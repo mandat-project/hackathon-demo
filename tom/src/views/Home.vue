@@ -1,17 +1,7 @@
 <template>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
-      <div class="p-inputgroup">
-        <InputText
-          placeholder="A URI to do actions on."
-          v-model="uri"
-          @keyup.enter="fetch"
-        />
-        <Button @click="fetch"> GET </Button>
-      </div>
-      <div class="progressbarWrapper">
-        <ProgressBar v-if="isLoading" mode="indeterminate" />
-      </div>
+      <a href="/demand">Create Demand</a>
     </div>
   </div>
   <div class="grid">
