@@ -85,7 +85,7 @@ export default defineComponent({
       await putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
 
       // Create data-request resource ...
-      const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#dataProcessedContainer> <" + dataProcessed + "> .", authFetch.value);
+      const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#hasDataProcessed> <" + dataProcessed + "> .", authFetch.value);
       // .. get its URI ...
       const dataRequest = getLocationHeader(createDataRequest);
       // ... and set ACL
@@ -116,8 +116,8 @@ export default defineComponent({
 @prefix : <http://example.org/vocab/datev/credit#> .
 
 <> a schema:Demand ;
-  :hasDataRequestContainer <${dataRequest}> ;
-  :hasDataProcessedContainer <${dataProcessed}> ;
+  :hasDataRequest <${dataRequest}> ;
+  :hasDataProcessed <${dataProcessed}> ;
   schema:itemOffered [
     a schema:LoanOrCredit ;
       schema:amount ${enteredAmount.value} ;
