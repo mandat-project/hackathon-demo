@@ -25,7 +25,8 @@
             <li>
                 <input type="button" value="check if offer was accepted" v-bind:disabled="!offerIsCreated"
                     @click="isOrderAccepted(uri)" />
-                <span v-if="offerIsAccepted">&check;</span>
+                <span class="offerAcceptedStatus" v-if="offerIsAccepted">&check;</span>
+                <span class="offerAcceptedStatus" v-if="!offerIsAccepted && offerIsCreated">&#9749;</span>
             </li>
         </ul>
     </li>
@@ -81,12 +82,18 @@ export default defineComponent({
                     return parseToN3(txt, demand)
                 }).then((parsedN3) => {
                     demandStore.value = parsedN3.store;
-                }).then(() => {
-                    // check if an offer is already available
-                    offerIsCreated.value = isOfferCreated(demandStore.value)
-                    console.log("offerIsCreated", offerIsCreated.value)
-                })
+                });
+
+            // check if an offer is already available
+            offerIsCreated.value = isOfferCreated(demandStore.value)
+            console.log("offerIsCreated", offerIsCreated.value)
+
+            // check if an offer is already accepted
+            offerIsAccepted.value = await isOrderAccepted(demand)
+            console.log("orderIsAccepted", offerIsAccepted.value)
+
         }
+        getDemand(props.uri)
 
         const isOfferCreated = (demandStore: Store) => {
             const offer = demandStore.getQuads(props.uri, CREDIT("hasOffer"), null, null)
@@ -219,8 +226,8 @@ export default defineComponent({
 	            <${await getDemanderUri()}> schema:seeks <>  .
                 <http://example.com/loansAndCredits/c12345#credit>
             	        a schema:LoanOrCredit ;
-            	        schema:amount "${demandStore.value.getObjects(null,SCHEMA("amount"), null)[0].value}" ;
-            	        schema:currency "${demandStore.value.getObjects(null,SCHEMA("currency"), null)[0].value}";
+            	        schema:amount "${demandStore.value.getObjects(null, SCHEMA("amount"), null)[0].value}" ;
+            	        schema:currency "${demandStore.value.getObjects(null, SCHEMA("currency"), null)[0].value}";
             	        schema:annualPercentageRate "1.08";
             	        schema:loanTerm <#duration>.  
                 <#duration> 
@@ -346,5 +353,9 @@ export default defineComponent({
 .demands a {
     padding-left: 1em;
     color: white;
+}
+
+.offerAcceptedStatus {
+    padding-left: 1em;
 }
 </style>

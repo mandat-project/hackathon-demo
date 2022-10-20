@@ -10,14 +10,6 @@
       </div>
     </div>
   </div>
-  <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
-      <Textarea v-model="content" class="sizing" v-if="content" />
-      <!-- Instead of textarea, Button where user can request VC from me for demo -->
-      <Button v-else-if="isLoggedIn" label="Request Demo" />
-      <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
-    </div>
-  </div>
   <div class="demands">
     <span>
       <h3> Demands </h3>
