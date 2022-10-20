@@ -32,7 +32,7 @@
 <script lang="ts">
 import { useToast } from "primevue/usetoast";
 import { useSolidSession } from "@/composables/useSolidSession";
-import { createResource, getResource, postResource } from "@/lib/solidRequests";
+import { createResource, getLocationHeader, getResource, postResource, putResource } from "@/lib/solidRequests";
 import { computed, defineComponent, ref, toRefs, watch } from "vue";
 import router from "@/router";
 import { useSolidProfile } from "@/composables/useSolidProfile";
@@ -41,11 +41,12 @@ export default defineComponent({
   name: "Home",
   components: { },
   setup(props, context) {
+    const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
+    const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
+
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
-    //const amount = ref(23.43);
-    //const currency = ref("EUR");
 
     const selectedCurrency = ref()
     const enteredAmount = ref(0)
@@ -56,11 +57,60 @@ export default defineComponent({
 
     const postDemand = async () => {
       const { storage } = useSolidProfile()
-      const createDataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value);
-      const dataProcessed = createDataProcessed.headers.get('Location') || "ERROR";
-      const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#dataProcessedContainer> <" + dataProcessed + "> .", authFetch.value);
-      const dataRequest = createDataRequest.headers.get('Location') || "ERROR";
 
+      // Create data-processed resource ...
+      const createDataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value);
+      // .. get its URI ...
+      const dataProcessed = getLocationHeader(createDataProcessed);
+      // ... and set ACL
+    const aclDataProcessed = `\
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+<#owner>
+  a acl:Authorization;
+  acl:accessTo <${dataProcessed}> ;
+  acl:agent <${webId?.value}> ;
+  acl:mode acl:Control, acl:Read, acl:Write.
+<#bank>
+    a acl:Authorization;
+    acl:accessTo <${dataProcessed}> ;
+    acl:agent <${bank.value}> ;
+    acl:mode acl:Read .
+<#tax>
+    a acl:Authorization;
+    acl:accessTo <${dataProcessed}> ;
+    acl:agent <${tax.value}> ;
+    acl:mode acl:Write .
+    `
+      await putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
+
+      // Create data-request resource ...
+      const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#dataProcessedContainer> <" + dataProcessed + "> .", authFetch.value);
+      // .. get its URI ...
+      const dataRequest = getLocationHeader(createDataRequest);
+      // ... and set ACL
+    const aclDataRequest = `\
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+<#owner>
+  a acl:Authorization;
+  acl:accessTo <${dataRequest}> ;
+  acl:agent <${webId?.value}> ;
+  acl:mode acl:Control, acl:Read, acl:Write.
+<#bank>
+    a acl:Authorization;
+    acl:accessTo <${dataRequest}> ;
+    acl:agent <${bank.value}> ;
+    acl:mode acl:Write .
+<#tax>
+    a acl:Authorization;
+    acl:accessTo <${dataRequest}> ;
+    acl:agent <${tax.value}> ;
+    acl:mode acl:Read .
+    `
+      await putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
+
+      // Create demand resource
       const payload = `\
 @prefix schema: <http://schema.org/> .
 @prefix : <http://example.org/vocab/datev/credit#> .
@@ -76,7 +126,6 @@ export default defineComponent({
 
 <${webId?.value}> schema:seeks <> .
 `
-
       await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value)
         .catch((err) => {
           toast.add({
