@@ -10,7 +10,7 @@
             <!--p:outputLabel for="amount" styleClass="col-fixed" style="width:100px" value="Amount" /-->
             <h5>Amount</h5>
             <div class="col">
-                <InputText id="amount" type="number" :enteredAmount="enteredAmount" />
+                <InputText id="amount" type="number" v-model="enteredAmount" />
             </div>
         </div>
         <div class="field grid">
@@ -32,11 +32,14 @@
     <div class="col lg:col-6 lg:col-offset-3">
       
       <h1>Released Demands</h1>
-      <ul>
-      <li v-for="demand in demands " :key="demand">
-        {{ demand.amount }} {{ demand.currency }} <span v-if="demand.offer">({{ demand.offer.interestRate}} % interest rate)</span><span v-else>(no offer)</span>
-      </li>
+      <ul v-if="demands">
+        <li v-for="demand in demands " :key="demand">
+          {{ demand.amount }} {{ demand.currency }} 
+          <span v-if="demand.offer">({{ demand.offer.interestRate}} % interest rate) <Button type="submit" @click="createOrder(demand.offer!.id)"> accept offer </Button>
+          </span><span v-else>(no offer)</span>
+        </li>
       </ul>
+      <p v-else>No released demands</p>
     </div>
   </div>
 </template>
@@ -58,7 +61,6 @@ export default defineComponent({
     const { isLoggedIn, webId } = toRefs(sessionInfo);
 
     this.$watch('isLoggedIn', (isLoggedIn: Boolean) => {
-      
     })
   },
   setup(props, context) {
@@ -69,6 +71,7 @@ export default defineComponent({
         offer?:Offer
     }
     interface Offer {
+      id:String,
       interestRate:number
     }
     
@@ -110,9 +113,9 @@ export default defineComponent({
                 .then((resp) => resp.text())
                 .then((txt) => parseToN3(txt, demandOffers[0].id))
                 .then((parsedN3)=> parsedN3.store);
-              const interestRate = offerStore.getObjects(null, DataFactory.namedNode("http://schema.org/interestRate"), null)[0];
+              const interestRate = offerStore.getObjects(null, DataFactory.namedNode("http://schema.org/annualPercentageRate"), null)[0];
               
-              demands.value.push({ amount: parseFloat(amount.value), currency: currency.value, offer: { interestRate: parseFloat(interestRate.value) } })
+              demands.value.push({ amount: parseFloat(amount.value), currency: currency.value, offer: { id: demandOffers[0].id, interestRate: parseFloat(interestRate.value) } })
             } else {
               demands.value.push({ amount: parseFloat(amount.value), currency: currency.value })
             }
@@ -129,9 +132,6 @@ export default defineComponent({
       loadDemands();
     })
 
-    const demandsEndpoint = 'https://bank.solid.aifb.kit.edu/credits/demands/';
-
-
     const selectedCurrency = ref()
     const enteredAmount = ref(0)
     const form = ref();
@@ -139,6 +139,25 @@ export default defineComponent({
         { label: "EUR", value: "EUR" },
         { label: "USD", value: "USD" }
     ];
+
+    const createOrder = async (offerId:String) => {
+      const payload = `\
+          @prefix schema: <http://schema.org/> .
+
+          <> schema:acceptedOffer <${offerId}> .
+        `
+      
+      const createOrder = await createResource("https://bank.solid.aifb.kit.edu/credits/orders/", payload, authFetch.value)
+      
+      .then((resp) => {
+        toast.add({
+          severity: "success",
+          summary: "Order created sucessfully",
+          life: 5000
+        });
+      });
+      
+    };
 
     const postDemand = async () => {
       try {
@@ -240,6 +259,7 @@ export default defineComponent({
 
     return {
       postDemand,
+      createOrder,
       isLoggedIn,
       enteredAmount,
       selectedCurrency,
