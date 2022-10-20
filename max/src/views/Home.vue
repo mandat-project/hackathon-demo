@@ -3,140 +3,98 @@
     <div class="col lg:col-6 lg:col-offset-3">
       <div class="p-inputgroup">
         <InputText
-          placeholder="GET my request."
-          v-model="requestUri"
-          @keyup.enter="fetch"
+            placeholder="GET my request."
+            v-model="requestUri"
+            @keyup.enter="getDataRequests"
         />
-        <Button @click="fetch"> GET </Button>
+        <Button @click="getDataRequests"> GET</Button>
       </div>
       <div class="p-inputgroup">
         <InputText
-          placeholder="POST processed data to..."
-          v-model="processedUri"
-          @keyup.enter="fetch"
+            placeholder="POST processed data to..."
+            v-model="processedUri"
         />
-        <Button @click="fetch"> POST </Button>
+        <Button> POST</Button>
       </div>
       <div class="progressbarWrapper">
-        <ProgressBar v-if="isLoading" mode="indeterminate" />
+        <ProgressBar v-if="isLoading" mode="indeterminate"/>
       </div>
     </div>
   </div>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
-      <Textarea v-model="content" class="sizing" v-if="content" />
-      <Button @click="doTaxThing" v-if="isLoggedIn" label="Do Tax things" />
+      <ul v-if="isLoggedIn && store">
+        <li v-for="requestId in getRequestIds()" :key="requestId">{{ requestId.value }}</li>
+      </ul>
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { useToast } from "primevue/usetoast";
-import { useSolidSession } from "@/composables/useSolidSession";
-import { createResource, getResource, postResource } from "@/lib/solidRequests";
-import { computed, defineComponent, ref, toRefs, watch } from "vue";
-import router from "@/router";
+<script setup lang="ts">
+import {useToast} from "primevue/usetoast";
+import {useSolidSession} from "@/composables/useSolidSession";
+import {getResource, parseToN3} from "@/lib/solidRequests";
+import {ref, toRefs} from "vue";
+import {LDP} from "@/lib/namespaces";
 
-export default defineComponent({
-  name: "Home",
-  components: { },
-  methods: {
-    doTaxThing(){
+const toast = useToast();
+const {authFetch, sessionInfo} = useSolidSession();
+const {isLoggedIn, webId} = toRefs(sessionInfo);
+const isLoading = ref(false);
 
-      this.content = this.content + " <> a :ProcessedRequest . "
+const requestUri = ref("https://max.solid.aifb.kit.edu/requests/");
+const processedUri = ref("https://max.solid.aifb.kit.edu/processed/");
 
-    }
+const content = ref("");
+const store = ref();
 
-  },
-  setup(props, context) {
-    const toast = useToast();
-    const { authFetch, sessionInfo } = useSolidSession();
-    const { isLoggedIn, webId } = toRefs(sessionInfo);
-    const isLoading = ref(false);
+function getDataRequests(): Promise<any> {
+  isLoading.value = true;
+  return getResource(requestUri.value, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        isLoading.value = false;
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then(txt => {
+        console.log(txt)
+        return parseToN3(txt, requestUri.value)
+      })
+      .then(n3 => {
+        console.log(n3.store.getObjects(requestUri.value, LDP("contains"), null));
+        store.value = n3.store
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
+}
 
-    // uri of the information resource
-    const requestUri = ref("https://max.solid.aifb.kit.edu/requests/request.ttl");
-    const processedUri = ref("https://max.solid.aifb.kit.edu/processed/processed.ttl");
-    
-
-
-    // watch(
-    //   () => inbox.value,
-    //   () => (uri.value = inbox.value),
-    //   { immediate: true }
-    // );
-    const isHTTP = computed(
-      () => requestUri.value.startsWith("http://") || requestUri.value.startsWith("https://")
-    );
-    // content of the information resource
-    const content = ref("");
-    //   content.value =
-    //     "This is a demo resource, which you only have access to after you 'unlock' it with a Verifiable Credential issued by the creator of this demo: Alice aka. Christoph aka. uvdsl :)\n\nClick `GET` to access the resource.\n\n    If you get a 401, log in\n                               (button at the top right).\n\n    If you get a 403, unlock the resource\n                               (button at the bottom).";
-    // watch(
-    //   () => inbox.value,
-    //   () => (content.value = inbox.value !== "" ? "<#this> a <#demo>." : ""),
-    //   { immediate: true }
-    // );
-    // get content of information resource
-    const fetch = async () => {
-      if (!isHTTP.value) {
-        return;
-      }
-      isLoading.value = true;
-      const txt = await getResource(requestUri.value, authFetch.value)
-        .catch((err) => {
-          toast.add({
-            severity: "error",
-            summary: "Error on fetch!",
-            detail: err,
-            life: 5000,
-          });
-          isLoading.value = false;
-          throw new Error(err);
-        })
-        .then((resp) => resp.text()); //;
-      // //   const parsedN3 =
-      // await parseToN3(txt, uri.value)
-      //   .catch((err) => {
-      //     toast.add({
-      //       severity: "error",
-      //       summary: "Parsing Error!",
-      //       detail: err,
-      //       life: 5000,
-      //     });
-      //     //   throw new Error(err);
-      //   })
-      // .finally(() => {
-      content.value = txt;
-      isLoading.value = false;
-      // });
-    };
-
-    return {
-      requestUri,
-      processedUri,
-      fetch,
-      content,
-      isLoading,
-      isLoggedIn
-      
-    };
-  },
-});
+function getRequestIds() {
+  return store.value.getObjects(requestUri.value, LDP("contains"), null);
+}
 </script>
 
-<style  scoped>
+<style scoped>
 .grid {
   margin: 5px;
 }
+
 .p-inputgroup {
   padding-bottom: 0px;
 }
+
 .border {
   border: 1px solid var(--surface-d);
   border-radius: 3px;
 }
+
 .border:hover {
   border: 1px solid var(--primary-color);
 }
@@ -146,6 +104,7 @@ export default defineComponent({
   padding: 0px 9px 0px 9px;
   transform: translate(0, -1px);
 }
+
 .p-progressbar {
   height: 2px;
   padding-top: 0px;
