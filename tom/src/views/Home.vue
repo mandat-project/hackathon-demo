@@ -56,28 +56,28 @@ export default defineComponent({
 
     const postDemand = async () => {
       const { storage } = useSolidProfile()
-      const dataRequestsContainer = "http://sme.solid.aifb.kit.edu/data-requests/0000-11";
-      const dataProcessedContainer = "http://sme.solid.aifb.kit.edu/data-processed/0000-11";
-console.log(selectedCurrency.value.value)
+      const createDataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value);
+      const dataProcessed = createDataProcessed.headers.get('Location') || "ERROR";
+      const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#dataProcessedContainer> <" + dataProcessed + "> .", authFetch.value);
+      const dataRequest = createDataRequest.headers.get('Location') || "ERROR";
+
       const payload = `\
 @prefix schema: <http://schema.org/> .
-@prefix : <http://example.org/> .
+@prefix : <http://example.org/vocab/datev/credit#> .
 
-</bla> a schema:Demand ;
-  :dataRequestContainer <${dataRequestsContainer}> ;
-  :dataProcessedContainer <${dataProcessedContainer}> ;
+<> a schema:Demand ;
+  :hasDataRequestContainer <${dataRequest}> ;
+  :hasDataProcessedContainer <${dataProcessed}> ;
   schema:itemOffered [
     a schema:LoanOrCredit ;
       schema:amount ${enteredAmount.value} ;
       schema:currency "${selectedCurrency.value.value}"
   ] .
 
-<${webId?.value}> schema:seeks </bal> .
+<${webId?.value}> schema:seeks <> .
 `
 
-      await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value, {
-        'Content-Type': 'text/turtle'
-      })
+      await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value)
         .catch((err) => {
           toast.add({
             severity: "error",
