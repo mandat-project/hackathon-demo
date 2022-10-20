@@ -34,7 +34,7 @@
       <h1>Released Demands</h1>
       <ul>
       <li v-for="demand in demands " :key="demand">
-        {{ demand.amount }} {{ demand.currency }}
+        {{ demand.amount }} {{ demand.currency }} <span v-if="demand.offer">({{ demand.offer.interestRate}} % interest rate)</span><span v-else>(no offer)</span>
       </li>
       </ul>
     </div>
@@ -65,8 +65,12 @@ export default defineComponent({
 
     interface Demand {
         amount:number,
-        currency:String
-      }
+        currency:String,
+        offer?:Offer
+    }
+    interface Offer {
+      interestRate:number
+    }
     
     const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
     const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
@@ -89,7 +93,6 @@ export default defineComponent({
       const allDemands = store.getObjects(DataFactory.namedNode(webId!.value!), 
         DataFactory.namedNode("http://example.org/vocab/datev/credit#hasDemand"), null);
 
-
       for (let demand of allDemands) {
         try {
           const demandStore = await getResource(demand.id, authFetch.value)
@@ -101,11 +104,20 @@ export default defineComponent({
           
             const amount = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/amount"), null)[0];
             const currency = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/currency"), null)[0];
-
-            //const amount = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/itemOffered"), null)[0];
             
-            demands.value.push({ amount: parseFloat(amount.value), currency: currency.value })
+            if (demandOffers.length > 0) {
+              const offerStore = await getResource(demandOffers[0].id, authFetch.value)
+                .then((resp) => resp.text())
+                .then((txt) => parseToN3(txt, demandOffers[0].id))
+                .then((parsedN3)=> parsedN3.store);
+              const interestRate = offerStore.getObjects(null, DataFactory.namedNode("http://schema.org/interestRate"), null)[0];
+              
+              demands.value.push({ amount: parseFloat(amount.value), currency: currency.value, offer: { interestRate: parseFloat(interestRate.value) } })
+            } else {
+              demands.value.push({ amount: parseFloat(amount.value), currency: currency.value })
+            }
         } catch (e) {
+          console.log(e)
         }
       }
       
