@@ -6,22 +6,27 @@ import Button from 'primevue/button';
 import { ref } from 'vue';
 
 export default {
-  data() {
-    return {
-      selectedCurrency: null,
-      enteredAmount: null,
-      currencies: [ 
-        {label: 'EUR', value: 'EUR'},
-        {label: 'USD', value: 'USD'},
-      ]
-    }
-  },
-  methods: {
-    handleSubmit() {
-        console.log(ref)
-      alert('go')
-    }
-  }
+    setup() {
+        const selectedCurrency = ref()
+        const enteredAmount = ref(0)
+        const currencies = [
+            { label: "EUR", value: "EUR" },
+            { label: "USD", value: "USD" }
+        ];
+        enteredAmount.value = 20;
+     
+        const handleSubmit= () => {
+            console.log("create demand for " + enteredAmount.value + " " + selectedCurrency.value.value);
+        }
+
+        return {
+            enteredAmount,
+            selectedCurrency,
+            currencies,
+            handleSubmit
+        }
+    },
+
 }
 </script>
 
@@ -46,7 +51,7 @@ export default {
             </div>
         </div>
 
-        <Button type="submit"> Submit </Button>
+        <Button type="submit" @click="handleSubmit()"> Submit </Button>
     </div>
 
     </h:form>
