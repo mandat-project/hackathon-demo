@@ -44,7 +44,7 @@ export default defineComponent({
   methods: {
     doTaxThing(){
 
-      this.content = "<>"
+      this.content = this.content + " <> a :ProcessedRequest . "
 
     }
 
