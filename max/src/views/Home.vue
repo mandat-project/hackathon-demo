@@ -49,6 +49,7 @@ const store = ref();
 const requests: Ref<Array<any>> = ref([]);
 
 const requestStores = new Map<string, Store>();
+const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
 
 function getDataRequests(): Promise<any> {
   isLoading.value = true;
@@ -119,16 +120,10 @@ function getRequestIds() {
 }
 
 async function processRequest(requestUri: any) {
-
-  console.log(requestStores.get(requestUri)?.getObjects(requestUri, EX("hasDataProcessed"), null)[0].value);
-  return;
-
-  const details = await getRequestDetails(requestUri)
-  console.log("Processing Request", requestUri, details)
-
-  const targetUri = details[0].value;
-
-  await putResource(targetUri, "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .", authFetch.value);
+  if (requestStores.has(requestUri)) {
+    const targetUri = requestStores.get(requestUri)!.getObjects(requestUri, EX("hasDataProcessed"), null)[0].value;
+    await putResource(targetUri, processedDataBody, authFetch.value);
+  }
 }
 </script>
 
