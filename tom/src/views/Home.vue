@@ -237,9 +237,13 @@ export default defineComponent({
 
         // Get our demand list and add newly created demand
         const getDemandList = await getResource(storage.value + "demands.ttl", authFetch.value);
-        const demandListBody = await getDemandList.text();
-        const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
-        await putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
+        if(getDemandList.status == 200) {
+          const demandListBody = await getDemandList.text();
+          const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
+          await putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
+        } else {
+          await putResource(storage.value + "demands.ttl", "<" + webId?.value + "> <http://example.org/vocab/datev/credit#hasDemand> <" + demand + "> .", authFetch.value);
+        }
 
         // Success Message \o/
         toast.add({
