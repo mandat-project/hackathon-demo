@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@/composables/useSolidSession";
-import {getResource, parseToN3, putResource} from "@/lib/solidRequests";
+import {getResource, parseToN3, putResource, createResource} from "@/lib/solidRequests";
 import {ref, toRefs} from "vue";
 import {EX, LDP} from "@/lib/namespaces";
 import {Quad, Store} from 'n3';
@@ -62,6 +62,10 @@ async function processRequest(key: string) {
     const targetUri = getObject(store, EX('hasDataProcessed'));
     const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
     await putResource(targetUri, processedDataBody, authFetch.value);
+
+    //LDN with targetUri as msgbody 
+    await createResource("https://sme.solid.aifb.kit.edu/inbox/", targetUri, authFetch.value);
+    
   }
 }
 
