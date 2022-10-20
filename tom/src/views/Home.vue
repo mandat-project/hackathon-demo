@@ -187,7 +187,7 @@ export default defineComponent({
               acl:agent <${tax.value}> ;
               acl:mode acl:Write .
         `
-        await putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
+        putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
 
         // Create data-request resource ...
         const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#hasDataProcessed> <" + dataProcessed + "> .", authFetch.value);
@@ -213,7 +213,7 @@ export default defineComponent({
               acl:agent <${tax.value}> ;
               acl:mode acl:Read .
         `
-        await putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
+        putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
 
         // Create demand resource
         const payload = `\
@@ -240,13 +240,13 @@ export default defineComponent({
         if(getDemandList.status == 200) {
           const demandListBody = await getDemandList.text();
           const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
-          await putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
+          putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
         } else {
-          await putResource(storage.value + "demands.ttl", "<" + webId?.value + "> <http://example.org/vocab/datev/credit#hasDemand> <" + demand + "> .", authFetch.value);
+          putResource(storage.value + "demands.ttl", "<" + webId?.value + "> <http://example.org/vocab/datev/credit#hasDemand> <" + demand + "> .", authFetch.value);
         }
 
         // Send LDN to bank about new demand
-        await createResource("https://bank.solid.aifb.kit.edu/inbox/", "<" + webId?.value + "> <http://schema.org/seeks> <" + demand + "> .", authFetch.value);
+        createResource("https://bank.solid.aifb.kit.edu/inbox/", "<" + webId?.value + "> <http://schema.org/seeks> <" + demand + "> .", authFetch.value);
 
         // Success Message \o/
         toast.add({
