@@ -112,6 +112,11 @@ export default defineComponent({
       console.log("demands", demands.value)
     }
 
+    watch(storage, function() {
+      if (!storage.value) return;
+      loadDemands();
+    })
+
     const demandsEndpoint = 'https://bank.solid.aifb.kit.edu/credits/demands/';
 
 
