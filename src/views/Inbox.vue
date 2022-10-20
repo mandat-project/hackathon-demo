@@ -16,15 +16,15 @@
 </template>
 
 <script lang="ts">
-import LDNs from "@/components/inbox/LDNs.vue";
 import { useSolidSession } from "@/composables/useSolidSession";
 import router from "@/router";
 
 import { defineComponent, toRefs } from "vue";
+import LDNs from "@/components/inbox/LDNs.vue";
 
 export default defineComponent({
   name: "Inbox",
-  components: {  },
+  components: { LDNs },
   setup() {
     const { sessionInfo } = useSolidSession();
     const { isLoggedIn } = toRefs(sessionInfo);
