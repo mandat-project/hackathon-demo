@@ -113,7 +113,7 @@ export default defineComponent({
     }
 
     const demandsEndpoint = 'https://bank.solid.aifb.kit.edu/credits/demands/';
->>>>>>> 220f73e (Fix demand creation form)
+
 
     const selectedCurrency = ref()
     const enteredAmount = ref(0)
