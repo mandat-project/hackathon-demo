@@ -44,6 +44,7 @@ const {isLoggedIn} = toRefs(sessionInfo);
 const isLoading = ref(false);
 
 const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
+const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
 const requestStores = ref(new Map<string, Store | null>());
 
 function getRequestsContainer() {
@@ -64,8 +65,7 @@ async function processRequest(key: string) {
     await putResource(targetUri, processedDataBody, authFetch.value);
 
     //LDN with targetUri as msgbody 
-    await createResource("https://sme.solid.aifb.kit.edu/inbox/", targetUri, authFetch.value);
-    
+    await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value);
   }
 }
 
