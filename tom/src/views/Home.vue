@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <Button type="submit" @click="postDemand"> Submit </Button>
+        <Button type="submit" @click="postDemand"> Submit demand </Button>
     </div>
 
     </h:form>
@@ -47,13 +47,25 @@ export default defineComponent({
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
+<<<<<<< HEAD
+=======
+
+    const demandsEndpoint = 'https://bank.solid.aifb.kit.edu/credits/demands/';
+>>>>>>> 220f73e (Fix demand creation form)
 
     const selectedCurrency = ref()
     const enteredAmount = ref(0)
+    const form = ref();
     const currencies = [
         { label: "EUR", value: "EUR" },
         { label: "USD", value: "USD" }
     ];
+
+    const loadDemands = async () => {
+      // https://bank.solid.aifb.kit.edu/credits/demands/
+      //const createDataProcessed = await getResource(storage.value + "data-processed/", "", authFetch.value);
+
+    }
 
     const postDemand = async () => {
       const { storage } = useSolidProfile()
@@ -130,13 +142,17 @@ export default defineComponent({
         .catch((err) => {
           toast.add({
             severity: "error",
-            summary: "Error on fetch!",
+            summary: "Failed to create demand!",
             detail: err,
             life: 5000,
           });
           throw new Error(err);
         })
-        .then((resp) => resp.text()); //;
+        .then((resp) => {
+          resp.text();
+          toast.add({ severity: "success", summary: "Demand created sucessfully", life: 5000 });
+
+        }); //;
     };
 
     return {
