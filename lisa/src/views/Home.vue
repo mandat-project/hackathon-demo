@@ -138,4 +138,8 @@ export default defineComponent({
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
+
+.demands ol li {
+  margin-bottom: 1em;
+}
 </style>
