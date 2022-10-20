@@ -25,7 +25,7 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <Textarea v-model="content" class="sizing" v-if="content" />
-      <Button v-else-if="isLoggedIn" label="Request Demo" />
+      <Button @click="doTaxThing" v-if="isLoggedIn" label="Do Tax things" />
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
     </div>
   </div>
@@ -41,6 +41,14 @@ import router from "@/router";
 export default defineComponent({
   name: "Home",
   components: { },
+  methods: {
+    doTaxThing(){
+
+      this.content = "<>"
+
+    }
+
+  },
   setup(props, context) {
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
@@ -48,7 +56,6 @@ export default defineComponent({
     const isLoading = ref(false);
 
     // uri of the information resource
-    const uri = ref("");
     const requestUri = ref("https://max.solid.aifb.kit.edu/requests/request.ttl");
     const processedUri = ref("https://max.solid.aifb.kit.edu/processed/processed.ttl");
     
@@ -60,7 +67,7 @@ export default defineComponent({
     //   { immediate: true }
     // );
     const isHTTP = computed(
-      () => uri.value.startsWith("http://") || uri.value.startsWith("https://")
+      () => requestUri.value.startsWith("http://") || requestUri.value.startsWith("https://")
     );
     // content of the information resource
     const content = ref("");
@@ -77,7 +84,7 @@ export default defineComponent({
         return;
       }
       isLoading.value = true;
-      const txt = await getResource(uri.value, authFetch.value)
+      const txt = await getResource(requestUri.value, authFetch.value)
         .catch((err) => {
           toast.add({
             severity: "error",
