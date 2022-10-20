@@ -10,7 +10,7 @@
             <!--p:outputLabel for="amount" styleClass="col-fixed" style="width:100px" value="Amount" /-->
             <h5>Amount</h5>
             <div class="col">
-                <InputText id="amount" type="number" v-model="enteredAmount" />
+                <InputText id="amount" type="number" :enteredAmount="enteredAmount" />
             </div>
         </div>
         <div class="field grid">
@@ -27,28 +27,93 @@
     </h:form>
     </div>
   </div>
+
+  <div class="grid">
+    <div class="col lg:col-6 lg:col-offset-3">
+      
+      <h1>Released Demands</h1>
+      <ul>
+      <li v-for="demand in demands " :key="demand">
+        {{ demand.amount }} {{ demand.currency }}
+      </li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { useToast } from "primevue/usetoast";
 import { useSolidSession } from "@/composables/useSolidSession";
-import { createResource, getLocationHeader, getResource, postResource, putResource } from "@/lib/solidRequests";
-import { computed, defineComponent, ref, toRefs, watch } from "vue";
+import { createResource, getLocationHeader, getResource, parseToN3, postResource, putResource } from "@/lib/solidRequests";
+import { computed, defineComponent, Ref, ref, toRefs, watch } from "vue";
 import router from "@/router";
 import { useSolidProfile } from "@/composables/useSolidProfile";
+import { DataFactory } from "n3";
 
 export default defineComponent({
   name: "Home",
   components: { },
+  created() {
+    const { authFetch, sessionInfo } = useSolidSession();
+    const { isLoggedIn, webId } = toRefs(sessionInfo);
+
+    this.$watch('isLoggedIn', (isLoggedIn: Boolean) => {
+      
+    })
+  },
   setup(props, context) {
+
+    interface Demand {
+        amount:number,
+        currency:String
+      }
+    
     const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
     const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
+    const demands = ref([]) as Ref<Demand[]>;
+    console.log("init loggedIn ", isLoggedIn.value)
+    const { storage } = useSolidProfile()
+      
+    const loadDemands = async () => {
+      console.log("loading demands...");
+
+      const store = await getResource(storage.value + "demands.ttl", authFetch.value) // 
+        .then((resp) => resp.text())
+        .then((txt) => parseToN3(txt, storage.value + "demands.ttl"))
+        .then((parsedN3)=> parsedN3.store);
+
+      const allDemands = store.getObjects(DataFactory.namedNode(webId!.value!), 
+        DataFactory.namedNode("http://example.org/vocab/datev/credit#hasDemand"), null);
+
+
+      for (let demand of allDemands) {
+        try {
+          const demandStore = await getResource(demand.id, authFetch.value)
+            .then((resp) => resp.text())
+            .then((txt) => parseToN3(txt, demand.id))
+            .then((parsedN3)=> parsedN3.store);
+
+            const demandOffers = demandStore.getObjects(null, DataFactory.namedNode("http://example.org/vocab/datev/credit#hasOffer"), null);
+          
+            const amount = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/amount"), null)[0];
+            const currency = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/currency"), null)[0];
+
+            //const amount = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/itemOffered"), null)[0];
+            
+            demands.value.push({ amount: parseFloat(amount.value), currency: currency.value })
+        } catch (e) {
+        }
+      }
+      
+      console.log("demands", demands.value)
+    }
 
     const demandsEndpoint = 'https://bank.solid.aifb.kit.edu/credits/demands/';
+>>>>>>> 220f73e (Fix demand creation form)
 
     const selectedCurrency = ref()
     const enteredAmount = ref(0)
@@ -57,12 +122,6 @@ export default defineComponent({
         { label: "EUR", value: "EUR" },
         { label: "USD", value: "USD" }
     ];
-
-    const loadDemands = async () => {
-      // https://bank.solid.aifb.kit.edu/credits/demands/
-      //const createDataProcessed = await getResource(storage.value + "data-processed/", "", authFetch.value);
-
-    }
 
     const postDemand = async () => {
       try {
@@ -167,7 +226,8 @@ export default defineComponent({
       isLoggedIn,
       enteredAmount,
       selectedCurrency,
-      currencies
+      currencies,
+      demands
     };
   },
 });
