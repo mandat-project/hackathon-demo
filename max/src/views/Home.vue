@@ -9,13 +9,7 @@
         />
         <Button @click="getDataRequests"> GET</Button>
       </div>
-      <div class="p-inputgroup">
-        <InputText
-            placeholder="POST processed data to..."
-            v-model="processedUri"
-        />
-        <Button> POST</Button>
-      </div>
+
       <div class="progressbarWrapper">
         <ProgressBar v-if="isLoading" mode="indeterminate"/>
       </div>
@@ -49,9 +43,7 @@ const {isLoggedIn, webId} = toRefs(sessionInfo);
 const isLoading = ref(false);
 
 const requestUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
-const processedUri = ref("https://max.solid.aifb.kit.edu/processed/");
 
-const content = ref("");
 const store = ref();
 
 const requests: Ref<Array<any>> = ref([]);
