@@ -3,8 +3,8 @@
         <span>Demand: {{ uri }} </span>
         <ul class="demands">
             <li><input type="button" value="get details of this demand" @click="getDemand(uri)" />
-                <a v-if="dataRequestURI" href="{{ dataRequestURI }}">data request</a>
-                <a v-if="dataProcessedURI" href="{{ dataProcessedURI}}">data request processed</a>
+                <a v-if="dataRequestURI" :href=dataRequestURI>data request</a>
+                <a v-if="dataProcessedURI" :href=dataProcessedURI>data request processed</a>
             </li>
 
             <li>

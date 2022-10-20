@@ -16,6 +16,7 @@
       <ol>
         <DemandProcessor :uri="demandURI" v-for="demandURI in demands" :key="demandURI" />
       </ol>
+      <div v-if="demandsAvailable">No demands available.</div>
     </span>
   </div>
 </template>
@@ -39,6 +40,7 @@ export default defineComponent({
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
     const isLoading = ref(false);
+    const demandsAvailable = ref(false);
 
     // uri of the information resource
     const uri = ref("");
@@ -100,11 +102,12 @@ export default defineComponent({
       isLoading,
       isLoggedIn,
       demands,
-
+      demandsAvailable
     };
   },
 });
 
+// const demandsAvailable = computed(() => // TODO
 
 </script>
 
