@@ -24,7 +24,11 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <ul v-if="isLoggedIn && store">
-        <li v-for="requestId in getRequestIds()" :key="requestId">{{ requestId.value }}</li>
+        <li v-for="(namedNode, index) in getRequestIds()" :key="namedNode">
+          {{ namedNode.value }}
+          <p v-if="requests">{{ requests[index]?.details }}</p>
+          <Button @click="processRequest(namedNode.value)">Do Processing</Button>
+        </li>
       </ul>
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
     </div>
@@ -34,8 +38,8 @@
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@/composables/useSolidSession";
-import {getResource, parseToN3} from "@/lib/solidRequests";
-import {ref, toRefs} from "vue";
+import {getResource, parseToN3, putResource} from "@/lib/solidRequests";
+import {ref, Ref, toRefs} from "vue";
 import {LDP} from "@/lib/namespaces";
 
 const toast = useToast();
@@ -43,11 +47,13 @@ const {authFetch, sessionInfo} = useSolidSession();
 const {isLoggedIn, webId} = toRefs(sessionInfo);
 const isLoading = ref(false);
 
-const requestUri = ref("https://max.solid.aifb.kit.edu/requests/");
+const requestUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
 const processedUri = ref("https://max.solid.aifb.kit.edu/processed/");
 
 const content = ref("");
 const store = ref();
+
+const requests: Ref<Array<any>> = ref([]);
 
 function getDataRequests(): Promise<any> {
   isLoading.value = true;
@@ -64,12 +70,48 @@ function getDataRequests(): Promise<any> {
       })
       .then((resp) => resp.text())
       .then(txt => {
-        console.log(txt)
         return parseToN3(txt, requestUri.value)
       })
-      .then(n3 => {
-        console.log(n3.store.getObjects(requestUri.value, LDP("contains"), null));
+      .then(async n3 => {
         store.value = n3.store
+
+        const ids = getRequestIds().map((node: { id: any; }) => node.id);
+
+        for (const id of ids) {
+          const request = {
+            id,
+            details: await getRequestDetails(id)
+          };
+          console.log("PUSH", request)
+          requests.value.push(request)
+        }
+
+        console.log("REQUESTS", requests.value)
+      })
+      .finally(() => {
+        isLoading.value = false;
+      });
+}
+
+function getRequestDetails(uri: string): Promise<any> {
+  isLoading.value = true;
+  return getResource(uri, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        isLoading.value = false;
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then(txt => {
+        return parseToN3(txt, uri)
+      })
+      .then(n3 => {
+        return n3.store.getObjects(uri, null, null);
       })
       .finally(() => {
         isLoading.value = false;
@@ -78,6 +120,15 @@ function getDataRequests(): Promise<any> {
 
 function getRequestIds() {
   return store.value.getObjects(requestUri.value, LDP("contains"), null);
+}
+
+async function processRequest(requestUri: any) {
+  const details = await getRequestDetails(requestUri)
+  console.log("Processing Request", requestUri, details)
+
+  const targetUri = details[0].value;
+
+  await putResource(targetUri, "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .", authFetch.value);
 }
 </script>
 
