@@ -1,12 +1,10 @@
 <template>
     <li>
         <span> {{ uri }} </span>
-        <ul>
+        <ul class="demands">
             <li><input type="button" value="get details of this demand" @click="getDemand(uri)" />
-                <div>
-                    <div v-if="dataRequestURI"> REQUEST: {{ dataRequestURI }} </div>
-                    <div v-if="dataProcessedURI"> PROCESSED: {{ dataProcessedURI}}</div>
-                </div>
+                <a v-if="dataRequestURI" href="{{ dataRequestURI }}">data request</a>
+                <a v-if="dataProcessedURI" href="{{ dataProcessedURI}}">data request processed</a>
             </li>
 
             <li>
@@ -25,19 +23,23 @@
                     @click="createOfferResource(uri, dataRequestURI,dataProcessedURI)" />
             </li>
             <li>
-                <input type="button" value="check if offer was accepted" v-bind:disabled="!offerIsCreated" />
+                <input type="button" value="check if offer was accepted" v-bind:disabled="!offerIsCreated"
+                    @click="isOrderAccepted(uri)" />
+                <span v-if="offerIsAccepted">&check;</span>
             </li>
         </ul>
     </li>
 
 </template>
 
-<script lang="ts">import { useSolidSession } from '@/composables/useSolidSession';
-import { CREDIT, SCHEMA } from '@/lib/namespaces';
+<script lang="ts">
+import { useSolidProfile } from '@/composables/useSolidProfile';
+import { useSolidSession } from '@/composables/useSolidSession';
+import { CREDIT, LDP, SCHEMA } from '@/lib/namespaces';
 import { createResource, getLocationHeader, getResource, parseToN3, patchResource, postResource, putResource } from '@/lib/solidRequests';
 import { Store } from 'n3';
 import { useToast } from 'primevue/usetoast';
-import { computed, defineComponent, ref, toRefs } from 'vue';
+import { computed, defineComponent, Ref, ref, toRefs } from 'vue';
 
 
 export default defineComponent({
@@ -53,6 +55,7 @@ export default defineComponent({
         const toast = useToast();
         const { authFetch, sessionInfo } = useSolidSession();
         const { isLoggedIn, webId } = toRefs(sessionInfo);
+        const { storage } = useSolidProfile();
 
         const demandStore = ref(new Store())
         const processedDemandStore = ref(new Store())
@@ -60,6 +63,7 @@ export default defineComponent({
 
         const hasRequestedData = ref(false)
         const offerIsCreated = ref(false)
+        const offerIsAccepted = ref(false)
 
         const getDemand = async (demand: string) => {
             await getResource(demand, authFetch.value)
@@ -239,9 +243,71 @@ export default defineComponent({
             return demanderURI;
         }
 
-        const checkOrder = async (orderURI: string) => {
-            return getResource(orderURI, authFetch.value)
+        const isOrderAccepted = async (demandURI: string) => {
+
+            const ordersURI = storage.value + "credits/orders/";
+            orderStore.value = await getAllOrders(ordersURI)
+
+            const offerURI = demandStore.value.getQuads(demandURI, CREDIT("hasOffer"), null, null)[0].object.value;
+            console.log("demand", demandURI, "has offerURI", offerURI)
+
+            // add all values to the order store
+            const orders = orderStore.value.getObjects(ordersURI, LDP("contains"), null).map((order) => order.value);
+            console.log(orders)
+            for (const order of orders) {
+                console.log("available order:", order)
+                await addOrderToStore(order)
+            }
+
+            let acceptedOffers = orderStore.value.getQuads(null, SCHEMA("acceptedOffer"), offerURI, null)
+
+            if (acceptedOffers.length == 1) {
+                console.log("offer accepted:", offerURI)
+                offerIsAccepted.value = true;
+                return true;
+            } else if (acceptedOffers.length > 1) {
+                console.warn("MORE than one offer accepted:", offerURI)
+                return true;
+            } else {
+                console.log("offer NOT accepted:", offerURI)
+                return false;
+            }
         }
+
+        const getAllOrders = async (ordersURI: string) => {
+            return getResource(ordersURI, authFetch.value)
+                .catch((err) => {
+                    toast.add({
+                        severity: "error",
+                        summary: "Error on fetch!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+                .then((resp) => resp.text())
+                .then((txt) => parseToN3(txt, ordersURI))
+                .then((parsedN3) => parsedN3.store)
+        }
+
+        const addOrderToStore = async (orderURI: string) => {
+            return getResource(orderURI, authFetch.value)
+                .catch((err) => {
+                    toast.add({
+                        severity: "error",
+                        summary: "Error on fetch!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+                .then((resp) => resp.text()).then((txt) => {
+                    return parseToN3(txt, orderURI)
+                }).then((parsedN3) => {
+                    orderStore.value.addQuads(parsedN3.store.getQuads(null, null, null, null));
+                })
+        }
+
 
         return {
             getDemand,
@@ -251,8 +317,9 @@ export default defineComponent({
             createOfferResource,
             patchDemand,
             getProcessedDemand,
-            checkOrder,
+            isOrderAccepted,
             offerIsCreated,
+            offerIsAccepted,
             getOrderDetails,
             hasRequestedData,
             getDemanderUri
@@ -261,5 +328,8 @@ export default defineComponent({
 });
 </script>
 <style>
-
+.demands a {
+    padding-left: 1em;
+    color: white;
+}
 </style>
