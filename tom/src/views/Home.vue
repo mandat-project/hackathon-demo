@@ -136,7 +136,15 @@ export default defineComponent({
 
           <${webId?.value}> schema:seeks <> .
         `
-        await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value);
+        const createDemand = await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value);
+        // Get location
+        const demand = getLocationHeader(createDemand);
+
+        // Get our demand list and add newly created demand
+        const getDemandList = await getResource(storage.value + "demands.ttl", authFetch.value);
+        const demandListBody = await getDemandList.text();
+        const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
+        await putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
 
         // Success Message \o/
         toast.add({
