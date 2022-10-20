@@ -40,7 +40,8 @@ import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@/composables/useSolidSession";
 import {getResource, parseToN3, putResource} from "@/lib/solidRequests";
 import {ref, Ref, toRefs} from "vue";
-import {LDP} from "@/lib/namespaces";
+import {EX, LDP} from "@/lib/namespaces";
+import {Store} from 'n3';
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
@@ -54,6 +55,8 @@ const content = ref("");
 const store = ref();
 
 const requests: Ref<Array<any>> = ref([]);
+
+const requestStores = new Map<string, Store>();
 
 function getDataRequests(): Promise<any> {
   isLoading.value = true;
@@ -111,6 +114,7 @@ function getRequestDetails(uri: string): Promise<any> {
         return parseToN3(txt, uri)
       })
       .then(n3 => {
+        requestStores.set(uri, n3.store);
         return n3.store.getObjects(uri, null, null);
       })
       .finally(() => {
@@ -123,6 +127,10 @@ function getRequestIds() {
 }
 
 async function processRequest(requestUri: any) {
+
+  console.log(requestStores.get(requestUri)?.getObjects(requestUri, EX("hasDataProcessed"), null)[0].value);
+  return;
+
   const details = await getRequestDetails(requestUri)
   console.log("Processing Request", requestUri, details)
 
