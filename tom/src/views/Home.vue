@@ -47,11 +47,8 @@ export default defineComponent({
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
-<<<<<<< HEAD
-=======
 
     const demandsEndpoint = 'https://bank.solid.aifb.kit.edu/credits/demands/';
->>>>>>> 220f73e (Fix demand creation form)
 
     const selectedCurrency = ref()
     const enteredAmount = ref(0)
@@ -68,91 +65,93 @@ export default defineComponent({
     }
 
     const postDemand = async () => {
-      const { storage } = useSolidProfile()
+      try {
+        const { storage } = useSolidProfile()
 
-      // Create data-processed resource ...
-      const createDataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value);
-      // .. get its URI ...
-      const dataProcessed = getLocationHeader(createDataProcessed);
-      // ... and set ACL
-    const aclDataProcessed = `\
-@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        // Create data-processed resource ...
+        const createDataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value);
+        // .. get its URI ...
+        const dataProcessed = getLocationHeader(createDataProcessed);
+        // ... and set ACL
+        const aclDataProcessed = `\
+          @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 
-<#owner>
-  a acl:Authorization;
-  acl:accessTo <${dataProcessed}> ;
-  acl:agent <${webId?.value}> ;
-  acl:mode acl:Control, acl:Read, acl:Write.
-<#bank>
-    a acl:Authorization;
-    acl:accessTo <${dataProcessed}> ;
-    acl:agent <${bank.value}> ;
-    acl:mode acl:Read .
-<#tax>
-    a acl:Authorization;
-    acl:accessTo <${dataProcessed}> ;
-    acl:agent <${tax.value}> ;
-    acl:mode acl:Write .
-    `
-      await putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
+          <#owner>
+            a acl:Authorization;
+            acl:accessTo <${dataProcessed}> ;
+            acl:agent <${webId?.value}> ;
+            acl:mode acl:Control, acl:Read, acl:Write.
+          <#bank>
+              a acl:Authorization;
+              acl:accessTo <${dataProcessed}> ;
+              acl:agent <${bank.value}> ;
+              acl:mode acl:Read .
+          <#tax>
+              a acl:Authorization;
+              acl:accessTo <${dataProcessed}> ;
+              acl:agent <${tax.value}> ;
+              acl:mode acl:Write .
+        `
+        await putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
 
-      // Create data-request resource ...
-      const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#hasDataProcessed> <" + dataProcessed + "> .", authFetch.value);
-      // .. get its URI ...
-      const dataRequest = getLocationHeader(createDataRequest);
-      // ... and set ACL
-    const aclDataRequest = `\
-@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        // Create data-request resource ...
+        const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#hasDataProcessed> <" + dataProcessed + "> .", authFetch.value);
+        // .. get its URI ...
+        const dataRequest = getLocationHeader(createDataRequest);
+        // ... and set ACL
+        const aclDataRequest = `\
+          @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 
-<#owner>
-  a acl:Authorization;
-  acl:accessTo <${dataRequest}> ;
-  acl:agent <${webId?.value}> ;
-  acl:mode acl:Control, acl:Read, acl:Write.
-<#bank>
-    a acl:Authorization;
-    acl:accessTo <${dataRequest}> ;
-    acl:agent <${bank.value}> ;
-    acl:mode acl:Write .
-<#tax>
-    a acl:Authorization;
-    acl:accessTo <${dataRequest}> ;
-    acl:agent <${tax.value}> ;
-    acl:mode acl:Read .
-    `
-      await putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
+          <#owner>
+            a acl:Authorization;
+            acl:accessTo <${dataRequest}> ;
+            acl:agent <${webId?.value}> ;
+            acl:mode acl:Control, acl:Read, acl:Write.
+          <#bank>
+              a acl:Authorization;
+              acl:accessTo <${dataRequest}> ;
+              acl:agent <${bank.value}> ;
+              acl:mode acl:Write .
+          <#tax>
+              a acl:Authorization;
+              acl:accessTo <${dataRequest}> ;
+              acl:agent <${tax.value}> ;
+              acl:mode acl:Read .
+        `
+        await putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
 
-      // Create demand resource
-      const payload = `\
-@prefix schema: <http://schema.org/> .
-@prefix : <http://example.org/vocab/datev/credit#> .
+        // Create demand resource
+        const payload = `\
+          @prefix schema: <http://schema.org/> .
+          @prefix : <http://example.org/vocab/datev/credit#> .
 
-<> a schema:Demand ;
-  :hasDataRequest <${dataRequest}> ;
-  :hasDataProcessed <${dataProcessed}> ;
-  schema:itemOffered [
-    a schema:LoanOrCredit ;
-      schema:amount ${enteredAmount.value} ;
-      schema:currency "${selectedCurrency.value.value}"
-  ] .
+          <> a schema:Demand ;
+            :hasDataRequest <${dataRequest}> ;
+            :hasDataProcessed <${dataProcessed}> ;
+            schema:itemOffered [
+              a schema:LoanOrCredit ;
+                schema:amount ${enteredAmount.value} ;
+                schema:currency "${selectedCurrency.value.value}"
+            ] .
 
-<${webId?.value}> schema:seeks <> .
-`
-      await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value)
-        .catch((err) => {
-          toast.add({
-            severity: "error",
-            summary: "Failed to create demand!",
-            detail: err,
-            life: 5000,
-          });
-          throw new Error(err);
-        })
-        .then((resp) => {
-          resp.text();
-          toast.add({ severity: "success", summary: "Demand created sucessfully", life: 5000 });
+          <${webId?.value}> schema:seeks <> .
+        `
+        await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value);
 
-        }); //;
+        // Success Message \o/
+        toast.add({
+          severity: "success",
+          summary: "Demand created sucessfully",
+          life: 5000
+        });
+      } catch(err) {
+        toast.add({
+          severity: "error",
+          summary: "Error creating Demand!",
+          detail: err,
+          life: 5000,
+        });
+      }
     };
 
     return {
