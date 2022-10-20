@@ -3,11 +3,19 @@
     <div class="col lg:col-6 lg:col-offset-3">
       <div class="p-inputgroup">
         <InputText
-          placeholder="A URI to do actions on."
-          v-model="uri"
+          placeholder="GET my request."
+          v-model="requestUri"
           @keyup.enter="fetch"
         />
         <Button @click="fetch"> GET </Button>
+      </div>
+      <div class="p-inputgroup">
+        <InputText
+          placeholder="POST processed data to..."
+          v-model="processedUri"
+          @keyup.enter="fetch"
+        />
+        <Button @click="fetch"> POST </Button>
       </div>
       <div class="progressbarWrapper">
         <ProgressBar v-if="isLoading" mode="indeterminate" />
@@ -17,7 +25,6 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <Textarea v-model="content" class="sizing" v-if="content" />
-      <!-- Instead of textarea, Button where user can request VC from me for demo -->
       <Button v-else-if="isLoggedIn" label="Request Demo" />
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
     </div>
@@ -42,7 +49,11 @@ export default defineComponent({
 
     // uri of the information resource
     const uri = ref("");
-    uri.value = "https://ik1533.solidweb.org/conf/semantics/demo";
+    const requestUri = ref("https://max.solid.aifb.kit.edu/requests/request.ttl");
+    const processedUri = ref("https://max.solid.aifb.kit.edu/processed/processed.ttl");
+    
+
+
     // watch(
     //   () => inbox.value,
     //   () => (uri.value = inbox.value),
@@ -96,7 +107,8 @@ export default defineComponent({
     };
 
     return {
-      uri,
+      requestUri,
+      processedUri,
       fetch,
       content,
       isLoading,
