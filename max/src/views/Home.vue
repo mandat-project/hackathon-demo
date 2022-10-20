@@ -15,6 +15,7 @@
       </div>
     </div>
   </div>
+
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <ul v-if="isLoggedIn">
@@ -33,52 +34,40 @@
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@/composables/useSolidSession";
 import {getResource, parseToN3, putResource} from "@/lib/solidRequests";
-import {ref, Ref, toRefs, onMounted} from "vue";
+import {ref, toRefs} from "vue";
 import {EX, LDP} from "@/lib/namespaces";
-import {Store, Quad} from 'n3';
+import {Quad, Store} from 'n3';
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
-const {isLoggedIn, webId} = toRefs(sessionInfo);
+const {isLoggedIn} = toRefs(sessionInfo);
 const isLoading = ref(false);
 
 const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
-const requestStores = new Map<string, Store | null>();
+const requestStores = ref(new Map<string, Store | null>());
 
-// Lifecycle-Hooks
-onMounted(() => {
-  getRequestsContainer(containerUri.value);
-});
-
-function getRequestsContainer(containerUri: string) {
-  isLoading.value = true;
-  return getResource(containerUri, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on fetch!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
+function getRequestsContainer() {
+  getResourceAsStore(containerUri.value).then(containerStore => getObjects(containerStore, LDP('contains'))
+      .forEach(requestUri => {
+        getResourceAsStore(requestUri).then(requestStore => {
+          requestStores.value.set(requestUri, requestStore);
+        })
       })
-      .then((resp) => resp.text())
-      .then(txt => parseToN3(txt, containerUri))
-      .then(async n3 => {
-        n3.store.getObjects(containerUri, LDP("contains"), null)
-            .map(el => el.value)
-            .forEach(requestUri => {
-              getRequest(requestUri).then(requestStore => {
-                requestStores.set(requestUri, requestStore);
-              })
-            });
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+  );
 }
 
-function getRequest(uri: string): Promise<any> {
+async function processRequest(key: string) {
+  const store = requestStores.value.get(key);
+  if (store) {
+    const targetUri = getObject(store, EX('hasDataProcessed'));
+    const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
+    await putResource(targetUri, processedDataBody, authFetch.value);
+  }
+}
+
+// HELPER-FUNCTIONS
+
+function getResourceAsStore(uri: string): Promise<any> {
   isLoading.value = true;
   return getResource(uri, authFetch.value)
       .catch((err) => {
@@ -99,18 +88,13 @@ function getRequest(uri: string): Promise<any> {
       });
 }
 
-function getObject(store: Store, quad1: string, quad2?: Quad) {
+function getObjects(store: Store, quad1: string, quad2?: Quad) {
   const subjectUri = store.getSubjects(null, null, null)[0].value;
-  return store.getObjects(subjectUri, quad1, quad2 || null)[0]?.value;
+  return store.getObjects(subjectUri, quad1, quad2 || null).map(obj => obj.value);
 }
 
-async function processRequest(key: string) {
-  const store = requestStores.get(key);
-  if (store) {
-    const targetUri = getObject(store, EX('hasDataProcessed'));
-    const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
-    await putResource(targetUri, processedDataBody, authFetch.value);
-  }
+function getObject(store: Store, quad1: string, quad2?: Quad): string {
+  return getObjects(store, quad1, quad2)[0];
 }
 </script>
 
