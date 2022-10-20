@@ -31,7 +31,7 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       
-      <h1>Released Demands</h1>
+      <h1>Offers</h1>
       <ul v-if="demands">
         <li v-for="demand in demands " :key="demand">
           {{ demand.amount }} {{ demand.currency }} 
@@ -82,12 +82,9 @@ export default defineComponent({
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
     const demands = ref([]) as Ref<Demand[]>;
-    console.log("init loggedIn ", isLoggedIn.value)
     const { storage } = useSolidProfile()
       
     const loadDemands = async () => {
-      console.log("loading demands...");
-
       const store = await getResource(storage.value + "demands.ttl", authFetch.value) // 
         .then((resp) => resp.text())
         .then((txt) => parseToN3(txt, storage.value + "demands.ttl"))
@@ -120,11 +117,8 @@ export default defineComponent({
               demands.value.push({ amount: parseFloat(amount.value), currency: currency.value })
             }
         } catch (e) {
-          console.log(e)
         }
       }
-      
-      console.log("demands", demands.value)
     }
 
     watch(storage, function() {
@@ -206,7 +200,7 @@ export default defineComponent({
               a acl:Authorization;
               acl:accessTo <${dataRequest}> ;
               acl:agent <${bank.value}> ;
-              acl:mode acl:Write .
+              acl:mode acl:Read, acl:Write .
           <#tax>
               a acl:Authorization;
               acl:accessTo <${dataRequest}> ;
@@ -236,12 +230,12 @@ export default defineComponent({
         const demand = getLocationHeader(createDemand);
 
         // Get our demand list and add newly created demand
-        const getDemandList = await getResource(storage.value + "demands.ttl", authFetch.value);
-        if(getDemandList.status == 200) {
+        try {
+          const getDemandList = await getResource(storage.value + "demands.ttl", authFetch.value);
           const demandListBody = await getDemandList.text();
           const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
           putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
-        } else {
+        } catch (error) {
           putResource(storage.value + "demands.ttl", "<" + webId?.value + "> <http://example.org/vocab/datev/credit#hasDemand> <" + demand + "> .", authFetch.value);
         }
 
