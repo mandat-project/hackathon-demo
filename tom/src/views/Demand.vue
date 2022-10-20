@@ -18,6 +18,7 @@ export default {
   },
   methods: {
     handleSubmit() {
+        console.log(ref)
       alert('go')
     }
   }
@@ -45,7 +46,7 @@ export default {
             </div>
         </div>
 
-        <Button @click="submitDemand" type="submit"> Submit </Button>
+        <Button type="submit"> Submit </Button>
     </div>
 
     </h:form>
