@@ -245,6 +245,9 @@ export default defineComponent({
           await putResource(storage.value + "demands.ttl", "<" + webId?.value + "> <http://example.org/vocab/datev/credit#hasDemand> <" + demand + "> .", authFetch.value);
         }
 
+        // Send LDN to bank about new demand
+        await createResource("https://bank.solid.aifb.kit.edu/inbox/", "<" + webId?.value + "> <http://schema.org/seeks> <" + demand + "> .", authFetch.value);
+
         // Success Message \o/
         toast.add({
           severity: "success",
