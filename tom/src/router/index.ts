@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "@/views/Home.vue";
 import Inbox from "@/views/Inbox.vue";
-import Demand from "@/views/Demand.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -13,11 +12,6 @@ const routes: Array<RouteRecordRaw> = [
     path: "/inbox/",
     name: "Inbox",
     component: Inbox,
-  },
-  {
-    path: "/demand/",
-    name: "Create Demand",
-    component: Demand,
   },
   {
     path: "/about",

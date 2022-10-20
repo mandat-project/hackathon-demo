@@ -1,8 +1,30 @@
 <template>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
-      <a href="/demand">Create Demand</a>
-      <Button @click="postDemand"> Create Demand </Button>
+      
+      <h1>Create Demand</h1>
+
+      <h:form>
+      <div class="card">
+        <div class="field grid">
+            <!--p:outputLabel for="amount" styleClass="col-fixed" style="width:100px" value="Amount" /-->
+            <h5>Amount</h5>
+            <div class="col">
+                <InputText id="amount" type="number" v-model="enteredAmount" />
+            </div>
+        </div>
+        <div class="field grid">
+            <!--p:outputLabel for="currency" styleClass="col-fixed" style="width:100px" value="Currency" /-->
+            <h5>Currency</h5>
+            <div class="col">
+                <Dropdown v-model="selectedCurrency" :options="currencies" optionLabel="label" placeholder="Select a Currency" />
+            </div>
+        </div>
+
+        <Button type="submit" @click="postDemand"> Submit </Button>
+    </div>
+
+    </h:form>
     </div>
   </div>
 </template>
@@ -22,14 +44,21 @@ export default defineComponent({
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
-    const amount = ref(23.43);
-    const currency = ref("EUR");
+    //const amount = ref(23.43);
+    //const currency = ref("EUR");
+
+    const selectedCurrency = ref()
+    const enteredAmount = ref(0)
+    const currencies = [
+        { label: "EUR", value: "EUR" },
+        { label: "USD", value: "USD" }
+    ];
 
     const postDemand = async () => {
       const { storage } = useSolidProfile()
       const dataRequestsContainer = "http://sme.solid.aifb.kit.edu/data-requests/0000-11";
       const dataProcessedContainer = "http://sme.solid.aifb.kit.edu/data-processed/0000-11";
-
+console.log(selectedCurrency.value.value)
       const payload = `\
 @prefix schema: <http://schema.org/> .
 @prefix : <http://example.org/> .
@@ -39,14 +68,14 @@ export default defineComponent({
   :dataProcessedContainer <${dataProcessedContainer}> ;
   schema:itemOffered [
     a schema:LoanOrCredit ;
-      schema:amount ${amount.value} ;
-      schema:currency "${currency.value}"
+      schema:amount ${enteredAmount.value} ;
+      schema:currency "${selectedCurrency.value.value}"
   ] .
 
 <${webId?.value}> schema:seeks </bal> .
 `
 
-      await createResource("https://bank.solid.aifb.kit.edu/cred;its/demands/", payload, authFetch.value, {
+      await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value, {
         'Content-Type': 'text/turtle'
       })
         .catch((err) => {
@@ -63,8 +92,10 @@ export default defineComponent({
 
     return {
       postDemand,
-      isLoggedIn
-      
+      isLoggedIn,
+      enteredAmount,
+      selectedCurrency,
+      currencies
     };
   },
 });
