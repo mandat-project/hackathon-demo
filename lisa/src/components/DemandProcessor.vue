@@ -20,14 +20,14 @@
                     @click="getProcessedDemand(dataProcessedURI)" />
             </li>
             <li>
-                <input type="button" value="create an offer for SME" v-bind:disabled="dataRequestURI === ''"
+                <input type="button" value="create an offer for SME"
+                    v-bind:disabled="dataRequestURI === '' || offerIsCreated"
                     @click="createOfferResource(uri, dataRequestURI,dataProcessedURI)" />
             </li>
             <li>
                 <input type="button" value="check if offer was accepted" v-bind:disabled="!offerIsCreated" />
             </li>
         </ul>
-
     </li>
 
 </template>
@@ -77,7 +77,16 @@ export default defineComponent({
                     return parseToN3(txt, demand)
                 }).then((parsedN3) => {
                     demandStore.value = parsedN3.store;
+                }).then(() => {
+                    // check if an offer is already available
+                    offerIsCreated.value = isOfferCreated(demandStore.value)
+                    console.log("offerIsCreated", offerIsCreated.value)
                 })
+        }
+
+        const isOfferCreated = (demandStore: Store) => {
+            const offer = demandStore.getQuads(props.uri, CREDIT("hasOffer"), null, null)
+            return offer.length > 0
         }
 
         const dataRequestURI = computed(() => {
@@ -171,7 +180,7 @@ export default defineComponent({
 
             // PUT the new data
             hasRequestedData.value = true;
-            return putResource(demandURI, body, authFetch.value).then(resp => console.log(resp))
+            return putResource(demandURI, body, authFetch.value)
         };
 
         const getOrderDetails = async (orderURI: string) => {
@@ -209,12 +218,24 @@ export default defineComponent({
         }
 
         const makeOfferAvailableToDemandingWebId = async (offerURI: string, demandingWebId: string) => {
-            return ""; // TODO
+            const offerAclURI = offerURI + ".acl";
+            const body = `
+                @prefix : <#>. 
+                @prefix acl: <http://www.w3.org/ns/auth/acl#> . 
+                <#read> a acl:Authorization; 
+                    acl:agent <${demandingWebId}>; 
+                    acl:mode acl:Read; 
+                    acl:accessTo <${offerURI}> . 
+                <#control> a acl:Authorization; 
+                    acl:agent <${webId?.value}>; 
+                    acl:mode acl:Read,acl:Control,acl:Write; 
+                    acl:accessTo <${offerURI}> . 
+                `
+            await putResource(offerAclURI, body, authFetch.value)
         }
 
         const getDemanderUri = async () => {
             const demanderURI = demandStore.value.getQuads(null, SCHEMA("seeks"), props.uri, null)[0].subject.value;
-            console.log("demanderURI: " + demanderURI);
             return demanderURI;
         }
 
