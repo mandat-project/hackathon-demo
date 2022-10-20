@@ -204,34 +204,49 @@ export default defineComponent({
             const body = `
                 @prefix : <#>. 
                 @prefix credit: <http://example.org/vocab/datev/credit#> . 
-                <> a credit:Offer; 
-                    credit:derivedFromDemand <${demandURI}> ; 
-                    credit:derivedFromData <${dataProcessedURI}>; 
-                    credit:hasUnderlyingRequest <${dataRequestURI}> . 
+                @prefix schema: <http://schema.org/> .
+                <> a credit:Offer;
+                schema:itemOffered <#credit>;
+	            schema:availability schema:InStock;
+                credit:derivedFromDemand <${demandURI}> ; 
+                credit:derivedFromData <${dataProcessedURI}>; 
+                credit:hasUnderlyingRequest <${dataRequestURI}> . 
+                <${webId?.value}> schema:offers <>  .
+	            <${await getDemanderUri()}> schema:seeks <>  .
+                <http://example.com/loansAndCredits/c12345#credit>
+            	        a schema:LoanOrCredit ;
+            	        schema:amount "${demandStore.value.getObjects(null,SCHEMA("amount"), null)[0].value}" ;
+            	        schema:currency "${demandStore.value.getObjects(null,SCHEMA("currency"), null)[0].value}";
+            	        schema:annualPercentageRate "1.08";
+            	        schema:loanTerm <#duration>.  
+                <#duration> 
+            	    a schema:QuantitativeValue;
+            	    schema:value "10 years".
                 `
             const offerURI = await createResource("https://bank.solid.aifb.kit.edu/credits/offers/", body, authFetch.value)
                 .then(getLocationHeader)
             await patchDemand(demandURI, offerURI);
-            await makeOfferAvailableToDemandingWebId(offerURI, await getDemanderUri());
+            await makeAvailableToDemandingWebId(offerURI, await getDemanderUri());
+            await makeAvailableToDemandingWebId(demandURI, await getDemanderUri()); // for demand
             offerIsCreated.value = true;
 
         }
 
-        const makeOfferAvailableToDemandingWebId = async (offerURI: string, demandingWebId: string) => {
-            const offerAclURI = offerURI + ".acl";
+        const makeAvailableToDemandingWebId = async (uri: string, demandingWebId: string) => {
+            const aclUri = uri + ".acl";
             const body = `
                 @prefix : <#>. 
                 @prefix acl: <http://www.w3.org/ns/auth/acl#> . 
                 <#read> a acl:Authorization; 
                     acl:agent <${demandingWebId}>; 
                     acl:mode acl:Read; 
-                    acl:accessTo <${offerURI}> . 
+                    acl:accessTo <${uri}> . 
                 <#control> a acl:Authorization; 
                     acl:agent <${webId?.value}>; 
                     acl:mode acl:Read,acl:Control,acl:Write; 
-                    acl:accessTo <${offerURI}> . 
+                    acl:accessTo <${uri}> . 
                 `
-            await putResource(offerAclURI, body, authFetch.value)
+            await putResource(aclUri, body, authFetch.value)
         }
 
         const getDemanderUri = async () => {
