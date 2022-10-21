@@ -22,6 +22,7 @@
         <li v-for="([uri, store], index) of requests" :key="index">
           <p>Request #{{ index }}: {{ uri }}</p>
           <p>Target-Uri: {{ getObject(store, EX('hasDataProcessed')) }}</p>
+          <p>Requested Data : {{ getObject(store, EX('hasRequestedData')) }} </p>
           <Button @click="processRequest(uri)">Do Processing</Button>
         </li>
       </ul>
@@ -46,7 +47,7 @@ const isLoading = ref(false);
 const {ldns} = useSolidInbox();
 
 const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
-const inboxUri = ref("https://tax.solid.aifb.kit.edu/inbox/");
+const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
 const requests = ref(new Map<string, Store | null>());
 
 watch(
