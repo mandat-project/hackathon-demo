@@ -3,7 +3,7 @@
     <template #start>
       <router-link to="/inbox/">
         <div v-if="inboxBadge == 0">
-          <Avatar v-if="isLoggedIn" shape="circle">
+          <Avatar v-if="isLoggedIn" shape="circle" style="border: 2px solid var(--primary-color)">
             <img v-if="img && isLoggedIn" :src="img" />
             <i v-if="!img && isLoggedIn" class="pi pi-user" />
           </Avatar>
