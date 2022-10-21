@@ -5,9 +5,9 @@
         <InputText
             placeholder="GET my request."
             v-model="containerUri"
-            @keyup.enter="getRequestsContainer(containerUri)"
+            @keyup.enter="fetchRequests(containerUri)"
         />
-        <Button @click="getRequestsContainer(containerUri)"> GET</Button>
+        <Button @click="fetchRequests(containerUri)"> GET</Button>
       </div>
 
       <div class="progressbarWrapper">
@@ -19,7 +19,7 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <ul v-if="isLoggedIn">
-        <li v-for="([uri, store], index) of requestStores" :key="index">
+        <li v-for="([uri, store], index) of requests" :key="index">
           <p>Request #{{ index }}: {{ uri }}</p>
           <p>Target-Uri: {{ getObject(store, EX('hasDataProcessed')) }}</p>
           <Button @click="processRequest(uri)">Do Processing</Button>
@@ -33,32 +33,39 @@
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@/composables/useSolidSession";
-import {getResource, parseToN3, putResource, createResource} from "@/lib/solidRequests";
-import {ref, toRefs} from "vue";
+import {createResource, getResource, parseToN3, putResource} from "@/lib/solidRequests";
+import {ref, toRefs, watch} from "vue";
 import {EX, LDP} from "@/lib/namespaces";
 import {Quad, Store} from 'n3';
+import {useSolidInbox} from "@/composables/useSolidInbox";
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {isLoggedIn} = toRefs(sessionInfo);
 const isLoading = ref(false);
+const {ldns} = useSolidInbox();
 
 const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
-const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
-const requestStores = ref(new Map<string, Store | null>());
+const inboxUri = ref("https://tax.solid.aifb.kit.edu/inbox/");
+const requests = ref(new Map<string, Store | null>());
 
-function getRequestsContainer() {
+watch(
+    () => ldns.value,
+    () => isLoggedIn ? fetchRequests() : {}
+);
+
+function fetchRequests() {
   getResourceAsStore(containerUri.value).then(containerStore => getObjects(containerStore, LDP('contains'))
       .forEach(requestUri => {
         getResourceAsStore(requestUri).then(requestStore => {
-          requestStores.value.set(requestUri, requestStore);
+          requests.value.set(requestUri, requestStore);
         })
       })
   );
 }
 
 async function processRequest(key: string) {
-  const store = requestStores.value.get(key);
+  const store = requests.value.get(key);
   if (store) {
     const targetUri = getObject(store, EX('hasDataProcessed'));
     const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
