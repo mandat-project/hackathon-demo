@@ -21,6 +21,7 @@
         class="no-tap-highlight hidden sm:inline-block ml-2"
       >
         <span>{{ name }}</span>
+        <span class="mx-5">Tom/SME App</span>
       </a>
     </template>
     <template #end>
