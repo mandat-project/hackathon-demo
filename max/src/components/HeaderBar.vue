@@ -3,7 +3,7 @@
     <template #start>
       <router-link to="/inbox/">
         <div v-if="inboxBadge == 0">
-          <Avatar v-if="isLoggedIn" shape="circle">
+          <Avatar v-if="isLoggedIn" shape="circle" style="border: 2px solid var(--primary-color)">
             <img v-if="img && isLoggedIn" :src="img" />
             <i v-if="!img && isLoggedIn" class="pi pi-user" />
           </Avatar>
@@ -39,8 +39,8 @@
   <div style="height: 75px" />
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, toRefs } from "vue";
+<script setup lang="ts">
+import { computed, ref, toRefs } from "vue";
 import LoginButton from "./buttons/LoginButton.vue";
 import LogoutButton from "./buttons/LogoutButton.vue";
 import { useSolidSession } from "../composables/useSolidSession";
@@ -50,73 +50,53 @@ import { useSolidProfile } from "@/composables/useSolidProfile";
 import { useSolidInbox } from "@/composables/useSolidInbox";
 import { useToast } from "primevue/usetoast";
 
-export default defineComponent({
-  name: "HeaderBar",
-  components: {
-    LoginButton,
-    LogoutButton,
-  },
-  setup() {
-    const { hasActivePush, askForNotificationPermission } =
-      useServiceWorkerNotifications();
-    const { subscribeForResource, unsubscribeFromResource } = useSolidWebPush();
-    const { sessionInfo } = useSolidSession();
-    const { isLoggedIn, webId } = toRefs(sessionInfo);
-    const { name, img, inbox } = useSolidProfile();
-    const { ldns } = useSolidInbox();
+const { hasActivePush, askForNotificationPermission } =
+  useServiceWorkerNotifications();
+const { subscribeForResource, unsubscribeFromResource } = useSolidWebPush();
+const { sessionInfo } = useSolidSession();
+const { isLoggedIn, webId } = toRefs(sessionInfo);
+const { name, img, inbox } = useSolidProfile();
+const { ldns } = useSolidInbox();
 
-    const toast = useToast();
+const toast = useToast();
 
-    const inboxBadge = computed(() => ldns.value.length);
+const inboxBadge = computed(() => ldns.value.length);
 
-    const isToggling = ref(false);
-    const togglePush = async () => {
-      toast.add({
-        severity: "error",
-        summary: "Web Push Unavailable!",
-        detail:
-          "The service is currently offline, but will be available again!",
-        life: 5000,
-      });
-      return;
-      isToggling.value = true;
-      const hasPermission = (await askForNotificationPermission()) == "granted";
-      if (!hasPermission) {
-        // toast to let the user know that the need to change the permission in the browser bar
-        isToggling.value = false;
-        return;
-      }
-      if (inbox.value == "") {
-        // toast to let the user know that we could not find an inbox
-        isToggling.value = false;
-        return;
-      }
-      if (hasActivePush.value) {
-        // currently subscribed -> unsub
-        return unsubscribeFromResource(inbox.value).finally(
-          () => (isToggling.value = false)
-        );
-      }
-      if (!hasActivePush.value) {
-        // currently not subbed -> sub
-        return subscribeForResource(inbox.value).finally(
-          () => (isToggling.value = false)
-        );
-      }
-    };
-
-    return {
-      isLoggedIn,
-      webId,
-      name,
-      img,
-      inboxBadge,
-      hasActivePush,
-      isToggling,
-      togglePush,
-    };
-  },
-});
+const isToggling = ref(false);
+const togglePush = async () => {
+  toast.add({
+    severity: "error",
+    summary: "Web Push Unavailable!",
+    detail:
+      "The service is currently offline, but will be available again!",
+    life: 5000,
+  });
+  return;
+  isToggling.value = true;
+  const hasPermission = (await askForNotificationPermission()) == "granted";
+  if (!hasPermission) {
+    // toast to let the user know that the need to change the permission in the browser bar
+    isToggling.value = false;
+    return;
+  }
+  if (inbox.value == "") {
+    // toast to let the user know that we could not find an inbox
+    isToggling.value = false;
+    return;
+  }
+  if (hasActivePush.value) {
+    // currently subscribed -> unsub
+    return unsubscribeFromResource(inbox.value).finally(
+      () => (isToggling.value = false)
+    );
+  }
+  if (!hasActivePush.value) {
+    // currently not subbed -> sub
+    return subscribeForResource(inbox.value).finally(
+      () => (isToggling.value = false)
+    );
+  }
+};
 </script>
 
 <style  scoped>

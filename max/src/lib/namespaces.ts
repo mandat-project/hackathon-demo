@@ -32,3 +32,5 @@ export const PUSH = Namespace("https://purl.org/solid-web-push/vocab#");
 export const SEC = Namespace("https://w3id.org/security#")
 export const SPACE = Namespace("http://www.w3.org/ns/pim/space#")
 export const SVCS = Namespace("https://purl.org/solid-vc/credentialStatus#")
+
+export const EX = Namespace("http://example.org/vocab/datev/credit#");

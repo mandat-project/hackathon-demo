@@ -22,6 +22,16 @@
         <Button @click="login(idp)"> > </Button>
       </div>
       <Button
+          class="idp"
+          @click="
+          idp = 'https://solid.aifb.kit.edu/';
+          login(idp);
+          isDisplaingIDPs = !isDisplaingIDPs;
+        "
+      >
+        https://solid.aifb.kit.edu
+      </Button>
+      <Button
         class="idp"
         @click="
           idp = 'https://solidcommunity.net';

@@ -3,7 +3,7 @@
 import { Parser, Prefixes, Quad, Store } from "n3";
 import { LDP } from "./namespaces";
 
-interface ParsedN3 {
+export interface ParsedN3 {
   store: Store;
   prefixes: Prefixes;
 }
