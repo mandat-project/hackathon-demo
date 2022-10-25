@@ -2,11 +2,7 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <div class="p-inputgroup">
-        <InputText
-          placeholder="A URI to do actions on."
-          v-model="uri"
-          @keyup.enter="fetch"
-        />
+        <InputText placeholder="A URI to do actions on." v-model="uri" @keyup.enter="fetch" />
         <Button @click="fetch"> GET </Button>
       </div>
       <div class="progressbarWrapper">
@@ -14,35 +10,41 @@
       </div>
     </div>
   </div>
-  <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
-      <Textarea v-model="content" class="sizing" v-if="content" />
-      <!-- Instead of textarea, Button where user can request VC from me for demo -->
-      <Button v-else-if="isLoggedIn" label="Request Demo" />
-      <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
-    </div>
+  <div class="demands">
+    <span>
+      <h3> Demands </h3>
+      <ol>
+        <DemandProcessor :uri="demandURI" v-for="demandURI in demands" :key="demandURI" />
+      </ol>
+      <div v-if="demandsAvailable">No demands available.</div>
+    </span>
   </div>
 </template>
 
 <script lang="ts">
 import { useToast } from "primevue/usetoast";
 import { useSolidSession } from "@/composables/useSolidSession";
-import { createResource, getResource, postResource } from "@/lib/solidRequests";
+import { createResource, getResource, postResource, parseToN3, getLocationHeader, patchResource } from "@/lib/solidRequests";
 import { computed, defineComponent, ref, toRefs, watch } from "vue";
 import router from "@/router";
+import { LDP, CREDIT } from "@/lib/namespaces";
+import DemandProcessor from "../components/DemandProcessor.vue";
+
+
 
 export default defineComponent({
   name: "Home",
-  components: { },
+  components: { DemandProcessor },
   setup(props, context) {
     const toast = useToast();
     const { authFetch, sessionInfo } = useSolidSession();
     const { isLoggedIn, webId } = toRefs(sessionInfo);
     const isLoading = ref(false);
+    const demandsAvailable = ref(false);
 
     // uri of the information resource
     const uri = ref("");
-    uri.value = "https://ik1533.solidweb.org/conf/semantics/demo";
+    uri.value = "https://bank.solid.aifb.kit.edu/credits/demands/";
     // watch(
     //   () => inbox.value,
     //   () => (uri.value = inbox.value),
@@ -61,12 +63,13 @@ export default defineComponent({
     //   { immediate: true }
     // );
     // get content of information resource
+    let demands = ref()
     const fetch = async () => {
       if (!isHTTP.value) {
         return;
       }
       isLoading.value = true;
-      const txt = await getResource(uri.value, authFetch.value)
+      await getResource(uri.value, authFetch.value)
         .catch((err) => {
           toast.add({
             severity: "error",
@@ -77,47 +80,51 @@ export default defineComponent({
           isLoading.value = false;
           throw new Error(err);
         })
-        .then((resp) => resp.text()); //;
-      // //   const parsedN3 =
-      // await parseToN3(txt, uri.value)
-      //   .catch((err) => {
-      //     toast.add({
-      //       severity: "error",
-      //       summary: "Parsing Error!",
-      //       detail: err,
-      //       life: 5000,
-      //     });
-      //     //   throw new Error(err);
-      //   })
-      // .finally(() => {
-      content.value = txt;
-      isLoading.value = false;
-      // });
+        .then((resp) => resp.text()).then((txt) => {
+          return parseToN3(txt, uri.value)
+        }).then((parsedN3) => {
+          return parsedN3.store;
+        }).then((store) => {
+          demands.value = store.getObjects(uri.value, LDP("contains"), null).map((node) => node.value);
+        })
+        .finally(() => {
+          isLoading.value = false;
+        })
     };
+
+
+
 
     return {
       uri,
       fetch,
       content,
       isLoading,
-      isLoggedIn
-      
+      isLoggedIn,
+      demands,
+      demandsAvailable
     };
   },
 });
+
+// const demandsAvailable = computed(() => // TODO
+
 </script>
 
 <style  scoped>
 .grid {
   margin: 5px;
 }
+
 .p-inputgroup {
   padding-bottom: 0px;
 }
+
 .border {
   border: 1px solid var(--surface-d);
   border-radius: 3px;
 }
+
 .border:hover {
   border: 1px solid var(--primary-color);
 }
@@ -127,10 +134,15 @@ export default defineComponent({
   padding: 0px 9px 0px 9px;
   transform: translate(0, -1px);
 }
+
 .p-progressbar {
   height: 2px;
   padding-top: 0px;
   border-top-right-radius: 0;
   border-top-left-radius: 0;
+}
+
+.demands ol li {
+  margin-bottom: 1em;
 }
 </style>
