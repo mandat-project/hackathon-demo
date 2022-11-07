@@ -1,7 +1,8 @@
-const {defineConfig} = require('@vue/cli-service')
+const {defineConfig} = require("@vue/cli-service");
 const {vueBaseConfig} = require("../../vue.base-config");
+
 
 module.exports = defineConfig({
     ...vueBaseConfig,
-    outputDir: '../../dist/max',
+    outputDir: '../../dist/lisa',
 });
