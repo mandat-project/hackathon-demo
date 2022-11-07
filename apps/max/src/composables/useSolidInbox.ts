@@ -1,16 +1,16 @@
-import { ref, watch } from "vue";
-import { useServiceWorkerNotifications } from "./useServiceWorkerNotifications";
-import { useSolidSession } from "./useSolidSession";
-import { useSolidProfile } from "./useSolidProfile";
-import { getContainerItems } from "../lib/solidRequests";
+import {ref, watch} from "vue";
+import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
+import {useSolidSession} from "./useSolidSession";
+import {useSolidProfile} from "./useSolidProfile";
+import {getContainerItems} from "@/lib/solidRequests";
 
 let socket: WebSocket;
-const { hasActivePush } = useServiceWorkerNotifications();
+const {hasActivePush} = useServiceWorkerNotifications();
 
-const { authFetch } = useSolidSession();
+const {authFetch} = useSolidSession();
 
 const ldns = ref([] as String[]);
-const { inbox } = useSolidProfile();
+const {inbox} = useSolidProfile();
 
 const update = async (uri: string) => {
     return getContainerItems(uri, authFetch.value).then((items) => {
@@ -56,7 +56,7 @@ const updateSubscription = () => {
  * Handle Updates
  */
 
-navigator.serviceWorker.addEventListener('message', event => {
+navigator.serviceWorker.addEventListener('message', _event => {
     update(inbox.value);
 });
 
@@ -68,10 +68,10 @@ watch(
         if (inbox.value == "") return;
         updateSubscription()
     },
-    { immediate: true }
+    {immediate: true}
 );
 
 
 export const useSolidInbox = () => {
-    return { ldns };
+    return {ldns};
 };

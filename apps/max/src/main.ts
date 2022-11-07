@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import {createApp} from "vue";
 import App from "./App.vue";
 import "./registerServiceWorker";
 import router from "./router";
@@ -44,7 +44,7 @@ import "primeicons/primeicons.css"; // icons
 
 const app = createApp(App);
 app.use(router);
-app.use(PrimeVue, { ripple: true });
+app.use(PrimeVue, {ripple: true});
 app.use(ToastService);
 app.use(ConfirmationService);
 

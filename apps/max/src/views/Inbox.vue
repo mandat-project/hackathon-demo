@@ -1,33 +1,33 @@
 <template>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
-      <LDNs v-if="isLoggedIn" />
+      <LDNs v-if="isLoggedIn"/>
     </div>
   </div>
   <div>
     <SpeedDial
-      showIcon="pi pi-ellipsis-h"
-      :model="speedDialActions"
-      type="linear"
-      direction="left"
-      :tooltipOptions="{ position: 'top' }"
+        showIcon="pi pi-ellipsis-h"
+        :model="speedDialActions"
+        type="linear"
+        direction="left"
+        :tooltipOptions="{ position: 'top' }"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { useSolidSession } from "../composables/useSolidSession";
+import {useSolidSession} from "@/composables/useSolidSession";
 import router from "../router";
 
-import { defineComponent, toRefs } from "vue";
+import {defineComponent, toRefs} from "vue";
 import LDNs from "../components/inbox/LDNs.vue";
 
 export default defineComponent({
   name: "Inbox",
-  components: { LDNs },
+  components: {LDNs},
   setup() {
-    const { sessionInfo } = useSolidSession();
-    const { isLoggedIn } = toRefs(sessionInfo);
+    const {sessionInfo} = useSolidSession();
+    const {isLoggedIn} = toRefs(sessionInfo);
 
     const speedDialActions = [
       {
@@ -36,12 +36,12 @@ export default defineComponent({
         command: () => router.push("/"),
       },
     ];
-    return { isLoggedIn, speedDialActions };
+    return {isLoggedIn, speedDialActions};
   },
 });
 </script>
 
-<style  scoped>
+<style scoped>
 .grid {
   margin: 5px;
 }

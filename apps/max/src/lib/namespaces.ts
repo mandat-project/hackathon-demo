@@ -1,4 +1,5 @@
 "use strict";
+
 /**
  * Concat the RDF namespace identified by the prefix used as function name
  * with the RDF thing identifier as function parameter,
@@ -7,7 +8,7 @@
  * @returns function which takes a parameter of RDF thing identifier as string
  */
 function Namespace(namespace: string) {
-  return (thing: string) => namespace.concat(thing);
+    return (thing: string) => namespace.concat(thing);
 }
 
 // Namespaces as functions where their parameter is the RDF thing identifier => concat, e.g. FOAF("knows") resovles to "http://xmlns.com/foaf/0.1/knows"
@@ -23,7 +24,7 @@ export const XSD = Namespace("http://www.w3.org/2001/XMLSchema#");
 export const ETHON = Namespace("http://ethon.consensys.net/");
 export const PDGR = Namespace("http://purl.org/pedigree#");
 export const LDCV = Namespace(
-  "http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#"
+    "http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#"
 );
 export const WILD = Namespace("http://purl.org/wild/vocab#");
 export const VCARD = Namespace("http://www.w3.org/2006/vcard/ns#");

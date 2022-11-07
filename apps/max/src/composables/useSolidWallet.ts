@@ -1,16 +1,16 @@
-import { ref, watch } from "vue";
-import { useSolidSession } from "./useSolidSession";
-import { useSolidProfile } from "./useSolidProfile";
-import { createContainer, getContainerItems, getResource, putResource } from "../lib/solidRequests";
+import {ref, watch} from "vue";
+import {useSolidSession} from "./useSolidSession";
+import {useSolidProfile} from "./useSolidProfile";
+import {createContainer, getContainerItems, getResource, putResource} from "@/lib/solidRequests";
 
 let socket: WebSocket;
 
-const { authFetch, sessionInfo } = useSolidSession();
+const {authFetch, sessionInfo} = useSolidSession();
 
 const creds = ref([] as String[]);
-const { wallet, credStatusDir } = useSolidProfile();
+const {wallet, credStatusDir} = useSolidProfile();
 
-const update = async (uri: string) => {
+const update = async (_uri: string) => {
     return getContainerItems(wallet.value, authFetch.value)
         .then((items) => {
             for (const e of creds.value) {
@@ -60,7 +60,6 @@ const updateSubscription = () => {
 watch(() => wallet.value, updateSubscription);
 
 
-
 // make sure that credential status directory exists
 watch(credStatusDir, () => {
     if (credStatusDir.value === "") return;
@@ -102,10 +101,9 @@ watch(credStatusDir, () => {
             return err;
         });
 
-}, { immediate: true })
-
+}, {immediate: true})
 
 
 export const useSolidWallet = () => {
-    return { creds };
+    return {creds};
 };

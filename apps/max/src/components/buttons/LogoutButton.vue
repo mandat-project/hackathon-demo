@@ -7,14 +7,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { useSolidSession } from "../../composables/useSolidSession";
+import {defineComponent} from "vue";
+import {useSolidSession} from "@/composables/useSolidSession";
 
 export default defineComponent({
   name: "LoginButton",
   setup() {
-    const { logout } = useSolidSession();
-    return { logout };
+    const {logout} = useSolidSession();
+    return {logout};
   },
 });
 </script>

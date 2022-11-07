@@ -2,61 +2,61 @@
   <Toolbar>
     <template #start>
       <router-link to="/inbox/">
-        <div v-if="inboxBadge == 0">
+        <div v-if="inboxBadge === 0">
           <Avatar v-if="isLoggedIn" shape="circle" style="border: 2px solid var(--primary-color)">
-            <img v-if="img && isLoggedIn" :src="img" />
-            <i v-if="!img && isLoggedIn" class="pi pi-user" />
+            <img v-if="img && isLoggedIn" :src="img"/>
+            <i v-if="!img && isLoggedIn" class="pi pi-user"/>
           </Avatar>
         </div>
         <div v-else>
           <Avatar v-if="isLoggedIn" shape="circle" v-badge="inboxBadge">
-            <img v-if="img && isLoggedIn" :src="img" />
-            <i v-if="!img && isLoggedIn" class="pi pi-user" />
+            <img v-if="img && isLoggedIn" :src="img"/>
+            <i v-if="!img && isLoggedIn" class="pi pi-user"/>
           </Avatar>
         </div>
       </router-link>
       <a
-        v-if="webId"
-        :href="webId"
-        class="no-tap-highlight hidden sm:inline-block ml-2"
+          v-if="webId"
+          :href="webId"
+          class="no-tap-highlight hidden sm:inline-block ml-2"
       >
         <span>{{ name }}</span>
       </a>
     </template>
     <template #end>
       <Button
-        v-if="isLoggedIn"
-        icon="pi pi-bell"
-        class="p-button-rounded p-button-text mr-4 no-tap-highlight"
-        :class="{ 'p-button-secondary': !hasActivePush }"
-        :loading="isToggling"
-        @click="togglePush"
+          v-if="isLoggedIn"
+          icon="pi pi-bell"
+          class="p-button-rounded p-button-text mr-4 no-tap-highlight"
+          :class="{ 'p-button-secondary': !hasActivePush }"
+          :loading="isToggling"
+          @click="togglePush"
       />
-      <LoginButton v-if="!isLoggedIn" />
-      <LogoutButton v-else />
+      <LoginButton v-if="!isLoggedIn"/>
+      <LogoutButton v-else/>
     </template>
   </Toolbar>
-  <div style="height: 75px" />
+  <div style="height: 75px"/>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs } from "vue";
+import {computed, ref, toRefs} from "vue";
 import LoginButton from "./buttons/LoginButton.vue";
 import LogoutButton from "./buttons/LogoutButton.vue";
-import { useSolidSession } from "../composables/useSolidSession";
-import { useServiceWorkerNotifications } from "../composables/useServiceWorkerNotifications";
-import { useSolidWebPush } from "../composables/useSolidWebPush";
-import { useSolidProfile } from "../composables/useSolidProfile";
-import { useSolidInbox } from "../composables/useSolidInbox";
-import { useToast } from "primevue/usetoast";
+import {useSolidSession} from "@/composables/useSolidSession";
+import {useServiceWorkerNotifications} from "@/composables/useServiceWorkerNotifications";
+import {useSolidWebPush} from "@/composables/useSolidWebPush";
+import {useSolidProfile} from "@/composables/useSolidProfile";
+import {useSolidInbox} from "@/composables/useSolidInbox";
+import {useToast} from "primevue/usetoast";
 
-const { hasActivePush, askForNotificationPermission } =
-  useServiceWorkerNotifications();
-const { subscribeForResource, unsubscribeFromResource } = useSolidWebPush();
-const { sessionInfo } = useSolidSession();
-const { isLoggedIn, webId } = toRefs(sessionInfo);
-const { name, img, inbox } = useSolidProfile();
-const { ldns } = useSolidInbox();
+const {hasActivePush, askForNotificationPermission} =
+    useServiceWorkerNotifications();
+const {subscribeForResource, unsubscribeFromResource} = useSolidWebPush();
+const {sessionInfo} = useSolidSession();
+const {isLoggedIn, webId} = toRefs(sessionInfo);
+const {name, img, inbox} = useSolidProfile();
+const {ldns} = useSolidInbox();
 
 const toast = useToast();
 
@@ -68,7 +68,7 @@ const togglePush = async () => {
     severity: "error",
     summary: "Web Push Unavailable!",
     detail:
-      "The service is currently offline, but will be available again!",
+        "The service is currently offline, but will be available again!",
     life: 5000,
   });
   return;
@@ -87,19 +87,19 @@ const togglePush = async () => {
   if (hasActivePush.value) {
     // currently subscribed -> unsub
     return unsubscribeFromResource(inbox.value).finally(
-      () => (isToggling.value = false)
+        () => (isToggling.value = false)
     );
   }
   if (!hasActivePush.value) {
     // currently not subbed -> sub
     return subscribeForResource(inbox.value).finally(
-      () => (isToggling.value = false)
+        () => (isToggling.value = false)
     );
   }
 };
 </script>
 
-<style  scoped>
+<style scoped>
 .p-toolbar {
   position: fixed;
   top: 0;
@@ -110,6 +110,7 @@ const togglePush = async () => {
   box-shadow: 0 0 10px -5px black;
   z-index: 1;
 }
+
 .p-toolbar-group-left span {
   margin-left: 10px;
   margin-right: 10px;
@@ -118,10 +119,12 @@ const togglePush = async () => {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .p-toolbar-group-left .p-avatar {
   width: 2.357rem;
   height: 2.357rem;
 }
+
 .p-toolbar-group-left a {
   color: inherit; /* blue colors for links too */
   text-decoration: inherit; /* no underline */

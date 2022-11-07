@@ -1,36 +1,37 @@
 <template>
-  <HeaderBar />
+  <HeaderBar/>
   <!-- <div id="nav">
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </div> -->
-  <router-view />
-  <div style="height: 75px" />
+  <router-view/>
+  <div style="height: 75px"/>
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
 
   <Dialog
-    header="We updated the App!"
-    v-model:visible="isOpen"
-    position="bottomright"
+      header="We updated the App!"
+      v-model:visible="isOpen"
+      position="bottomright"
   >
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
     <template #footer>
-      <Button label="Update" autofocus @click="refreshApp" />
+      <Button label="Update" autofocus @click="refreshApp"/>
     </template>
   </Dialog>
   <Toast
-    position="bottom-right"
-    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
+      position="bottom-right"
+      :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
   />
-  <ConfirmDialog />
+  <ConfirmDialog/>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import {defineComponent, ref, watch} from "vue";
 import HeaderBar from "./components/HeaderBar.vue";
-import { useServiceWorkerUpdate } from "@/composables/useServiceWorkerUpdate";
+import {useServiceWorkerUpdate} from "@/composables/useServiceWorkerUpdate";
 import Toast from "primevue/toast";
+
 export default defineComponent({
   name: "Home",
   components: {
@@ -38,7 +39,7 @@ export default defineComponent({
     Toast,
   },
   setup() {
-    const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
+    const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
     const isOpen = ref(false);
     watch(hasUpdatedAvailable, () => {
       isOpen.value = hasUpdatedAvailable.value;
@@ -51,7 +52,7 @@ export default defineComponent({
 });
 </script>
 
-<style >
+<style>
 html {
   width: 100vw;
   height: 100vh;
@@ -60,7 +61,7 @@ html {
 
 body {
   overscroll-behavior-y: contain;
-  margin: 0px;
+  margin: 0;
   width: 100%;
   height: 100%;
   overflow-x: hidden;
