@@ -28,8 +28,8 @@
 
 <script lang="ts">
 import {defineComponent, ref, watch} from "vue";
-import HeaderBar from "@/components/HeaderBar.vue";
-import {useServiceWorkerUpdate} from "@/composables/useServiceWorkerUpdate";
+import {HeaderBar} from "@shared/components";
+import {useServiceWorkerUpdate} from "@shared/composables";
 import Toast from "primevue/toast";
 
 export default defineComponent({
@@ -61,7 +61,7 @@ html {
 
 body {
   overscroll-behavior-y: contain;
-  margin: 0px;
+  margin: 0;
   width: 100%;
   height: 100%;
   overflow-x: hidden;

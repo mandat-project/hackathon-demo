@@ -4,7 +4,7 @@
 
       <h1>Create Demand</h1>
 
-      <h:form>
+      <form>
         <div class="card">
           <div class="field grid">
             <!--p:outputLabel for="amount" styleClass="col-fixed" style="width:100px" value="Amount" /-->
@@ -25,7 +25,7 @@
           <Button type="submit" @click="postDemand"> Submit demand</Button>
         </div>
 
-      </h:form>
+      </form>
     </div>
   </div>
 
@@ -48,10 +48,9 @@
 
 <script lang="ts">
 import {useToast} from "primevue/usetoast";
-import {useSolidSession} from "@/composables/useSolidSession";
-import {createResource, getLocationHeader, getResource, parseToN3, putResource} from "@/lib/solidRequests";
+import {useSolidSession, useSolidProfile} from "@shared/composables";
+import {createResource, getLocationHeader, getResource, parseToN3, putResource} from "@shared/solid";
 import {defineComponent, Ref, ref, toRefs, watch} from "vue";
-import {useSolidProfile} from "@/composables/useSolidProfile";
 import {DataFactory} from "n3";
 
 export default defineComponent({
