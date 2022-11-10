@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import {computed, ref, toRefs} from "vue";
+<script lang="ts">
+import {computed, defineComponent, ref, toRefs} from "vue";
 import LoginButton from "./LoginButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 import {
@@ -10,54 +10,66 @@ import {
   useSolidWebPush
 } from "@shared/composables";
 import {useToast} from "primevue/usetoast";
+import BadgeDirective from "primevue/badgedirective";
 
-const {hasActivePush, askForNotificationPermission} =
-    useServiceWorkerNotifications();
-const {subscribeForResource, unsubscribeFromResource} = useSolidWebPush();
-const {sessionInfo} = useSolidSession();
-const {isLoggedIn, webId} = toRefs(sessionInfo);
-const {name, img, inbox} = useSolidProfile();
-const {ldns} = useSolidInbox();
+export default defineComponent({
+  name: 'HeaderBar',
+  components: {
+    LoginButton, LogoutButton
+  },
+  directives: {
+    'badge': BadgeDirective
+  },
+  setup() {
+    const {hasActivePush, askForNotificationPermission} =
+        useServiceWorkerNotifications();
+    const {subscribeForResource, unsubscribeFromResource} = useSolidWebPush();
+    const {sessionInfo} = useSolidSession();
+    const {isLoggedIn, webId} = toRefs(sessionInfo);
+    const {name, img, inbox} = useSolidProfile();
+    const {ldns} = useSolidInbox();
+    const toast = useToast();
 
-const toast = useToast();
+    const inboxBadge = computed(() => ldns.value.length);
 
-const inboxBadge = computed(() => ldns.value.length);
-
-const isToggling = ref(false);
-const togglePush = async () => {
-  toast.add({
-    severity: "error",
-    summary: "Web Push Unavailable!",
-    detail:
-        "The service is currently offline, but will be available again!",
-    life: 5000,
-  });
-  return;
-  isToggling.value = true;
-  const hasPermission = (await askForNotificationPermission()) == "granted";
-  if (!hasPermission) {
-    // toast to let the user know that the need to change the permission in the browser bar
-    isToggling.value = false;
-    return;
+    const isToggling = ref(false);
+    const togglePush = async () => {
+      toast.add({
+        severity: "error",
+        summary: "Web Push Unavailable!",
+        detail:
+            "The service is currently offline, but will be available again!",
+        life: 5000,
+      });
+      return;
+      isToggling.value = true;
+      const hasPermission = (await askForNotificationPermission()) == "granted";
+      if (!hasPermission) {
+        // toast to let the user know that the need to change the permission in the browser bar
+        isToggling.value = false;
+        return;
+      }
+      if (inbox.value == "") {
+        // toast to let the user know that we could not find an inbox
+        isToggling.value = false;
+        return;
+      }
+      if (hasActivePush.value) {
+        // currently subscribed -> unsub
+        return unsubscribeFromResource(inbox.value).finally(
+            () => (isToggling.value = false)
+        );
+      }
+      if (!hasActivePush.value) {
+        // currently not subbed -> sub
+        return subscribeForResource(inbox.value).finally(
+            () => (isToggling.value = false)
+        );
+      }
+    };
+    return {inboxBadge, isLoggedIn, img, isToggling, hasActivePush, webId, name, togglePush};
   }
-  if (inbox.value == "") {
-    // toast to let the user know that we could not find an inbox
-    isToggling.value = false;
-    return;
-  }
-  if (hasActivePush.value) {
-    // currently subscribed -> unsub
-    return unsubscribeFromResource(inbox.value).finally(
-        () => (isToggling.value = false)
-    );
-  }
-  if (!hasActivePush.value) {
-    // currently not subbed -> sub
-    return subscribeForResource(inbox.value).finally(
-        () => (isToggling.value = false)
-    );
-  }
-};
+})
 </script>
 
 <template>
