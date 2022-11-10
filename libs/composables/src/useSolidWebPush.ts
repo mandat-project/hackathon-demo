@@ -1,5 +1,4 @@
-import {AS, LDP, PUSH} from "@/lib/namespaces";
-import {createResource, getResource, parseToN3} from "@/lib/solidRequests";
+import {AS, createResource, getResource, LDP, parseToN3, PUSH} from "@shared/solid";
 import {toRefs} from "vue";
 import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
 import {useSolidSession} from "./useSolidSession";

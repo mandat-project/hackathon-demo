@@ -1,53 +1,14 @@
-<template>
-  <Toolbar>
-    <template #start>
-      <router-link to="/inbox/">
-        <div v-if="inboxBadge === 0">
-          <Avatar v-if="isLoggedIn" shape="circle" style="border: 2px solid var(--primary-color)">
-            <img v-if="img && isLoggedIn" :src="img"/>
-            <i v-if="!img && isLoggedIn" class="pi pi-user"/>
-          </Avatar>
-        </div>
-        <div v-else>
-          <Avatar v-if="isLoggedIn" shape="circle" v-badge="inboxBadge">
-            <img v-if="img && isLoggedIn" :src="img"/>
-            <i v-if="!img && isLoggedIn" class="pi pi-user"/>
-          </Avatar>
-        </div>
-      </router-link>
-      <a
-          v-if="webId"
-          :href="webId"
-          class="no-tap-highlight hidden sm:inline-block ml-2"
-      >
-        <span>{{ name }}</span>
-      </a>
-    </template>
-    <template #end>
-      <Button
-          v-if="isLoggedIn"
-          icon="pi pi-bell"
-          class="p-button-rounded p-button-text mr-4 no-tap-highlight"
-          :class="{ 'p-button-secondary': !hasActivePush }"
-          :loading="isToggling"
-          @click="togglePush"
-      />
-      <LoginButton v-if="!isLoggedIn"/>
-      <LogoutButton v-else/>
-    </template>
-  </Toolbar>
-  <div style="height: 75px"/>
-</template>
-
 <script setup lang="ts">
 import {computed, ref, toRefs} from "vue";
-import LoginButton from "./buttons/LoginButton.vue";
-import LogoutButton from "./buttons/LogoutButton.vue";
-import {useSolidSession} from "@/composables/useSolidSession";
-import {useServiceWorkerNotifications} from "@/composables/useServiceWorkerNotifications";
-import {useSolidWebPush} from "@/composables/useSolidWebPush";
-import {useSolidProfile} from "@/composables/useSolidProfile";
-import {useSolidInbox} from "@/composables/useSolidInbox";
+import LoginButton from "./LoginButton.vue";
+import LogoutButton from "./LogoutButton.vue";
+import {
+  useServiceWorkerNotifications,
+  useSolidInbox,
+  useSolidProfile,
+  useSolidSession,
+  useSolidWebPush
+} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
 
 const {hasActivePush, askForNotificationPermission} =
@@ -98,6 +59,49 @@ const togglePush = async () => {
   }
 };
 </script>
+
+<template>
+  <div>
+    <Toolbar>
+      <template #start>
+        <router-link to="/inbox/">
+          <div v-if="inboxBadge === 0">
+            <Avatar v-if="isLoggedIn" shape="circle" style="border: 2px solid var(--primary-color)">
+              <img v-if="img && isLoggedIn" :src="img"/>
+              <i v-if="!img && isLoggedIn" class="pi pi-user"/>
+            </Avatar>
+          </div>
+          <div v-else>
+            <Avatar v-if="isLoggedIn" shape="circle" v-badge="inboxBadge">
+              <img v-if="img && isLoggedIn" :src="img"/>
+              <i v-if="!img && isLoggedIn" class="pi pi-user"/>
+            </Avatar>
+          </div>
+        </router-link>
+        <a
+            v-if="webId"
+            :href="webId"
+            class="no-tap-highlight hidden sm:inline-block ml-2"
+        >
+          <span>{{ name }}</span>
+        </a>
+      </template>
+      <template #end>
+        <Button
+            v-if="isLoggedIn"
+            icon="pi pi-bell"
+            class="p-button-rounded p-button-text mr-4 no-tap-highlight"
+            :class="{ 'p-button-secondary': !hasActivePush }"
+            :loading="isToggling"
+            @click="togglePush"
+        />
+        <LoginButton v-if="!isLoggedIn"/>
+        <LogoutButton v-else/>
+      </template>
+    </Toolbar>
+    <div style="height: 75px"/>
+  </div>
+</template>
 
 <style scoped>
 .p-toolbar {

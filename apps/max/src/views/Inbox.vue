@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import {useSolidSession} from "@/composables/useSolidSession";
+import {useSolidSession} from "@shared/composables";
 import router from "../router";
 
 import {defineComponent, toRefs} from "vue";

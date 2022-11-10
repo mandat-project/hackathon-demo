@@ -1,8 +1,7 @@
 import {computed, ref, watch} from "vue";
 import {useSolidSession} from "./useSolidSession";
-import {getResource, parseToN3} from "@/lib/solidRequests";
+import {getResource, LDP, parseToN3, SPACE, VCARD} from "@shared/solid";
 import {Store} from "n3";
-import {LDP, SPACE, VCARD} from "@/lib/namespaces";
 
 const {authFetch, sessionInfo} = useSolidSession();
 

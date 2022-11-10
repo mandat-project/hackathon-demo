@@ -1,7 +1,7 @@
 import {ref, watch} from "vue";
 import {useSolidSession} from "./useSolidSession";
 import {useSolidProfile} from "./useSolidProfile";
-import {createContainer, getContainerItems, getResource, putResource} from "@/lib/solidRequests";
+import {createContainer, getContainerItems, getResource, putResource} from "@shared/solid";
 
 let socket: WebSocket;
 

@@ -83,9 +83,8 @@
 </template>
 
 <script lang="ts">
-import {useSolidProfile} from "@/composables/useSolidProfile";
-import {useSolidSession} from "@/composables/useSolidSession";
-import {deleteResource, getResource, postResource} from "@/lib/solidRequests";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
+import {deleteResource, getResource, postResource} from "@shared/solid";
 import {defineComponent, ref, watch} from "vue";
 
 export default defineComponent({

@@ -3,18 +3,19 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "serve:max": "lerna run serve --scope max",
-    "build:max": "lerna run build --scope max",
-    "lint:max": "lerna run lint --scope max",
-    "serve:lisa": "lerna run serve --scope lisa",
-    "build:lisa": "lerna run build --scope lisa",
-    "lint:lisa": "lerna run lint --scope lisa",
-    "serve:tom": "lerna run serve --scope tom",
-    "build:tom": "lerna run build --scope tom",
-    "lint:tom": "lerna run lint --scope tom"
+    "max:serve": "lerna run serve --scope max",
+    "max:build": "lerna run build --scope max",
+    "max:lint": "lerna run lint --scope max",
+    "lisa:serve": "lerna run serve --scope lisa",
+    "lisa:build": "lerna run build --scope lisa",
+    "lisa:lint": "lerna run lint --scope lisa",
+    "tom:serve": "lerna run serve --scope tom",
+    "tom:build": "lerna run build --scope tom",
+    "tom:lint": "lerna run lint --scope tom"
   },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "libs/*"
   ],
   "dependencies": {
     "@inrupt/solid-client-authn-browser": "^1.12.2",

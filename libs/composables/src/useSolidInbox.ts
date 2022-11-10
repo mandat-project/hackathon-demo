@@ -2,7 +2,7 @@ import {ref, watch} from "vue";
 import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
 import {useSolidSession} from "./useSolidSession";
 import {useSolidProfile} from "./useSolidProfile";
-import {getContainerItems} from "@/lib/solidRequests";
+import {getContainerItems} from "@shared/solid";
 
 let socket: WebSocket;
 const {hasActivePush} = useServiceWorkerNotifications();

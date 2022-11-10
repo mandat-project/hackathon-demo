@@ -1,44 +1,9 @@
-<template>
-  <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
-      <div class="p-inputgroup">
-        <InputText
-            placeholder="GET my request."
-            v-model="containerUri"
-            @keyup.enter="fetchRequests(containerUri)"
-        />
-        <Button @click="fetchRequests(containerUri)"> GET</Button>
-      </div>
-
-      <div class="progressbarWrapper">
-        <ProgressBar v-if="isLoading" mode="indeterminate"/>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
-      <ul v-if="isLoggedIn">
-        <li v-for="([uri, store], index) of requests" :key="index">
-          <p>Request #{{ index }}: {{ uri }}</p>
-          <p>Target-Uri: {{ getObject(store, EX('hasDataProcessed')) }}</p>
-          <p>Requested Data : {{ getObject(store, EX('hasRequestedData')) }} </p>
-          <Button @click="processRequest(uri)">Do Processing</Button>
-        </li>
-      </ul>
-      <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
-import {useSolidSession} from "../composables/useSolidSession";
-import {createResource, getResource, parseToN3, putResource} from "../lib/solidRequests";
 import {ref, toRefs, watch} from "vue";
-import {EX, LDP} from "../lib/namespaces";
 import {Quad, Store} from 'n3';
-import {useSolidInbox} from "../composables/useSolidInbox";
+import {createResource, EX, getResource, LDP, parseToN3, putResource} from "@shared/solid";
+import {useSolidInbox, useSolidSession} from "@shared/composables";
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
@@ -72,7 +37,7 @@ async function processRequest(key: string) {
     const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
     await putResource(targetUri, processedDataBody, authFetch.value);
 
-    //LDN with targetUri as msgbody 
+    //LDN with targetUri as msgbody
     await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value);
   }
 }
@@ -110,13 +75,46 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 }
 </script>
 
+<template>
+  <div class="grid">
+    <div class="col lg:col-6 lg:col-offset-3">
+      <div class="p-inputgroup">
+        <InputText
+            placeholder="GET my request."
+            v-model="containerUri"
+            @keyup.enter="fetchRequests(containerUri)"
+        />
+        <Button @click="fetchRequests(containerUri)"> GET</Button>
+      </div>
+
+      <div class="progressbarWrapper">
+        <ProgressBar v-if="isLoading" mode="indeterminate"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col lg:col-6 lg:col-offset-3">
+      <ul v-if="isLoggedIn">
+        <li v-for="([uri, store], index) of requests" :key="index">
+          <p>Request #{{ index }}: {{ uri }}</p>
+          <p>Target-Uri: {{ getObject(store, EX('hasDataProcessed')) }}</p>
+          <p>Requested Data : {{ getObject(store, EX('hasRequestedData')) }} </p>
+          <Button @click="processRequest(uri)">Do Processing</Button>
+        </li>
+      </ul>
+      <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
+    </div>
+  </div>
+</template>
+
 <style scoped>
 .grid {
   margin: 5px;
 }
 
 .p-inputgroup {
-  padding-bottom: 0px;
+  padding-bottom: 0;
 }
 
 .border {
@@ -130,13 +128,13 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 
 .progressbarWrapper {
   height: 2px;
-  padding: 0px 9px 0px 9px;
+  padding: 0 9px 0 9px;
   transform: translate(0, -1px);
 }
 
 .p-progressbar {
   height: 2px;
-  padding-top: 0px;
+  padding-top: 0;
   border-top-right-radius: 0;
   border-top-left-radius: 0;
 }
