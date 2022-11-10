@@ -17,17 +17,6 @@
     "types": [
       "webpack-env"
     ],
-    "paths": {
-      "@shared/components": [
-        "./libs/components/index.ts"
-      ],
-      "@shared/composables": [
-        "./libs/composables/index.ts"
-      ],
-      "@shared/solid": [
-        "./libs/solid/index.ts"
-      ]
-    },
     "lib": [
       "esnext",
       "dom",

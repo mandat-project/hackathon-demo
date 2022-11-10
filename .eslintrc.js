@@ -20,9 +20,7 @@ module.exports = {
         'vue/multi-word-component-names': 0,
         "no-restricted-imports": ["error", {
             patterns: [
-                "@shared/composables/*",
-                "@shared/components/*",
-                "@shared/solid/*"
+                "@shared/*/*"
             ]
         }]
     },
