@@ -34,10 +34,17 @@
 </template>
 
 <script lang="ts">
-import {useSolidProfile} from '@/composables/useSolidProfile';
-import {useSolidSession} from '@/composables/useSolidSession';
-import {CREDIT, LDP, SCHEMA} from '@/lib/namespaces';
-import {createResource, getLocationHeader, getResource, parseToN3, putResource} from '@/lib/solidRequests';
+import {useSolidProfile, useSolidSession} from '@shared/composables';
+import {
+  createResource,
+  CREDIT,
+  getLocationHeader,
+  getResource,
+  LDP,
+  parseToN3,
+  putResource,
+  SCHEMA
+} from '@shared/solid';
 import {Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, defineComponent, ref, toRefs} from 'vue';

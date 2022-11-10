@@ -23,10 +23,9 @@
 
 <script lang="ts">
 import {useToast} from "primevue/usetoast";
-import {useSolidSession} from "@/composables/useSolidSession";
-import {getResource, parseToN3} from "@/lib/solidRequests";
+import {useSolidSession} from "@shared/composables";
+import {getResource, LDP, parseToN3} from "@shared/solid";
 import {computed, defineComponent, ref, toRefs} from "vue";
-import {LDP} from "@/lib/namespaces";
 import DemandProcessor from "../components/DemandProcessor.vue";
 
 
