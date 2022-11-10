@@ -20,7 +20,7 @@ import {useSolidSession} from "@shared/composables";
 import router from "../router";
 
 import {defineComponent, toRefs} from "vue";
-import LDNs from "../components/inbox/LDNs.vue";
+import {LDNs} from "@shared/components";
 
 export default defineComponent({
   name: "Inbox",

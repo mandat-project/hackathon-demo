@@ -1,10 +1,8 @@
 <template>
   <HeaderBar/>
-  <!-- <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div> -->
+
   <router-view/>
+
   <div style="height: 75px"/>
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
 

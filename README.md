@@ -200,3 +200,4 @@ Sämtliche Pakete sollten stets in der `package.json` im **Root** installiert we
    3. TS-Baseconfig im Root extenden
    3. `include` mit den entsprechenden Dateien ergänzen
 4. `index.ts` anlegen (zur Steuerung, was exportiert wird)
+5. In der TS-Base-Config `ts.base-config.json` unter `paths` den Package-Namen mit Pfad zur Index-Datei ergänzen (ermöglicht Auto-Import)
