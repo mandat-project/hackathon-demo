@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "lint": "lerna run lint",
+    "build": "lerna run build",
     "max:serve": "lerna run serve --scope max",
     "max:build": "lerna run build --scope max",
     "max:lint": "lerna run lint --scope max",

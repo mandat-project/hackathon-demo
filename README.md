@@ -179,3 +179,24 @@ note over Tom,StB_Pod: Initialising Business Contract
     Tom->>+Bank_Pod: [HTTP POST /credits/orders/] credit order
     Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
 ```
+
+## Entwicklung
+
+### Allgemeine Infos
+- mit Lerna einen Task ausführen: `npx lerna run TASK`
+  - führt den Task für **alle** Apps/Libs aus, die den Task in **ihrer** `package.json` als Script aufgeführt haben
+  - mit dem Parameter `--scope` kann die Auswahl der Apps/Libs anhand ihres Package-Namen beschränkt werden
+
+
+### Ein neues NPM-Package installieren
+Sämtliche Pakete sollten stets in der `package.json` im **Root** installiert werden.  
+
+
+### Eine neue Lib erstellen
+1. Ordner unter `/libs` anlegen
+2. `package.json` anlegen 
+   2. Name gem. Format `@shared/NAME_DER_LIB`
+3. `tsconfig.json` anlegen
+   3. TS-Baseconfig im Root extenden
+   3. `include` mit den entsprechenden Dateien ergänzen
+4. `index.ts` anlegen (zur Steuerung, was exportiert wird)
