@@ -1,0 +1,50 @@
+{
+  "name": "hackathon-demo",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "lint": "lerna run lint",
+    "build": "lerna run build",
+    "max:serve": "lerna run serve --scope max",
+    "max:build": "lerna run build --scope max",
+    "max:lint": "lerna run lint --scope max",
+    "lisa:serve": "lerna run serve --scope lisa",
+    "lisa:build": "lerna run build --scope lisa",
+    "lisa:lint": "lerna run lint --scope lisa",
+    "tom:serve": "lerna run serve --scope tom",
+    "tom:build": "lerna run build --scope tom",
+    "tom:lint": "lerna run lint --scope tom"
+  },
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "dependencies": {
+    "@inrupt/solid-client-authn-browser": "^1.12.2",
+    "core-js": "^3.8.3",
+    "n3": "^1.16.2",
+    "primeflex": "^3.2.1",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.17.0",
+    "register-service-worker": "^1.7.2",
+    "vue": "^3.2.13",
+    "vue-class-component": "^8.0.0-0",
+    "vue-router": "^4.0.3"
+  },
+  "devDependencies": {
+    "lerna": "^6.0.1",
+    "@types/n3": "^1.10.4",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-typescript": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "@vue/eslint-config-typescript": "^9.1.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "typescript": "~4.5.5"
+  }
+}

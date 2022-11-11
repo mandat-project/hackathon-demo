@@ -1,7 +1,9 @@
 # MANDAT Hackathon Demo
 
-In this demo, we showcase the initialisation of a business contract between the SME and the BANK in form of a credit grant.
-An overview of the current state is provided in Figure 1, where the starting point is indicated by step 0 "create demand". You may follow the numeric ordering to get an idea of the flow.
+In this demo, we showcase the initialisation of a business contract between the SME and the BANK in form of a credit
+grant.
+An overview of the current state is provided in Figure 1, where the starting point is indicated by step 0 "create
+demand". You may follow the numeric ordering to get an idea of the flow.
 
 ![Figure 1](/img/current_state.png)
 Figure 1: The current state of the demo.
@@ -9,7 +11,8 @@ Figure 1: The current state of the demo.
 - The _Credit App_ is available at [/lisa/](/lisa/).
 - The _Banking App_ is available at [/tom/](/tom/).
 - The _Data App_ is available at [/max/](/max/).
-- We use Solid Pods provided by a [Community Solid Server](https://github.com/CommunitySolidServer/CommunitySolidServer) (v5.0.0) instance.
+- We use Solid Pods provided by
+  a [Community Solid Server](https://github.com/CommunitySolidServer/CommunitySolidServer) (v5.0.0) instance.
 
 Currently, the following sequence is showcased:
 
@@ -176,3 +179,25 @@ note over Tom,StB_Pod: Initialising Business Contract
     Tom->>+Bank_Pod: [HTTP POST /credits/orders/] credit order
     Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
 ```
+
+## Entwicklung
+
+### Allgemeine Infos
+- mit Lerna einen Task ausführen: `npx lerna run TASK`
+  - führt den Task für **alle** Apps/Libs aus, die den Task in **ihrer** `package.json` als Script aufgeführt haben
+  - mit dem Parameter `--scope` kann die Auswahl der Apps/Libs anhand ihres Package-Namen beschränkt werden
+
+
+### Ein neues NPM-Package installieren
+Sämtliche Pakete sollten stets in der `package.json` im **Root** installiert werden.  
+
+
+### Eine neue Lib erstellen
+1. Ordner unter `/libs` anlegen
+2. `package.json` anlegen 
+   2. Name gem. Format `@shared/NAME_DER_LIB`
+3. `tsconfig.json` anlegen
+   3. TS-Baseconfig im Root extenden
+   3. `include` mit den entsprechenden Dateien ergänzen
+4. `index.ts` anlegen (zur Steuerung, was exportiert wird)
+5. In der TS-Base-Config `ts.base-config.json` unter `paths` den Package-Namen mit Pfad zur Index-Datei ergänzen (ermöglicht Auto-Import)
