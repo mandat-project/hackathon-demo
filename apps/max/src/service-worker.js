@@ -1,7 +1,10 @@
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0/workbox-sw.js');
+
 workbox.core.setCacheNameDetails({prefix: "solid-vue-pwa"});
 
 self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
 
 /*
  * BEGIN: HANDLE UPDATES
