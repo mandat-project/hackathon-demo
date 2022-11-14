@@ -13,14 +13,6 @@ module.exports = defineConfig({
         workboxOptions: {
             swSrc: "./src/service-worker.js",
         },
-        short_name: "Tom PWA",
-        name: "Tom PWA",
-        start_url: "./",
-        display: "standalone",
-        themeColor: "#1f2d40",
         msTileColor: "#81c784",
-        manifestOptions: {
-            background_color: "#1f2d40",
-        },
     },
 });

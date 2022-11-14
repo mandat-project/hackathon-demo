@@ -1,6 +1,10 @@
 {
-  "short_name": "Solid PWA",
-  "name": "Solid Vue PWA",
+  "name": "Tom PWA",
+  "short_name": "Tom PWA",
+  "start_url": "./",
+  "display": "standalone",
+  "themeColor": "#1f2d40",
+  "background_color": "#1f2d40",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
@@ -53,6 +57,11 @@
       "src": "./img/icons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
+    },
+    {
+      "src": "./img/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     },
     {
       "src": "./img/icons/favicon-16x16.png",
