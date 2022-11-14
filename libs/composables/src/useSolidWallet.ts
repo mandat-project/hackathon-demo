@@ -1,7 +1,7 @@
 import {ref, watch} from "vue";
 import {useSolidSession} from "./useSolidSession";
 import {useSolidProfile} from "./useSolidProfile";
-import {createContainer, getContainerItems, getResource, putResource} from "@shared/solid";
+import {ACL, createContainer, FOAF, getContainerItems, getResource, putResource} from "@shared/solid";
 
 let socket: WebSocket;
 
@@ -74,8 +74,8 @@ watch(credStatusDir, () => {
                     authFetch.value
                 ).then(() => {
                     const acl = `
-  @prefix acl: <http://www.w3.org/ns/auth/acl#>.
-  @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+  @prefix acl: <${ACL()}>.
+  @prefix foaf: <${FOAF()}>.
   
   <#owner>
       a acl:Authorization;

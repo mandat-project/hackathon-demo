@@ -2,7 +2,7 @@
 import {useToast} from "primevue/usetoast";
 import {ref, toRefs, watch} from "vue";
 import {Quad, Store} from 'n3';
-import {createResource, EX, getResource, LDP, parseToN3, putResource} from "@shared/solid";
+import {createResource, CREDIT, getResource, LDP, parseToN3, putResource} from "@shared/solid";
 import {useSolidInbox, useSolidSession} from "@shared/composables";
 
 const toast = useToast();
@@ -33,8 +33,8 @@ function fetchRequests() {
 async function processRequest(key: string) {
   const store = requests.value.get(key);
   if (store) {
-    const targetUri = getObject(store, EX('hasDataProcessed'));
-    const processedDataBody = "@prefix ex: <http://example.org/vocab/datev/credit#>. <> a ex:ProcessedData .";
+    const targetUri = getObject(store, CREDIT('hasDataProcessed'));
+    const processedDataBody = `@prefix ex: <${CREDIT()}>. <> a ex:ProcessedData .`;
     await putResource(targetUri, processedDataBody, authFetch.value);
 
     //LDN with targetUri as msgbody
@@ -98,8 +98,8 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
       <ul v-if="isLoggedIn">
         <li v-for="([uri, store], index) of requests" :key="index">
           <p>Request #{{ index }}: {{ uri }}</p>
-          <p>Target-Uri: {{ getObject(store, EX('hasDataProcessed')) }}</p>
-          <p>Requested Data : {{ getObject(store, EX('hasRequestedData')) }} </p>
+          <p>Target-Uri: {{ getObject(store, CREDIT('hasDataProcessed')) }}</p>
+          <p>Requested Data : {{ getObject(store, CREDIT('hasRequestedData')) }} </p>
           <Button @click="processRequest(uri)">Do Processing</Button>
         </li>
       </ul>

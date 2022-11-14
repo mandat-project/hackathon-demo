@@ -49,7 +49,16 @@
 <script lang="ts">
 import {useToast} from "primevue/usetoast";
 import {useSolidSession, useSolidProfile} from "@shared/composables";
-import {createResource, getLocationHeader, getResource, parseToN3, putResource} from "@shared/solid";
+import {
+  ACL,
+  createResource,
+  CREDIT,
+  getLocationHeader,
+  getResource,
+  parseToN3,
+  putResource,
+  SCHEMA
+} from "@shared/solid";
 import {defineComponent, Ref, ref, toRefs, watch} from "vue";
 import {DataFactory} from "n3";
 
@@ -92,7 +101,7 @@ export default defineComponent({
           .then((parsedN3) => parsedN3.store);
 
       const allDemands = store.getObjects(DataFactory.namedNode(webId!.value!),
-          DataFactory.namedNode("http://example.org/vocab/datev/credit#hasDemand"), null);
+          CREDIT('hasDemand'), null);
 
       for (let demand of allDemands) {
         try {
@@ -101,17 +110,17 @@ export default defineComponent({
               .then((txt) => parseToN3(txt, demand.id))
               .then((parsedN3) => parsedN3.store);
 
-          const demandOffers = demandStore.getObjects(null, DataFactory.namedNode("http://example.org/vocab/datev/credit#hasOffer"), null);
+          const demandOffers = demandStore.getObjects(null, CREDIT('hasOffer'), null);
 
-          const amount = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/amount"), null)[0];
-          const currency = demandStore.getObjects(null, DataFactory.namedNode("http://schema.org/currency"), null)[0];
+          const amount = demandStore.getObjects(null, SCHEMA('amount'), null)[0];
+          const currency = demandStore.getObjects(null, SCHEMA('currency'), null)[0];
 
           if (demandOffers.length > 0) {
             const offerStore = await getResource(demandOffers[0].id, authFetch.value)
                 .then((resp) => resp.text())
                 .then((txt) => parseToN3(txt, demandOffers[0].id))
                 .then((parsedN3) => parsedN3.store);
-            const interestRate = offerStore.getObjects(null, DataFactory.namedNode("http://schema.org/annualPercentageRate"), null)[0];
+            const interestRate = offerStore.getObjects(null, SCHEMA('annualPercentageRate'), null)[0];
 
             demands.value.push({
               amount: parseFloat(amount.value),
@@ -141,7 +150,7 @@ export default defineComponent({
 
     const createOrder = async (offerId: String) => {
       const payload = `\
-          @prefix schema: <http://schema.org/> .
+          @prefix schema: <${SCHEMA()}> .
 
           <> schema:acceptedOffer <${offerId}> .
         `
@@ -168,7 +177,7 @@ export default defineComponent({
         const dataProcessed = getLocationHeader(createDataProcessed);
         // ... and set ACL
         const aclDataProcessed = `\
-          @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+          @prefix acl: <${ACL()}>.
 
           <#owner>
             a acl:Authorization;
@@ -189,12 +198,12 @@ export default defineComponent({
         putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
 
         // Create data-request resource ...
-        const createDataRequest = await createResource(storage.value + "data-requests/", "<> <http://example.org/vocab/datev/credit#hasDataProcessed> <" + dataProcessed + "> .", authFetch.value);
+        const createDataRequest = await createResource(storage.value + "data-requests/", `<> <${CREDIT('hasDataProcessed')}> <${dataProcessed}> .`, authFetch.value);
         // .. get its URI ...
         const dataRequest = getLocationHeader(createDataRequest);
         // ... and set ACL
         const aclDataRequest = `\
-          @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+          @prefix acl: <${ACL()}>.
 
           <#owner>
             a acl:Authorization;
@@ -216,8 +225,8 @@ export default defineComponent({
 
         // Create demand resource
         const payload = `\
-          @prefix schema: <http://schema.org/> .
-          @prefix : <http://example.org/vocab/datev/credit#> .
+          @prefix schema: <${SCHEMA()}> .
+          @prefix : <${CREDIT()}> .
 
           <> a schema:Demand ;
             :hasDataRequest <${dataRequest}> ;
@@ -241,11 +250,11 @@ export default defineComponent({
           const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
           putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
         } catch (error) {
-          putResource(storage.value + "demands.ttl", "<" + webId?.value + "> <http://example.org/vocab/datev/credit#hasDemand> <" + demand + "> .", authFetch.value);
+          putResource(storage.value + "demands.ttl", `<${webId?.value}> <${CREDIT('hasDemand')}> <${demand}> .`, authFetch.value);
         }
 
         // Send LDN to bank about new demand
-        createResource("https://bank.solid.aifb.kit.edu/inbox/", "<" + webId?.value + "> <http://schema.org/seeks> <" + demand + "> .", authFetch.value);
+        createResource("https://bank.solid.aifb.kit.edu/inbox/", `<${webId?.value}> <${SCHEMA('seeks')}> <${demand}> .`, authFetch.value);
 
         // Success Message \o/
         toast.add({

@@ -148,7 +148,7 @@ export async function createResource(
     headers["Content-type"] = headers["Content-type"]
         ? headers["Content-type"]
         : "text/turtle";
-    headers["Link"] = '<http://www.w3.org/ns/ldp#Resource>; rel="type"'
+    headers["Link"] = `<${LDP('Resource')}>; rel="type"`
     return postResource(
         locationURI,
         body,
@@ -179,7 +179,7 @@ export async function createContainer(
         body,
         fetch,
         {
-            Link: '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
+            Link: `<${LDP('BasicContainer')}>; rel="type"`,
             Slug: name,
         }
     ).then(_checkResponseStatus);
@@ -239,7 +239,7 @@ export async function putResource(
     headers["Content-type"] = headers["Content-type"]
         ? headers["Content-type"]
         : "text/turtle";
-    headers["Link"] = '<http://www.w3.org/ns/ldp#Resource>; rel="type"';
+    headers["Link"] = `<${LDP('Resource')}>; rel="type"`;
     return fetch(uri, {
         method: "PUT",
         headers: headers,
