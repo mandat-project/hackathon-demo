@@ -8,7 +8,7 @@
  * @returns function which takes a parameter of RDF thing identifier as string
  */
 function Namespace(namespace: string) {
-    return (thing: string) => namespace.concat(thing);
+    return (thing?: string) => thing ? namespace.concat(thing) : namespace;
 }
 
 // Namespaces as functions where their parameter is the RDF thing identifier => concat, e.g. FOAF("knows") resovles to "http://xmlns.com/foaf/0.1/knows"
@@ -19,13 +19,12 @@ export const RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#");
 export const WDT = Namespace("http://www.wikidata.org/prop/direct/");
 export const WD = Namespace("http://www.wikidata.org/entity/");
 export const LDP = Namespace("http://www.w3.org/ns/ldp#");
+export const ACL = Namespace("http://www.w3.org/ns/auth/acl#");
 export const AS = Namespace("https://www.w3.org/ns/activitystreams#");
 export const XSD = Namespace("http://www.w3.org/2001/XMLSchema#");
 export const ETHON = Namespace("http://ethon.consensys.net/");
 export const PDGR = Namespace("http://purl.org/pedigree#");
-export const LDCV = Namespace(
-    "http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#"
-);
+export const LDCV = Namespace("http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#");
 export const WILD = Namespace("http://purl.org/wild/vocab#");
 export const VCARD = Namespace("http://www.w3.org/2006/vcard/ns#");
 
@@ -36,4 +35,3 @@ export const SVCS = Namespace("https://purl.org/solid-vc/credentialStatus#")
 
 export const CREDIT = Namespace("http://example.org/vocab/datev/credit#")
 export const SCHEMA = Namespace("http://schema.org/")
-export const EX = Namespace("http://example.org/vocab/datev/credit#");

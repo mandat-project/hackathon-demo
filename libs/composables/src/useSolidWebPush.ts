@@ -1,4 +1,4 @@
-import {AS, createResource, getResource, LDP, parseToN3, PUSH} from "@shared/solid";
+import {AS, createResource, getResource, LDP, parseToN3, PUSH, RDF} from "@shared/solid";
 import {toRefs} from "vue";
 import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
 import {useSolidSession} from "./useSolidSession";
@@ -40,9 +40,9 @@ const _createSubscriptionOnResource = (
     details: WebPushSubscription
 ) => {
     return `
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix as: <https://www.w3.org/ns/activitystreams#> .
-@prefix push: <https://purl.org/solid-web-push/vocab#> .
+@prefix rdf: <${RDF()}> .
+@prefix as: <${AS()}> .
+@prefix push: <${PUSH()}> .
 <#sub> a as:Follow;
     as:actor <${webId?.value}>;
     as:object <${uri}>;
@@ -60,9 +60,9 @@ const _createUnsubscriptionFromResource = (
     details: WebPushSubscription
 ) => {
     return `
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix as: <https://www.w3.org/ns/activitystreams#> .
-@prefix push: <https://purl.org/solid-web-push/vocab#> .
+@prefix rdf: <${RDF()}> .
+@prefix as: <${AS()}> .
+@prefix push: <${PUSH()}> .
 <#unsub> a as:Undo;
     as:actor <${webId?.value}>;
     as:object [

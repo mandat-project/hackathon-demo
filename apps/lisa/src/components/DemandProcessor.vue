@@ -36,6 +36,7 @@
 <script lang="ts">
 import {useSolidProfile, useSolidSession} from '@shared/composables';
 import {
+  ACL,
   createResource,
   CREDIT,
   getLocationHeader,
@@ -149,8 +150,8 @@ export default defineComponent({
 
       // create a body
       const body = responseText.concat(`
-            <> <http://example.org/vocab/datev/credit#hasRequestedData> <#requestedData> .
-                <#requestedData> a <http://exmaple.org/vocab/datev/credit#Balance> .
+            <> <${CREDIT('hasRequestedData')}> <#requestedData> .
+                <#requestedData> a <${CREDIT('Balance')}> .
             `)
 
       // PUT the new data
@@ -193,7 +194,7 @@ export default defineComponent({
 
       // create a body
       const body = responseText.concat(`
-                <${demandURI}> <http://example.org/vocab/datev/credit#hasOffer> <${offerURI}> .
+                <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
             `)
 
       // PUT the new data
@@ -221,8 +222,8 @@ export default defineComponent({
     const createOfferResource = async (demandURI: string, dataRequestURI: string, dataProcessedURI: string) => {
       const body = `
                 @prefix : <#>. 
-                @prefix credit: <http://example.org/vocab/datev/credit#> . 
-                @prefix schema: <http://schema.org/> .
+                @prefix credit: <${CREDIT()}> .
+                @prefix schema: <${SCHEMA()}> .
                 <> a credit:Offer;
                 schema:itemOffered <#credit>;
 	            schema:availability schema:InStock;
@@ -254,7 +255,7 @@ export default defineComponent({
       const aclUri = uri + ".acl";
       const body = `
                 @prefix : <#>. 
-                @prefix acl: <http://www.w3.org/ns/auth/acl#> . 
+                @prefix acl: <${ACL()}> .
                 <#read> a acl:Authorization; 
                     acl:agent <${demandingWebId}>; 
                     acl:mode acl:Read; 
