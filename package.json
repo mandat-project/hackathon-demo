@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "lerna run lint",
     "build": "lerna run build",
+    "serve": "lerna run serve",
     "max:serve": "lerna run serve --scope max",
     "max:build": "lerna run build --scope max",
     "max:lint": "lerna run lint --scope max",
