@@ -79,9 +79,9 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
         <InputText
             placeholder="GET my request."
             v-model="containerUri"
-            @keyup.enter="fetchRequests(containerUri)"
+            @keyup.enter="fetchRequests()"
         />
-        <Button @click="fetchRequests(containerUri)"> GET</Button>
+        <Button @click="fetchRequests()"> GET</Button>
       </div>
 
         <ProgressBar v-if="isLoading" mode="indeterminate" class="progressbar"/>
