@@ -1,7 +1,9 @@
 <template>
   <HeaderBar/>
 
-  <router-view/>
+  <div class="m-0 lg:m-5">
+    <router-view/>
+  </div>
 
   <div style="height: 75px"/>
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
@@ -83,5 +85,11 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: cadetblue;
+}
+
+/* PrimeFlex Overrides */
+/*noinspection CssUnusedSymbol*/
+.grid {
+  margin: 5px !important;
 }
 </style>
