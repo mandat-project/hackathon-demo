@@ -87,9 +87,7 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
         <Button @click="fetchRequests(containerUri)"> GET</Button>
       </div>
 
-      <div class="progressbarWrapper">
-        <ProgressBar v-if="isLoading" mode="indeterminate"/>
-      </div>
+        <ProgressBar v-if="isLoading" mode="indeterminate" class="progressbar"/>
     </div>
   </div>
 
@@ -117,25 +115,9 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
   padding-bottom: 0;
 }
 
-.border {
-  border: 1px solid var(--surface-d);
-  border-radius: 3px;
-}
-
-.border:hover {
-  border: 1px solid var(--primary-color);
-}
-
-.progressbarWrapper {
+.progressbar {
   height: 2px;
-  padding: 0 9px 0 9px;
-  transform: translate(0, -1px);
-}
-
-.p-progressbar {
-  height: 2px;
-  padding-top: 0;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  border-radius: 0 0 3px 3px;
+  transform: translateY(-2px);
 }
 </style>
