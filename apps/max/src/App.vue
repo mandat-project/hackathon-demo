@@ -1,12 +1,10 @@
 <template>
+
   <HeaderBar/>
 
   <div class="m-0 lg:m-5">
     <router-view/>
   </div>
-
-  <div style="height: 75px"/>
-  <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
 
   <Dialog
       header="We updated the App!"
@@ -19,11 +17,14 @@
       <Button label="Update" autofocus @click="refreshApp"/>
     </template>
   </Dialog>
+
   <Toast
       position="bottom-right"
       :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
   />
+
   <ConfirmDialog/>
+
 </template>
 
 <script setup lang="ts">
@@ -59,15 +60,16 @@ body {
   color: var(--text-color);
 }
 
+/* App-Container */
 #app {
   height: 100%;
   width: 100%;
 }
 
-.no-tap-highlight {
-  -webkit-tap-highlight-color: transparent;
+/* PrimeVue / PrimeFlex Overrides */
+.grid {
+  margin: 5px !important;
 }
-
 .p-button {
   -webkit-tap-highlight-color: transparent;
 }
@@ -85,11 +87,5 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: cadetblue;
-}
-
-/* PrimeFlex Overrides */
-/*noinspection CssUnusedSymbol*/
-.grid {
-  margin: 5px !important;
 }
 </style>
