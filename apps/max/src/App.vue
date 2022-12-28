@@ -31,7 +31,7 @@
 import {ref, watch} from "vue/";
 import Toast from "primevue/toast";
 import {useServiceWorkerUpdate} from "@shared/composables";
-import {HeaderBar} from "@shared/components"
+import {HeaderBar} from "@shared/components";
 
 const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
 const isOpen = ref(false);
