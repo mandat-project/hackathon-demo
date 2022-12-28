@@ -15,6 +15,7 @@ const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
 const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
 const requests = ref(new Map<string, Store | null>());
 
+// auto refetch on ldn
 watch(
     () => ldns.value,
     () => isLoggedIn ? fetchRequests() : {}
