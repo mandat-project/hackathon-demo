@@ -21,13 +21,15 @@ watch(
 );
 
 function fetchRequests() {
-  getResourceAsStore(containerUri.value).then(containerStore => getObjects(containerStore, LDP('contains'))
+  isLoading.value = true;
+  getResourceAsStore(containerUri.value)
+    .then(containerStore => getObjects(containerStore, LDP('contains'))
       .forEach(requestUri => {
         getResourceAsStore(requestUri).then(requestStore => {
           requests.value.set(requestUri, requestStore);
         })
-      })
-  );
+      }))
+    .finally(() => isLoading.value = false);
 }
 
 async function processRequest(key: string) {
@@ -45,7 +47,6 @@ async function processRequest(key: string) {
 // HELPER-FUNCTIONS
 
 function getResourceAsStore(uri: string): Promise<any> {
-  isLoading.value = true;
   return getResource(uri, authFetch.value)
       .catch((err) => {
         toast.add({
@@ -54,15 +55,11 @@ function getResourceAsStore(uri: string): Promise<any> {
           detail: err,
           life: 5000,
         });
-        isLoading.value = false;
         throw new Error(err);
       })
       .then((resp) => resp.text())
       .then(txt => parseToN3(txt, uri))
-      .then(n3 => n3.store)
-      .finally(() => {
-        isLoading.value = false;
-      });
+      .then(n3 => n3.store);
 }
 
 function getObjects(store: Store, quad1: string, quad2?: Quad) {
