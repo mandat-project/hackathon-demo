@@ -4,13 +4,13 @@
     <div class="col lg:col-6 lg:col-offset-3">
 
       <div class="p-inputgroup">
-        <InputText placeholder="A URI to do actions on." v-model="uri" @keyup.enter="fetch"/>
+        <InputText placeholder="URI of the banks' credit-demands."
+                   v-model="uri"
+                   @keyup.enter="fetch"/>
         <Button @click="fetch"> GET</Button>
       </div>
 
-      <div class="progressbarWrapper">
-        <ProgressBar v-if="isLoading" mode="indeterminate"/>
-      </div>
+      <ProgressBar v-if="isLoading" mode="indeterminate" class="progressbar"/>
 
     </div>
   </div>
@@ -69,9 +69,6 @@ const fetch = async () => {
         isLoading.value = false;
       })
 };
-
-// const demandsAvailable = computed(() => // TODO
-
 </script>
 
 <style scoped>
@@ -83,26 +80,10 @@ const fetch = async () => {
   padding-bottom: 0px;
 }
 
-.border {
-  border: 1px solid var(--surface-d);
-  border-radius: 3px;
-}
-
-.border:hover {
-  border: 1px solid var(--primary-color);
-}
-
-.progressbarWrapper {
+.progressbar {
   height: 2px;
-  padding: 0px 9px 0px 9px;
-  transform: translate(0, -1px);
-}
-
-.p-progressbar {
-  height: 2px;
-  padding-top: 0px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  border-radius: 0 0 3px 3px;
+  transform: translateY(-2px);
 }
 
 .demands ol li {
