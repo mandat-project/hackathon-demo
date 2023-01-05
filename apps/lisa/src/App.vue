@@ -99,4 +99,15 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: cadetblue;
 }
+
+ul, ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* PrimeFlex Overrides */
+.grid {
+  margin: 5px !important;
+}
 </style>
