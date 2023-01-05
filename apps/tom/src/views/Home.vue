@@ -188,13 +188,10 @@ const createOrder = async (offerId: String) => {
 
 const postDemand = async () => {
   try {
-    const {storage} = useSolidProfile()
+    // create data-processed resource
+    const dataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value).then(res => getLocationHeader(res));
 
-    // Create data-processed resource ...
-    const createDataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value);
-    // .. get its URI ...
-    const dataProcessed = getLocationHeader(createDataProcessed);
-    // ... and set ACL
+    // set its ACL
     const aclDataProcessed = `\
       @prefix acl: <${ACL()}>.
 
@@ -216,11 +213,11 @@ const postDemand = async () => {
     `;
     putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
 
-    // Create data-request resource ...
-    const createDataRequest = await createResource(storage.value + "data-requests/", `<> <${CREDIT('hasDataProcessed')}> <${dataProcessed}> .`, authFetch.value);
-    // .. get its URI ...
-    const dataRequest = getLocationHeader(createDataRequest);
-    // ... and set ACL
+    // create data-request resource ...
+    const dataRequest = await createResource(storage.value + "data-requests/", `<> <${CREDIT('hasDataProcessed')}> <${dataProcessed}> .`, authFetch.value)
+        .then(res => getLocationHeader(res));
+
+    // set its ACL
     const aclDataRequest = `\
       @prefix acl: <${ACL()}>.
 
@@ -239,7 +236,7 @@ const postDemand = async () => {
           acl:accessTo <${dataRequest}> ;
           acl:agent <${tax.value}> ;
           acl:mode acl:Read .
-    `
+    `;
     putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
 
     // Create demand resource
@@ -257,10 +254,9 @@ const postDemand = async () => {
         ] .
 
       <${webId?.value}> schema:seeks <> .
-    `
-    const createDemand = await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value);
-    // Get location
-    const demand = getLocationHeader(createDemand);
+    `;
+    const demand = await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value)
+        .then(res => getLocationHeader(res));
 
     // Get our demand list and add newly created demand
     try {
