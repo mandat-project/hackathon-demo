@@ -34,7 +34,10 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
 
-      <h1>Offers</h1>
+      <h1>
+        Offers
+        <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="loadDemands()"/>
+      </h1>
 
       <ul v-if="demands" class="flex flex-column p-0">
         <li v-for="(demand, index) in demands" :key="demand" class="flex flex-wrap align-items-center justify-content-between">
@@ -56,6 +59,8 @@
       </ul>
 
       <p v-else>No released demands</p>
+
+      <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px"/>
 
     </div>
   </div>
@@ -97,13 +102,22 @@ const {webId} = toRefs(sessionInfo);
 const demands = ref([]) as Ref<Demand[]>;
 const {storage} = useSolidProfile()
 
-const loadDemands = async () => {
+let isLoading = ref(false);
+
+async function loadDemands() {
+  isLoading.value = true;
+  demands.value = [];
+
   const url = `${storage.value}demands.ttl`;
 
   const store = await getResource(url, authFetch.value)
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, url))
-      .then((parsedN3) => parsedN3.store);
+      .then((parsedN3) => parsedN3.store)
+      .catch(err => {
+        isLoading.value = false
+        throw err;
+      });
 
   const allDemands = store.getObjects(DataFactory.namedNode(webId!.value!),
       CREDIT('hasDemand'), null);
@@ -138,6 +152,8 @@ const loadDemands = async () => {
     } catch (e) {
     }
   }
+
+  isLoading.value = false;
 }
 
 watch(storage, function () {
