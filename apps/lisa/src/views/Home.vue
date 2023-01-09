@@ -20,7 +20,10 @@
   <div class="grid">
     <h3 class="col-12">Demands</h3>
     <ul class="col-12 flex flex-column gap-4">
-      <DemandProcessor :uri="demandUri" v-for="demandUri in demandUris" :key="demandUri"/>
+      <template v-for="(demandUri, index) in demandUris" :key="demandUri">
+        <hr class="w-full" v-if="index !== 0">
+        <DemandProcessor :uri="demandUri"/>
+      </template>
     </ul>
   </div>
 
@@ -30,7 +33,7 @@
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@shared/composables";
 import {getResource, LDP, parseToN3} from "@shared/solid";
-import {Ref, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
 
 const toast = useToast();
@@ -38,7 +41,7 @@ const {authFetch, sessionInfo} = useSolidSession();
 
 const uri = ref("https://bank.solid.aifb.kit.edu/credits/demands/");
 const isLoading = ref(false);
-const demandUris: Ref<Array<string>> = ref([]);
+const demandUris = ref<string[]>([]);
 
 // refetch demandUris on login
 watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? fetchDemandUris() : {});

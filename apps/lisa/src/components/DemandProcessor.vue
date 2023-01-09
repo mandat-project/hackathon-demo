@@ -1,6 +1,6 @@
 <template>
   <li>
-    <span>Demand: {{ uri }} </span>
+    <span>Demand: {{ props.uri }} </span>
     <ul class="demands">
       <li><input type="button" value="get details of this demand" @click="getDemand(uri)"/>
         <a v-if="dataRequestURI" :href=dataRequestURI>data request</a>
@@ -30,10 +30,9 @@
       </li>
     </ul>
   </li>
-
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {useSolidProfile, useSolidSession} from '@shared/composables';
 import {
   ACL,
@@ -48,315 +47,280 @@ import {
 } from '@shared/solid';
 import {Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
-import {computed, defineComponent, ref, toRefs} from 'vue';
+import {computed, ref, toRefs} from 'vue';
 
 
-export default defineComponent({
-  name: "DemandProcessor",
-  components: {},
-  props: {
-    uri: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props, context) {
-    const toast = useToast();
-    const {authFetch, sessionInfo} = useSolidSession();
-    const {isLoggedIn, webId} = toRefs(sessionInfo);
-    const {storage} = useSolidProfile();
+const props = defineProps<{ uri: string }>();
 
-    const demandStore = ref(new Store())
-    const processedDemandStore = ref(new Store())
-    const orderStore = ref(new Store())
+const toast = useToast();
+const {authFetch, sessionInfo} = useSolidSession();
+const {isLoggedIn, webId} = toRefs(sessionInfo);
+const {storage} = useSolidProfile();
 
-    const hasRequestedData = ref(false)
-    const offerIsCreated = ref(false)
-    const offerIsAccepted = ref(false)
+const demandStore = ref(new Store())
+const processedDemandStore = ref(new Store())
+const orderStore = ref(new Store())
 
-    const getDemand = async (demand: string) => {
-      await getResource(demand, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            //      isLoading.value = false;
-            throw new Error(err);
-          })
-          .then((resp) => resp.text()).then((txt) => {
-            return parseToN3(txt, demand)
-          }).then((parsedN3) => {
-            demandStore.value = parsedN3.store;
-          });
+const hasRequestedData = ref(false)
+const offerIsCreated = ref(false)
+const offerIsAccepted = ref(false)
 
-      // check if an offer is already available
-      offerIsCreated.value = isOfferCreated(demandStore.value)
-      console.log("offerIsCreated", offerIsCreated.value)
+const getDemand = async (demand: string) => {
+  await getResource(demand, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        //      isLoading.value = false;
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, demand))
+      .then((parsedN3) => demandStore.value = parsedN3.store);
 
-      // check if an offer is already accepted
-      offerIsAccepted.value = await isOrderAccepted(demand)
-      console.log("orderIsAccepted", offerIsAccepted.value)
+  // check if an offer is already available
+  offerIsCreated.value = isOfferCreated(demandStore.value)
+  console.log("offerIsCreated", offerIsCreated.value)
 
-    }
-    getDemand(props.uri)
+  // check if an offer is already accepted
+  offerIsAccepted.value = await isOrderAccepted(demand)
+  console.log("orderIsAccepted", offerIsAccepted.value)
 
-    const isOfferCreated = (demandStore: Store) => {
-      const offer = demandStore.getQuads(props.uri, CREDIT("hasOffer"), null, null)
-      return offer.length > 0
-    }
+}
+getDemand(props.uri)
 
-    const dataRequestURI = computed(() => {
-      try {
-        return demandStore.value.getQuads(props.uri, CREDIT("hasDataRequest"), null, null)[0].object.value
-      } catch (error) {
-        return ""
-      }
+const isOfferCreated = (demandStore: Store) => {
+  const offer = demandStore.getQuads(props.uri, CREDIT("hasOffer"), null, null)
+  return offer.length > 0
+}
 
-    })
-    const dataProcessedURI = computed(() => {
-      try {
-        return demandStore.value.getQuads(props.uri, CREDIT("hasDataProcessed"), null, null)[0].object.value
-      } catch (error) {
-        return ""
-      }
-    })
-
-    const orderURI = computed(() => {
-      try {
-        return orderStore.value.getQuads(props.uri, CREDIT("hasOrder"), null, null)[0].object.value
-      } catch (error) {
-        return ""
-      }
-    })
-
-    const requestData = async (requestURI: string) => {
-      // simulate patch as it is not supported, warning: not atomic
-
-      // GET the current data
-      const responseText = await getResource(requestURI, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            throw new Error(err);
-          })
-          .then((resp) => resp.text())
-
-      // create a body
-      const body = responseText.concat(`
-            <> <${CREDIT('hasRequestedData')}> <#requestedData> .
-                <#requestedData> a <${CREDIT('Balance')}> .
-            `)
-
-      // PUT the new data
-      hasRequestedData.value = true;
-      return putResource(requestURI, body, authFetch.value).then(resp => console.log(resp))
-    }
-
-
-    const getProcessedDemand = async (processedURI: string) => {
-      return getResource(processedURI, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            throw new Error(err);
-          })
-          .then((resp) => resp.text()).then((txt) => {
-            return parseToN3(txt, processedURI)
-          }).then((parsedN3) => {
-            processedDemandStore.value = parsedN3.store;
-          })
-    };
-
-    const patchDemand = async (demandURI: string, offerURI: string) => {
-      // GET the current data
-      const responseText = await getResource(demandURI, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            throw new Error(err);
-          })
-          .then((resp) => resp.text())
-
-      // create a body
-      const body = responseText.concat(`
-                <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
-            `)
-
-      // PUT the new data
-      hasRequestedData.value = true;
-      return putResource(demandURI, body, authFetch.value)
-    };
-
-    const getOrderDetails = async (orderURI: string) => {
-      return getResource(orderURI, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            throw new Error(err);
-          })
-          .then((resp) => resp.text()).then((txt) => {
-            return parseToN3(txt, orderURI)
-          }).then((parsedN3) => {
-            orderStore.value = parsedN3.store;
-          })
-    };
-    const createOfferResource = async (demandURI: string, dataRequestURI: string, dataProcessedURI: string) => {
-      const body = `
-                @prefix : <#>. 
-                @prefix credit: <${CREDIT()}> .
-                @prefix schema: <${SCHEMA()}> .
-                <> a credit:Offer;
-                schema:itemOffered <#credit>;
-	            schema:availability schema:InStock;
-                credit:derivedFromDemand <${demandURI}> ; 
-                credit:derivedFromData <${dataProcessedURI}>; 
-                credit:hasUnderlyingRequest <${dataRequestURI}> . 
-                <${webId?.value}> schema:offers <>  .
-	            <${await getDemanderUri()}> schema:seeks <>  .
-                <http://example.com/loansAndCredits/c12345#credit>
-            	        a schema:LoanOrCredit ;
-            	        schema:amount "${demandStore.value.getObjects(null, SCHEMA("amount"), null)[0].value}" ;
-            	        schema:currency "${demandStore.value.getObjects(null, SCHEMA("currency"), null)[0].value}";
-            	        schema:annualPercentageRate "1.08";
-            	        schema:loanTerm <#duration>.  
-                <#duration> 
-            	    a schema:QuantitativeValue;
-            	    schema:value "10 years".
-                `
-      const offerURI = await createResource("https://bank.solid.aifb.kit.edu/credits/offers/", body, authFetch.value)
-          .then(getLocationHeader)
-      await patchDemand(demandURI, offerURI);
-      await makeAvailableToDemandingWebId(offerURI, await getDemanderUri());
-      await makeAvailableToDemandingWebId(demandURI, await getDemanderUri()); // for demand
-      offerIsCreated.value = true;
-
-    }
-
-    const makeAvailableToDemandingWebId = async (uri: string, demandingWebId: string) => {
-      const aclUri = uri + ".acl";
-      const body = `
-                @prefix : <#>. 
-                @prefix acl: <${ACL()}> .
-                <#read> a acl:Authorization; 
-                    acl:agent <${demandingWebId}>; 
-                    acl:mode acl:Read; 
-                    acl:accessTo <${uri}> . 
-                <#control> a acl:Authorization; 
-                    acl:agent <${webId?.value}>; 
-                    acl:mode acl:Read,acl:Control,acl:Write; 
-                    acl:accessTo <${uri}> . 
-                `
-      await putResource(aclUri, body, authFetch.value)
-    }
-
-    const getDemanderUri = async () => {
-      const demanderURI = demandStore.value.getQuads(null, SCHEMA("seeks"), props.uri, null)[0].subject.value;
-      return demanderURI;
-    }
-
-    const isOrderAccepted = async (demandURI: string) => {
-
-      const ordersURI = storage.value + "credits/orders/";
-      orderStore.value = await getAllOrders(ordersURI)
-
-      const offerURI = demandStore.value.getQuads(demandURI, CREDIT("hasOffer"), null, null)[0].object.value;
-      console.log("demand", demandURI, "has offerURI", offerURI)
-
-      // add all values to the order store
-      const orders = orderStore.value.getObjects(ordersURI, LDP("contains"), null).map((order) => order.value);
-      console.log(orders)
-      for (const order of orders) {
-        console.log("available order:", order)
-        await addOrderToStore(order)
-      }
-
-      let acceptedOffers = orderStore.value.getQuads(null, SCHEMA("acceptedOffer"), offerURI, null)
-
-      if (acceptedOffers.length == 1) {
-        console.log("offer accepted:", offerURI)
-        offerIsAccepted.value = true;
-        return true;
-      } else if (acceptedOffers.length > 1) {
-        console.warn("MORE than one offer accepted:", offerURI)
-        return true;
-      } else {
-        console.log("offer NOT accepted:", offerURI)
-        return false;
-      }
-    }
-
-    const getAllOrders = async (ordersURI: string) => {
-      return getResource(ordersURI, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            throw new Error(err);
-          })
-          .then((resp) => resp.text())
-          .then((txt) => parseToN3(txt, ordersURI))
-          .then((parsedN3) => parsedN3.store)
-    }
-
-    const addOrderToStore = async (orderURI: string) => {
-      return getResource(orderURI, authFetch.value)
-          .catch((err) => {
-            toast.add({
-              severity: "error",
-              summary: "Error on fetch!",
-              detail: err,
-              life: 5000,
-            });
-            throw new Error(err);
-          })
-          .then((resp) => resp.text()).then((txt) => {
-            return parseToN3(txt, orderURI)
-          }).then((parsedN3) => {
-            orderStore.value.addQuads(parsedN3.store.getQuads(null, null, null, null));
-          })
-    }
-
-
-    return {
-      getDemand,
-      dataProcessedURI,
-      dataRequestURI,
-      requestData,
-      createOfferResource,
-      patchDemand,
-      getProcessedDemand,
-      isOrderAccepted,
-      offerIsCreated,
-      offerIsAccepted,
-      getOrderDetails,
-      hasRequestedData,
-      getDemanderUri
-    }
+const dataRequestURI = computed(() => {
+  try {
+    return demandStore.value.getQuads(props.uri, CREDIT("hasDataRequest"), null, null)[0].object.value
+  } catch (error) {
+    return ""
   }
-});
+
+})
+const dataProcessedURI = computed(() => {
+  try {
+    return demandStore.value.getQuads(props.uri, CREDIT("hasDataProcessed"), null, null)[0].object.value
+  } catch (error) {
+    return ""
+  }
+})
+
+const orderURI = computed(() => {
+  try {
+    return orderStore.value.getQuads(props.uri, CREDIT("hasOrder"), null, null)[0].object.value
+  } catch (error) {
+    return ""
+  }
+})
+
+const requestData = async (requestURI: string) => {
+  // simulate patch as it is not supported, warning: not atomic
+
+  // GET the current data
+  const responseText = await getResource(requestURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+
+  // create a body
+  const body = responseText.concat(`
+        <> <${CREDIT('hasRequestedData')}> <#requestedData> .
+            <#requestedData> a <${CREDIT('Balance')}> .
+        `)
+
+  // PUT the new data
+  hasRequestedData.value = true;
+  return putResource(requestURI, body, authFetch.value).then(resp => console.log(resp))
+}
+
+
+const getProcessedDemand = async (processedURI: string) => {
+  return getResource(processedURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, processedURI))
+      .then((parsedN3) => processedDemandStore.value = parsedN3.store)
+};
+
+const patchDemand = async (demandURI: string, offerURI: string) => {
+  // GET the current data
+  const responseText = await getResource(demandURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+
+  // create a body
+  const body = responseText.concat(`
+            <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
+        `)
+
+  // PUT the new data
+  hasRequestedData.value = true;
+  return putResource(demandURI, body, authFetch.value)
+};
+
+const getOrderDetails = async (orderURI: string) => {
+  return getResource(orderURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, orderURI))
+      .then((parsedN3) => orderStore.value = parsedN3.store)
+};
+const createOfferResource = async (demandURI: string, dataRequestURI: string, dataProcessedURI: string) => {
+  const body = `
+            @prefix : <#>.
+            @prefix credit: <${CREDIT()}> .
+            @prefix schema: <${SCHEMA()}> .
+            <> a credit:Offer;
+            schema:itemOffered <#credit>;
+          schema:availability schema:InStock;
+            credit:derivedFromDemand <${demandURI}> ;
+            credit:derivedFromData <${dataProcessedURI}>;
+            credit:hasUnderlyingRequest <${dataRequestURI}> .
+            <${webId?.value}> schema:offers <>  .
+          <${getDemanderUri()}> schema:seeks <>  .
+            <http://example.com/loansAndCredits/c12345#credit>
+                  a schema:LoanOrCredit ;
+                  schema:amount "${demandStore.value.getObjects(null, SCHEMA("amount"), null)[0].value}" ;
+                  schema:currency "${demandStore.value.getObjects(null, SCHEMA("currency"), null)[0].value}";
+                  schema:annualPercentageRate "1.08";
+                  schema:loanTerm <#duration>.
+            <#duration>
+              a schema:QuantitativeValue;
+              schema:value "10 years".
+            `
+  const offerURI = await createResource("https://bank.solid.aifb.kit.edu/credits/offers/", body, authFetch.value)
+      .then(getLocationHeader)
+  await patchDemand(demandURI, offerURI);
+  await makeAvailableToDemandingWebId(offerURI, getDemanderUri());
+  await makeAvailableToDemandingWebId(demandURI, getDemanderUri()); // for demand
+  offerIsCreated.value = true;
+
+}
+
+const makeAvailableToDemandingWebId = async (uri: string, demandingWebId: string) => {
+  const aclUri = uri + ".acl";
+  const body = `
+            @prefix : <#>.
+            @prefix acl: <${ACL()}> .
+            <#read> a acl:Authorization;
+                acl:agent <${demandingWebId}>;
+                acl:mode acl:Read;
+                acl:accessTo <${uri}> .
+            <#control> a acl:Authorization;
+                acl:agent <${webId?.value}>;
+                acl:mode acl:Read,acl:Control,acl:Write;
+                acl:accessTo <${uri}> .
+            `
+  await putResource(aclUri, body, authFetch.value)
+}
+
+function getDemanderUri() {
+  return demandStore.value.getQuads(null, SCHEMA("seeks"), props.uri, null)[0].subject.value;
+}
+
+const isOrderAccepted = async (demandURI: string) => {
+
+  const ordersURI = storage.value + "credits/orders/";
+  orderStore.value = await getAllOrders(ordersURI)
+
+  const offerURI = demandStore.value.getQuads(demandURI, CREDIT("hasOffer"), null, null)[0].object.value;
+  console.log("demand", demandURI, "has offerURI", offerURI)
+
+  // add all values to the order store
+  const orders = orderStore.value.getObjects(ordersURI, LDP("contains"), null).map((order) => order.value);
+  console.log(orders)
+  for (const order of orders) {
+    console.log("available order:", order)
+    await addOrderToStore(order)
+  }
+
+  let acceptedOffers = orderStore.value.getQuads(null, SCHEMA("acceptedOffer"), offerURI, null)
+
+  if (acceptedOffers.length == 1) {
+    console.log("offer accepted:", offerURI)
+    offerIsAccepted.value = true;
+    return true;
+  } else if (acceptedOffers.length > 1) {
+    console.warn("MORE than one offer accepted:", offerURI)
+    return true;
+  } else {
+    console.log("offer NOT accepted:", offerURI)
+    return false;
+  }
+}
+
+const getAllOrders = async (ordersURI: string) => {
+  return getResource(ordersURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, ordersURI))
+      .then((parsedN3) => parsedN3.store)
+}
+
+const addOrderToStore = async (orderURI: string) => {
+  return getResource(orderURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, orderURI))
+      .then((parsedN3) => orderStore.value.addQuads(parsedN3.store.getQuads(null, null, null, null)))
+}
 </script>
+
 <style>
 .demands a {
   padding-left: 1em;
@@ -365,5 +329,9 @@ export default defineComponent({
 
 .offerAcceptedStatus {
   padding-left: 1em;
+}
+
+hr {
+  border: 1px solid var(--surface-d);
 }
 </style>
