@@ -1,6 +1,6 @@
 <template>
   <li>
-    <p>Demand: <a :href="props.uri">{{ shortenedDemandUri }}</a> </p>
+    <h3>Demand: <a :href="props.uri">{{ shortenedDemandUri }}</a> </h3>
 
     <ul class="flex flex-column gap-2">
 
