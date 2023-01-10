@@ -6,9 +6,6 @@
     <router-view/>
   </div>
 
-  <div style="height: 75px"/>
-  <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
-
   <Dialog header="We updated the App!"
           v-model:visible="isOpen"
           position="bottomright">
@@ -25,30 +22,15 @@
 
 </template>
 
-<script lang="ts">
-import {defineComponent, ref, watch} from "vue";
+<script setup lang="ts">
+import {ref, watch} from "vue";
 import {HeaderBar} from "@shared/components";
 import {useServiceWorkerUpdate} from "@shared/composables";
 import Toast from "primevue/toast";
 
-export default defineComponent({
-  name: "Home",
-  components: {
-    HeaderBar,
-    Toast,
-  },
-  setup() {
-    const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
-    const isOpen = ref(false);
-    watch(hasUpdatedAvailable, () => {
-      isOpen.value = hasUpdatedAvailable.value;
-    });
-    return {
-      isOpen,
-      refreshApp,
-    };
-  },
-});
+const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
+const isOpen = ref(false);
+watch(hasUpdatedAvailable, () => isOpen.value = hasUpdatedAvailable.value);
 </script>
 
 <style>
