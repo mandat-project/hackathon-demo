@@ -1,29 +1,31 @@
 <template>
-  <HeaderBar/>
-  <!-- <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div> -->
-  <router-view/>
-  <div style="height: 75px"/>
-  <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
 
-  <Dialog
-      header="We updated the App!"
-      v-model:visible="isOpen"
-      position="bottomright"
-  >
+  <HeaderBar/>
+
+  <div class="m-0 lg:m-5">
+    <router-view/>
+  </div>
+
+  <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
+  <div style="height: 75px"/>
+
+  <Dialog header="We updated the App!"
+          v-model:visible="isOpen"
+          position="bottomright">
+
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
+
     <template #footer>
       <Button label="Update" autofocus @click="refreshApp"/>
     </template>
+
   </Dialog>
-  <Toast
-      position="bottom-right"
-      :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
-  />
+
+  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
+
   <ConfirmDialog/>
+
 </template>
 
 <script lang="ts">
@@ -98,5 +100,10 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: cadetblue;
+}
+
+/* PrimeFlex Overrides */
+.grid {
+  margin: 5px !important;
 }
 </style>
