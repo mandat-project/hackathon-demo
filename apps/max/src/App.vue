@@ -1,10 +1,10 @@
 <template>
+
   <HeaderBar/>
 
-  <router-view/>
-
-  <div style="height: 75px"/>
-  <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
+  <div class="m-0 lg:m-5">
+    <router-view/>
+  </div>
 
   <Dialog
       header="We updated the App!"
@@ -17,18 +17,21 @@
       <Button label="Update" autofocus @click="refreshApp"/>
     </template>
   </Dialog>
+
   <Toast
       position="bottom-right"
       :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
   />
+
   <ConfirmDialog/>
+
 </template>
 
 <script setup lang="ts">
 import {ref, watch} from "vue/";
 import Toast from "primevue/toast";
 import {useServiceWorkerUpdate} from "@shared/composables";
-import {HeaderBar} from "@shared/components"
+import {HeaderBar} from "@shared/components";
 
 const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
 const isOpen = ref(false);
@@ -57,15 +60,16 @@ body {
   color: var(--text-color);
 }
 
+/* App-Container */
 #app {
   height: 100%;
   width: 100%;
 }
 
-.no-tap-highlight {
-  -webkit-tap-highlight-color: transparent;
+/* PrimeVue / PrimeFlex Overrides */
+.grid {
+  margin: 5px !important;
 }
-
 .p-button {
   -webkit-tap-highlight-color: transparent;
 }

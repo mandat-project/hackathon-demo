@@ -15,19 +15,22 @@ const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
 const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
 const requests = ref(new Map<string, Store | null>());
 
+// auto refetch on ldn
 watch(
     () => ldns.value,
     () => isLoggedIn ? fetchRequests() : {}
 );
 
 function fetchRequests() {
-  getResourceAsStore(containerUri.value).then(containerStore => getObjects(containerStore, LDP('contains'))
+  isLoading.value = true;
+  getResourceAsStore(containerUri.value)
+    .then(containerStore => getObjects(containerStore, LDP('contains'))
       .forEach(requestUri => {
         getResourceAsStore(requestUri).then(requestStore => {
           requests.value.set(requestUri, requestStore);
         })
-      })
-  );
+      }))
+    .finally(() => isLoading.value = false);
 }
 
 async function processRequest(key: string) {
@@ -45,7 +48,6 @@ async function processRequest(key: string) {
 // HELPER-FUNCTIONS
 
 function getResourceAsStore(uri: string): Promise<any> {
-  isLoading.value = true;
   return getResource(uri, authFetch.value)
       .catch((err) => {
         toast.add({
@@ -54,15 +56,11 @@ function getResourceAsStore(uri: string): Promise<any> {
           detail: err,
           life: 5000,
         });
-        isLoading.value = false;
         throw new Error(err);
       })
       .then((resp) => resp.text())
       .then(txt => parseToN3(txt, uri))
-      .then(n3 => n3.store)
-      .finally(() => {
-        isLoading.value = false;
-      });
+      .then(n3 => n3.store);
 }
 
 function getObjects(store: Store, quad1: string, quad2?: Quad) {
@@ -82,14 +80,12 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
         <InputText
             placeholder="GET my request."
             v-model="containerUri"
-            @keyup.enter="fetchRequests(containerUri)"
+            @keyup.enter="fetchRequests()"
         />
-        <Button @click="fetchRequests(containerUri)"> GET</Button>
+        <Button @click="fetchRequests()"> GET</Button>
       </div>
 
-      <div class="progressbarWrapper">
-        <ProgressBar v-if="isLoading" mode="indeterminate"/>
-      </div>
+        <ProgressBar v-if="isLoading" mode="indeterminate" class="progressbar"/>
     </div>
   </div>
 
@@ -117,25 +113,9 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
   padding-bottom: 0;
 }
 
-.border {
-  border: 1px solid var(--surface-d);
-  border-radius: 3px;
-}
-
-.border:hover {
-  border: 1px solid var(--primary-color);
-}
-
-.progressbarWrapper {
+.progressbar {
   height: 2px;
-  padding: 0 9px 0 9px;
-  transform: translate(0, -1px);
-}
-
-.p-progressbar {
-  height: 2px;
-  padding-top: 0;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  border-radius: 0 0 3px 3px;
+  transform: translateY(-2px);
 }
 </style>
