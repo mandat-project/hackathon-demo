@@ -35,3 +35,5 @@ export const SVCS = Namespace("https://purl.org/solid-vc/credentialStatus#")
 
 export const CREDIT = Namespace("http://example.org/vocab/datev/credit#")
 export const SCHEMA = Namespace("http://schema.org/")
+
+export const INTEROP = Namespace("http://www.w3.org/ns/solid/interop#")
