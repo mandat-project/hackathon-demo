@@ -2,7 +2,7 @@
 import {useToast} from "primevue/usetoast";
 import {ref, toRefs, watch} from "vue";
 import {Quad, Store} from 'n3';
-import {createResource, CREDIT, getResource, LDP, parseToN3, putResource} from "@shared/solid";
+import {createResource, CREDIT, getResource, LDP, parseToN3, putResource, getDataRegistrationContainers} from "@shared/solid";
 import {useSolidInbox, useSolidSession} from "@shared/composables";
 
 const toast = useToast();
@@ -11,7 +11,9 @@ const {isLoggedIn} = toRefs(sessionInfo);
 const isLoading = ref(false);
 const {ldns} = useSolidInbox();
 
+// TODO: hardcoded containerUri should be replaced by getDataRegistrationContainers
 const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
+
 const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
 const requests = ref(new Map<string, Store | null>());
 
@@ -45,6 +47,15 @@ async function processRequest(key: string) {
   }
 }
 
+// TODO: change fn to receive needed resource (max does not need offers, get something else instead)
+async function getOffersContainer() {
+  const webId = 'https://bank.solid.aifb.kit.edu/profile/card#me';
+  const shapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
+  const containers = await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
+
+  console.log(containers);
+}
+
 // HELPER-FUNCTIONS
 
 function getResourceAsStore(uri: string): Promise<any> {
@@ -76,6 +87,10 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 <template>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
+
+      <!-- TODO: remove btn -> only for testing purpose -->
+      <Button @click="getOffersContainer()">GetDataRegistrationContainers</Button>
+
       <div class="p-inputgroup">
         <InputText
             placeholder="GET my request."
