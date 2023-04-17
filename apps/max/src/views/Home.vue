@@ -48,10 +48,19 @@ async function processRequest(key: string) {
 }
 
 // TODO: change fn to receive needed resource (max does not need offers, get something else instead)
-async function getOffersContainer() {
+async function getRequestDataContainer() {
   const webId = 'https://bank.solid.aifb.kit.edu/profile/card#me';
   const shapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
-  const containers = await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
+  const containers = await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value);
+
+  containers.forEach(containerUri => getResourceAsStore(containerUri)
+      .then(containerStore => getObjects(containerStore, LDP('contains'))
+          .forEach(requestUri => {
+              getResourceAsStore(requestUri).then(requestStore => {
+                  requests.value.set(requestUri, requestStore);
+              })
+          }))
+      )
 
   console.log(containers);
 }
@@ -89,7 +98,7 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
     <div class="col lg:col-6 lg:col-offset-3">
 
       <!-- TODO: remove btn -> only for testing purpose -->
-      <Button @click="getOffersContainer()">GetDataRegistrationContainers</Button>
+      <Button @click="getRequestDataContainer()">GetDataRegistrationContainers</Button>
 
       <div class="p-inputgroup">
         <InputText

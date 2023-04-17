@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@shared/composables";
-import {getResource, LDP, parseToN3} from "@shared/solid";
+import {getResource, LDP, parseToN3, getDataRegistrationContainers} from "@shared/solid";
 import {ref, watch} from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
 
@@ -43,31 +43,36 @@ const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 
 const uri = ref("https://bank.solid.aifb.kit.edu/credits/demands/");
+const webId = 'https://bank.solid.aifb.kit.edu/profile/card#me';
 const isLoading = ref(false);
 const demandUris = ref<string[]>([]);
 
 // refetch demandUris on login
 watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? fetchDemandUris() : {});
 
-function fetchDemandUris(): Promise<string[]> {
+async function fetchDemandUris(): Promise<string[]> {
+
+    const shapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
+    const containers = await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value);
+
   demandUris.value = [];
   isLoading.value = true;
-  return getResource(uri.value, authFetch.value)
+  return containers.forEach(containerUri => getResource(containerUri, authFetch.value)
       .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on fetch!",
-          detail: err,
-          life: 5000,
-        });
-        isLoading.value = false;
-        throw new Error(err);
+          toast.add({
+              severity: "error",
+              summary: "Error on fetch!",
+              detail: err,
+              life: 5000,
+          });
+          isLoading.value = false;
+          throw new Error(err);
       })
       .then(resp => resp.text())
       .then(txt => parseToN3(txt, uri.value))
       .then(parsedN3 => parsedN3.store)
       .then(store => demandUris.value = store.getObjects(uri.value, LDP("contains"), null).map((node) => node.value))
-      .finally(() => isLoading.value = false);
+      .finally(() => isLoading.value = false)) ;
 }
 </script>
 
