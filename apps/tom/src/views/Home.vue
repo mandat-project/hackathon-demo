@@ -73,6 +73,7 @@ import {
   ACL,
   createResource,
   CREDIT,
+  getDataRegistrationContainers,
   getLocationHeader,
   getResource,
   parseToN3,
@@ -81,6 +82,7 @@ import {
 } from "@shared/solid";
 import {Ref, ref, toRefs, watch} from "vue";
 import {DataFactory} from "n3";
+import * as url from "url";
 
 interface Demand {
   amount: number,
@@ -96,6 +98,8 @@ interface Offer {
 const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
 const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 
+const demandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
+
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
@@ -108,11 +112,11 @@ async function loadDemands() {
   isLoading.value = true;
   demands.value = [];
 
-  const url = `${storage.value}demands.ttl`;
+  const demandContainerUris = await getDataRegistrationContainers(webId!.value!, demandShapeTreeUri, authFetch.value);
 
-  const store = await getResource(url, authFetch.value)
+  const store = await getResource(demandContainerUris[0], authFetch.value)
       .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, url))
+      .then((txt) => parseToN3(txt, demandContainerUris[0]))
       .then((parsedN3) => parsedN3.store)
       .catch(err => {
         isLoading.value = false
@@ -255,17 +259,20 @@ const postDemand = async () => {
 
       <${webId?.value}> schema:seeks <> .
     `;
+
+    const demandContainerUris = await getDataRegistrationContainers(webId!.value!, demandShapeTreeUri, authFetch.value);
+
     const demand = await createResource("https://bank.solid.aifb.kit.edu/credits/demands/", payload, authFetch.value)
         .then(res => getLocationHeader(res));
 
     // Get our demand list and add newly created demand
     try {
-      const getDemandList = await getResource(storage.value + "demands.ttl", authFetch.value);
+      const getDemandList = await getResource(demandContainerUris[0], authFetch.value);
       const demandListBody = await getDemandList.text();
       const newDemandList = demandListBody.substring(0, demandListBody.lastIndexOf('.')) + ", <" + demand + "> ."
-      putResource(storage.value + "demands.ttl", newDemandList, authFetch.value);
+      putResource(demandContainerUris[0], newDemandList, authFetch.value);
     } catch (error) {
-      putResource(storage.value + "demands.ttl", `<${webId?.value}> <${CREDIT('hasDemand')}> <${demand}> .`, authFetch.value);
+      putResource(demandContainerUris[0], `<${webId?.value}> <${CREDIT('hasDemand')}> <${demand}> .`, authFetch.value);
     }
 
     // Send LDN to bank about new demand

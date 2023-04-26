@@ -1,6 +1,6 @@
 <template>
   <li>
-    <h3>Demand: <a :href="props.uri">{{ shortenedDemandUri }}</a> </h3>
+    <h3>Demand: <a :href="demandContainerUris[0]">{{ demandContainerUris[0] }}</a> </h3>
 
     <ul class="flex flex-column gap-2">
 
@@ -27,7 +27,7 @@
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" label="Create an offer for SME"
                v-bind:disabled="!dataRequestURI || isOfferCreated"
-               @click="createOfferResource(uri, dataRequestURI,dataProcessedURI)"/>
+               @click="createOfferResource(demandContainerUris[0], dataRequestURI!, dataProcessedURI!)"/>
         <span class="offerAcceptedStatus" v-if="isOfferAccepted">&check; Offer accepted</span>
         <span class="offerAcceptedStatus" v-if="!isOfferAccepted && isOfferCreated">&#9749; Waiting for response</span>
       </li>
@@ -47,21 +47,29 @@ import {
   LDP,
   parseToN3,
   putResource,
-  SCHEMA
+  SCHEMA,
+  getDataRegistrationContainers
 } from '@shared/solid';
 import {Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, ComputedRef, onMounted, reactive, ref, toRefs} from 'vue';
 
 
-const props = defineProps<{ uri: string }>();
+//const props = defineProps<{ uri: string }>();
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
 const {storage} = useSolidProfile();
 
-const ordersUri = `${storage.value}credits/orders/`;
+const demandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
+const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
+const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
+
+let orderContainerUris: Array<string>;
+let demandContainerUris: Array<string>;
+let offerContainerUris: Array<string>;
+
 const hasRequestedData = ref(false)
 
 const state = reactive({
@@ -70,15 +78,15 @@ const state = reactive({
   processedDataStore: new Store(),
 });
 
-const shortenedDemandUri = computed(() => props.uri.replace(`${storage.value}credits/demands/`, ''));
+//const shortenedDemandUri = computed(() => demandContainerUris[0].replace(`${storage.value}credits/demands/`, ''));
 
 // Demand
-const dataRequestURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.uri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
-const dataProcessedURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.uri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
-const demanderUri: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.uri, null)[0]?.subject?.value);
+const dataRequestURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(demandContainerUris[0], CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
+const dataProcessedURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(demandContainerUris[0], CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
+const demanderUri: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), demandContainerUris[0], null)[0]?.subject?.value);
 
 // Offers
-const offers = computed(() => state.demandStore.getQuads(props.uri, CREDIT("hasOffer"), null, null));
+const offers = computed(() => state.demandStore.getQuads(demandContainerUris[0], CREDIT("hasOffer"), null, null));
 const isOfferCreated = computed(() => offers.value.length > 0);
 const isOfferAccepted = computed(() => {
   const offerUri = offers.value[0]?.object?.value;
@@ -87,43 +95,52 @@ const isOfferAccepted = computed(() => {
       : false;
 });
 
+async function getAllDataRegistrationContainers() {
+  demandContainerUris = await getDataRegistrationContainers(webId!.value!, demandShapeTreeUri, authFetch.value);
+  orderContainerUris = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
+  offerContainerUris = await getDataRegistrationContainers(webId!.value!, offerShapeTreeUri, authFetch.value);
+}
+
 onMounted(async () => {
+  await getAllDataRegistrationContainers()
   await fetchDemand();
-  await fetchOrders(ordersUri)
+  await fetchOrders()
       .then(() => addOrderDetails());
 });
 
-function fetchDemand(): Promise<Store> {
-  return getResource(props.uri, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on fetch!",
-          detail: err,
-          life: 5000,
-        });
-        //      isLoading.value = false;
-        throw new Error(err);
-      })
-      .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, props.uri))
-      .then((parsedN3) => state.demandStore = parsedN3.store);
+async function fetchDemand(): Promise<Store> {
+
+  return getResource(demandContainerUris[0], authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on fetch!",
+        detail: err,
+        life: 5000,
+      });
+      //      isLoading.value = false;
+      throw new Error(err);
+    })
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, demandContainerUris[0]))
+    .then((parsedN3) => state.demandStore = parsedN3.store);
 }
 
-function fetchOrders(ordersURI: string) {
-  return getResource(ordersURI, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on fetch!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-      .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, ordersURI))
-      .then((parsedN3) => state.orderStore = parsedN3.store);
+async function fetchOrders() {
+
+  return getResource(orderContainerUris[0], authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on fetch!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, orderContainerUris[0]))
+    .then((parsedN3) => state.orderStore = parsedN3.store);
 }
 
 /**
@@ -232,7 +249,7 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
               a schema:QuantitativeValue;
               schema:value "10 years".
             `
-  const offerURI = await createResource(`${storage.value}credits/offers/`, body, authFetch.value)
+  const offerURI = await createResource(offerContainerUris[0], body, authFetch.value)
       .then(getLocationHeader)
   await patchDemand(demandURI, offerURI);
   await grantAccessToResource(offerURI, demanderUri.value!);
