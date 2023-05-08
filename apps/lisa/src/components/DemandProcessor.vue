@@ -1,6 +1,6 @@
 <template>
   <li>
-    <h3>Demand: <a :href="demandContainerUris[0]">{{ demandContainerUris[0] }}</a> </h3>
+    <h3>Demand: <a :href="props.demandUri">{{ props.demandUri }}</a> </h3>
 
     <ul class="flex flex-column gap-2">
 
@@ -27,7 +27,7 @@
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" label="Create an offer for SME"
                v-bind:disabled="!dataRequestURI || isOfferCreated"
-               @click="createOfferResource(demandContainerUris[0], dataRequestURI!, dataProcessedURI!)"/>
+               @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)"/>
         <span class="offerAcceptedStatus" v-if="isOfferAccepted">&check; Offer accepted</span>
         <span class="offerAcceptedStatus" v-if="!isOfferAccepted && isOfferCreated">&#9749; Waiting for response</span>
       </li>
@@ -55,14 +55,13 @@ import {useToast} from 'primevue/usetoast';
 import {computed, ComputedRef, onMounted, reactive, ref, toRefs} from 'vue';
 
 
-//const props = defineProps<{ uri: string }>();
+const props = defineProps<{ demandUri: string }>();
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
 const {storage} = useSolidProfile();
 
-const demandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
 
@@ -78,15 +77,13 @@ const state = reactive({
   processedDataStore: new Store(),
 });
 
-//const shortenedDemandUri = computed(() => demandContainerUris[0].replace(`${storage.value}credits/demands/`, ''));
-
 // Demand
-const dataRequestURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(demandContainerUris[0], CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
-const dataProcessedURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(demandContainerUris[0], CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
+const dataRequestURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
+const dataProcessedURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
 const demanderUri: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), demandContainerUris[0], null)[0]?.subject?.value);
 
 // Offers
-const offers = computed(() => state.demandStore.getQuads(demandContainerUris[0], CREDIT("hasOffer"), null, null));
+const offers = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasOffer"), null, null));
 const isOfferCreated = computed(() => offers.value.length > 0);
 const isOfferAccepted = computed(() => {
   const offerUri = offers.value[0]?.object?.value;
@@ -96,9 +93,10 @@ const isOfferAccepted = computed(() => {
 });
 
 async function getAllDataRegistrationContainers() {
-  demandContainerUris = await getDataRegistrationContainers(webId!.value!, demandShapeTreeUri, authFetch.value);
   orderContainerUris = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
   offerContainerUris = await getDataRegistrationContainers(webId!.value!, offerShapeTreeUri, authFetch.value);
+
+  console.log(demandContainerUris)
 }
 
 onMounted(async () => {
@@ -110,7 +108,7 @@ onMounted(async () => {
 
 async function fetchDemand(): Promise<Store> {
 
-  return getResource(demandContainerUris[0], authFetch.value)
+  return getResource(props.demandUri, authFetch.value)
     .catch((err) => {
       toast.add({
         severity: "error",

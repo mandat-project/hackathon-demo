@@ -8,7 +8,7 @@
     <ul class="col-12 flex flex-column gap-4">
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
         <hr class="w-full" v-if="index !== 0">
-        <DemandProcessor :uri="demandUri"/>
+        <DemandProcessor :demandUri="demandUri"/>
       </template>
     </ul>
   </div>
