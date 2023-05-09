@@ -246,8 +246,7 @@ Sämtliche Pakete sollten stets in der `package.json` im **Root** installiert we
    module.exports = {
      extends: '../../babel.base-config.js',
    }
-   ```
- 
+   ``` 
 9. _(optional)_ in app-spezifischer `tsconfig.json` die `ts.base-config.json` extenden
 10. _(optional)_ in der `package.json` im Root `lerna`-Skripte für die App ergänzen
 
