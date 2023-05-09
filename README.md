@@ -202,5 +202,54 @@ Sämtliche Pakete sollten stets in der `package.json` im **Root** installiert we
 4. `index.ts` anlegen (zur Steuerung, was exportiert wird)
 5. In der TS-Base-Config `ts.base-config.json` unter `paths` den Package-Namen mit Pfad zur Index-Datei ergänzen (ermöglicht Auto-Import)
 
+### Eine neue App erstellen
+1. Ordner entsprechend dem App-Namen unter `/apps` anlegen
+2. Im Ordner mit der Vue-Cli die App erstellen: `npx @vue/cli create .` _(Alternativ: global installierte Vue-Cli nutzen)_
+   - zu aktivierende Features: `Babel, TS, Linter`
+   - Vue-Version: `3.x`
+   - Linter/Formatter: `Standard`
+   - Configs: `In dedicated config files`
+3. App-spezifische `package.json` anpassen
+   - alle (Dev-)Dependencies entfernen
+   - folgende Config ergänzen:
+      ```json
+      {
+        //...
+        "vuePlugins": {
+            "resolveFrom": "../../"
+        }
+      }
+      ```
+4. `npm install` im Root des Monorepos ausführen
+5. `vue.config.js` wie folgt überschreiben:
+   ```js
+   module.exports = defineConfig({
+        ...vueBaseConfig,
+        outputDir: '../../dist/%NAME_DER_APP%',
+        devServer: {
+            port: %PORT_FUER_APP_SERVE%
+        },
+    })
+    ```
+    > Die Platzhalter `%...%` sind entsprechend zu ersetzen.
+6. Änderungen an der `README.md` im Root zurücksetzen
+7. `.eslintrc.js` wie folgt überschreiben:
+   ```js
+   module.exports = {
+     extends: [
+       "../../.eslintrc.js",
+     ],
+   };
+   ```
+8. `babel.config.js` wie folgt überschreiben:
+   ```js
+   module.exports = {
+     extends: '../../babel.base-config.js',
+   }
+   ```
+ 
+9. _(optional)_ in app-spezifischer `tsconfig.json` die `ts.base-config.json` extenden
+10. _(optional)_ in der `package.json` im Root `lerna`-Skripte für die App ergänzen
+
 ### Getestet mit folgenden node-Versionen
 - v16.19.0
