@@ -37,18 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import {useSolidProfile, useSolidSession} from '@shared/composables';
+import {useSolidSession} from '@shared/composables';
 import {
   ACL,
   createResource,
   CREDIT,
+  getDataRegistrationContainers,
   getLocationHeader,
   getResource,
   LDP,
   parseToN3,
   putResource,
-  SCHEMA,
-  getDataRegistrationContainers
+  SCHEMA
 } from '@shared/solid';
 import {Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
@@ -60,7 +60,6 @@ const props = defineProps<{ demandUri: string }>();
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
-const {storage} = useSolidProfile();
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
@@ -95,8 +94,6 @@ const isOfferAccepted = computed(() => {
 async function getAllDataRegistrationContainers() {
   orderContainerUris = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
   offerContainerUris = await getDataRegistrationContainers(webId!.value!, offerShapeTreeUri, authFetch.value);
-
-  console.log(demandContainerUris)
 }
 
 onMounted(async () => {
