@@ -1,0 +1,16 @@
+{
+  "extends": "../../ts.base-config.json",
+  "compilerOptions": {
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "**/*.vue"
+  ]
+}
