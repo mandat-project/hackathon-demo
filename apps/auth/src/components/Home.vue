@@ -5,21 +5,22 @@
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
 
-      <h1>Create Demand</h1>
+      <h1>Check for Access Requests</h1>
 
       <div class="col-12">
-        <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-left" label="Zurück"
+        <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Check For Access Requests"
                 @click="getAccessRequests()"/>
       </div>
 
       <ul>
-        <li v-for="accessRequest in accessRequests" :key="accessRequest">
-          <p>{{ accessRequest.fromSocialAgent }}</p>
-          <p>{{ accessRequest.toSocialAgent }}</p>
-          <p>{{ accessRequest.hasAccessNeedGroup }}</p>
+        <li style="list-style-type: none;" v-for="(accessRequest,index) in accessRequests" :key="accessRequest">
+          <p>{{"Request " + (index+1) +":"}}</p>
+          <p>{{"From: " + accessRequest.fromSocialAgent }}</p>
+          <p>{{"To: " +  accessRequest.toSocialAgent }}</p>
+          <p>{{"AccessNeed: " +  accessRequest.hasAccessNeedGroup }}</p>
           <div class="col-12">
-            <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-left" label="grant"
-                    @click="postAccessAuthorization()"/>
+            <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
+                    @click="AuthorizeAndGrantAccess()"/>
           </div>
         </li>
       </ul>
@@ -44,6 +45,11 @@ const toast = useToast();
 const accessRequestURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
 const accessRequests = ref<AccessRequest[]>([]);
 
+async function AuthorizeAndGrantAccess() {
+
+  await postAccessAuthorization();
+  await postAccessGrantInAgentRegistry();
+}
 async function postAccessAuthorization() {
   const payload = `
     @prefix interop: <http://www.w3.org/ns/solid/interop#> .
@@ -73,7 +79,67 @@ async function postAccessAuthorization() {
       interop:satisfiesAccessNeed <#bwaAccessNeed> .`;
 
   await createResource(`${storage.value}authorization-registry/`, payload, authFetch.value)
-    .then(() => toast.add({severity: "success", summary: "Access Granted"}));
+    .then(() => toast.add({
+      severity: "success",
+      summary: "Access authorized",
+      life: 5000
+    }));
+
+}
+
+async function postAccessGrantInAgentRegistry() {
+  const payload = `
+    @prefix interop: <http://www.w3.org/ns/solid/interop#> .
+    @prefix ldp: <http://www.w3.org/ns/ldp#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
+    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+
+     # Located in the Agent Registry of SME, readable by Bank
+      <#bwaAccessGrant>
+      a interop:AccessGrant ;
+      interop:grantedBy <${sessionInfo.webId}> ;
+      interop:grantedAt "2020-04-04T20:15:47.000Z"^^xsd:dateTime ;
+      interop:grantee <https://bank.solid.aifb.kit.edu/profile/card#me> ;
+      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
+      interop:hasDataGrant <#bwaDataGrant> .
+
+      <#bwaDataGrant>
+      a interop:DataGrant ;
+      # Take care: DataOwner is not necessarialy the one who grants: 'grantedBy!
+      interop:dataOwner <${sessionInfo.webId}> ;
+      interop:grantee <https://bank.solid.aifb.kit.edu/profile/card#me> ;
+      interop:registeredShapeTree shapeTree:businessAssessmentTree ;
+      interop:hasDataRegistration <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
+      interop:satisfiesAccessNeed <#bwaAccessNeed> ;
+      interop:accessMode acl:Read ;
+      interop:scopeOfGrant interop:AllFromRegistry .`;
+
+  await createResource(`${storage.value}agent-registry/`, payload, authFetch.value)
+    .then(() => toast.add({
+      severity: "success",
+      summary: "Access granted",
+      life: 5000
+    }));
+
+}
+
+async function postAccessReceiptToGrantee() {
+  const payload = `
+    @prefix interop: <http://www.w3.org/ns/solid/interop#> .
+    @prefix ldp: <http://www.w3.org/ns/ldp#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
+    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+
+ # Send to the access inbox of Bank by SME
+<#bwaAccessReceipt>
+  a interop:AccessReceipt ;
+  interop:providedAt "2020-09-05T06:15:01Z"^^xsd:dateTime ;
+  interop:grantedBy <${sessionInfo.webId}> .`;
+
+  await createResource(`${storage.value}agent-registry/`, payload, authFetch.value)
+    .then(() => toast.add({severity: "success", summary: "AccessReceipt sent to grantee"}));
 
 }
 

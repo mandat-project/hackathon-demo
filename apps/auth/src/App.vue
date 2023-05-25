@@ -1,15 +1,19 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png">
   <Home/>
+  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
+
 </template>
 
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component'
 import Home from './components/Home.vue'
+import Toast from "primevue/toast";
 
 @Options({
   components: {
-    Home
+    Home,
+    Toast
   }
 })
 export default class App extends Vue {}
