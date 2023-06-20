@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import {useSolidProfile, useSolidSession} from '@shared/composables';
+import { useSolidSession} from '@shared/composables';
 import {
   ACL,
   createResource,
@@ -60,13 +60,11 @@ const props = defineProps<{ demandUri: string }>();
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
-const {storage} = useSolidProfile();
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
 
 let orderContainerUris: Array<string>;
-let demandContainerUris: Array<string>;
 let offerContainerUris: Array<string>;
 
 const hasRequestedData = ref(false)
@@ -80,7 +78,7 @@ const state = reactive({
 // Demand
 const dataRequestURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
 const dataProcessedURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
-const demanderUri: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), demandContainerUris[0], null)[0]?.subject?.value);
+const demanderUri: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
 
 // Offers
 const offers = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasOffer"), null, null));
@@ -95,8 +93,6 @@ const isOfferAccepted = computed(() => {
 async function getAllDataRegistrationContainers() {
   orderContainerUris = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
   offerContainerUris = await getDataRegistrationContainers(webId!.value!, offerShapeTreeUri, authFetch.value);
-
-  console.log(demandContainerUris)
 }
 
 onMounted(async () => {
@@ -120,7 +116,7 @@ async function fetchDemand(): Promise<Store> {
       throw new Error(err);
     })
     .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, demandContainerUris[0]))
+    .then((txt) => parseToN3(txt, props.demandUri))
     .then((parsedN3) => state.demandStore = parsedN3.store);
 }
 
