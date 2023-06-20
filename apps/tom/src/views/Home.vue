@@ -261,7 +261,7 @@ const postDemand = async () => {
     `;
 
         // TODO: discover (demands-)container only once -> store uris on component-level (not fn-scoped)
-        const demandContainerUris = await getDataRegistrationContainers(webId!.value!, demandShapeTreeUri, authFetch.value);
+        const demandContainerUris = await getDataRegistrationContainers(bank.value, demandShapeTreeUri, authFetch.value);
 
         const demand = await createResource(demandContainerUris[0], payload, authFetch.value)
             .then(res => getLocationHeader(res));
