@@ -171,7 +171,15 @@ function fetchProcessedData(): Promise<Store> {
         throw new Error(err);
       })
       .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, dataProcessedURI.value!))
+      .then((txt) => {
+        toast.add({
+          severity: "success",
+          summary: "Processed Data",
+          detail: txt,
+          life: 10000,
+        });
+        return parseToN3(txt, dataProcessedURI.value!)
+      })
       .then((parsedN3) => state.processedDataStore = parsedN3.store)
 }
 
