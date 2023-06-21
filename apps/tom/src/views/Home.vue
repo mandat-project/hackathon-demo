@@ -23,7 +23,7 @@
                     </div>
                 </div>
 
-                <Button class="mt-2" type="button" @click="postDemand"> Submit demand</Button>
+        <Button class="mt-2" @click="postDemand"> Submit demand</Button>
 
             </form>
 
