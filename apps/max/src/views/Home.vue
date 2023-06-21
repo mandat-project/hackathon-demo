@@ -2,7 +2,7 @@
 import {useToast} from "primevue/usetoast";
 import {ref, toRefs, watch} from "vue";
 import {Quad, Store, NamedNode, Literal, Writer, Parser} from 'n3';
-import { createResource, CREDIT, getResource, LDP, parseToN3, putResource, getLocationHeader, ACL, SCHEMA, FOAF, createContainer, patchResource } from "@shared/solid";
+import { createResource, CREDIT, getResource, LDP, parseToN3, putResource, getLocationHeader, ACL, SCHEMA, FOAF, DCT, createContainer, patchResource } from "@shared/solid";
 import { useSolidInbox, useSolidSession, useSolidProfile } from "@shared/composables";
 
 const toast = useToast();
@@ -37,12 +37,29 @@ function fetchRequests() {
 async function processRequest(key: string) {
   const store = requests.value.get(key);
   if (store) {
-    const targetUri = getObject(store, CREDIT('hasDataProcessed'));
-    const processedDataBody = `@prefix ex: <${CREDIT()}>. <> a ex:ProcessedData .`;
-    await putResource(targetUri, processedDataBody, authFetch.value);
 
-    //LDN with targetUri as msgbody
-    await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value);
+    try{
+      const targetUri = getObject(store, CREDIT('hasDataProcessed'));
+      const processedDataBody = `@prefix ex: <${CREDIT()}>. <> a ex:ProcessedData .`;
+      await putResource(targetUri, processedDataBody, authFetch.value);
+
+      //LDN with targetUri as msgbody
+      await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value);
+
+      toast.add({
+        severity: "success",
+        summary: "Data was successfully processed! Resource changed at " + targetUri,
+        life: 5000
+      });
+    }catch (err) {
+      toast.add({
+        severity: "error",
+        summary: "Error during Data Processing",
+        detail: err,
+        life: 5000,
+      });
+    }
+   
   }
 }
 
@@ -60,14 +77,14 @@ async function startApprovalProcess(responsibleWebID: String[]) {
   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
   <> a appro:ApprovalProcess ;
-    appro:approvalFlow <#SimpleFlow> .
+    appro:approvalFlows ( <#SimpleFlow> ).
 
   <#SimpleFlow> a appro:AtomicFlow ;
-    appro:hasStep <#SimpleStep> .
+    appro:hasStep ( <#SimpleStep> ).
 
   <#SimpleStep> a appro:IndividualApprovalStep ;
     appro:approvalOfIndividual <${responsibleWebID}> ;
-    appro:hasActivity <#ApprovalActivity> .
+    appro:hasActivity ( <#ApprovalActivity> ).
 
   <#ApprovalActivity> a prov:Activity ;
     prov:startedAtTime "${currentdate}"^^xsd:dateTime ; 
@@ -79,14 +96,14 @@ async function startApprovalProcess(responsibleWebID: String[]) {
   @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
   <> a appro:ApprovalProcess ;
-    appro:approvalFlow <#ParallelFlow> .
+    appro:approvalFlows ( <#ParallelFlow> ) .
 
   <#ParallelFlow> a appro:AtomicFlow ;
-    appro:hasParallelSteps <#SimpleStep1>, <#SimpleStep2> .
+    appro:hasParallelSteps ( <#SimpleStep1> <#SimpleStep2> ) .
 
   <#SimpleStep1> a appro:IndividualApprovalStep ;
     appro:approvalOfIndividual <${responsibleWebID[0]}> ;
-    appro:hasActivity <#ApprovalActivity1> .
+    appro:hasActivity ( <#ApprovalActivity1> ).
 
   <#ApprovalActivity1> a prov:Activity ;
     prov:startedAtTime "${currentdate}"^^xsd:dateTime ; 
@@ -94,7 +111,7 @@ async function startApprovalProcess(responsibleWebID: String[]) {
 
   <#SimpleStep2> a appro:IndividualApprovalStep ;
     appro:approvalOfIndividual <${responsibleWebID[1]}> ;
-    appro:hasActivity <#ApprovalActivity2> .
+    appro:hasActivity ( <#ApprovalActivity2> ).
 
   <#ApprovalActivity2> a prov:Activity ;
     prov:startedAtTime "${currentdate}"^^xsd:dateTime ; 
@@ -234,7 +251,7 @@ async function createApproval(resource: string, employeeWebID: string, associate
     //start process with resonsible person for required signature, returns URI of proccess ressource
     let resourceOfProcessForThisApproval = await startApprovalProcess(responsibleWebID);
 
-    //GET names to fill in human readable form of stakeholders in approval process
+    //GET names to fill in human readable form of stakeholders in approval process as rdfs:label
     var employeeName = await getSolidName(employeeWebID);
     var associateName = await getSolidName(associateWebID); 
     var dt = new Date();
@@ -388,6 +405,7 @@ function idsToList(webIds : String[]) : String{
       <ul v-if="isLoggedIn">
         <li v-for="([uri, store], index) of requests" :key="index">
           <p>Request #{{ index }}: {{ uri }}</p>
+          <!--<p>Date : {{ getObject(store, DCT('modified')) }} </p>-->
           <p>Target-Uri: {{ getObject(store, CREDIT('hasDataProcessed')) }}</p>
           <p>Requested Data : {{ getObject(store, CREDIT('hasRequestedData')) }} </p>
           <Button @click="processRequest(uri)">Do Processing</Button>

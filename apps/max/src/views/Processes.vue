@@ -150,7 +150,7 @@ async function giveSignature(key: string) {
 
     let myActivites = [] //gathers all occurring activities
 
-    //get all associated activities for my webId in this store ////webId?.value
+    //get all associated activities for my webId in this store 
     for (const quad of store.match(null, new NamedNode(PROV('wasAssociatedWith')), new NamedNode(`${webId?.value}`))) {
       myActivites.push(quad.subject.value);
     }  
@@ -194,6 +194,9 @@ async function giveSignature(key: string) {
         summary: "Gave signature to activity.",
         life: 5000
       });
+
+      fetchProcesses() //just gets all processes again such that the signature count is updated
+
    } catch (err) {
       toast.add({
         severity: "error",
@@ -207,15 +210,30 @@ async function giveSignature(key: string) {
   }  
 }
 
-function getStatus(store: Store, quad1: string, quad2?: Quad): string {
-  var res = getObjects(store, quad1, quad2)[0];
+function getStatus(store: Store): string {
+  const uris = store.match(null, new NamedNode(RDF('type')), new NamedNode(APPRO('ApprovalProcess')))
+  
+  /*there MUST be exactly one thing of type approvalProcess and its subject is the URI of the Process, so I imagine somthing like the line below (=just take first quad's subject and that's the uri. But that isn't working, so we do a 'for loop' for exactly on triple...)
+  let processURI = uris[0].subject.value;
+  */
+  let processURI = ""
+  for(const c of uris)
+  {
+    processURI = c.subject.value;
+  }
 
-  if (res == "https://www.example.org/approvalProcess#OngoingStatus"){
-    return "Ongoing"
-  } else if (res == "https://www.example.org/approvalProcess#ApprovedStatus"){
+  const p = store.match(new NamedNode(processURI) , new NamedNode(RDF('type')), null ) //get all associated types to the process
+  let types = [];
+  for(const quad of p){
+    types.push(quad.object.value);
+  }
+  
+  if (types.includes("https://www.example.org/approvalProcess#ApprovedProcess")){
     return "Approved"
-  } else if (res == "https://www.example.org/approvalProcess#DeniedStatus"){
+  } else if (types.includes("https://www.example.org/approvalProcess#DeniedProcess")){
     return "Denied"
+  } else {
+    return "Ongoing"
   }
 }
 
@@ -270,12 +288,41 @@ function countSignatures(store: Store, sigPred: string) {
 /*counts how many signature are already present in total (all users)*/
 function checkSignatures(store: Store) {
 
-  let countSig = 0;   
-  //collect all generated entities for this process
+  //collect all generated entities for this process  
+  let st = new Store();
   for (const quad of store.match(null, new NamedNode(PROV('generated')), null)) {
-    countSig = countSig + 1;
+    st.add(quad);
   }
-  return countSig;
+  //collect all entites that point to rdf:nil (= no signature / decision created)
+  const p = st.match(null, new NamedNode(PROV('generated')), new NamedNode(RDF('nil')))
+  
+  return st.size - p.size; //difference gives already made decisions
+}
+
+/*checks if a process was already signed by a given WebID*/
+async function checkAlreadySigned(uri : string, store: Store, webID : string) {
+
+    let activities = [];
+    //collects all listed activities that are associated with the webID that has to sign
+    for (const quad of store.match(null, PROV('wasAssociatedWith'), new NamedNode(`${webID}`))){
+      activities.push(quad.subject);
+    }  
+    let st = new Store();
+    let res = await getResource(uri + activities[0].value, authFetch.value); //get the whole activity resource
+    const resBody = await res.text(); //get body
+    let p1 = new Parser();
+    const quads = p1.parse(String(resBody)); //stream to quads
+    //add quad to store
+    for (const quad of quads) {
+      st.add(quad);
+    }
+
+    //prov:generated is only in the activity, iff a resource was created (independent of approved or denied), so webID should be able to sign anymore
+    if ((st.countQuads(null, PROV('generated'), null)) == 0) {
+      return false //nothing generated
+    } else {
+      return true //something generated; @@@ better check here..?
+    }
 }
 
 /*returns an array of strings of all URIs that this Approval Process links to (aka that are approved by the signatures)*/
@@ -323,33 +370,42 @@ function getObjString(store: Store, processPred: string) {
         
         <li v-for="([uri, store], index) of requests" :key="index">
           <p>Process #{{ index }}: </p>
-          <p>Case: {{ getObjString(store, RDFS("label")) }}</p>
+          <p>Process to be approved: {{ getObjString(store, RDFS("label"))[0] }}</p>
           
-          <!--   rdfs:label
-          <div v-if="getStatus(store, APPRO('processStatus')) === 'Ongoing'">
-            Activity state: Ongoing ⏩️
+          <!--@@@ checkAlready signed returns wrong state..?
+            <div v-if="checkAlreadySigned(uri, store, webId)">
+                true -> is signed
+            </div>
+            <div v-if="checkAlreadySigned(uri, store, webId) == false">
+                false -> is not signed
+            </div>-->
+
+          <div v-if="getStatus(store) === 'Ongoing'">
+            <!--Activity state: Ongoing ⏩️-->
+            <!--@@@ prevent signing of document, if already signed? without using status-->
+            <Button @click="giveSignature(uri)" v-if="(getSignatures(store, PROV('wasAssociatedWith')).includes(webId)) ">Give your signature ✒️</Button>
           </div>
-          <div v-else-if="getStatus(store, APPRO('processStatus')) === 'Approved'">
-            Activity state: Approved ✅️
+          <div v-else-if="getStatus(store) === 'Approved'">
+            <!--Activity state: Approved ✅️-->
+            <Button :disabled="true" v-if="(getStatus(store) === 'Approved')">This process was already approved ✅️</Button>
+          
           </div>
-          <div v-else-if="getStatus(store, APPRO('processStatus')) === 'Denied'">
-            Activity state: Denied ❌️
+          <div v-else-if="getStatus(store) === 'Denied'">
+            <!--Activity state: Denied ❌️-->
+            <Button :disabled="true" v-if="(getStatus(store) === 'Denied')">This process was already denied ❌️</Button>
+          
           </div>
           <div v-else>
             Activity status not available ❓️
-          </div>-->
+          </div>
           
           <p>{{ checkSignatures(store) }} of {{ countSignatures(store, PROV('wasAssociatedWith')) }} total have already signed</p>
           
-          <!--@@@ prevent signing of document, if signature has already been given? without using processStatus-->
-          <Button @click="giveSignature(uri)" v-if="(getSignatures(store, PROV('wasAssociatedWith')).includes(webId)) ">Give your signature ✒️</Button>
-          <Button :disabled="true" v-if="(getStatus(store, APPRO('processStatus')) === 'Approved')">This process was already approved ✅️</Button>
-          <Button :disabled="true" v-if="(getStatus(store, APPRO('processStatus')) === 'Denied')">This process was already denied ❌️</Button>
-          <Button :disabled=true v-if="!(getSignatures(store, PROV('wasAssociatedWith')).includes(webId))">You cannot give your signature 🚫️</Button>
+          <Button :disabled=true v-if="!(getSignatures(store, PROV('wasAssociatedWith')).includes(webId))">You may not sign 🚫️</Button>
           
-
+          <hr>
         </li>
-  
+        
       </ul>
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
     </div>
