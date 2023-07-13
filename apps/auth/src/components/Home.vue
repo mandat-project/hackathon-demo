@@ -14,12 +14,12 @@
 
       <ul>
         <li style="list-style-type: none;" v-for="(accessRequest,index) in accessRequests" :key="accessRequest">
-          <p>{{"Request " + (index+1) +":"}}</p>
-          <p>{{"From: " + accessRequest.fromSocialAgent }}</p>
-          <p>{{"Subject: " +  accessRequest.label }}</p>
-          <p>{{"Comment: " +  accessRequest.definition }}</p>
-          <p>{{"Required Data: " +  accessRequest.shapeTree }}</p>
-          <p>{{"Access Mode: " +  accessRequest.accessMode }}</p>
+          <p>{{ "Request " + (index + 1) + ":" }}</p>
+          <p>{{ "From: " + accessRequest.fromSocialAgent }}</p>
+          <p>{{ "Subject: " + accessRequest.label }}</p>
+          <p>{{ "Comment: " + accessRequest.definition }}</p>
+          <p>{{ "Required Data: " + accessRequest.shapeTree }}</p>
+          <p>{{ "Access Mode: " + accessRequest.accessMode }}</p>
           <div class="col-12">
             <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
                     @click="AuthorizeAndGrantAccess()"/>
@@ -29,7 +29,6 @@
 
     </div>
   </div>
-
 
 
 </template>
@@ -42,7 +41,6 @@ import {
   LDP,
   SKOS,
   parseToN3,
-  INBOX,
   RDF,
   XSD,
   ACL,
@@ -52,7 +50,7 @@ import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
 import {ref} from "vue";
 import {useToast} from "primevue/usetoast";
-import {QueryEngine} from "@comunica/query-sparql";
+import {QueryEngine} from "@comunica/query-sparql/lib/QueryEngine";
 
 const {authFetch, sessionInfo} = useSolidSession();
 const {storage} = useSolidProfile();
@@ -62,10 +60,10 @@ const inboxURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
 const accessRequests = ref<AccessRequest[]>([]);
 
 async function AuthorizeAndGrantAccess() {
-
   await postAccessAuthorization();
   await postAccessGrantInAgentRegistry();
 }
+
 async function postAccessAuthorization() {
   const payload = `
     @prefix interop:<${INTEROP()}> .
@@ -100,7 +98,6 @@ async function postAccessAuthorization() {
       summary: "Access authorized",
       life: 5000
     }));
-
 }
 
 async function postAccessGrantInAgentRegistry() {
@@ -137,7 +134,6 @@ async function postAccessGrantInAgentRegistry() {
       summary: "Access granted",
       life: 5000
     }));
-
 }
 
 async function postAccessReceiptToGrantee() {
@@ -156,13 +152,9 @@ async function postAccessReceiptToGrantee() {
 
   await createResource(`${storage.value}agent-registry/`, payload, authFetch.value)
     .then(() => toast.add({severity: "success", summary: "AccessReceipt sent to grantee"}));
-
 }
 
 async function getAccessRequests() {
-  //console.log(storage.value);
-  //const myEngine = new QueryEngine();
-
   const store = await getResource(inboxURI, authFetch.value)
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, inboxURI))
@@ -170,40 +162,15 @@ async function getAccessRequests() {
 
   const access_requests = store.getObjects(null, LDP('contains'), null);
 
-  console.log(store);
-  console.log(access_requests);
-
-  //const QueryEngine = require('@comunica/query-sparql').QueryEngine;
-
   access_requests.forEach(request => {
     getResource(request.id, authFetch.value)
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, inboxURI))
       .then((parsedN3) => parsedN3.store)
-      .then(async store =>
-
-      {
-        let senderSocialAgent= '';
-        const SparqlEngine_a = new QueryEngine( );
-        const bindingsStream_a = await SparqlEngine_a.queryBindings(`
-           PREFIX interop:<${INTEROP()}>
-           SELECT ?senderSocialAgent WHERE  {
-              ?accessRequest interop:fromSocialAgent    ?senderSocialAgent.
-            }
-        `, {
-          sources: [store],
-        });
-        bindingsStream_a.on('data', (binding: any) => {
-          // Obtaining values
-          senderSocialAgent=  binding.get('senderSocialAgent').value
-          senderSocialAgent = senderSocialAgent.replace('#me','');
-          console.log('senderSocialAgent: '+senderSocialAgent);
-
-        });
-
-
-        const SparqlEngine = new QueryEngine( );
-       const bindingsStream = await SparqlEngine.queryBindings(`
+      .then(async store => {
+        const senderSocialAgent = store.getObjects(null, INTEROP("fromSocialAgent"), null)[0].value;
+        const SparqlEngine = new QueryEngine();
+        const bindingsStream = await SparqlEngine.queryBindings(`
         PREFIX interop:<${INTEROP()}>
         PREFIX rdf:<${RDF()}>
         PREFIX rdfs:<${RDFS()}>
@@ -234,32 +201,25 @@ async function getAccessRequests() {
 
          ?senderSocialAgent  vcard:fn ?vcardName.
          }`, {
-         //sources: [store, 'http://www.w3.org/ns/auth/acl#', senderSocialAgent.toString()],
-         sources: [store, 'http://www.w3.org/ns/auth/acl#', 'https://bank.solid.aifb.kit.edu/profile/card'],
-       });
-
-     bindingsStream.on('data', (binding: any) => {
-           // Obtaining values
-
-           accessRequests.value.push({
-             fromSocialAgent : binding.get('vcardName').value,
-             toSocialAgent : binding.get('receiverSocialAgent').value ,
-             label : binding.get('label').value,
-             definition : binding.get('definition').value,
-             necessity : binding.get('necessity').value,
-             shapeTree : binding.get('shapeTree').value,
-             accessMode : binding.get('accessModeLabel').value
-         })
-       console.log('accessModeLabel: '+ binding.get('accessModeLabel').value);
-       console.log('vcardName: '+ binding.get('vcardName').value);
+          sources: [store, 'http://www.w3.org/ns/auth/acl#', senderSocialAgent]
         });
 
+        bindingsStream.on('data', (binding: any) => {
+          // Obtaining values
 
+          accessRequests.value.push({
+            fromSocialAgent: binding.get('vcardName').value,
+            toSocialAgent: binding.get('receiverSocialAgent').value,
+            label: binding.get('label').value,
+            definition: binding.get('definition').value,
+            necessity: binding.get('necessity').value,
+            shapeTree: binding.get('shapeTree').value,
+            accessMode: binding.get('accessModeLabel').value
+          })
+        });
       })
   })
 }
-
-
 
 
 interface AccessRequest {
@@ -267,7 +227,7 @@ interface AccessRequest {
   toSocialAgent: string;
   label: string; // TODO change type to actual AccessNeedGroup
   definition: string;
-  necessity: string ;
+  necessity: string;
   shapeTree: string;
   accessMode: string;
 }

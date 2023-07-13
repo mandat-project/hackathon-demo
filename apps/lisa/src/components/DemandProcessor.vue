@@ -103,7 +103,6 @@ onMounted(async () => {
 });
 
 async function fetchDemand(): Promise<Store> {
-
   return getResource(props.demandUri, authFetch.value)
     .catch((err) => {
       toast.add({
