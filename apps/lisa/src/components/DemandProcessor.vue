@@ -1,8 +1,12 @@
 <template>
   <li>
-    <h3>Demand: <a :href="props.demandUri">{{ props.demandUri }}</a> </h3>
+    <h3>Demand: <a :href="props.demandUri">{{ props.demandUri }}</a></h3>
 
     <ul class="flex flex-column gap-2">
+
+      <li class="flex align-items-center gap-2">
+        <p>Amount: {{amount}} {{currency}}</p>
+      </li>
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" label="Demand additional data from StB"
@@ -26,8 +30,8 @@
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" label="Create an offer for SME"
-               v-bind:disabled="!dataRequestURI || isOfferCreated"
-               @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)"/>
+                v-bind:disabled="!dataRequestURI || isOfferCreated"
+                @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)"/>
         <span class="offerAcceptedStatus" v-if="isOfferAccepted">&check; Offer accepted</span>
         <span class="offerAcceptedStatus" v-if="!isOfferAccepted && isOfferCreated">&#9749; Waiting for response</span>
       </li>
@@ -37,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSolidSession} from '@shared/composables';
+import {useSolidSession} from '@shared/composables';
 import {
   ACL,
   createResource,
@@ -76,9 +80,11 @@ const state = reactive({
 });
 
 // Demand
-const dataRequestURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
-const dataProcessedURI: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
-const demanderUri: ComputedRef<string|undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
+const dataRequestURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
+const dataProcessedURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
+const amount: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
+const currency: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
+const demanderUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
 
 // Offers
 const offers = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasOffer"), null, null));
@@ -105,36 +111,36 @@ onMounted(async () => {
 async function fetchDemand(): Promise<Store> {
 
   return getResource(props.demandUri, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on fetch!",
-        detail: err,
-        life: 5000,
-      });
-      //      isLoading.value = false;
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, props.demandUri))
-    .then((parsedN3) => state.demandStore = parsedN3.store);
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        //      isLoading.value = false;
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, props.demandUri))
+      .then((parsedN3) => state.demandStore = parsedN3.store);
 }
 
 async function fetchOrders() {
 
   return getResource(orderContainerUris[0], authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on fetch!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, orderContainerUris[0]))
-    .then((parsedN3) => state.orderStore = parsedN3.store);
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetch!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, orderContainerUris[0]))
+      .then((parsedN3) => state.orderStore = parsedN3.store);
 }
 
 /**
@@ -243,8 +249,8 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
           <${demanderUri.value}> schema:seeks <>  .
             <http://example.com/loansAndCredits/c12345#credit>
                   a schema:LoanOrCredit ;
-                  schema:amount "${state.demandStore.getObjects(null, SCHEMA("amount"), null)[0].value}" ;
-                  schema:currency "${state.demandStore.getObjects(null, SCHEMA("currency"), null)[0].value}";
+                  schema:amount "${amount.value}";
+                  schema:currency "${currency.value}";
                   schema:annualPercentageRate "1.08";
                   schema:loanTerm <#duration>.
             <#duration>
@@ -280,7 +286,15 @@ function grantAccessToResource(resourceUri: string, agentUri: string): Promise<R
 </script>
 
 <style>
-p { margin: 0; }
-a { color: white; }
-hr { border: 1px solid var(--surface-d); }
+p {
+    margin: 0;
+}
+
+a {
+    color: white;
+}
+
+hr {
+    border: 1px solid var(--surface-d);
+}
 </style>
