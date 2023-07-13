@@ -46,7 +46,7 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS
+  SHAPETREE, RDFS, VCARD
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
@@ -58,7 +58,7 @@ const {authFetch, sessionInfo} = useSolidSession();
 const {storage} = useSolidProfile();
 const toast = useToast();
 
-const accessRequestURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
+const inboxURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
 const accessRequests = ref<AccessRequest[]>([]);
 
 async function AuthorizeAndGrantAccess() {
@@ -163,9 +163,9 @@ async function getAccessRequests() {
   //console.log(storage.value);
   //const myEngine = new QueryEngine();
 
-  const store = await getResource(accessRequestURI, authFetch.value)
+  const store = await getResource(inboxURI, authFetch.value)
     .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, accessRequestURI))
+    .then((txt) => parseToN3(txt, inboxURI))
     .then((parsedN3) => parsedN3.store);
 
   const access_requests = store.getObjects(null, LDP('contains'), null);
@@ -178,19 +178,40 @@ async function getAccessRequests() {
   access_requests.forEach(request => {
     getResource(request.id, authFetch.value)
       .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, accessRequestURI))
+      .then((txt) => parseToN3(txt, inboxURI))
       .then((parsedN3) => parsedN3.store)
-      .then(async store => {
+      .then(async store =>
 
-       const SparqlEngine = new QueryEngine( );
+      {
+        let senderSocialAgent= '';
+        const SparqlEngine_a = new QueryEngine( );
+        const bindingsStream_a = await SparqlEngine_a.queryBindings(`
+           PREFIX interop:<${INTEROP()}>
+           SELECT ?senderSocialAgent WHERE  {
+              ?accessRequest interop:fromSocialAgent    ?senderSocialAgent.
+            }
+        `, {
+          sources: [store],
+        });
+        bindingsStream_a.on('data', (binding: any) => {
+          // Obtaining values
+          senderSocialAgent=  binding.get('senderSocialAgent').value
+          senderSocialAgent = senderSocialAgent.replace('#me','');
+          console.log('senderSocialAgent: '+senderSocialAgent);
+
+        });
+
+
+        const SparqlEngine = new QueryEngine( );
        const bindingsStream = await SparqlEngine.queryBindings(`
         PREFIX interop:<${INTEROP()}>
         PREFIX rdf:<${RDF()}>
-        PREFIX rdf:<${RDFS()}>
+        PREFIX rdfs:<${RDFS()}>
         PREFIX skos:<${SKOS()}>
         PREFIX acl:<${ACL()}>
+        PREFIX vcard:<${VCARD()}>
 
-         SELECT ?senderSocialAgent ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition    WHERE  {
+         SELECT ?senderSocialAgent ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition ?accessModeLabel ?vcardName  WHERE  {
           ?accessRequest interop:fromSocialAgent    ?senderSocialAgent ;
                          interop:toSocialAgent      ?receiverSocialAgent ;
                          interop:hasAccessNeedGroup ?accessNeedGroup.
@@ -209,34 +230,31 @@ async function getAccessRequests() {
           ?accessNeed interop:registeredShapeTree   ?shapeTree.
           ?accessNeed interop:accessNecessity       ?necessity.
 
+         ?accessMode rdfs:label ?accessModeLabel.
+
+         ?senderSocialAgent  vcard:fn ?vcardName.
          }`, {
-         sources: [store],
+         //sources: [store, 'http://www.w3.org/ns/auth/acl#', senderSocialAgent.toString()],
+         sources: [store, 'http://www.w3.org/ns/auth/acl#', 'https://bank.solid.aifb.kit.edu/profile/card'],
        });
 
      bindingsStream.on('data', (binding: any) => {
            // Obtaining values
 
            accessRequests.value.push({
-             fromSocialAgent : binding.get('senderSocialAgent').value,
+             fromSocialAgent : binding.get('vcardName').value,
              toSocialAgent : binding.get('receiverSocialAgent').value ,
              label : binding.get('label').value,
              definition : binding.get('definition').value,
              necessity : binding.get('necessity').value,
              shapeTree : binding.get('shapeTree').value,
-             accessMode : binding.get('accessMode').value
+             accessMode : binding.get('accessModeLabel').value
          })
+       console.log('accessModeLabel: '+ binding.get('accessModeLabel').value);
+       console.log('vcardName: '+ binding.get('vcardName').value);
         });
 
-/*
 
-        console.log(binding.get('receiverSocialAgent').value);
-        console.log(binding.get('label').value);
-        console.log(binding.get('definition').value);
-        console.log(binding.get('necessity').value);
-        console.log(binding.get('shapeTree').value);
-        console.log(binding.get('accessMode').value);
-
-*/
       })
   })
 }
