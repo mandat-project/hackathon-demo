@@ -11,7 +11,7 @@ function Namespace(namespace: string) {
     return (thing?: string) => thing ? namespace.concat(thing) : namespace;
 }
 
-// Namespaces as functions where their parameter is the RDF thing identifier => concat, e.g. FOAF("knows") resovles to "http://xmlns.com/foaf/0.1/knows"
+// Namespaces as functions where their parameter is the RDF thing identifier => concat, e.g. FOAF("knows") resolves to "http://xmlns.com/foaf/0.1/knows"
 export const FOAF = Namespace("http://xmlns.com/foaf/0.1/");
 export const DCT = Namespace("http://purl.org/dc/terms/");
 export const RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
@@ -37,3 +37,8 @@ export const CREDIT = Namespace("http://example.org/vocab/datev/credit#")
 export const SCHEMA = Namespace("http://schema.org/")
 
 export const INTEROP = Namespace("http://www.w3.org/ns/solid/interop#")
+
+export const SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
+
+export const INBOX = Namespace("https://sme.solid.aifb.kit.edu/access-inbox/")
+export const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#")

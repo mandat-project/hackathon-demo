@@ -16,8 +16,10 @@
         <li style="list-style-type: none;" v-for="(accessRequest,index) in accessRequests" :key="accessRequest">
           <p>{{"Request " + (index+1) +":"}}</p>
           <p>{{"From: " + accessRequest.fromSocialAgent }}</p>
-          <p>{{"To: " +  accessRequest.toSocialAgent }}</p>
-          <p>{{"AccessNeed: " +  accessRequest.hasAccessNeedGroup }}</p>
+          <p>{{"Subject: " +  accessRequest.label }}</p>
+          <p>{{"Comment: " +  accessRequest.definition }}</p>
+          <p>{{"Required Data: " +  accessRequest.shapeTree }}</p>
+          <p>{{"Access Mode: " +  accessRequest.accessMode }}</p>
           <div class="col-12">
             <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
                     @click="AuthorizeAndGrantAccess()"/>
@@ -29,14 +31,28 @@
   </div>
 
 
+
 </template>
 
 <script lang="ts" setup>
-import {createResource, getResource, INTEROP, LDP, parseToN3} from "@shared/solid";
+import {
+  createResource,
+  getResource,
+  INTEROP,
+  LDP,
+  SKOS,
+  parseToN3,
+  INBOX,
+  RDF,
+  XSD,
+  ACL,
+  SHAPETREE, RDFS
+} from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
 import {ref} from "vue";
 import {useToast} from "primevue/usetoast";
+import {QueryEngine} from "@comunica/query-sparql";
 
 const {authFetch, sessionInfo} = useSolidSession();
 const {storage} = useSolidProfile();
@@ -52,11 +68,11 @@ async function AuthorizeAndGrantAccess() {
 }
 async function postAccessAuthorization() {
   const payload = `
-    @prefix interop: <http://www.w3.org/ns/solid/interop#> .
-    @prefix ldp: <http://www.w3.org/ns/ldp#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
-    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+    @prefix interop:<${INTEROP()}> .
+    @prefix ldp:<${LDP()}> .
+    @prefix xsd:<${XSD()}> .
+    @prefix acl:<${ACL()}> .
+    @prefix shapeTree:<${SHAPETREE()}> .
 
     # Located in the Authorization Registry of SME
     <#bwaAccessAuthorization>
@@ -89,11 +105,11 @@ async function postAccessAuthorization() {
 
 async function postAccessGrantInAgentRegistry() {
   const payload = `
-    @prefix interop: <http://www.w3.org/ns/solid/interop#> .
-    @prefix ldp: <http://www.w3.org/ns/ldp#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
-    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+      @prefix interop:<${INTEROP()}> .
+      @prefix ldp:<${LDP()}> .
+      @prefix xsd:<${XSD()}> .
+      @prefix acl:<${ACL()}> .
+      @prefix shapeTree:<${SHAPETREE()}> .
 
      # Located in the Agent Registry of SME, readable by Bank
       <#bwaAccessGrant>
@@ -126,11 +142,11 @@ async function postAccessGrantInAgentRegistry() {
 
 async function postAccessReceiptToGrantee() {
   const payload = `
-    @prefix interop: <http://www.w3.org/ns/solid/interop#> .
-    @prefix ldp: <http://www.w3.org/ns/ldp#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
-    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+    @prefix interop:<${INTEROP()}> .
+    @prefix ldp:<${LDP()}> .
+    @prefix xsd:<${XSD()}> .
+    @prefix acl:<${ACL()}> .
+    @prefix shapeTree:<${SHAPETREE()}> .
 
  # Send to the access inbox of Bank by SME
 <#bwaAccessReceipt>
@@ -144,7 +160,8 @@ async function postAccessReceiptToGrantee() {
 }
 
 async function getAccessRequests() {
-  console.log(storage.value);
+  //console.log(storage.value);
+  //const myEngine = new QueryEngine();
 
   const store = await getResource(accessRequestURI, authFetch.value)
     .then((resp) => resp.text())
@@ -156,31 +173,85 @@ async function getAccessRequests() {
   console.log(store);
   console.log(access_requests);
 
+  //const QueryEngine = require('@comunica/query-sparql').QueryEngine;
+
   access_requests.forEach(request => {
     getResource(request.id, authFetch.value)
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, accessRequestURI))
       .then((parsedN3) => parsedN3.store)
-      .then(store => {
-        const fromSocialAgent = store.getObjects(null, INTEROP('fromSocialAgent'), null)[0].value;
-        const toSocialAgent = store.getObjects(null, INTEROP('toSocialAgent'), null)[0].value;
-        const hasAccessNeedGroup = store.getObjects(null, INTEROP('hasAccessNeedGroup'), null)[0].value;
+      .then(async store => {
 
-        accessRequests.value.push({fromSocialAgent, toSocialAgent, hasAccessNeedGroup})
+       const SparqlEngine = new QueryEngine( );
+       const bindingsStream = await SparqlEngine.queryBindings(`
+        PREFIX interop:<${INTEROP()}>
+        PREFIX rdf:<${RDF()}>
+        PREFIX rdf:<${RDFS()}>
+        PREFIX skos:<${SKOS()}>
+        PREFIX acl:<${ACL()}>
+
+         SELECT ?senderSocialAgent ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition    WHERE  {
+          ?accessRequest interop:fromSocialAgent    ?senderSocialAgent ;
+                         interop:toSocialAgent      ?receiverSocialAgent ;
+                         interop:hasAccessNeedGroup ?accessNeedGroup.
+
+          ?accessNeedGroupDescription interop:hasAccessNeedGroup  ?accessNeedGroup;
+                                      a interop:AccessNeedGroupDescription ;
+                                      skos:prefLabel              ?label;
+                                      skos:definition             ?definition;
+                                      interop:hasAccessNeedGroup  ?accessNeedGroup.
+
+          ?accessNeedGroup   a                        interop:AccessNeedGroup;
+                             interop:hasAccessNeed    ?accessNeed.
+
+          ?accessNeed a                             interop:AccessNeed.
+          ?accessNeed interop:accessMode            ?accessMode.
+          ?accessNeed interop:registeredShapeTree   ?shapeTree.
+          ?accessNeed interop:accessNecessity       ?necessity.
+
+         }`, {
+         sources: [store],
+       });
+
+     bindingsStream.on('data', (binding: any) => {
+           // Obtaining values
+
+           accessRequests.value.push({
+             fromSocialAgent : binding.get('senderSocialAgent').value,
+             toSocialAgent : binding.get('receiverSocialAgent').value ,
+             label : binding.get('label').value,
+             definition : binding.get('definition').value,
+             necessity : binding.get('necessity').value,
+             shapeTree : binding.get('shapeTree').value,
+             accessMode : binding.get('accessMode').value
+         })
+        });
+
+/*
+
+        console.log(binding.get('receiverSocialAgent').value);
+        console.log(binding.get('label').value);
+        console.log(binding.get('definition').value);
+        console.log(binding.get('necessity').value);
+        console.log(binding.get('shapeTree').value);
+        console.log(binding.get('accessMode').value);
+
+*/
       })
   })
 }
 
-//interop:fromSocialAgent <https://bank.solid.aifb.kit.edu/profile/card#me> ;
-//interop:toSocialAgent  <https://sme.solid.aifb.kit.edu/profile/card#me> ;
-//interop:hasAccessNeedGroup <#bwaAccessNeedGroup> .
+
+
 
 interface AccessRequest {
   fromSocialAgent: string;
   toSocialAgent: string;
-  hasAccessNeedGroup: string; // TODO change type to actual AccessNeedGroup
-
+  label: string; // TODO change type to actual AccessNeedGroup
+  definition: string;
+  necessity: string ;
+  shapeTree: string;
+  accessMode: string;
 }
 
 </script>
-
