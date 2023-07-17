@@ -15,11 +15,13 @@
       <ul>
         <li style="list-style-type: none;" v-for="(accessRequest,index) in accessRequests" :key="accessRequest">
           <p>{{ "Request " + (index + 1) + ":" }}</p>
-          <p>{{ "From: " + accessRequest.fromSocialAgent }}</p>
+          <a :href=accessRequest.fromSocialAgentURI>{{ "From: " + accessRequest.fromSocialAgent }}</a>
           <p>{{ "Subject: " + accessRequest.label }}</p>
           <p>{{ "Comment: " + accessRequest.definition }}</p>
-          <p>{{ "Required Data: " + accessRequest.shapeTree }}</p>
-          <p>{{ "Access Mode: " + accessRequest.accessMode }}</p>
+          <a :href="accessRequest.shapeTreeURI">{{ "Required Data: " + accessRequest.shapeTree }}</a>
+          <p>
+            <a :href="accessRequest.accessModeURI">{{ "Access Mode: " + accessRequest.accessMode }}</a>
+          </p>
           <div class="col-12">
             <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
                     @click="AuthorizeAndGrantAccess()"/>
@@ -44,7 +46,7 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS, VCARD
+  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
@@ -101,7 +103,15 @@ async function postAccessAuthorization() {
 }
 
 async function postAccessGrantInAgentRegistry() {
-  const payload = `
+  const store = await getResource(inboxURI, authFetch.value)
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, inboxURI))
+    .then((parsedN3) => parsedN3.store);
+
+  // const targetContainerUri = await getDataRegistrationContainers(`${storage.value}data-registry/`, demandShapeTreeUri, authFetch.value);
+
+  // Old Access Grant Solution
+  /*const payload = `
       @prefix interop:<${INTEROP()}> .
       @prefix ldp:<${LDP()}> .
       @prefix xsd:<${XSD()}> .
@@ -133,7 +143,7 @@ async function postAccessGrantInAgentRegistry() {
       severity: "success",
       summary: "Access granted",
       life: 5000
-    }));
+    }));*/
 }
 
 async function postAccessReceiptToGrantee() {
@@ -201,20 +211,23 @@ async function getAccessRequests() {
 
          ?senderSocialAgent  vcard:fn ?vcardName.
          }`, {
-          sources: [store, 'http://www.w3.org/ns/auth/acl#', senderSocialAgent]
+          sources: [store, ACL(), senderSocialAgent]
         });
 
         bindingsStream.on('data', (binding: any) => {
           // Obtaining values
 
           accessRequests.value.push({
+            fromSocialAgentURI: senderSocialAgent,
             fromSocialAgent: binding.get('vcardName').value,
             toSocialAgent: binding.get('receiverSocialAgent').value,
             label: binding.get('label').value,
             definition: binding.get('definition').value,
             necessity: binding.get('necessity').value,
-            shapeTree: binding.get('shapeTree').value,
-            accessMode: binding.get('accessModeLabel').value
+            shapeTreeURI: binding.get('shapeTree').value,
+            shapeTree: binding.get('shapeTree').value.split('#')[1],
+            accessMode: binding.get('accessModeLabel').value,
+            accessModeURI: binding.get('accessMode').value
           })
         });
       })
@@ -223,13 +236,16 @@ async function getAccessRequests() {
 
 
 interface AccessRequest {
+  fromSocialAgentURI: string;
   fromSocialAgent: string;
   toSocialAgent: string;
   label: string; // TODO change type to actual AccessNeedGroup
   definition: string;
   necessity: string;
   shapeTree: string;
+  shapeTreeURI: string;
   accessMode: string;
+  accessModeURI: string;
 }
 
 </script>
