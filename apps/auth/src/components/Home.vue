@@ -24,7 +24,7 @@
           </p>
           <div class="col-12">
             <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
-                    @click="AuthorizeAndGrantAccess()"/>
+                    @click="AuthorizeAndGrantAccess(accessRequest)"/>
           </div>
         </li>
       </ul>
@@ -61,9 +61,9 @@ const toast = useToast();
 const inboxURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
 const accessRequests = ref<AccessRequest[]>([]);
 
-async function AuthorizeAndGrantAccess() {
+async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   await postAccessAuthorization();
-  await postAccessGrantInAgentRegistry();
+  await postAccessGrantInAgentRegistry(accessRequest);
 }
 
 async function postAccessAuthorization() {
@@ -102,13 +102,15 @@ async function postAccessAuthorization() {
     }));
 }
 
-async function postAccessGrantInAgentRegistry() {
-  const store = await getResource(inboxURI, authFetch.value)
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, inboxURI))
-    .then((parsedN3) => parsedN3.store);
+async function postAccessGrantInAgentRegistry(accessRequest: AccessRequest) {
+  const targetContainerUri = await getDataRegistrationContainers(`${storage.value}`, accessRequest.shapeTreeURI, authFetch.value);
 
-  // const targetContainerUri = await getDataRegistrationContainers(`${storage.value}data-registry/`, demandShapeTreeUri, authFetch.value);
+
+  // const store = await getResource(inboxURI, authFetch.value)
+  //   .then((resp) => resp.text())
+  //   .then((txt) => parseToN3(txt, inboxURI))
+
+  //   .then((parsedN3) => parsedN3.store);
 
   // Old Access Grant Solution
   /*const payload = `
