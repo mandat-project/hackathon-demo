@@ -46,7 +46,7 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers
+  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource, CREDIT, getLocationHeader
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
@@ -62,11 +62,11 @@ const inboxURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
 const accessRequests = ref<AccessRequest[]>([]);
 
 async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
-  await postAccessAuthorization();
+  await postAccessAuthorization(accessRequest);
   await postAccessGrantInAgentRegistry(accessRequest);
 }
 
-async function postAccessAuthorization() {
+async function postAccessAuthorization(accessRequest: AccessRequest) {
   const payload = `
     @prefix interop:<${INTEROP()}> .
     @prefix ldp:<${LDP()}> .
@@ -80,31 +80,64 @@ async function postAccessAuthorization() {
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedWith <#blank> ;
       interop:grantedAt "2020-09-05T06:15:01Z"^^xsd:dateTime ;
-      interop:grantee <https://bank.solid.aifb.kit.edu/profile/card#me> ;
+      interop:grantee <${accessRequest.fromSocialAgentURI}> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
       interop:hasDataAuthorization <#bwaDataAuthorization> .
 
     <#bwaDataAuthorization>
       a interop:DataAuthorization ;
       interop:dataOwner <https://sme.solid.aifb.kit.edu/profile/card#me> ;
-      interop:grantee <https://bank.solid.aifb.kit.edu/profile/card#me> ;
+      interop:grantee  <${accessRequest.fromSocialAgentURI}> ;
       interop:registeredShapeTree shapeTree:businessAssessmentTree ;
       interop:accessMode acl:Read ;
       interop:scopeOfAuthorization interop:AllFromRegistry ;
       interop:hasDataRegistration  <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
       interop:satisfiesAccessNeed <#bwaAccessNeed> .`;
 
-  await createResource(`${storage.value}authorization-registry/`, payload, authFetch.value)
-    .then(() => toast.add({
-      severity: "success",
-      summary: "Access authorized",
-      life: 5000
-    }));
+  // await createResource(`${storage.value}authorization-registry/`, payload, authFetch.value)
+  //   .then(() => toast.add({
+  //     severity: "success",
+  //     summary: "Access authorized",
+  //     life: 5000
+  //   }));
 }
 
 async function postAccessGrantInAgentRegistry(accessRequest: AccessRequest) {
+  const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
+  const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
+
   const targetContainerUri = await getDataRegistrationContainers(`${storage.value}`, accessRequest.shapeTreeURI, authFetch.value);
 
+  // Intermediate Shortcut: Directly manipulating the ACL for the BWA data
+  //<https://sme.solid.aifb.kit.edu/businessAssessments/.acl
+ console.log(targetContainerUri);
+  // create data-request resource ...
+  const aclDataProcessed = `\
+      @prefix acl: <${ACL()}>.
+
+#owner
+    a           acl:Authorization;
+    acl:agent   <${sessionInfo.webId}>,
+    acl:mode    acl:Control,
+                acl:Read,
+                acl:Write;
+    acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>;
+    acl:default <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>.
+
+<#bank>
+    a acl:Authorization;
+    acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
+    acl:agent <${bank.value}> ;
+    acl:mode acl:Read .
+
+<#tax>
+    a               acl:Authorization;
+    acl:accessTo    <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
+    acl:agent       <${tax.value}> ;
+    acl:mode        acl:Read,
+                    acl:Write .
+    `;
+  // putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
 
   // const store = await getResource(inboxURI, authFetch.value)
   //   .then((resp) => resp.text())
@@ -182,7 +215,7 @@ async function getAccessRequests() {
       .then(async store => {
         const senderSocialAgent = store.getObjects(null, INTEROP("fromSocialAgent"), null)[0].value;
         const SparqlEngine = new QueryEngine();
-        const bindingsStream = await SparqlEngine.queryBindings(`
+        const sparqlQuery= `
         PREFIX interop:<${INTEROP()}>
         PREFIX rdf:<${RDF()}>
         PREFIX rdfs:<${RDFS()}>
@@ -191,7 +224,7 @@ async function getAccessRequests() {
         PREFIX vcard:<${VCARD()}>
 
          SELECT ?senderSocialAgent ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition ?accessModeLabel ?vcardName  WHERE  {
-          ?accessRequest interop:fromSocialAgent    ?senderSocialAgent ;
+          ?accessRequest interop:fromSocialAgent    <${senderSocialAgent}> ;
                          interop:toSocialAgent      ?receiverSocialAgent ;
                          interop:hasAccessNeedGroup ?accessNeedGroup.
 
@@ -212,7 +245,8 @@ async function getAccessRequests() {
          ?accessMode rdfs:label ?accessModeLabel.
 
          ?senderSocialAgent  vcard:fn ?vcardName.
-         }`, {
+         }`;
+        const bindingsStream = await SparqlEngine.queryBindings(sparqlQuery, {
           sources: [store, ACL(), senderSocialAgent]
         });
 
