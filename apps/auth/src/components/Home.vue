@@ -63,7 +63,7 @@ const accessRequests = ref<AccessRequest[]>([]);
 
 async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   await postAccessAuthorization(accessRequest);
-  await postAccessGrantInAgentRegistry(accessRequest);
+  await postAccessControlList(accessRequest);
 }
 
 async function postAccessAuthorization(accessRequest: AccessRequest) {
@@ -102,83 +102,43 @@ async function postAccessAuthorization(accessRequest: AccessRequest) {
   //   }));
 }
 
-async function postAccessGrantInAgentRegistry(accessRequest: AccessRequest) {
+async function postAccessControlList(accessRequest: AccessRequest) {
   const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
   const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 
-  const targetContainerUri = await getDataRegistrationContainers(`${storage.value}`, accessRequest.shapeTreeURI, authFetch.value);
+
+  const targetContainerUri = await getDataRegistrationContainers(`${sessionInfo.webId}`, accessRequest.shapeTreeURI, authFetch.value);
 
   // Intermediate Shortcut: Directly manipulating the ACL for the BWA data
   //<https://sme.solid.aifb.kit.edu/businessAssessments/.acl
- console.log(targetContainerUri);
+  console.log(targetContainerUri);
   // create data-request resource ...
   const aclDataProcessed = `\
-      @prefix acl: <${ACL()}>.
+          @prefix acl: <${ACL()}>.
 
-#owner
-    a           acl:Authorization;
-    acl:agent   <${sessionInfo.webId}>,
-    acl:mode    acl:Control,
-                acl:Read,
-                acl:Write;
-    acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>;
-    acl:default <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>.
+    #owner
+        a           acl:Authorization;
+        acl:agent   <${sessionInfo.webId}>,
+        acl:mode    acl:Control,
+                    acl:Read,
+                    acl:Write;
+        acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>;
+        acl:default <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>.
 
-<#bank>
-    a acl:Authorization;
-    acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-    acl:agent <${bank.value}> ;
-    acl:mode acl:Read .
+    <#bank>
+        a acl:Authorization;
+        acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
+        acl:agent <${bank.value}> ;
+        acl:mode acl:Read .
 
-<#tax>
-    a               acl:Authorization;
-    acl:accessTo    <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-    acl:agent       <${tax.value}> ;
-    acl:mode        acl:Read,
-                    acl:Write .
-    `;
-  // putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
+    <#tax>
+        a               acl:Authorization;
+        acl:accessTo    <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
+        acl:agent       <${tax.value}> ;
+        acl:mode        acl:Read,
+                        acl:Write .`;
 
-  // const store = await getResource(inboxURI, authFetch.value)
-  //   .then((resp) => resp.text())
-  //   .then((txt) => parseToN3(txt, inboxURI))
-
-  //   .then((parsedN3) => parsedN3.store);
-
-  // Old Access Grant Solution
-  /*const payload = `
-      @prefix interop:<${INTEROP()}> .
-      @prefix ldp:<${LDP()}> .
-      @prefix xsd:<${XSD()}> .
-      @prefix acl:<${ACL()}> .
-      @prefix shapeTree:<${SHAPETREE()}> .
-
-     # Located in the Agent Registry of SME, readable by Bank
-      <#bwaAccessGrant>
-      a interop:AccessGrant ;
-      interop:grantedBy <${sessionInfo.webId}> ;
-      interop:grantedAt "2020-04-04T20:15:47.000Z"^^xsd:dateTime ;
-      interop:grantee <https://bank.solid.aifb.kit.edu/profile/card#me> ;
-      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
-      interop:hasDataGrant <#bwaDataGrant> .
-
-      <#bwaDataGrant>
-      a interop:DataGrant ;
-      # Take care: DataOwner is not necessarialy the one who grants: 'grantedBy!
-      interop:dataOwner <${sessionInfo.webId}> ;
-      interop:grantee <https://bank.solid.aifb.kit.edu/profile/card#me> ;
-      interop:registeredShapeTree shapeTree:businessAssessmentTree ;
-      interop:hasDataRegistration <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-      interop:satisfiesAccessNeed <#bwaAccessNeed> ;
-      interop:accessMode acl:Read ;
-      interop:scopeOfGrant interop:AllFromRegistry .`;
-
-  await createResource(`${storage.value}agent-registry/`, payload, authFetch.value)
-    .then(() => toast.add({
-      severity: "success",
-      summary: "Access granted",
-      life: 5000
-    }));*/
+  await putResource(targetContainerUri + ".acl", aclDataProcessed, authFetch.value);
 }
 
 async function postAccessReceiptToGrantee() {
@@ -215,7 +175,7 @@ async function getAccessRequests() {
       .then(async store => {
         const senderSocialAgent = store.getObjects(null, INTEROP("fromSocialAgent"), null)[0].value;
         const SparqlEngine = new QueryEngine();
-        const sparqlQuery= `
+        const sparqlQuery = `
         PREFIX interop:<${INTEROP()}>
         PREFIX rdf:<${RDF()}>
         PREFIX rdfs:<${RDFS()}>

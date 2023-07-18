@@ -1,5 +1,5 @@
 import {getResource, INTEROP, parseToN3} from "@shared/solid";
-import {Quad_Object, Store} from "n3";
+import {Quad, Quad_Object, Store} from "n3";
 
 type Fetch = typeof fetch;
 
@@ -8,17 +8,16 @@ export async function getDataRegistrationContainers(webId: string, shapeTreeUri:
     let dataRegistrationContainerUris: Array<string> = [];
 
     const registrySetUri = await getRegistrySet(webId, authFetch)
-        .then(getQuadValue)
+        .then(getQuadValue);
 
     if (registrySetUri) {
-        const dataRegistryUri = await getDataRegistry(registrySetUri, authFetch)
-            .then(getQuadValue)
+        const dataRegistryUris = await getDataRegistry(registrySetUri, authFetch)
+            .then(dataRegistry => dataRegistry.map(getQuadValue));
 
-        if (dataRegistryUri) {
-            const dataRegistrationUris = await getDataRegistrations(dataRegistryUri, authFetch)
-                .then(dataRegistrations => dataRegistrations.map(getQuadValue));
+        if (dataRegistryUris) {
+            const dataRegistrationUris = await getDataRegistrations(dataRegistryUris, authFetch);
 
-            dataRegistrationContainerUris = await filterDataRegistrationUrisByShapeTreeUri(dataRegistrationUris, shapeTreeUri, authFetch)
+            dataRegistrationContainerUris = await filterDataRegistrationUrisByShapeTreeUri(dataRegistrationUris, shapeTreeUri, authFetch);
         }
     }
 
@@ -44,15 +43,22 @@ function getRegistrySet(webId: string, authFetch?: Fetch): Promise<Quad_Object> 
         .then(store => store.getObjects(null, INTEROP('hasRegistrySet'), null)[0]);
 }
 
-function getDataRegistry(registrySetUri: string, authFetch?: Fetch): Promise<Quad_Object> {
+function getDataRegistry(registrySetUri: string, authFetch?: Fetch): Promise<Array<Quad_Object>> {
     return getResourceAsStore(registrySetUri, authFetch)
-        .then(store => store.getObjects(null, INTEROP('hasDataRegistry'), null)[0]);
+        .then(store => store.getObjects(null, INTEROP('hasDataRegistry'), null));
 
 }
 
-function getDataRegistrations(dataRegistryUri: string, authFetch?: Fetch): Promise<Array<Quad_Object>> {
-    return getResourceAsStore(dataRegistryUri, authFetch)
-        .then(store => store.getObjects(null, INTEROP('hasDataRegistration'), null));
+async function getDataRegistrations(dataRegistryUris: string[], authFetch?: Fetch ): Promise<string[]> {
+    const result: string[] = [];
+    for (const dataRegistryUri of dataRegistryUris) {
+        await getResourceAsStore(dataRegistryUri, authFetch)
+            .then(store => store.getObjects(null, INTEROP('hasDataRegistration'), null))
+            .then(x => x.map(getQuadValue))
+            .then(uri => result.push(...uri));
+    }
+    return result;
+
 }
 
 function getRegisteredShapeTree(dataRegistrationUri: string, authFetch?: Fetch): Promise<Quad_Object> {
