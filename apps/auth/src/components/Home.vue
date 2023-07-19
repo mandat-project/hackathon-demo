@@ -16,11 +16,11 @@
         <li style="list-style-type: none;" v-for="(accessRequest,index) in accessRequests" :key="accessRequest">
           <p>{{ "Request " + (index + 1) + ":" }}</p>
           <a :href=accessRequest.fromSocialAgentURI>{{ "From: " + accessRequest.fromSocialAgent }}</a>
-          <p>{{ "Subject: " + accessRequest.label }}</p>
-          <p>{{ "Comment: " + accessRequest.definition }}</p>
+          <p>{{ "Subject: " + accessRequest.accessNeedGroupDescriptionLabel }}</p>
+          <p>{{ "Comment: " + accessRequest.accessNeedGroupDescriptionDefinition }}</p>
           <a :href="accessRequest.shapeTreeURI">{{ "Required Data: " + accessRequest.shapeTree }}</a>
           <p>
-            <a :href="accessRequest.accessModeURI">{{ "Access Mode: " + accessRequest.accessMode }}</a>
+            <a :href="accessRequest.accessModeURI">{{ "Access Mode: " + accessRequest.accessModeLabel }}</a>
           </p>
           <div class="col-12">
             <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
@@ -46,7 +46,7 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource, CREDIT, getLocationHeader
+  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
@@ -58,15 +58,18 @@ const {authFetch, sessionInfo} = useSolidSession();
 const {storage} = useSolidProfile();
 const toast = useToast();
 
-const inboxURI = "https://sme.solid.aifb.kit.edu/access-inbox/";
+const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 const accessRequests = ref<AccessRequest[]>([]);
 
 async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
-  await postAccessAuthorization(accessRequest);
-  await postAccessControlList(accessRequest);
+  const targetContainerURIs = await getDataRegistrationContainers(`${sessionInfo.webId}`, accessRequest.shapeTreeURI, authFetch.value);
+  await postAccessAuthorization(accessRequest, targetContainerURIs);
+  await postAccessControlList(accessRequest, targetContainerURIs);
 }
 
-async function postAccessAuthorization(accessRequest: AccessRequest) {
+async function postAccessAuthorization(accessRequest: AccessRequest, targetContainerURIs: string[]) {
+  const date = new Date().toISOString();
+
   const payload = `
     @prefix interop:<${INTEROP()}> .
     @prefix ldp:<${LDP()}> .
@@ -79,40 +82,31 @@ async function postAccessAuthorization(accessRequest: AccessRequest) {
       a interop:AccessAuthorization ;
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedWith <#blank> ;
-      interop:grantedAt "2020-09-05T06:15:01Z"^^xsd:dateTime ;
+      interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee <${accessRequest.fromSocialAgentURI}> ;
-      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
+      interop:hasAccessNeedGroup <${accessRequest.accessNeedGroupURI}> ;
       interop:hasDataAuthorization <#bwaDataAuthorization> .
 
     <#bwaDataAuthorization>
       a interop:DataAuthorization ;
       interop:dataOwner <https://sme.solid.aifb.kit.edu/profile/card#me> ;
       interop:grantee  <${accessRequest.fromSocialAgentURI}> ;
-      interop:registeredShapeTree shapeTree:businessAssessmentTree ;
-      interop:accessMode acl:Read ;
+      interop:registeredShapeTree <${accessRequest.shapeTreeURI}> ;
+      interop:accessMode <${accessRequest.accessModeURI}> ;
       interop:scopeOfAuthorization interop:AllFromRegistry ;
-      interop:hasDataRegistration  <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-      interop:satisfiesAccessNeed <#bwaAccessNeed> .`;
+      interop:hasDataRegistration  <${targetContainerURIs[0]}> ;
+      interop:satisfiesAccessNeed <${accessRequest.accessNeedURI}> .`;
 
-  // await createResource(`${storage.value}authorization-registry/`, payload, authFetch.value)
-  //   .then(() => toast.add({
-  //     severity: "success",
-  //     summary: "Access authorized",
-  //     life: 5000
-  //   }));
+  await createResource(`${storage.value}authorization-registry/`, payload, authFetch.value)
+    .then(() => toast.add({
+      severity: "success",
+      summary: "Access authorized",
+      life: 5000
+    }));
 }
 
-async function postAccessControlList(accessRequest: AccessRequest) {
-  const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
-  const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
+async function postAccessControlList(accessRequest: AccessRequest, targetContainerURIs: string[]) {
 
-
-  const targetContainerUri = await getDataRegistrationContainers(`${sessionInfo.webId}`, accessRequest.shapeTreeURI, authFetch.value);
-
-  // Intermediate Shortcut: Directly manipulating the ACL for the BWA data
-  //<https://sme.solid.aifb.kit.edu/businessAssessments/.acl
-  console.log(targetContainerUri);
-  // create data-request resource ...
   const aclDataProcessed = `\
           @prefix acl: <${ACL()}>.
 
@@ -122,24 +116,22 @@ async function postAccessControlList(accessRequest: AccessRequest) {
         acl:mode    acl:Control,
                     acl:Read,
                     acl:Write;
-        acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>.
+        acl:accessTo <${targetContainerURIs[0]}>.
 
     <#bank>
         a acl:Authorization;
-        acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-        acl:agent <${bank.value}>;
-        acl:mode acl:Read.
+        acl:accessTo <${targetContainerURIs[0]}> ;
+        acl:agent <${accessRequest.fromSocialAgentURI}>;
+        acl:mode <${accessRequest.accessModeURI}>.
 
     <#tax>
         a               acl:Authorization;
-        acl:accessTo    <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>;
+        acl:accessTo    <${targetContainerURIs[0]}>;
         acl:agent       <${tax.value}>;
         acl:mode        acl:Read,
                         acl:Write.`;
 
-  //targetContainerUri = ;
-//'https://sme.solid.aifb.kit.edu/businessAssessments/'
-  await putResource( targetContainerUri+ ".acl", aclDataProcessed, authFetch.value);
+  await putResource(targetContainerURIs[0] + ".acl", aclDataProcessed, authFetch.value);
 }
 
 async function postAccessReceiptToGrantee() {
@@ -161,12 +153,18 @@ async function postAccessReceiptToGrantee() {
 }
 
 async function getAccessRequests() {
-  const store = await getResource(inboxURI, authFetch.value)
+  const storeProfileCard = await getResource(sessionInfo.webId!, authFetch.value)
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, sessionInfo.webId!))
+    .then((parsedN3) => parsedN3.store);
+  const inboxURI = storeProfileCard.getObjects(null, INTEROP("hasAccessInbox"), null)[0].value;
+
+  const inboxStore = await getResource(inboxURI, authFetch.value)
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, inboxURI))
     .then((parsedN3) => parsedN3.store);
 
-  const access_requests = store.getObjects(null, LDP('contains'), null);
+  const access_requests = inboxStore.getObjects(null, LDP('contains'), null);
 
   access_requests.forEach(request => {
     getResource(request.id, authFetch.value)
@@ -184,7 +182,7 @@ async function getAccessRequests() {
         PREFIX acl:<${ACL()}>
         PREFIX vcard:<${VCARD()}>
 
-         SELECT ?senderSocialAgent ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition ?accessModeLabel ?vcardName  WHERE  {
+         SELECT ?senderSocialAgent ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition ?accessModeLabel ?vcardName ?accessNeedGroup ?accessNeed WHERE  {
           ?accessRequest interop:fromSocialAgent    <${senderSocialAgent}> ;
                          interop:toSocialAgent      ?receiverSocialAgent ;
                          interop:hasAccessNeedGroup ?accessNeedGroup.
@@ -212,19 +210,19 @@ async function getAccessRequests() {
         });
 
         bindingsStream.on('data', (binding: any) => {
-          // Obtaining values
-
           accessRequests.value.push({
             fromSocialAgentURI: senderSocialAgent,
             fromSocialAgent: binding.get('vcardName').value,
             toSocialAgent: binding.get('receiverSocialAgent').value,
-            label: binding.get('label').value,
-            definition: binding.get('definition').value,
+            accessNeedGroupDescriptionLabel: binding.get('label').value,
+            accessNeedGroupDescriptionDefinition: binding.get('definition').value,
             necessity: binding.get('necessity').value,
             shapeTreeURI: binding.get('shapeTree').value,
             shapeTree: binding.get('shapeTree').value.split('#')[1],
-            accessMode: binding.get('accessModeLabel').value,
-            accessModeURI: binding.get('accessMode').value
+            accessNeedGroupURI: binding.get('accessNeedGroup').value,
+            accessModeLabel: binding.get('accessModeLabel').value,
+            accessModeURI: binding.get('accessMode').value,
+            accessNeedURI: binding.get('accessNeed').value
           })
         });
       })
@@ -236,13 +234,15 @@ interface AccessRequest {
   fromSocialAgentURI: string;
   fromSocialAgent: string;
   toSocialAgent: string;
-  label: string; // TODO change type to actual AccessNeedGroup
-  definition: string;
+  accessNeedGroupDescriptionLabel: string;
+  accessNeedGroupDescriptionDefinition: string;
   necessity: string;
   shapeTree: string;
   shapeTreeURI: string;
-  accessMode: string;
+  accessModeLabel: string;
   accessModeURI: string;
+  accessNeedURI: string;
+  accessNeedGroupURI: string;
 }
 
 </script>
