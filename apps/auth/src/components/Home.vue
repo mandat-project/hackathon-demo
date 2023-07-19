@@ -116,29 +116,30 @@ async function postAccessControlList(accessRequest: AccessRequest) {
   const aclDataProcessed = `\
           @prefix acl: <${ACL()}>.
 
-    #owner
+    <#owner>
         a           acl:Authorization;
-        acl:agent   <${sessionInfo.webId}>,
+        acl:agent   <${sessionInfo.webId}>;
         acl:mode    acl:Control,
                     acl:Read,
                     acl:Write;
-        acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>;
-        acl:default <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>.
+        acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>.
 
     <#bank>
         a acl:Authorization;
         acl:accessTo <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-        acl:agent <${bank.value}> ;
-        acl:mode acl:Read .
+        acl:agent <${bank.value}>;
+        acl:mode acl:Read.
 
     <#tax>
         a               acl:Authorization;
-        acl:accessTo    <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/> ;
-        acl:agent       <${tax.value}> ;
+        acl:accessTo    <https://sme.solid.aifb.kit.edu/businessAssessments/businessAssessment/>;
+        acl:agent       <${tax.value}>;
         acl:mode        acl:Read,
-                        acl:Write .`;
+                        acl:Write.`;
 
-  await putResource(targetContainerUri + ".acl", aclDataProcessed, authFetch.value);
+  //targetContainerUri = ;
+//'https://sme.solid.aifb.kit.edu/businessAssessments/'
+  await putResource( targetContainerUri+ ".acl", aclDataProcessed, authFetch.value);
 }
 
 async function postAccessReceiptToGrantee() {
