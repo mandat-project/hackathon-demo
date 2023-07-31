@@ -1,38 +1,43 @@
 <template>
   <HeaderBar/>
 
+
   <!-- Create Demand -->
   <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
+    <div class="col lg:col-6">
 
-      <h1>Check for Access Requests</h1>
-
-      <div class="col-12">
-        <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Check For Access Requests"
-                @click="getAccessRequests()"/>
+      <div class="accordion" id="accessAccordion">
+        <ul>
+          <li style="list-style-type: none;margin-left: 30px;margin-right: 60px;margin-bottom: 5px" v-for="(accessRequest) in accessRequests" :key="accessRequest">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                        aria-expanded="false" aria-controls="collapseOne">
+                  <a :href=accessRequest.fromSocialAgentURI>{{ accessRequest.fromSocialAgent }}</a>
+                  <a>&nbsp;{{ "requests " + accessRequest.accessNeedGroupDescriptionLabel }}</a>
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                   data-bs-parent="#accessAccordion" style="text-align:left">
+                <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px">
+                  <strong>Comment: </strong>{{accessRequest.accessNeedGroupDescriptionDefinition}}
+                </div>
+                <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px">
+                  <strong>Required Data: </strong>
+                  <a :href="accessRequest.shapeTreeURI">{{accessRequest.shapeTree }}</a>
+                </div>
+                <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px">
+                  <strong>Access Mode: </strong>
+                  <a :href="accessRequest.accessModeURI">{{ accessRequest.accessModeLabel }}</a>
+                </div>
+                <button @click="AuthorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px;" class="btn btn-primary">Authorize</button>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
-
-      <ul>
-        <li style="list-style-type: none;" v-for="(accessRequest,index) in accessRequests" :key="accessRequest">
-          <p>{{ "Request " + (index + 1) + ":" }}</p>
-          <a :href=accessRequest.fromSocialAgentURI>{{ "From: " + accessRequest.fromSocialAgent }}</a>
-          <p>{{ "Subject: " + accessRequest.accessNeedGroupDescriptionLabel }}</p>
-          <p>{{ "Comment: " + accessRequest.accessNeedGroupDescriptionDefinition }}</p>
-          <a :href="accessRequest.shapeTreeURI">{{ "Required Data: " + accessRequest.shapeTree }}</a>
-          <p>
-            <a :href="accessRequest.accessModeURI">{{ "Access Mode: " + accessRequest.accessModeLabel }}</a>
-          </p>
-          <div class="col-12">
-            <Button class="p-button-text p-button-rounded" icon="pi pi-arrow-right" label="Authorize and grant access"
-                    @click="AuthorizeAndGrantAccess(accessRequest)"/>
-          </div>
-        </li>
-      </ul>
-
     </div>
   </div>
-
-
 </template>
 
 <script lang="ts" setup>
@@ -50,7 +55,7 @@ import {
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import {useToast} from "primevue/usetoast";
 import {QueryEngine} from "@comunica/query-sparql/lib/QueryEngine";
 
@@ -60,6 +65,8 @@ const toast = useToast();
 
 const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 const accessRequests = ref<AccessRequest[]>([]);
+
+watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? getAccessRequests() : {});
 
 async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   const targetContainerURIs = await getDataRegistrationContainers(`${sessionInfo.webId}`, accessRequest.shapeTreeURI, authFetch.value);
@@ -166,6 +173,8 @@ async function getAccessRequests() {
 
   const access_requests = inboxStore.getObjects(null, LDP('contains'), null);
 
+
+
   access_requests.forEach(request => {
     getResource(request.id, authFetch.value)
       .then((resp) => resp.text())
@@ -221,6 +230,20 @@ async function getAccessRequests() {
             shapeTree: binding.get('shapeTree').value.split('#')[1],
             accessNeedGroupURI: binding.get('accessNeedGroup').value,
             accessModeLabel: binding.get('accessModeLabel').value,
+            accessModeURI: binding.get('accessMode').value,
+            accessNeedURI: binding.get('accessNeed').value
+          })
+          accessRequests.value.push({
+            fromSocialAgentURI: "test",
+            fromSocialAgent: "Steuerberater",
+            toSocialAgent: binding.get('receiverSocialAgent').value,
+            accessNeedGroupDescriptionLabel: "Schreibrechte BWA",
+            accessNeedGroupDescriptionDefinition: "Steuerberater muss in deinen Container schreiben können, um die BWA bereitzustellen",
+            necessity: binding.get('necessity').value,
+            shapeTreeURI: binding.get('shapeTree').value,
+            shapeTree: binding.get('shapeTree').value.split('#')[1],
+            accessNeedGroupURI: binding.get('accessNeedGroup').value,
+            accessModeLabel: "write",
             accessModeURI: binding.get('accessMode').value,
             accessNeedURI: binding.get('accessNeed').value
           })

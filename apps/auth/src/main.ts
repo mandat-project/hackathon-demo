@@ -31,6 +31,8 @@ import "primeflex/primeflex.css"; // layouts
 import "primevue/resources/themes/vela-green/theme.css"; // theme
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css"; // icons
+import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap/dist/js/bootstrap.js"
 import App from "./App.vue";
 
 
