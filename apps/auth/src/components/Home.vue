@@ -1,23 +1,21 @@
 <template>
   <HeaderBar/>
 
-
   <!-- Create Demand -->
   <div class="grid">
     <div class="col lg:col-6">
-
       <div class="accordion" id="accessAccordion">
         <ul>
-          <li style="list-style-type: none;margin-left: 30px;margin-right: 60px;margin-bottom: 5px" v-for="(accessRequest) in accessRequests" :key="accessRequest">
+          <li style="list-style-type: none;margin-left: 30px;margin-right: 60px;margin-bottom: 5px" v-for="(accessRequest, accordionIndex) in accessRequests" :key="accessRequest">
             <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-                        aria-expanded="false" aria-controls="collapseOne">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" v-bind:data-bs-target="`#cv${accordionIndex}`"
+                        aria-expanded="true" v-bind:aria-controls="`cv${accordionIndex}`">
                   <a :href=accessRequest.fromSocialAgentURI>{{ accessRequest.fromSocialAgent }}</a>
                   <a>&nbsp;{{ "requests " + accessRequest.accessNeedGroupDescriptionLabel }}</a>
                 </button>
               </h2>
-              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+              <div v-bind:id="`cv${accordionIndex}`"   class="accordion-collapse collapse"
                    data-bs-parent="#accessAccordion" style="text-align:left">
                 <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px">
                   <strong>Comment: </strong>{{accessRequest.accessNeedGroupDescriptionDefinition}}
@@ -233,6 +231,8 @@ async function getAccessRequests() {
             accessModeURI: binding.get('accessMode').value,
             accessNeedURI: binding.get('accessNeed').value
           })
+          // Dummy access request to display more than one access request in the UI
+          // Note: Invalid authorization. Can be overwritten by setting authorization for the bank
           accessRequests.value.push({
             fromSocialAgentURI: "test",
             fromSocialAgent: "Steuerberater",
@@ -251,6 +251,7 @@ async function getAccessRequests() {
       })
   })
 }
+
 
 
 interface AccessRequest {
