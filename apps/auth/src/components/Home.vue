@@ -94,7 +94,7 @@ async function postAccessAuthorization(accessRequest: AccessRequest, targetConta
 
     <#bwaDataAuthorization>
       a interop:DataAuthorization ;
-      interop:dataOwner <https://sme.solid.aifb.kit.edu/profile/card#me> ;
+      interop:dataOwner <${accessRequest.fromSocialAgentURI}> ;
       interop:grantee  <${accessRequest.fromSocialAgentURI}> ;
       interop:registeredShapeTree <${accessRequest.shapeTreeURI}> ;
       interop:accessMode <${accessRequest.accessModeURI}> ;
@@ -233,20 +233,20 @@ async function getAccessRequests() {
           })
           // Dummy access request to display more than one access request in the UI
           // Note: Invalid authorization. Can be overwritten by setting authorization for the bank
-          accessRequests.value.push({
-            fromSocialAgentURI: "test",
-            fromSocialAgent: "Steuerberater",
-            toSocialAgent: binding.get('receiverSocialAgent').value,
-            accessNeedGroupDescriptionLabel: "Schreibrechte BWA",
-            accessNeedGroupDescriptionDefinition: "Steuerberater muss in deinen Container schreiben können, um die BWA bereitzustellen",
-            necessity: binding.get('necessity').value,
-            shapeTreeURI: binding.get('shapeTree').value,
-            shapeTree: binding.get('shapeTree').value.split('#')[1],
-            accessNeedGroupURI: binding.get('accessNeedGroup').value,
-            accessModeLabel: "write",
-            accessModeURI: binding.get('accessMode').value,
-            accessNeedURI: binding.get('accessNeed').value
-          })
+          //accessRequests.value.push({
+          //  fromSocialAgentURI: "test",
+          //  fromSocialAgent: "Steuerberater",
+          //  toSocialAgent: binding.get('receiverSocialAgent').value,
+          //  accessNeedGroupDescriptionLabel: "Schreibrechte BWA",
+          //  accessNeedGroupDescriptionDefinition: "Steuerberater muss in deinen Container schreiben können, um die BWA bereitzustellen",
+          //  necessity: binding.get('necessity').value,
+          //  shapeTreeURI: binding.get('shapeTree').value,
+          //  shapeTree: binding.get('shapeTree').value.split('#')[1],
+          //  accessNeedGroupURI: binding.get('accessNeedGroup').value,
+          //  accessModeLabel: "write",
+          //  accessModeURI: binding.get('accessMode').value,
+          //  accessNeedURI: binding.get('accessNeed').value
+          //})
         });
       })
   })
