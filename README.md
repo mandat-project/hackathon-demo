@@ -190,6 +190,7 @@ note over Tom,StB_Pod: Initialising Business Contract
 
 ### Ein neues NPM-Package installieren
 Sämtliche Pakete sollten stets in der `package.json` im **Root** installiert werden.  
+Dementsprechend ist ein npm install auch zwingend im **Root** Verzeichnis auszuführen und **nicht** in einem der app Unterordner.
 
 
 ### Eine neue Lib erstellen

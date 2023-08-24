@@ -8,6 +8,8 @@
 import {Options, Vue} from 'vue-class-component'
 import Home from './components/Home.vue'
 import Toast from "primevue/toast";
+import 'primevue/resources/themes/nova/theme.css';
+
 
 @Options({
   components: {

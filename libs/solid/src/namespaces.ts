@@ -19,7 +19,7 @@ export const RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#");
 export const WDT = Namespace("http://www.wikidata.org/prop/direct/");
 export const WD = Namespace("http://www.wikidata.org/entity/");
 export const LDP = Namespace("http://www.w3.org/ns/ldp#");
-export const ACL = Namespace("https://www.w3.org/ns/auth/acl#");
+export const ACL = Namespace("http://www.w3.org/ns/auth/acl#");
 export const AS = Namespace("https://www.w3.org/ns/activitystreams#");
 export const XSD = Namespace("http://www.w3.org/2001/XMLSchema#");
 export const ETHON = Namespace("http://ethon.consensys.net/");
@@ -40,5 +40,4 @@ export const INTEROP = Namespace("http://www.w3.org/ns/solid/interop#")
 
 export const SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
 
-export const INBOX = Namespace("https://sme.solid.aifb.kit.edu/access-inbox/")
 export const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#")
