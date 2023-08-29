@@ -12,7 +12,7 @@
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
     <template #footer>
-      <Button label="Update" autofocus @click="reloadApp"/>
+      <Button label="Update" autofocus @click="refreshApp"/>
     </template>
   </Dialog>
 
@@ -31,10 +31,6 @@ import Toast from "primevue/toast";
 const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
 const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => isOpen.value = hasUpdatedAvailable.value);
-
-function reloadApp() {
-  window.location.reload();
-}
 </script>
 
 <style>
