@@ -1,7 +1,7 @@
-<template xmlns:text-align="http://www.w3.org/1999/xhtml">
+<template>
   <HeaderBar />
 
-  <div class="grid">
+  <div v-if="isLoggedIn" class="grid">
     <div class="col lg:col-6">
       <div class="accordion" id="accessAccordion">
         <Accordion :activeIndex="-1">
@@ -29,6 +29,7 @@
       </div>
     </div>
   </div>
+  <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
 </template>
 
 <script lang="ts" setup>
@@ -46,7 +47,7 @@ import {
 } from "@shared/solid";
 import { useSolidProfile, useSolidSession } from "@shared/composables";
 import { HeaderBar } from "@shared/components";
-import { ref, watch } from "vue";
+import {ref, toRefs, watch} from "vue";
 import { useToast } from "primevue/usetoast";
 import { QueryEngine } from "@comunica/query-sparql/lib/QueryEngine";
 import { Store } from "n3";
@@ -55,6 +56,7 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 
 const { authFetch, sessionInfo } = useSolidSession();
+const {isLoggedIn} = toRefs(sessionInfo);
 const { storage } = useSolidProfile();
 const toast = useToast();
 

@@ -1,71 +1,73 @@
 <template>
-
-  <!-- Create Demand -->
+  <div v-if="isLoggedIn">
+    <!-- Create Demand -->
     <div class="grid">
-        <div class="col lg:col-6 lg:col-offset-3">
+      <div class="col lg:col-6 lg:col-offset-3">
 
-            <h1>Create Demand</h1>
+        <h1>Create Demand</h1>
 
-            <form>
+        <form>
 
-                <div class="grid">
-                    <span class="align-self-center font-bold">Amount</span>
-                    <div class="col">
-                        <InputText id="amount" type="number" v-model="enteredAmount"/>
-                    </div>
-                </div>
+          <div class="grid">
+            <span class="align-self-center font-bold">Amount</span>
+            <div class="col">
+              <InputText id="amount" type="number" v-model="enteredAmount"/>
+            </div>
+          </div>
 
-                <div class="grid">
-                    <span class="align-self-center font-bold">Currency</span>
-                    <div class="col">
-                        <Dropdown v-model="selectedCurrency" :options="currencies" optionLabel="label"
-                                  placeholder="Select a Currency"/>
-                    </div>
-                </div>
+          <div class="grid">
+            <span class="align-self-center font-bold">Currency</span>
+            <div class="col">
+              <Dropdown v-model="selectedCurrency" :options="currencies" optionLabel="label"
+                        placeholder="Select a Currency"/>
+            </div>
+          </div>
 
-        <Button class="mt-2" @click="postDemand"> Submit demand</Button>
+          <Button class="mt-2" @click="postDemand"> Submit demand</Button>
 
-            </form>
+        </form>
 
-        </div>
+      </div>
     </div>
 
-  <!-- Offers -->
+    <!-- Offers -->
     <div class="grid">
-        <div class="col lg:col-6 lg:col-offset-3">
+      <div class="col lg:col-6 lg:col-offset-3">
 
-            <h1>
-                Offers
-                <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-                        @click="loadDemands()"/>
-            </h1>
+        <h1>
+          Offers
+          <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+                  @click="loadDemands()"/>
+        </h1>
 
-            <ul v-if="demands" class="flex flex-column p-0">
-                <li v-for="(demand, index) in demands" :key="demand"
-                    class="flex flex-wrap align-items-center justify-content-between">
-                    <hr v-if="index !== 0" class="w-full"/>
+        <ul v-if="demands" class="flex flex-column p-0">
+          <li v-for="(demand, index) in demands" :key="demand"
+              class="flex flex-wrap align-items-center justify-content-between">
+            <hr v-if="index !== 0" class="w-full"/>
 
-                    <div class="flex flex-column md:flex-row gap-2 p-3">
-                        <span>{{ demand.amount }} {{ demand.currency }}</span>
+            <div class="flex flex-column md:flex-row gap-2 p-3">
+              <span>{{ demand.amount }} {{ demand.currency }}</span>
 
-                        <span v-if="demand.offer">({{ demand.offer.interestRate }} % interest rate)</span>
-                        <span v-else>(no offer)</span>
-                    </div>
-                    <Button v-if="demand.offer"
-                            type="submit"
-                            label="Accept Offer"
-                            icon="pi pi-check"
-                            class="p-button-text"
-                            @click="createOrder(demand.offer.id)"/>
-                </li>
-            </ul>
+              <span v-if="demand.offer">({{ demand.offer.interestRate }} % interest rate)</span>
+              <span v-else>(no offer)</span>
+            </div>
+            <Button v-if="demand.offer"
+                    type="submit"
+                    label="Accept Offer"
+                    icon="pi pi-check"
+                    class="p-button-text"
+                    @click="createOrder(demand.offer.id)"/>
+          </li>
+        </ul>
 
-            <p v-else>No released demands</p>
+        <p v-else>No released demands</p>
 
-            <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px"/>
+        <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px"/>
 
-        </div>
+      </div>
     </div>
+  </div>
+  <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
 </template>
 
 <script setup lang="ts">
@@ -103,7 +105,9 @@ const demandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
+
 const {webId} = toRefs(sessionInfo);
+const {isLoggedIn} = toRefs(sessionInfo);
 const demands = ref([]) as Ref<Demand[]>;
 const {storage} = useSolidProfile()
 

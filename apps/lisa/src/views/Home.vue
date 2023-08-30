@@ -1,6 +1,6 @@
 <template>
 
-  <div class="grid">
+  <div v-if="isLoggedIn" class="grid">
     <h1 class="col-12 flex align-items-center gap-2">
       Demands
       <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="fetchDemandUris()"/>
@@ -12,18 +12,19 @@
       </template>
     </ul>
   </div>
-
+  <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
 </template>
 
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
 import {useSolidSession} from "@shared/composables";
 import {getResource, LDP, parseToN3, getDataRegistrationContainers} from "@shared/solid";
-import {ref, watch} from "vue";
+import {ref, toRefs, watch} from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
+const {isLoggedIn} = toRefs(sessionInfo);
 
 const shapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
 const webId = 'https://bank.solid.aifb.kit.edu/profile/card#me';
