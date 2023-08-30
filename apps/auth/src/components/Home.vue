@@ -5,7 +5,7 @@
     <div class="col lg:col-6">
       <div class="accordion" id="accessAccordion">
         <Accordion :activeIndex="-1">
-          <AccordionTab v-for="(accessRequest) in accessRequests" :key="accessRequest"
+          <AccordionTab v-for="(accessRequest) in accessRequests" :key="accessRequest.accessNeedURI"
             :header="accessRequest.fromSocialAgent">
             <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
               <a :href=accessRequest.fromSocialAgentURI>{{ accessRequest.fromSocialAgent }}</a>
