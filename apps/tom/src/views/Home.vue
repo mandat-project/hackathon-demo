@@ -86,6 +86,7 @@ import {
     SCHEMA
 } from "@shared/solid";
 import {Ref, ref, toRefs, watch} from "vue";
+import {Quad} from "n3";
 
 interface Demand {
     amount: number,
@@ -108,74 +109,105 @@ const {authFetch, sessionInfo} = useSolidSession();
 
 const {webId} = toRefs(sessionInfo);
 const {isLoggedIn} = toRefs(sessionInfo);
+const {storage} = useSolidProfile();
+
 const demands = ref([]) as Ref<Demand[]>;
-const {storage} = useSolidProfile()
+const selectedCurrency = ref();
+const enteredAmount = ref(0);
+const form = ref();
+
+const currencies = [
+  {label: "EUR", value: "EUR"},
+  {label: "USD", value: "USD"}
+];
 
 let isLoading = ref(false);
 
+watch(storage, function () {
+  if (!storage.value) return;
+  loadDemands();
+})
 async function loadDemands() {
-    isLoading.value = true;
-    demands.value = [];
+  isLoading.value = true;
 
-    const demandContainerUris = await getDataRegistrationContainers(bank.value, demandShapeTreeUri, authFetch.value);
+  demands.value = [];
 
-    const store = await getResource(demandContainerUris[0], authFetch.value)
-        .then((resp) => resp.text())
-        .then((txt) => parseToN3(txt, demandContainerUris[0]))
-        .then((parsedN3) => parsedN3.store)
-        .catch(err => {
-            isLoading.value = false
-            throw err;
-        });
+  const demandContainerUris = await getDataRegistrationContainers(bank.value, demandShapeTreeUri, authFetch.value);
 
-    const allDemands = store.getObjects(null, LDP('contains'), null);
+  const demandContainerStore = await getDemandContainerStore(demandContainerUris);
 
-    for (let demand of allDemands) {
-        try {
-            const demandStore = await getResource(demand.id, authFetch.value)
-                .then((resp) => resp.text())
-                .then((txt) => parseToN3(txt, demand.id))
-                .then((parsedN3) => parsedN3.store);
+  const allDemands = demandContainerStore.getObjects(null, LDP('contains'), null);
+  for (let demand of allDemands) {
+    try {
+      const demandStore = await getDemandStore(demand);
 
-            const demandOffers = demandStore.getObjects(null, CREDIT('hasOffer'), null);
+      const demandOffers = demandStore.getObjects(null, CREDIT('hasOffer'), null);
+      const amount = demandStore.getObjects(null, SCHEMA('amount'), null)[0];
+      const currency = demandStore.getObjects(null, SCHEMA('currency'), null)[0];
 
-            const amount = demandStore.getObjects(null, SCHEMA('amount'), null)[0];
-            const currency = demandStore.getObjects(null, SCHEMA('currency'), null)[0];
+      if (demandOffers.length > 0) {
+        const offerStore = await getOfferStore(demandOffers);
 
-            if (demandOffers.length > 0) {
-                const offerStore = await getResource(demandOffers[0].id, authFetch.value)
-                    .then((resp) => resp.text())
-                    .then((txt) => parseToN3(txt, demandOffers[0].id))
-                    .then((parsedN3) => parsedN3.store);
-                const interestRate = offerStore.getObjects(null, SCHEMA('annualPercentageRate'), null)[0];
+        const interestRate = offerStore.getObjects(null, SCHEMA('annualPercentageRate'), null)[0];
 
-                demands.value.push({
-                    amount: parseFloat(amount.value),
-                    currency: currency.value,
-                    offer: {id: demandOffers[0].id, interestRate: parseFloat(interestRate.value)}
-                })
-            } else {
-                demands.value.push({amount: parseFloat(amount.value), currency: currency.value})
-            }
-        } catch (e) {
-        }
+        demands.value.push({
+          amount: parseFloat(amount.value),
+          currency: currency.value,
+          offer: {id: demandOffers[0].id, interestRate: parseFloat(interestRate.value)}
+        })
+      } else {
+        demands.value.push({amount: parseFloat(amount.value), currency: currency.value})
+      }
+    } catch (e) {
     }
 
-    isLoading.value = false;
+  }
+  isLoading.value = false;
+
 }
+async function getDemandContainerStore(demandContainerUris: Array<string>) {
+  return await getResource(demandContainerUris[0], authFetch.value)
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, demandContainerUris[0]))
+      .then((parsedN3) => parsedN3.store)
+      .catch(err => {
+        isLoading.value = false
+        throw err;
+      });
 
-watch(storage, function () {
-    if (!storage.value) return;
-    loadDemands();
-})
+}
+async function getDemandStore(demand: any) {
+  return await getResource(demand.id, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on get!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, demand.id))
+      .then((parsedN3) => parsedN3.store);
 
-const selectedCurrency = ref()
-const enteredAmount = ref(0)
-const form = ref();
-const currencies = [
-    {label: "EUR", value: "EUR"},
-    {label: "USD", value: "USD"}
-];
+}
+async function getOfferStore(demandOffers: Array<Quad["object"]>) {
+  return await getResource(demandOffers[0].id, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on get!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, demandOffers[0].id))
+      .then((parsedN3) => parsedN3.store);
+
+}
 
 const createOrder = async (offerId: String) => {
     const payload = `\
@@ -185,6 +217,15 @@ const createOrder = async (offerId: String) => {
     `;
 
     await createResource("https://bank.solid.aifb.kit.edu/credits/orders/", payload, authFetch.value)
+        .catch((err) => {
+          toast.add({
+            severity: "error",
+            summary: "Error on create!",
+            detail: err,
+            life: 5000,
+          });
+          throw new Error(err);
+        })
         .then(() => {
             toast.add({
                 severity: "success",
@@ -194,10 +235,105 @@ const createOrder = async (offerId: String) => {
         });
 };
 
+async function createDataProcessedResource() {
+  return await createResource(storage.value + "data-processed/", "", authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(res => getLocationHeader(res));
+}
+
+async function createDataRequestResource(dataProcessed: string) {
+  return await createResource(storage.value + "data-requests/", `<> <${CREDIT('hasDataProcessed')}> <${dataProcessed}> .`, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(res => getLocationHeader(res));
+}
+
+function setDataProcessedAcl(dataProcessed: string, aclDataProcessed: string) {
+  putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on put!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
+}
+
+function setDataRequestAcl(dataRequest: string, aclDataRequest: string) {
+  putResource(dataRequest + ".acl", aclDataRequest, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on put!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
+}
+
+async function getContainerUris(webId: string, shapeTreeUri: string) {
+  return await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on getDataRegistrationContainers!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
+}
+
+
+async function createDemand(demandContainerUris: Array<string>, payload: string) {
+  return await createResource(demandContainerUris[0], payload, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(res => getLocationHeader(res));
+}
+
+function sendLDNtoBank(demand: string) {
+  createResource("https://bank.solid.aifb.kit.edu/inbox/", `<${webId?.value}> <${SCHEMA('seeks')}> <${demand}> .`, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
+}
+
 const postDemand = async () => {
     try {
         // create data-processed resource
-        const dataProcessed = await createResource(storage.value + "data-processed/", "", authFetch.value).then(res => getLocationHeader(res));
+        const dataProcessed = await createDataProcessedResource();
 
         // set its ACL
         const aclDataProcessed = `\
@@ -219,11 +355,10 @@ const postDemand = async () => {
           acl:agent <${tax.value}> ;
           acl:mode acl:Write .
     `;
-        putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value);
+        setDataProcessedAcl(dataProcessed, aclDataProcessed);
 
         // create data-request resource ...
-        const dataRequest = await createResource(storage.value + "data-requests/", `<> <${CREDIT('hasDataProcessed')}> <${dataProcessed}> .`, authFetch.value)
-            .then(res => getLocationHeader(res));
+        const dataRequest = await createDataRequestResource(dataProcessed);
 
         // set its ACL
         const aclDataRequest = `\
@@ -245,7 +380,7 @@ const postDemand = async () => {
           acl:agent <${tax.value}> ;
           acl:mode acl:Read .
     `;
-        putResource(dataRequest + ".acl", aclDataRequest, authFetch.value);
+        setDataRequestAcl(dataRequest, aclDataRequest);
 
         // Create demand resource
         const payload = `\
@@ -265,13 +400,12 @@ const postDemand = async () => {
     `;
 
         // TODO: discover (demands-)container only once -> store uris on component-level (not fn-scoped)
-        const demandContainerUris = await getDataRegistrationContainers(bank.value, demandShapeTreeUri, authFetch.value);
+        const demandContainerUris = await getContainerUris(bank.value, demandShapeTreeUri);
 
-        const demand = await createResource(demandContainerUris[0], payload, authFetch.value)
-            .then(res => getLocationHeader(res));
+        const demand = await createDemand(demandContainerUris, payload);
 
         // Send LDN to bank about new demand
-        createResource("https://bank.solid.aifb.kit.edu/inbox/", `<${webId?.value}> <${SCHEMA('seeks')}> <${demand}> .`, authFetch.value);
+        sendLDNtoBank(demand);
 
         // Success Message \o/
         toast.add({

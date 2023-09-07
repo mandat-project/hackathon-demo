@@ -5,7 +5,7 @@
     <ul class="flex flex-column gap-2">
 
       <li class="flex align-items-center gap-2">
-        <p>Amount: {{amount}} {{currency}}</p>
+        <p>Amount: {{ amount }} {{ currency }}</p>
       </li>
 
       <li class="flex align-items-center gap-2">
@@ -97,8 +97,21 @@ const isOfferAccepted = computed(() => {
 });
 
 async function getAllDataRegistrationContainers() {
-  orderContainerUris = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
-  offerContainerUris = await getDataRegistrationContainers(webId!.value!, offerShapeTreeUri, authFetch.value);
+  orderContainerUris = await getContainerUris(webId!.value!, orderShapeTreeUri);
+  offerContainerUris = await getContainerUris(webId!.value!, offerShapeTreeUri);
+}
+
+async function getContainerUris(webId: string, shapeTreeUri: string) {
+  return await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on getDataRegistrationContainers!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
 }
 
 onMounted(async () => {
@@ -113,7 +126,7 @@ async function fetchDemand(): Promise<Store> {
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Error on fetch!",
+          summary: "Error on fetchDemand!",
           detail: err,
           life: 5000,
         });
@@ -126,12 +139,11 @@ async function fetchDemand(): Promise<Store> {
 }
 
 async function fetchOrders() {
-
   return getResource(orderContainerUris[0], authFetch.value)
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Error on fetch!",
+          summary: "Error on fetchOrders!",
           detail: err,
           life: 5000,
         });
@@ -151,7 +163,7 @@ function addOrderDetails(): Promise<void[]> {
           .catch((err) => {
             toast.add({
               severity: "error",
-              summary: "Error on fetch!",
+              summary: "Error on get Order!",
               detail: err,
               life: 5000,
             });
@@ -169,7 +181,7 @@ function fetchProcessedData(): Promise<Store> {
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Error on fetch!",
+          summary: "Error on fetchProcessedData!",
           detail: err,
           life: 5000,
         });
@@ -194,7 +206,7 @@ function requestData(): Promise<Response> {
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Error on fetch!",
+          summary: "Error on get requestData!",
           detail: err,
           life: 5000,
         });
@@ -208,6 +220,15 @@ function requestData(): Promise<Response> {
       .then(body => {
         hasRequestedData.value = true;
         return putResource(dataRequestURI.value!, body, authFetch.value)
+            .catch((err) => {
+              toast.add({
+                severity: "error",
+                summary: "Error on put!",
+                detail: err,
+                life: 5000,
+              });
+              throw new Error(err);
+            })
       })
 }
 
@@ -217,7 +238,7 @@ function patchDemand(demandURI: string, offerURI: string): Promise<Response> {
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Error on fetch!",
+          summary: "Error on get Demand!",
           detail: err,
           life: 5000,
         });
@@ -229,8 +250,31 @@ function patchDemand(demandURI: string, offerURI: string): Promise<Response> {
       `))
       .then(body => {
         hasRequestedData.value = true;
-        return putResource(demandURI, body, authFetch.value);
+        return putResource(demandURI, body, authFetch.value)
+            .catch((err) => {
+              toast.add({
+                severity: "error",
+                summary: "Error on put Demand!",
+                detail: err,
+                life: 5000,
+              });
+              throw new Error(err);
+            });
       })
+}
+
+async function createOffer(body: string) {
+  return await createResource(offerContainerUris[0], body, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create Offer!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(getLocationHeader);
 }
 
 async function createOfferResource(demandURI: string, dataRequestURI: string, dataProcessedURI: string): Promise<void> {
@@ -256,8 +300,8 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
               a schema:QuantitativeValue;
               schema:value "10 years".
             `
-  const offerURI = await createResource(offerContainerUris[0], body, authFetch.value)
-      .then(getLocationHeader)
+  const offerURI = await createOffer(body);
+
   await patchDemand(demandURI, offerURI);
   await grantAccessToResource(offerURI, demanderUri.value!);
   await grantAccessToResource(demandURI, demanderUri.value!); // for demand
@@ -279,21 +323,30 @@ function grantAccessToResource(resourceUri: string, agentUri: string): Promise<R
                 acl:mode acl:Read,acl:Control,acl:Write;
                 acl:accessTo <${resourceUri}> .
             `
-  return putResource(aclUri, body, authFetch.value);
+  return putResource(aclUri, body, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on put!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
 }
 
 </script>
 
 <style>
 p {
-    margin: 0;
+  margin: 0;
 }
 
 a {
-    color: white;
+  color: white;
 }
 
 hr {
-    border: 1px solid var(--surface-d);
+  border: 1px solid var(--surface-d);
 }
 </style>

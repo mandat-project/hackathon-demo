@@ -38,10 +38,28 @@ async function processRequest(key: string) {
   if (store) {
     const targetUri = getObject(store, CREDIT('hasDataProcessed'));
     const processedDataBody = `@prefix ex: <${CREDIT()}>. <> a ex:ProcessedData .`;
-    await putResource(targetUri, processedDataBody, authFetch.value);
+    await putResource(targetUri, processedDataBody, authFetch.value)
+        .catch((err) => {
+          toast.add({
+            severity: "error",
+            summary: "Error on fetch!",
+            detail: err,
+            life: 5000,
+          });
+          throw new Error(err);
+        });
 
     //LDN with targetUri as msgbody
-    await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value);
+    await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value)
+        .catch((err) => {
+          toast.add({
+            severity: "error",
+            summary: "Error on create!",
+            detail: err,
+            life: 5000,
+          });
+          throw new Error(err);
+        });
   }
 }
 
