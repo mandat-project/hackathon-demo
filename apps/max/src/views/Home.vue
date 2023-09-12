@@ -42,7 +42,7 @@ async function processRequest(key: string) {
         .catch((err) => {
           toast.add({
             severity: "error",
-            summary: "Error on fetch!",
+            summary: "Error on put!",
             detail: err,
             life: 5000,
           });

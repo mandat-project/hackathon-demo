@@ -165,6 +165,47 @@ async function loadDemands() {
   isLoading.value = false;
 
 }
+const postDemand = async () => {
+  try {
+    // create data-processed resource
+    const dataProcessed = await createDataProcessedResource();
+
+    // set its ACL
+    const aclDataProcessed = createAclDataProcessed(dataProcessed);
+    setDataProcessedAcl(dataProcessed, aclDataProcessed);
+
+    // create data-request resource
+    const dataRequest = await createDataRequestResource(dataProcessed);
+
+    // set its ACL
+    const aclDataRequest = createAclDataRequest(dataRequest);
+    setDataRequestAcl(dataRequest, aclDataRequest);
+
+    // Create demand resource
+    const payload = createDemandPayload(dataRequest, dataProcessed);
+
+    const demandContainerUris = await getContainerUris(bank.value, demandShapeTreeUri);
+
+    const demand = await createDemand(demandContainerUris, payload);
+
+    // Send LDN to bank about new demand
+    sendLDNtoBank(demand);
+
+    // Success Message \o/
+    toast.add({
+      severity: "success",
+      summary: "Demand created sucessfully",
+      life: 5000
+    });
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "Error creating Demand!",
+      detail: err,
+      life: 5000,
+    });
+  }
+};
 async function getDemandContainerStore(demandContainerUris: Array<string>) {
   return await getResource(demandContainerUris[0], authFetch.value)
       .then((resp) => resp.text())
@@ -192,6 +233,7 @@ async function getDemandStore(demand: any) {
       .then((parsedN3) => parsedN3.store);
 
 }
+
 async function getOfferStore(demandOffers: Array<Quad["object"]>) {
   return await getResource(demandOffers[0].id, authFetch.value)
       .catch((err) => {
@@ -289,6 +331,7 @@ function setDataRequestAcl(dataRequest: string, aclDataRequest: string) {
       });
 }
 
+
 async function getContainerUris(webId: string, shapeTreeUri: string) {
   return await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
       .catch((err) => {
@@ -301,7 +344,6 @@ async function getContainerUris(webId: string, shapeTreeUri: string) {
         throw new Error(err);
       });
 }
-
 
 async function createDemand(demandContainerUris: Array<string>, payload: string) {
   return await createResource(demandContainerUris[0], payload, authFetch.value)
@@ -330,13 +372,8 @@ function sendLDNtoBank(demand: string) {
       });
 }
 
-const postDemand = async () => {
-    try {
-        // create data-processed resource
-        const dataProcessed = await createDataProcessedResource();
-
-        // set its ACL
-        const aclDataProcessed = `\
+function createAclDataProcessed(dataProcessed: string) {
+  return `\
       @prefix acl: <${ACL()}>.
 
       <#owner>
@@ -355,13 +392,10 @@ const postDemand = async () => {
           acl:agent <${tax.value}> ;
           acl:mode acl:Write .
     `;
-        setDataProcessedAcl(dataProcessed, aclDataProcessed);
+}
 
-        // create data-request resource ...
-        const dataRequest = await createDataRequestResource(dataProcessed);
-
-        // set its ACL
-        const aclDataRequest = `\
+function createAclDataRequest(dataRequest: string) {
+  return `\
       @prefix acl: <${ACL()}>.
 
       <#owner>
@@ -380,10 +414,10 @@ const postDemand = async () => {
           acl:agent <${tax.value}> ;
           acl:mode acl:Read .
     `;
-        setDataRequestAcl(dataRequest, aclDataRequest);
+}
 
-        // Create demand resource
-        const payload = `\
+function createDemandPayload(dataRequest: string, dataProcessed: string) {
+  return `\
       @prefix schema: <${SCHEMA()}> .
       @prefix : <${CREDIT()}> .
 
@@ -398,30 +432,7 @@ const postDemand = async () => {
 
       <${webId?.value}> schema:seeks <> .
     `;
-
-        // TODO: discover (demands-)container only once -> store uris on component-level (not fn-scoped)
-        const demandContainerUris = await getContainerUris(bank.value, demandShapeTreeUri);
-
-        const demand = await createDemand(demandContainerUris, payload);
-
-        // Send LDN to bank about new demand
-        sendLDNtoBank(demand);
-
-        // Success Message \o/
-        toast.add({
-            severity: "success",
-            summary: "Demand created sucessfully",
-            life: 5000
-        });
-    } catch (err) {
-        toast.add({
-            severity: "error",
-            summary: "Error creating Demand!",
-            detail: err,
-            life: 5000,
-        });
-    }
-};
+}
 </script>
 
 <style scoped>

@@ -89,7 +89,7 @@ async function getStoreProfileCard() {
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Error on getAccessRequests!",
+        summary: "Error on getStoreProfileCard!",
         detail: err,
         life: 5000,
       });
