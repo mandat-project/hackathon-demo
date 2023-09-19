@@ -1,17 +1,22 @@
 <template>
   <li>
-    <h3>Demand: <a :href="props.demandUri">{{ props.demandUri }}</a></h3>
+    <h3>Transaction number: <a :href="props.demandUri">{{ props.demandUri.split("/").pop() }}</a></h3>
 
     <ul class="flex flex-column gap-2">
+     
+      <li class="flex align-items-center gap-1">
+        <p>From: <a :href="demanderUri">{{ demanderName }} </a></p>
+        <img :src="demanderIconUri" width="25" alt="demander icon">
+      </li>
 
-      <li class="flex align-items-center gap-2">
+      <li class="flex align-items-center gap-1">
         <p>Amount: {{ amount }} {{ currency }}</p>
       </li>
 
       <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary" label="Demand additional data from StB"
+        <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
-                @click="requestData()"/>
+                @click="requestData()">Request business assessment data from {{demanderName}}</Button>
         <p>
           &rightarrow;
           <a v-if="dataRequestURI" :href=dataRequestURI>Data Request</a>
@@ -19,9 +24,9 @@
       </li>
 
       <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary" label="Fetch processed data demand from StB"
+        <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
-                @click="fetchProcessedData()"/>
+                @click="fetchProcessedData()">Fetch processed business assessment data from {{demanderName}}</Button>
         <p>
           &rightarrow;
           <a v-if="dataProcessedURI" :href=dataProcessedURI>Processed Data</a>
@@ -29,9 +34,10 @@
       </li>
 
       <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary" label="Create an offer for SME"
+        <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || isOfferCreated"
-                @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)"/>
+                @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)">Create an offer for {{demanderName}}</Button>
+
         <span class="offerAcceptedStatus" v-if="isOfferAccepted">&check; Offer accepted</span>
         <span class="offerAcceptedStatus" v-if="!isOfferAccepted && isOfferCreated">&#9749; Waiting for response</span>
       </li>
@@ -52,7 +58,7 @@ import {
   parseToN3,
   putResource,
   SCHEMA,
-  getDataRegistrationContainers
+  getDataRegistrationContainers, FOAF, VCARD
 } from '@shared/solid';
 import {Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
@@ -71,13 +77,19 @@ const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#
 let orderContainerUris: Array<string>;
 let offerContainerUris: Array<string>;
 
+
 const hasRequestedData = ref(false)
 
 const state = reactive({
   demandStore: new Store(),
   orderStore: new Store(),
   processedDataStore: new Store(),
+  demanderStore: new Store()
 });
+
+// Demander
+const demanderName: ComputedRef<string | undefined> = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
+const demanderIconUri: ComputedRef<string | undefined> = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
 
 // Demand
 const dataRequestURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
@@ -101,6 +113,22 @@ async function getAllDataRegistrationContainers() {
   offerContainerUris = await getContainerUris(webId!.value!, offerShapeTreeUri);
 }
 
+async function getStoreProfileCard(uri: string) {
+  return await getResource(uri, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on getStoreProfileCard!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, sessionInfo.webId!))
+      .then((parsedN3) => parsedN3.store);
+}
+
 async function getContainerUris(webId: string, shapeTreeUri: string) {
   return await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
       .catch((err) => {
@@ -117,10 +145,31 @@ async function getContainerUris(webId: string, shapeTreeUri: string) {
 onMounted(async () => {
   await getAllDataRegistrationContainers()
   await fetchDemand();
+  await fetchDemander();
   await fetchOrders()
       .then(() => addOrderDetails());
+
+  //let demanderStore: Store;
+  //demanderStore = await getStoreProfileCard(demanderUri.value!);
+  //demanderName = demanderStore.getObjects(demanderUri.value!, FOAF("name"), null)[0].value;
 });
 
+async function fetchDemander(): Promise<Store> {
+  return getResource(demanderUri.value!, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetchDemander!",
+          detail: err,
+          life: 5000,
+        });
+        //      isLoading.value = false;
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, props.demandUri))
+      .then((parsedN3) => state.demanderStore = parsedN3.store);
+}
 async function fetchDemand(): Promise<Store> {
   return getResource(props.demandUri, authFetch.value)
       .catch((err) => {

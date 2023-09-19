@@ -2,7 +2,7 @@
 
   <div v-if="isLoggedIn" class="grid">
     <h1 class="col-12 flex align-items-center gap-2">
-      Demands
+      Credit demand
       <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="fetchDemandUris()"/>
     </h1>
     <ul class="col-12 flex flex-column gap-4">
