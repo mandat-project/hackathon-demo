@@ -3,7 +3,7 @@
     <h3>Transaction number: <a :href="props.demandUri">{{ props.demandUri.split("/").pop() }}</a></h3>
 
     <ul class="flex flex-column gap-2">
-     
+
       <li class="flex align-items-center gap-1">
         <p>From: <a :href="demanderUri">{{ demanderName }} </a></p>
         <img :src="demanderIconUri" width="25" alt="demander icon">
@@ -16,7 +16,8 @@
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
-                @click="requestData()">Request business assessment data from {{demanderName}}</Button>
+                @click="requestData()">Request business assessment data from {{ demanderName }}
+        </Button>
         <p>
           &rightarrow;
           <a v-if="dataRequestURI" :href=dataRequestURI>Data Request</a>
@@ -26,7 +27,8 @@
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
-                @click="fetchProcessedData()">Fetch processed business assessment data from {{demanderName}}</Button>
+                @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
+        </Button>
         <p>
           &rightarrow;
           <a v-if="dataProcessedURI" :href=dataProcessedURI>Processed Data</a>
@@ -34,9 +36,26 @@
       </li>
 
       <li class="flex align-items-center gap-2">
+        <div class="grid">
+          <span class="align-self-center font-bold">Annual percentage rate % </span>
+          <div class="col">
+            <InputText id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
+          </div>
+        </div>
+        <div class="grid">
+          <span class="align-self-center font-bold">Loan terms</span>
+          <div class="col">
+            <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
+                      placeholder="Select loan term"/>
+          </div>
+        </div>
+      </li>
+      <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || isOfferCreated"
-                @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)">Create an offer for {{demanderName}}</Button>
+                @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)">Create an offer for
+          {{ demanderName }}
+        </Button>
 
         <span class="offerAcceptedStatus" v-if="isOfferAccepted">&check; Offer accepted</span>
         <span class="offerAcceptedStatus" v-if="!isOfferAccepted && isOfferCreated">&#9749; Waiting for response</span>
@@ -70,6 +89,17 @@ const props = defineProps<{ demandUri: string }>();
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
+
+const enteredAnnualPercentageRate = ref(1.08);
+const selectedLoanTerm = ref();
+const loanTerms = [
+  {label: "6 months", value: 0.5},
+  {label: "12 months", value: 1},
+  {label: "24 months", value: 2},
+  {label: "36 months", value: 3},
+  {label: "48 months", value: 4},
+  {label: "60 months", value: 5}
+];
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
@@ -148,10 +178,6 @@ onMounted(async () => {
   await fetchDemander();
   await fetchOrders()
       .then(() => addOrderDetails());
-
-  //let demanderStore: Store;
-  //demanderStore = await getStoreProfileCard(demanderUri.value!);
-  //demanderName = demanderStore.getObjects(demanderUri.value!, FOAF("name"), null)[0].value;
 });
 
 async function fetchDemander(): Promise<Store> {
@@ -163,13 +189,13 @@ async function fetchDemander(): Promise<Store> {
           detail: err,
           life: 5000,
         });
-        //      isLoading.value = false;
         throw new Error(err);
       })
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, props.demandUri))
       .then((parsedN3) => state.demanderStore = parsedN3.store);
 }
+
 async function fetchDemand(): Promise<Store> {
   return getResource(props.demandUri, authFetch.value)
       .catch((err) => {
@@ -343,11 +369,11 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
                   a schema:LoanOrCredit ;
                   schema:amount "${amount.value}";
                   schema:currency "${currency.value}";
-                  schema:annualPercentageRate "1.08";
+                  schema:annualPercentageRate "${enteredAnnualPercentageRate.value}";
                   schema:loanTerm <#duration>.
             <#duration>
               a schema:QuantitativeValue;
-              schema:value "10 years".
+              schema:value "${selectedLoanTerm.value} years".
             `
   const offerURI = await createOffer(body);
 
