@@ -1,0 +1,49 @@
+sequenceDiagram
+    participant BANK's ID Document
+    participant BANK
+    participant BANK's Access Inbox
+    participant SME's Access Inbox
+    participant SME's Authorization Agent
+    participant SME's Pod
+    participant SME's ID Document
+
+    Note over BANK: 1. BANK needs to know BWA of SME
+    Note over BANK: 2. BANK knows WebID of SME
+    BANK->>SME's ID Document: 3. GET 
+    SME's ID Document -->> BANK: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
+    
+    
+    BANK->>SME's Access Inbox: 5. POST Access Request 
+    SME's Authorization Agent ->> SME's Access Inbox: 5.1 GET Access Request
+    SME's Access Inbox -->> SME's Authorization Agent: 200 OK with Access Request
+    Note over SME's Authorization Agent: 5.2 Present Access Request to SME (Andreas' Notification)
+
+    
+    Note over SME's Authorization Agent: 5.3 SME answers Access Request for BANK
+    Note over SME's Authorization Agent, SME's Pod: 5.4 Save Access Authorization in Authorization Registry
+    Note over SME's Authorization Agent, SME's Pod: 5.5 Save Access Grant in Social Agent Registration in Agent Registry
+    
+    SME's Authorization Agent->>BANK's ID Document: 6. GET 
+    BANK's ID Document -->> SME's Authorization Agent: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
+    SME's Authorization Agent->>BANK's Access Inbox: 7. POST Access Receipt 
+
+
+    BANK->> BANK's Access Inbox: 8 GET Access Receipt
+    BANK's Access Inbox -->> BANK: 200 OK with Access Receipt (inlc. interop:grantedBy)
+    BANK->>SME's ID Document: 9. GET 
+    SME's ID Document -->> BANK: 200 OK with WebID Profile Document (incl. `interop:hasAuthorizationAgent`)
+    BANK->>SME's Authorization Agent: 10. GET 
+    SME's Authorization Agent -->> BANK: 200 OK with Link header, `interop:registeredAgent` (Social Agent Registration from 5.5)
+    BANK->>SME's Pod: 11. GET on link of `interop:registeredAgent`
+    SME's Pod -->> BANK: 200 OK with `interop:SocialAgentRegistration` including `interop:hasAccessGrant`
+    BANK->>SME's Pod: 12. GET on link of `interop:hasAccessGrant`
+    SME's Pod -->> BANK: 200 OK with `interop:AccessGrant` including `interop:hasDataGrant`
+    BANK->>SME's Pod: 13. GET on link of `interop:hasDataGrant`
+    SME's Pod -->> BANK: 200 OK with `interop:DataGrant` including `interop:hasDataRegistration`
+    BANK->>SME's Pod: 14. GET on link of `interop:hasDataRegistration`
+    SME's Pod -->> BANK: 200 OK with `interop:DataRegistration` including `ldp:contains`
+    
+    BANK->>SME's Pod: 15. GET on link of `ldp:contains`
+    SME's Pod -->> BANK: 200 OK with `ldp:Resource`, e.g., BWA
+    
+
