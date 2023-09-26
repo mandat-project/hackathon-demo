@@ -1,0 +1,65 @@
+sequenceDiagram
+actor Lisa
+participant Bank_Pod as BANK Pod
+actor Tom
+participant KMU_Pod as SME Pod
+actor Max 
+participant StB_Pod as TAX Pod
+
+
+%% autonumber
+%% Initiation of partnership
+note over Lisa,Tom: Initiation of partnership
+    note over Tom,Bank_Pod: (1) Tom fills in a credit form and requests a creditfrom the bank
+
+     Tom->>Tom: Tom fills in the credit information (credit amount)  
+     note over Bank_Pod,Tom: Tom needs to know location/container in  <br/> bank Pod  for posting  credit requests/demands 
+    rect rgb(255, 150, 255)
+     note over Bank_Pod,Tom: This is unclear.  How does Tom know where to put thre credit demand <br/> 'demandShapeTreeUri' for getting  <br/> 'demandContainerUris' to put credit demand in Bank pod  <br/>  is hard coded in Tom App
+     Tom->>Bank_Pod: getContainerUris(bank Web ID , demandShapeTreeUri)
+    Bank_Pod -->> Tom: 200 OK with  location of inbox for posting  credit requests / demands)
+    end
+    %% create credit demand in bank pod
+    note over Bank_Pod,Tom: Tom posts credit demand in Bank Pod
+    Tom->>+Bank_Pod: [HTTP POST /credits/demands/] credit demand
+    Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
+
+    note over Lisa,Bank_Pod: (2) Lisa fetches and processes credit request
+
+    %% fetch credit demand
+    Lisa->>Bank_Pod: [HTTP GET /credits/demands/}]
+    Bank_Pod-->>Lisa: [HTTP 200 OK] credit demands
+    Lisa->>+Bank_Pod: [HTTP GET /credits/demands/{uuid}]
+    Bank_Pod-->> Lisa: [HTTP 200 OK] credit demand
+
+    %% grant access to that resource to KMU as they do not have access by default
+    %% The following .acl patch is equivalent to acknowledging the demand. 
+    %% Otherwise the demand may not exist at all.
+    rect rgb(255, 150, 255)
+    note over Lisa, Bank_Pod: 'Official' hack, creator of a resource in another pod does not <br/> necessarily have the read rights for it in the pod. <br/> Solvable via interop spec, but spec not implemented on server
+    Lisa->>+Bank_Pod: [HTTP PATCH /credits/demands/{uuid}.acl] (grant SME read)
+    Bank_Pod-->>-Lisa: [HTTP 205 RESET CONTENT] location {uuid}.acl    
+    end
+
+    Lisa->>Lisa: Lisa processes the credit request <br/>  to decide what to do next
+    %% (2) Nachfrage aktuelle Unternehmenssituation
+    note over Lisa, KMU_Pod: (2) Lisa knows WebID of SME and requests company data  (business analysis)
+
+    Lisa->>KMU_Pod: 3. GET SME WebID document
+    KMU_Pod -->> Lisa: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
+        
+    Lisa->>KMU_Pod:  POST Access Request in SME's Acces Inbox (i.e. object of `interop:hasAccessInbox`)
+    rect rgb(0, 250, 0)
+    note over Bank_Pod, KMU_Pod: (2) currently implemented via auth agent
+    Tom ->> KMU_Pod:  GET Access Request from Access Inbox
+    KMU_Pod -->> Tom: 200 OK with Access Request
+
+    Tom -->> Tom: Tom looks at the access request <br/> and decides what to do next
+    
+    Note over Tom, KMU_Pod: Save Access Authorization in Authorization Registry <br/> Currently done via setting ACLs directly
+    Note over Tom, KMU_Pod: Save Access Grant in <br/> Social Agent Registration in Agent Registry
+    
+    Tom ->>Bank_Pod: 6. GET BANK's ID Document
+    Bank_Pod -->> Tom: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
+    Tom->> Bank_Pod: 7. POST Access Receipt in BANK's Access Inbox
+    end
