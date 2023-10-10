@@ -4,6 +4,7 @@ import {ref, toRefs, watch} from "vue";
 import {Quad, Store} from 'n3';
 import {createResource, CREDIT, getResource, LDP, parseToN3, putResource} from "@shared/solid";
 import {useSolidInbox, useSolidSession} from "@shared/composables";
+import Button from "primevue/button";
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
@@ -61,6 +62,11 @@ async function processRequest(key: string) {
           throw new Error(err);
         });
   }
+  toast.add({
+      severity: "success",
+      summary: "Processing something",
+      life: 5000
+    });
 }
 
 // HELPER-FUNCTIONS
@@ -94,27 +100,12 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 <template>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
-      <div class="p-inputgroup">
-        <InputText
-            placeholder="GET my request."
-            v-model="containerUri"
-            @keyup.enter="fetchRequests()"
-        />
-        <Button @click="fetchRequests()"> GET</Button>
-      </div>
-
-        <ProgressBar v-if="isLoading" mode="indeterminate" class="progressbar"/>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
       <ul v-if="isLoggedIn">
         <li v-for="([uri, store], index) of requests" :key="index">
           <p>Request #{{ index }}: {{ uri }}</p>
           <p>Target-Uri: {{ getObject(store, CREDIT('hasDataProcessed')) }}</p>
           <p>Requested Data : {{ getObject(store, CREDIT('hasRequestedData')) }} </p>
-          <Button @click="processRequest(uri)">Do Processing</Button>
+          <Button   @click="processRequest(uri)">Do Processing</Button>
         </li>
       </ul>
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>

@@ -44,10 +44,10 @@
           <li v-for="(demand, index) in demands" :key="demand"
               class="flex flex-wrap align-items-center justify-content-between">
             <hr v-if="index !== 0" class="w-full"/>
-
             <div class="flex flex-column md:flex-row gap-2 p-3">
-              <span>{{ demand.amount }} {{ demand.currency }}</span>
-
+              <span v-if="demand.offer"> From </span>
+              <span v-if="demand.offer" style="font-weight:bold ;"> <a :href=demand.providerWebID>{{ demand.providerName }} </a> : </span>                            
+              <span v-if="demand.offer">{{ demand.amount }} {{ demand.currency }}</span>
               <span v-if="demand.offer">(interest rate %: {{ demand.offer.interestRate }})</span>
               <span v-if="demand.offer">(duration: {{ demand.offer.duration }})</span>
               <span v-else>(no offer)</span>
@@ -84,15 +84,18 @@ import {
     LDP,
     parseToN3,
     putResource,
-    SCHEMA
+    SCHEMA,
+VCARD
 } from "@shared/solid";
 import {Ref, ref, toRefs, watch} from "vue";
 import {Quad} from "n3";
 
 interface Demand {
-    amount: number,
-    currency: string,
-    offer?: Offer
+  providerName: string,
+  providerWebID: string ,
+  amount: number,
+  currency: string,
+  offer?: Offer
 }
 
 interface Offer {
@@ -105,6 +108,8 @@ const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
 const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 
 const demandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
+const orderContainer = "https://bank.solid.aifb.kit.edu/credits/orders/";
+
 
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
@@ -146,22 +151,27 @@ async function loadDemands() {
       const demandOffers = demandStore.getObjects(null, CREDIT('hasOffer'), null);
       const amount = demandStore.getObjects(null, SCHEMA('amount'), null)[0];
       const currency = demandStore.getObjects(null, SCHEMA('currency'), null)[0];
+      const profileCard = await getprofileCard(bank.value);
+      const bankname = profileCard.getObjects(bank.value, VCARD('fn'),null)[0].value;
 
       if (demandOffers.length > 0) {
         const offerStore = await getOfferStore(demandOffers);
 
         const interestRate = offerStore.getObjects(null, SCHEMA('annualPercentageRate'), null)[0];
+
         const duration = offerStore.getObjects(demandOffers[0].value + "#duration", SCHEMA('value'), null)[0];
 
         console.log(duration);
 
         demands.value.push({
+          providerName:bankname ,
+          providerWebID: bank.value , 
           amount: parseFloat(amount.value),
           currency: currency.value,
           offer: {id: demandOffers[0].id, interestRate: parseFloat(interestRate.value), duration: duration.value}
         })
       } else {
-        demands.value.push({amount: parseFloat(amount.value), currency: currency.value})
+        demands.value.push({providerName: bankname, providerWebID: bank.value, amount: parseFloat(amount.value), currency: currency.value})
       }
     } catch (e) {
     }
@@ -263,7 +273,7 @@ const createOrder = async (offerId: String) => {
       <> schema:acceptedOffer <${offerId}> .
     `;
 
-    await createResource("https://bank.solid.aifb.kit.edu/credits/orders/", payload, authFetch.value)
+    await createResource(orderContainer, payload, authFetch.value)
         .catch((err) => {
           toast.add({
             severity: "error",
@@ -336,6 +346,21 @@ function setDataRequestAcl(dataRequest: string, aclDataRequest: string) {
       });
 }
 
+
+async function getprofileCard(webId: string) {
+  return await getResource(webId, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on getting profile Card!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      }).then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, webId))
+      .then((parsedN3) => parsedN3.store);
+}
 
 async function getContainerUris(webId: string, shapeTreeUri: string) {
   return await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
