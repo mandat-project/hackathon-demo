@@ -48,7 +48,8 @@
             <div class="flex flex-column md:flex-row gap-2 p-3">
               <span>{{ demand.amount }} {{ demand.currency }}</span>
 
-              <span v-if="demand.offer">({{ demand.offer.interestRate }} % interest rate)</span>
+              <span v-if="demand.offer">(interest rate %: {{ demand.offer.interestRate }})</span>
+              <span v-if="demand.offer">(duration: {{ demand.offer.duration }})</span>
               <span v-else>(no offer)</span>
             </div>
             <Button v-if="demand.offer"
@@ -97,6 +98,7 @@ interface Demand {
 interface Offer {
     id: string,
     interestRate: number
+    duration: string
 }
 
 const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
@@ -149,11 +151,14 @@ async function loadDemands() {
         const offerStore = await getOfferStore(demandOffers);
 
         const interestRate = offerStore.getObjects(null, SCHEMA('annualPercentageRate'), null)[0];
+        const duration = offerStore.getObjects(demandOffers[0].value + "#duration", SCHEMA('value'), null)[0];
+
+        console.log(duration);
 
         demands.value.push({
           amount: parseFloat(amount.value),
           currency: currency.value,
-          offer: {id: demandOffers[0].id, interestRate: parseFloat(interestRate.value)}
+          offer: {id: demandOffers[0].id, interestRate: parseFloat(interestRate.value), duration: duration.value}
         })
       } else {
         demands.value.push({amount: parseFloat(amount.value), currency: currency.value})
