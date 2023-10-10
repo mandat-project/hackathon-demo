@@ -91,14 +91,14 @@ const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
 
 const enteredAnnualPercentageRate = ref(1.08);
-const selectedLoanTerm = ref();
+const selectedLoanTerm = ref({label: "60 months", value: "5"});
 const loanTerms = [
-  {label: "6 months", value: 0.5},
-  {label: "12 months", value: 1},
-  {label: "24 months", value: 2},
-  {label: "36 months", value: 3},
-  {label: "48 months", value: 4},
-  {label: "60 months", value: 5}
+  {label: "6 months", value: "0.5"},
+  {label: "12 months", value: "1"},
+  {label: "24 months", value: "2"},
+  {label: "36 months", value: "3"},
+  {label: "48 months", value: "4"},
+  {label: "60 months", value: "5"}
 ];
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
@@ -373,7 +373,7 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
                   schema:loanTerm <#duration>.
             <#duration>
               a schema:QuantitativeValue;
-              schema:value "${selectedLoanTerm.value} years".
+              schema:value "${selectedLoanTerm.value.value} years".
             `
   const offerURI = await createOffer(body);
 
