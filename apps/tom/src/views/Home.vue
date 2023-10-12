@@ -75,17 +75,17 @@
 import {useToast} from "primevue/usetoast";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
-    ACL,
-    createResource,
-    CREDIT,
-    getDataRegistrationContainers,
-    getLocationHeader,
-    getResource,
-    LDP,
-    parseToN3,
-    putResource,
-    SCHEMA,
-VCARD
+  ACL,
+  createResource,
+  CREDIT,
+  getDataRegistrationContainers,
+  getLocationHeader,
+  getResource,
+  LDP,
+  parseToN3,
+  putResource,
+  SCHEMA,
+  VCARD, XSD
 } from "@shared/solid";
 import {Ref, ref, toRefs, watch} from "vue";
 import {Quad} from "n3";
@@ -447,13 +447,16 @@ function createAclDataRequest(dataRequest: string) {
 }
 
 function createDemandPayload(dataRequest: string, dataProcessed: string) {
+  const dateCreated = new Date().toISOString();
   return `\
+      @prefix xsd:<${XSD()}> .
       @prefix schema: <${SCHEMA()}> .
       @prefix : <${CREDIT()}> .
 
       <> a schema:Demand ;
         :hasDataRequest <${dataRequest}> ;
         :hasDataProcessed <${dataProcessed}> ;
+        schema:dateCreated "${dateCreated}"^^xsd:dateTime ;
         schema:itemOffered [
           a schema:LoanOrCredit ;
             schema:amount ${enteredAmount.value} ;

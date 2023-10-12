@@ -13,6 +13,10 @@
         <p>Amount: {{ amount }} {{ currency }}</p>
       </li>
 
+      <li class="flex align-items-center gap-1">
+        <p>Created: {{ dateCreated }}</p>
+      </li>
+
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
@@ -124,6 +128,7 @@ const demanderIconUri: ComputedRef<string | undefined> = computed(() => state.de
 // Demand
 const dataRequestURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
 const dataProcessedURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
+const dateCreated: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, SCHEMA("dateCreated"), null, null)[0]?.object?.value);
 const amount: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
 const currency: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
