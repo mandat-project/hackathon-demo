@@ -1,8 +1,8 @@
 <template>
-  <div>{{ uri }}</div>
-  <div>{{ redirect }}</div>
+  <div>Show Access Request {{ uri }}</div>
+  <div>on Authorize redirect to {{ `${redirect}?uri=${uri}&result=1` }}</div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps(["uri", "redirect"]);
+defineProps(["uri", "redirect"]);
 </script>
