@@ -32,10 +32,12 @@ import "primevue/resources/themes/vela-green/theme.css"; // theme
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css"; // icons
 import App from "./App.vue";
+import router from "./router";
 
 
 const app = createApp(App);
 
+app.use(router)
 app.use(PrimeVue, {ripple: true});
 app.use(ToastService);
 app.use(ConfirmationService);

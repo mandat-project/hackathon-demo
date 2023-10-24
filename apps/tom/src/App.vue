@@ -1,57 +1,51 @@
 <template>
-
-  <HeaderBar/>
+  <HeaderBar />
 
   <div class="m-0 lg:m-5">
-    <router-view/>
+    <router-view />
   </div>
 
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
-  <div style="height: 75px"/>
+  <div style="height: 75px" />
 
-  <Dialog header="We updated the App!"
-          v-model:visible="isOpen"
-          position="bottomright">
-
+  <Dialog
+    header="We updated the App!"
+    v-model:visible="isOpen"
+    position="bottomright"
+  >
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
 
     <template #footer>
-      <Button label="Update" autofocus @click="refreshApp"/>
+      <Button label="Update" autofocus @click="refreshApp" />
     </template>
-
   </Dialog>
 
-  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
+  <Toast
+    position="bottom-right"
+    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
+  />
 
-  <ConfirmDialog/>
-
+  <ConfirmDialog />
 </template>
 
-<script lang="ts">
-import {defineComponent, ref, watch} from "vue";
-import {HeaderBar} from "@shared/components";
-import {useServiceWorkerUpdate} from "@shared/composables";
+<script lang="ts" setup>
+import { ref, watch } from "vue";
+import { HeaderBar } from "@shared/components";
+import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
+import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
+import router from "./router";
 
-export default defineComponent({
-  name: "Home",
-  components: {
-    HeaderBar,
-    Toast,
-  },
-  setup() {
-    const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
-    const isOpen = ref(false);
-    watch(hasUpdatedAvailable, () => {
-      isOpen.value = hasUpdatedAvailable.value;
-    });
-    return {
-      isOpen,
-      refreshApp,
-    };
-  },
+const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
+const isOpen = ref(false);
+watch(hasUpdatedAvailable, () => {
+  isOpen.value = hasUpdatedAvailable.value;
 });
+// bring user back to the current location
+onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
+// re-use Solid session
+useSolidSession().restoreSession();
 </script>
 
 <style>

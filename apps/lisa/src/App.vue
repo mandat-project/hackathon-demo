@@ -1,36 +1,45 @@
 <template>
-
-  <HeaderBar/>
+  <HeaderBar />
 
   <div class="m-0 lg:m-5">
-    <router-view/>
+    <router-view />
   </div>
 
-  <Dialog header="We updated the App!"
-          v-model:visible="isOpen"
-          position="bottomright">
+  <Dialog
+    header="We updated the App!"
+    v-model:visible="isOpen"
+    position="bottomright"
+  >
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
     <template #footer>
-      <Button label="Update" autofocus @click="refreshApp"/>
+      <Button label="Update" autofocus @click="refreshApp" />
     </template>
   </Dialog>
 
-  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
+  <Toast
+    position="bottom-right"
+    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
+  />
 
-  <ConfirmDialog/>
-
+  <ConfirmDialog />
 </template>
 
 <script setup lang="ts">
-import {ref, watch} from "vue";
-import {HeaderBar} from "@shared/components";
-import {useServiceWorkerUpdate} from "@shared/composables";
+import { ref, watch } from "vue";
+import { HeaderBar } from "@shared/components";
+import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
+import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
+import router from "./router";
 
-const {hasUpdatedAvailable, refreshApp} = useServiceWorkerUpdate();
+const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
-watch(hasUpdatedAvailable, () => isOpen.value = hasUpdatedAvailable.value);
+watch(hasUpdatedAvailable, () => (isOpen.value = hasUpdatedAvailable.value));
+// bring user back to the current location
+onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
+// re-use Solid session
+useSolidSession().restoreSession();
 </script>
 
 <style>
@@ -53,7 +62,8 @@ body {
   color: var(--text-color);
 }
 
-ul, ol {
+ul,
+ol {
   list-style: none;
   padding: 0;
   margin: 0;

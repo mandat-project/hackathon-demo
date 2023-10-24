@@ -111,7 +111,7 @@ export default defineComponent({
         <LogoutButton v-else/>
       </template>
     </Toolbar>
-    <div style="height: 75px"/>
+    <div style="height: 75px" id="header-bar-spacer"/>
   </div>
 </template>
 
