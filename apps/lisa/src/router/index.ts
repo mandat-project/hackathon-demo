@@ -1,6 +1,8 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import Home from "@/views/Home.vue";
 import Inbox from "@/views/Inbox.vue";
+import { AccessRequestCallback } from "@shared/components";
+import onResult from "./accessRequestHandledCallback";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -13,6 +15,16 @@ const routes: Array<RouteRecordRaw> = [
         name: "Inbox",
         component: Inbox,
     },
+    {
+        path: "/accessRequestHandled",
+        name: "AccessRequestHandled",
+        component: AccessRequestCallback,
+        props: (route) => ({
+          uri: route.query.uri,
+          result: route.query.result,
+          onResult: onResult
+        }),
+      },
 ];
 
 const router = createRouter({

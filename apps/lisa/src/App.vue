@@ -1,9 +1,12 @@
 <template>
   <HeaderBar />
 
-  <div class="m-0 lg:m-5">
+  <div v-if="isLoggedIn" class="m-0 lg:m-5">
     <router-view />
   </div>
+  <span v-else>
+    401 Unauthenticated : Login using the button in the top-right corner!
+  </span>
 
   <Dialog
     header="We updated the App!"
@@ -26,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, toRefs, watch } from "vue";
 import { HeaderBar } from "@shared/components";
 import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
@@ -40,6 +43,9 @@ watch(hasUpdatedAvailable, () => (isOpen.value = hasUpdatedAvailable.value));
 onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
 // re-use Solid session
 useSolidSession().restoreSession();
+// check if logged in
+const { sessionInfo } = useSolidSession();
+const { isLoggedIn } = toRefs(sessionInfo);
 </script>
 
 <style>

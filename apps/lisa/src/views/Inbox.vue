@@ -4,19 +4,13 @@
       <Button label="Zurück" icon="pi pi-arrow-left" class="p-button-text p-button-rounded" @click="router.push('/')"/>
     </div>
     <div class="col lg:col-6 lg:col-offset-3">
-      <LDNs v-if="isLoggedIn"/>
+      <LDNs />
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {useSolidSession} from "@shared/composables";
 import router from "@/router";
-
-import {toRefs} from "vue";
 import {LDNs} from "@shared/components";
-
-const {sessionInfo} = useSolidSession();
-const {isLoggedIn} = toRefs(sessionInfo);
 </script>

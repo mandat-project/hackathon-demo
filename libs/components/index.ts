@@ -4,6 +4,7 @@ import LogoutButton from './src/LogoutButton.vue';
 import SignUpButton from './src/SignUpButton.vue';
 import LDN from './src/LDN.vue';
 import LDNs from './src/LDNs.vue';
+import AccessRequestCallback from './src/AccessRequestCallback.vue';
 
 export {
     HeaderBar,
@@ -11,5 +12,6 @@ export {
     LogoutButton,
     SignUpButton,
     LDN,
-    LDNs
+    LDNs,
+    AccessRequestCallback
 }
