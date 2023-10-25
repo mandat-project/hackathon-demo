@@ -182,22 +182,8 @@ async function loadDemands() {
 }
 const postDemand = async () => {
   try {
-    // create data-processed resource
-    const dataProcessed = await createDataProcessedResource();
-
-    // set its ACL
-    const aclDataProcessed = createAclDataProcessed(dataProcessed);
-    setDataProcessedAcl(dataProcessed, aclDataProcessed);
-
-    // create data-request resource
-    const dataRequest = await createDataRequestResource(dataProcessed);
-
-    // set its ACL
-    const aclDataRequest = createAclDataRequest(dataRequest);
-    setDataRequestAcl(dataRequest, aclDataRequest);
-
     // Create demand resource
-    const payload = createDemandPayload(dataRequest, dataProcessed);
+    const payload = createDemandPayload();
 
     const demandContainerUris = await getContainerUris(bank.value, demandShapeTreeUri);
 
@@ -292,59 +278,6 @@ const createOrder = async (offerId: String) => {
         });
 };
 
-async function createDataProcessedResource() {
-  return await createResource(storage.value + "data-processed/", "", authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on create!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-      .then(res => getLocationHeader(res));
-}
-
-async function createDataRequestResource(dataProcessed: string) {
-  return await createResource(storage.value + "data-requests/", `<> <${CREDIT('hasDataProcessed')}> <${dataProcessed}> .`, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on create!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-      .then(res => getLocationHeader(res));
-}
-
-function setDataProcessedAcl(dataProcessed: string, aclDataProcessed: string) {
-  putResource(dataProcessed + ".acl", aclDataProcessed, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on put!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      });
-}
-
-function setDataRequestAcl(dataRequest: string, aclDataRequest: string) {
-  putResource(dataRequest + ".acl", aclDataRequest, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on put!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      });
-}
 
 
 async function getprofileCard(webId: string) {
@@ -402,58 +335,12 @@ function sendLDNtoBank(demand: string) {
       });
 }
 
-function createAclDataProcessed(dataProcessed: string) {
-  return `\
-      @prefix acl: <${ACL()}>.
-
-      <#owner>
-        a acl:Authorization;
-        acl:accessTo <${dataProcessed}> ;
-        acl:agent <${webId?.value}> ;
-        acl:mode acl:Control, acl:Read, acl:Write.
-      <#bank>
-          a acl:Authorization;
-          acl:accessTo <${dataProcessed}> ;
-          acl:agent <${bank.value}> ;
-          acl:mode acl:Read .
-      <#tax>
-          a acl:Authorization;
-          acl:accessTo <${dataProcessed}> ;
-          acl:agent <${tax.value}> ;
-          acl:mode acl:Write .
-    `;
-}
-
-function createAclDataRequest(dataRequest: string) {
-  return `\
-      @prefix acl: <${ACL()}>.
-
-      <#owner>
-        a acl:Authorization;
-        acl:accessTo <${dataRequest}> ;
-        acl:agent <${webId?.value}> ;
-        acl:mode acl:Control, acl:Read, acl:Write.
-      <#bank>
-          a acl:Authorization;
-          acl:accessTo <${dataRequest}> ;
-          acl:agent <${bank.value}> ;
-          acl:mode acl:Read, acl:Write .
-      <#tax>
-          a acl:Authorization;
-          acl:accessTo <${dataRequest}> ;
-          acl:agent <${tax.value}> ;
-          acl:mode acl:Read .
-    `;
-}
-
-function createDemandPayload(dataRequest: string, dataProcessed: string) {
+function createDemandPayload() {
   return `\
       @prefix schema: <${SCHEMA()}> .
       @prefix : <${CREDIT()}> .
 
       <> a schema:Demand ;
-        :hasDataRequest <${dataRequest}> ;
-        :hasDataProcessed <${dataProcessed}> ;
         schema:itemOffered [
           a schema:LoanOrCredit ;
             schema:amount ${enteredAmount.value} ;

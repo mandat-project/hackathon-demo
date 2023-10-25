@@ -44,7 +44,7 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource
+  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource, CREDIT
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
@@ -143,7 +143,8 @@ async function getSingleAccessRequest(store: Store) {
         accessNeedGroupURI: binding.get('accessNeedGroup').value,
         accessModeLabel: binding.get('accessModeLabel').value,
         accessModeURI: binding.get('accessMode').value,
-        accessNeedURI: binding.get('accessNeed').value
+        accessNeedURI: binding.get('accessNeed').value,
+        fromDemandURI: binding.get('fromDemand').value
       })
       // Dummy access request to display more than one access request in the UI
       //   Note: Invalid authorization. Can be overwritten by setting authorization for the bank
@@ -250,10 +251,41 @@ async function postAccessControlList(accessRequest: AccessRequest, targetContain
     });
 }
 
+async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fromDemandURI: string, containerURI: string) {
+  getResource(fromDemandURI, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on get Demand!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then((resp) => resp.text())
+    .then(txt => txt.replace("isAccessRequestGranted false", "isAccessRequestGranted true"))
+    .then(txt => txt.concat(`
+      <> :providedData <${containerURI}>.
+    `))
+    .then(body => {
+      return putResource(fromDemandURI, body, authFetch.value)
+        .catch((err) => {
+          toast.add({
+            severity: "error",
+            summary: "Error on put Demand!",
+            detail: err,
+            life: 5000,
+          });
+          throw new Error(err);
+        });
+    })
+}
+
 async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   const targetContainerURIs = await getTargetContainerURIs(accessRequest);
   await postAccessAuthorization(accessRequest, targetContainerURIs);
   await postAccessControlList(accessRequest, targetContainerURIs);
+  await setDemandIsAccessRequestGranted(accessRequest, accessRequest.fromDemandURI, targetContainerURIs[0]);
 }
 
 async function getTargetContainerURIs(accessRequest: AccessRequest) {
@@ -303,12 +335,14 @@ function getSparqlForQueryingAccessRequests(senderSocialAgent: string) {
           PREFIX skos:<${SKOS()}>
           PREFIX acl:<${ACL()}>
           PREFIX vcard:<${VCARD()}>
+          PREFIX credit:<${CREDIT()}>
 
-           SELECT  ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition ?accessModeLabel ?vcardName ?accessNeedGroup ?accessNeed WHERE  {
+           SELECT  ?receiverSocialAgent   ?necessity ?shapeTree ?accessMode ?label ?definition ?accessModeLabel ?vcardName ?accessNeedGroup ?accessNeed ?fromDemand WHERE  {
             ?accessRequest a                          interop:AccessRequest ;
                            interop:fromSocialAgent    <${senderSocialAgent}> ;
                            interop:toSocialAgent      ?receiverSocialAgent ;
-                           interop:hasAccessNeedGroup ?accessNeedGroup.
+                           interop:hasAccessNeedGroup ?accessNeedGroup;
+                           credit:fromDemand          ?fromDemand.
 
             ?accessNeedGroupDescription interop:hasAccessNeedGroup  ?accessNeedGroup;
                                         a interop:AccessNeedGroupDescription ;
@@ -360,6 +394,7 @@ interface AccessRequest {
   accessModeURI: string;
   accessNeedURI: string;
   accessNeedGroupURI: string;
+  fromDemandURI: string;
 }
 
 </script>

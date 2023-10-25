@@ -15,24 +15,20 @@
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-                v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
+                v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                 @click="requestData()">Request business assessment data from {{ demanderName }}
         </Button>
         <p>
           &rightarrow;
-          <a v-if="dataRequestURI" :href=dataRequestURI>Data Request</a>
+          <a v-if="accessRequestUri" :href=accessRequestUri>Access Request</a>
         </p>
       </li>
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-                v-bind:disabled="!dataRequestURI || hasRequestedData || isOfferCreated"
+                v-bind:disabled="isAccessRequestGranted === 'false' || isOfferCreated"
                 @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
         </Button>
-        <p>
-          &rightarrow;
-          <a v-if="dataProcessedURI" :href=dataProcessedURI>Processed Data</a>
-        </p>
       </li>
 
       <li class="flex align-items-center gap-2">
@@ -52,8 +48,8 @@
       </li>
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-                v-bind:disabled="!dataRequestURI || isOfferCreated"
-                @click="createOfferResource(props.demandUri, dataRequestURI!, dataProcessedURI!)">Create an offer for
+                v-bind:disabled="isAccessRequestGranted === false || isOfferCreated"
+                @click="createOfferResource(props.demandUri, accessRequestUri!)">Create an offer for
           {{ demanderName }}
         </Button>
 
@@ -77,9 +73,9 @@ import {
   parseToN3,
   putResource,
   SCHEMA,
-  getDataRegistrationContainers, FOAF, VCARD
+  getDataRegistrationContainers, FOAF, VCARD, INTEROP
 } from '@shared/solid';
-import {Store} from 'n3';
+import {NamedNode, Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, ComputedRef, onMounted, reactive, ref, toRefs} from 'vue';
 
@@ -103,27 +99,28 @@ const loanTerms = [
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
+const businessAssessmentShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#'
 
 let orderContainerUris: Array<string>;
 let offerContainerUris: Array<string>;
 
 
-const hasRequestedData = ref(false)
-
 const state = reactive({
   demandStore: new Store(),
   orderStore: new Store(),
-  processedDataStore: new Store(),
   demanderStore: new Store()
 });
 
 // Demander
 const demanderName: ComputedRef<string | undefined> = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const demanderIconUri: ComputedRef<string | undefined> = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
+const demanderAccessInboxUri: ComputedRef<string | undefined> = computed(() => state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value);
 
 // Demand
-const dataRequestURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataRequest"), null, null)[0]?.object?.value);
-const dataProcessedURI: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasDataProcessed"), null, null)[0]?.object?.value);
+
+const providedDataUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("providedData"), null, null)[0]?.object?.value);
+const accessRequestUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasAccessRequest"), null, null)[0]?.object?.value);
+const isAccessRequestGranted: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("isAccessRequestGranted"), null, null)[0]?.object?.value);
 const amount: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
 const currency: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
@@ -141,22 +138,6 @@ const isOfferAccepted = computed(() => {
 async function getAllDataRegistrationContainers() {
   orderContainerUris = await getContainerUris(webId!.value!, orderShapeTreeUri);
   offerContainerUris = await getContainerUris(webId!.value!, offerShapeTreeUri);
-}
-
-async function getStoreProfileCard(uri: string) {
-  return await getResource(uri, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on getStoreProfileCard!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-      .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, sessionInfo.webId!))
-      .then((parsedN3) => parsedN3.store);
 }
 
 async function getContainerUris(webId: string, shapeTreeUri: string) {
@@ -251,37 +232,72 @@ function addOrderDetails(): Promise<void[]> {
   );
 }
 
-function fetchProcessedData(): Promise<Store> {
-  return getResource(dataProcessedURI.value!, authFetch.value)
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on fetchProcessedData!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-      .then((resp) => resp.text())
-      .then((txt) => {
-        toast.add({
-          severity: "success",
-          summary: "Processed Data",
-          detail: txt,
-          life: 10000,
-        });
-        return parseToN3(txt, dataProcessedURI.value!)
-      })
-      .then((parsedN3) => state.processedDataStore = parsedN3.store)
+async function fetchProcessedData() {
+  window.open(providedDataUri.value, '_blank');
 }
 
-function requestData(): Promise<Response> {
-  // simulate patch as it is not supported, warning: not atomic
-  return getResource(dataRequestURI.value!, authFetch.value)
+
+function getAccessRequestBody() {
+
+  // TODO Werte befüllen!
+  return `@prefix interop: <http://www.w3.org/ns/solid/interop#> .
+    @prefix ldp: <http://www.w3.org/ns/ldp#> .
+    @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+    @prefix credit: <http://example.org/vocab/datev/credit#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
+    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+
+    # This could be hosted at the profle document of the application or social agent or at a
+    # central location (e.g. together with the shapes/shapetress) for "standardized" access needs
+    <#bwaAccessNeed>
+      a interop:AccessNeed ;
+      interop:accessMode acl:Read ;
+      interop:registeredShapeTree shapeTree:businessAssessmentTree ;
+      interop:accessNecessity interop:accessRequired .
+
+    <#bwaAccessNeedGroup>
+      a interop:AccessNeedGroup ;
+      interop:hasAccessDescriptionSet <#bwaAccessDescriptionSet> ;
+      interop:accessNecessity interop:accessRequired ;
+      interop:accessScenario interop:sharedAccess ;
+      interop:authenticatesAs interop:SocialAgent ;
+      interop:hasAccessNeed <#bwaAccessNeed> .
+
+    <#bwaAccessDescriptionSet>
+      a interop:AccessDescriptionSet ;
+      interop:usesLanguage "de"^^xsd:language .
+
+    # This is hosted at the profile document of the agent or application
+    <#bwaAccessNeedGroupDescription>
+      a interop:AccessNeedGroupDescription ;
+      interop:inAccessDescriptionSet <#bwaAccessDescriptionSet> ;
+      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
+      skos:prefLabel "Zugriff BWA (Gruppe)"@de ;
+      skos:definition "Die Bank muss deine BWAs kennen, um ein für dich passendes Kreditangebot zu erstellen"@de .
+
+    <#bwaAccessNeedDescription>
+      a interop:AccessNeedDescription ;
+      interop:inAccessDescriptionSet <#bwaAccessDescriptionSet> ;
+      interop:hasAccessNeed <#bwaAccessNeed> ;
+      skos:prefLabel "Zugriff BWA"@de ;
+      skos:definition "Die Bank muss deine BWAs kennen, um ein für dich passendes Kreditangebot zu erstellen"@de .
+
+    # Goes into the access inbox of sme
+    <#bwaAccessRequest>
+      a interop:AccessRequest ;
+      interop:fromSocialAgent <https://bank.solid.aifb.kit.edu/profile/card#me> ;
+      interop:toSocialAgent  <https://sme.solid.aifb.kit.edu/profile/card#me> ;
+      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
+      credit:fromDemand <${props.demandUri}>.`;
+}
+
+function patchDemandAccessRequest(accessRequestUri: string) {
+  getResource(props.demandUri, authFetch.value)
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Error on get requestData!",
+          summary: "Error on get Demand!",
           detail: err,
           life: 5000,
         });
@@ -289,25 +305,42 @@ function requestData(): Promise<Response> {
       })
       .then((resp) => resp.text())
       .then(txt => txt.concat(`
-        <> <${CREDIT('hasRequestedData')}> <#requestedData> .
-            <#requestedData> a <${CREDIT('Balance')}> .
+        <> :hasAccessRequest <${accessRequestUri}#bwaAccessRequest> .
+        <> :isAccessRequestGranted false .
       `))
       .then(body => {
-        hasRequestedData.value = true;
-        return putResource(dataRequestURI.value!, body, authFetch.value)
+        return putResource(props.demandUri, body, authFetch.value)
             .catch((err) => {
               toast.add({
                 severity: "error",
-                summary: "Error on put!",
+                summary: "Error on put Demand!",
                 detail: err,
                 life: 5000,
               });
               throw new Error(err);
-            })
+            });
       })
 }
 
-function patchDemand(demandURI: string, offerURI: string): Promise<Response> {
+async function requestData() {
+  const accessRequest = getAccessRequestBody();
+
+  const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequest, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on put Demand!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(getLocationHeader);
+
+  patchDemandAccessRequest(accessRequestUri);
+}
+
+function patchDemandOffer(demandURI: string, offerURI: string): Promise<Response> {
   // GET the current data
   return getResource(demandURI, authFetch.value)
       .catch((err) => {
@@ -324,7 +357,6 @@ function patchDemand(demandURI: string, offerURI: string): Promise<Response> {
         <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
       `))
       .then(body => {
-        hasRequestedData.value = true;
         return putResource(demandURI, body, authFetch.value)
             .catch((err) => {
               toast.add({
@@ -352,7 +384,9 @@ async function createOffer(body: string) {
       .then(getLocationHeader);
 }
 
-async function createOfferResource(demandURI: string, dataRequestURI: string, dataProcessedURI: string): Promise<void> {
+async function createOfferResource(demandURI: string, accessRequestUri: string): Promise<void> {
+  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri!.value!, businessAssessmentShapeTreeUri, authFetch.value);
+
   const body = `
             @prefix : <#>.
             @prefix credit: <${CREDIT()}> .
@@ -361,8 +395,8 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
             schema:itemOffered <#credit>;
           schema:availability schema:InStock;
             credit:derivedFromDemand <${demandURI}> ;
-            credit:derivedFromData <${dataProcessedURI}>;
-            credit:hasUnderlyingRequest <${dataRequestURI}> .
+            credit:derivedFromData <${businessAssessmentUri[0]}>;
+            credit:hasUnderlyingRequest <${accessRequestUri}> .
             <${webId?.value}> schema:offers <>  .
           <${demanderUri.value}> schema:seeks <>  .
             <http://example.com/loansAndCredits/c12345#credit>
@@ -377,7 +411,7 @@ async function createOfferResource(demandURI: string, dataRequestURI: string, da
             `
   const offerURI = await createOffer(body);
 
-  await patchDemand(demandURI, offerURI);
+  await patchDemandOffer(demandURI, offerURI);
   await grantAccessToResource(offerURI, demanderUri.value!);
   await grantAccessToResource(demandURI, demanderUri.value!); // for demand
 
