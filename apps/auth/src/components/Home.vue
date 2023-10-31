@@ -22,6 +22,10 @@
               <strong>Access Mode: </strong>
               <a :href="accessRequest.accessModeURI">{{ accessRequest.accessModeLabel }}</a>
             </div>
+            <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
+              <strong>From Demand: </strong>
+              <a :href="accessRequest.fromDemandURI">{{ accessRequest.fromDemandURI }}</a>
+            </div>
             <Button @click="AuthorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px;"
                     class="btn btn-primary">Authorize
             </Button>
@@ -251,7 +255,7 @@ async function postAccessControlList(accessRequest: AccessRequest, targetContain
     });
 }
 
-async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fromDemandURI: string, containerURI: string) {
+async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fromDemandURI: string) {
   getResource(fromDemandURI, authFetch.value)
     .catch((err) => {
       toast.add({
@@ -264,9 +268,6 @@ async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fro
     })
     .then((resp) => resp.text())
     .then(txt => txt.replace("isAccessRequestGranted false", "isAccessRequestGranted true"))
-    .then(txt => txt.concat(`
-      <> :providedData <${containerURI}>.
-    `))
     .then(body => {
       return putResource(fromDemandURI, body, authFetch.value)
         .catch((err) => {
@@ -285,7 +286,7 @@ async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   const targetContainerURIs = await getTargetContainerURIs(accessRequest);
   await postAccessAuthorization(accessRequest, targetContainerURIs);
   await postAccessControlList(accessRequest, targetContainerURIs);
-  await setDemandIsAccessRequestGranted(accessRequest, accessRequest.fromDemandURI, targetContainerURIs[0]);
+  await setDemandIsAccessRequestGranted(accessRequest, accessRequest.fromDemandURI);
 }
 
 async function getTargetContainerURIs(accessRequest: AccessRequest) {

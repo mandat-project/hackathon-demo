@@ -14,6 +14,11 @@
       </li>
 
       <li class="flex align-items-center gap-2">
+        <div class="col">
+          <span class="align-self-center font-bold">Select additional Data to Request</span>
+          <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label"
+                    placeholder="Request Data"/>
+        </div>
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                 @click="requestData()">Request business assessment data from {{ demanderName }}
@@ -73,9 +78,9 @@ import {
   parseToN3,
   putResource,
   SCHEMA,
-  getDataRegistrationContainers, FOAF, VCARD, INTEROP
+  getDataRegistrationContainers, FOAF, VCARD, INTEROP, XSD, SKOS
 } from '@shared/solid';
-import {NamedNode, Store} from 'n3';
+import { Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, ComputedRef, onMounted, reactive, ref, toRefs} from 'vue';
 
@@ -97,9 +102,14 @@ const loanTerms = [
   {label: "60 months", value: "5"}
 ];
 
+const selectedShapeTree = ref({label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#"});
+const shapeTrees = [
+  {label: "Business Assessment 2022", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#"},
+  {label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#"}
+];
+
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
-const businessAssessmentShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#'
 
 let orderContainerUris: Array<string>;
 let offerContainerUris: Array<string>;
@@ -118,7 +128,6 @@ const demanderAccessInboxUri: ComputedRef<string | undefined> = computed(() => s
 
 // Demand
 
-const providedDataUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("providedData"), null, null)[0]?.object?.value);
 const accessRequestUri: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasAccessRequest"), null, null)[0]?.object?.value);
 const isAccessRequestGranted: ComputedRef<string | undefined> = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("isAccessRequestGranted"), null, null)[0]?.object?.value);
 const amount: ComputedRef<string | undefined> = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
@@ -133,6 +142,14 @@ const isOfferAccepted = computed(() => {
   return offerUri
       ? state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), offerUri, null).length > 0
       : false;
+});
+
+onMounted(async () => {
+  await getAllDataRegistrationContainers()
+  await fetchDemand();
+  await fetchDemander();
+  await fetchOrders()
+      .then(() => addOrderDetails());
 });
 
 async function getAllDataRegistrationContainers() {
@@ -152,14 +169,6 @@ async function getContainerUris(webId: string, shapeTreeUri: string) {
         throw new Error(err);
       });
 }
-
-onMounted(async () => {
-  await getAllDataRegistrationContainers()
-  await fetchDemand();
-  await fetchDemander();
-  await fetchOrders()
-      .then(() => addOrderDetails());
-});
 
 async function fetchDemander(): Promise<Store> {
   return getResource(demanderUri.value!, authFetch.value)
@@ -210,6 +219,11 @@ async function fetchOrders() {
       .then((parsedN3) => state.orderStore = parsedN3.store);
 }
 
+async function fetchProcessedData() {
+  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, authFetch.value);
+  window.open(businessAssessmentUri[0], '_blank');
+}
+
 /**
  * Adds details to orderStore foreach contained order
  */
@@ -232,21 +246,15 @@ function addOrderDetails(): Promise<void[]> {
   );
 }
 
-async function fetchProcessedData() {
-  window.open(providedDataUri.value, '_blank');
-}
-
 
 function getAccessRequestBody() {
-
-  // TODO Werte befüllen!
-  return `@prefix interop: <http://www.w3.org/ns/solid/interop#> .
-    @prefix ldp: <http://www.w3.org/ns/ldp#> .
-    @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-    @prefix credit: <http://example.org/vocab/datev/credit#> .
-    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-    @prefix acl: <http://www.w3.org/ns/auth/acl#> .
-    @prefix shapeTree:  <https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#>.
+  return `@prefix interop: <${INTEROP()}> .
+    @prefix ldp: <${LDP()}> .
+    @prefix skos: <${SKOS()}> .
+    @prefix credit: <${CREDIT()}> .
+    @prefix xsd: <${XSD()}> .
+    @prefix acl: <${ACL()}> .
+    @prefix shapeTree:  <${selectedShapeTree.value.value}>.
 
     # This could be hosted at the profle document of the application or social agent or at a
     # central location (e.g. together with the shapes/shapetress) for "standardized" access needs
@@ -286,8 +294,8 @@ function getAccessRequestBody() {
     # Goes into the access inbox of sme
     <#bwaAccessRequest>
       a interop:AccessRequest ;
-      interop:fromSocialAgent <https://bank.solid.aifb.kit.edu/profile/card#me> ;
-      interop:toSocialAgent  <https://sme.solid.aifb.kit.edu/profile/card#me> ;
+      interop:fromSocialAgent <${webId!.value}> ;
+      interop:toSocialAgent  <${demanderUri.value}> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
       credit:fromDemand <${props.demandUri}>.`;
 }
@@ -385,7 +393,7 @@ async function createOffer(body: string) {
 }
 
 async function createOfferResource(demandURI: string, accessRequestUri: string): Promise<void> {
-  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri!.value!, businessAssessmentShapeTreeUri, authFetch.value);
+  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, authFetch.value);
 
   const body = `
             @prefix : <#>.
