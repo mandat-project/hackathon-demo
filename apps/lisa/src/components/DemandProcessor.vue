@@ -19,6 +19,9 @@
           <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label"
                     placeholder="Request Data"/>
         </div>
+      </li>
+
+      <li class="flex align-items-center gap-2">       
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                 @click="requestData()">Request business assessment data from {{ demanderName }}
