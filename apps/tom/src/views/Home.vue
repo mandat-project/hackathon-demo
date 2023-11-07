@@ -45,12 +45,12 @@
               class="flex flex-wrap align-items-center justify-content-between">
             <hr v-if="index !== 0" class="w-full"/>
             <div class="flex flex-column md:flex-row gap-2 p-3">
-              <span v-if="demand.offer"> From </span>
-              <span v-if="demand.offer" style="font-weight:bold ;"> <a :href=demand.providerWebID>{{ demand.providerName }} </a> : </span>                            
-              <span v-if="demand.offer">{{ demand.amount }} {{ demand.currency }}</span>
+              <span> From </span>
+              <span style="font-weight:bold ;"> <a :href=demand.providerWebID>{{ demand.providerName }} </a> : </span>
+              <span>{{ demand.amount }} {{ demand.currency }}</span>
               <span v-if="demand.offer">(interest rate %: {{ demand.offer.interestRate }})</span>
               <span v-if="demand.offer">(duration: {{ demand.offer.duration }})</span>
-              <span v-else>(no offer)</span>
+              <span v-else>(currently no offer)</span>
             </div>
             <Button v-if="demand.offer"
                     type="submit"
@@ -75,7 +75,6 @@
 import {useToast} from "primevue/usetoast";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
-    ACL,
     createResource,
     CREDIT,
     getDataRegistrationContainers,
@@ -83,7 +82,6 @@ import {
     getResource,
     LDP,
     parseToN3,
-    putResource,
     SCHEMA,
 VCARD
 } from "@shared/solid";
@@ -161,7 +159,6 @@ async function loadDemands() {
 
         const duration = offerStore.getObjects(demandOffers[0].value + "#duration", SCHEMA('value'), null)[0];
 
-        console.log(duration);
 
         demands.value.push({
           providerName:bankname ,
