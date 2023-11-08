@@ -1,7 +1,9 @@
 sequenceDiagram
+actor Lisa (via auth agent) 
 actor Lisa
 participant Bank_Pod as BANK Pod
 actor Tom
+actor Tom (via auth agent) 
 participant KMU_Pod as SME Pod
 actor Max 
 participant StB_Pod as TAX Pod
@@ -41,11 +43,12 @@ note over Lisa,Tom: Initiation of partnership
     %% grant access to that resource to KMU as they do not have access by default
     %% The following .acl patch is equivalent to acknowledging the demand.
     %% Otherwise the demand may not exist at all.
-    rect rgb(255, 10, 255)
-        note over Lisa, Bank_Pod: 'Official' hack, creator of a resource in another pod does not <br/> necessarily have the read rights for it in the pod. <br/> Solvable via interop spec, but spec not implemented on server
-        Lisa->>+Bank_Pod: [HTTP PATCH /credits/demands/{uuid}.acl] (grant SME read)
-        Bank_Pod-->>-Lisa: [HTTP 205 RESET CONTENT] location {uuid}.acl
-    end
+    %% Info: Setzen der Rechte wird nicht mehr gebraucht, da gelöst über server script
+    %% rect rgb(255, 10, 255)
+    %%    note over Lisa, Bank_Pod: 'Official' hack , creator of a resource in another pod does not <br/> necessarily have the read rights for it in the pod. <br/> Solvable via interop spec, but spec not implemented on server
+    %%    Lisa->>+Bank_Pod: [HTTP PATCH /credits/demands/{uuid}.acl] (grant SME read)
+    %%    Bank_Pod-->>-Lisa: [HTTP 205 RESET CONTENT] location {uuid}.acl
+    %%end
 
     Lisa->>Lisa: Lisa processes the credit request <br/>  to decide what to do next
     %% (2) Nachfrage aktuelle Unternehmenssituation
@@ -54,39 +57,49 @@ note over Lisa,Tom: Initiation of partnership
     Lisa->>KMU_Pod: 3. GET SME WebID document
     KMU_Pod -->> Lisa: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
 
-    Lisa->>KMU_Pod:  POST Access Request in SME's Acces Inbox (i.e. object of `interop:hasAccessInbox`)
+    Lisa->>KMU_Pod:  [HTTP POST  /accessInbox] Access Request in SME's Access Inbox (i.e. object of `interop:hasAccessInbox`)
+    KMU_Pod-->>+Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
+
+
+    
     rect rgb(0, 150, 0)
-        note over Bank_Pod, KMU_Pod: (2) currently implemented via auth agent
-        Tom ->> KMU_Pod:  GET Access Request from Access Inbox
-        KMU_Pod -->> Tom: 200 OK with Access Request
+        note over Bank_Pod, KMU_Pod: implemented via auth agent
+        Tom ->> Tom (via auth agent) :  Redirect from Toms Bank app to Auth Agent
+        Tom (via auth agent) ->> KMU_Pod:  GET Access Request from Access Inbox
+        KMU_Pod -->> Tom (via auth agent): 200 OK with Access Request
 
-        Tom -->> Tom: Tom looks at the access request <br/> and decides what to do next
+        Tom (via auth agent) -->> Tom (via auth agent): Tom looks at the access request in the Auth App <br/> and decides what to do next
 
-        Note over Tom, KMU_Pod: Save Access Authorization in Authorization Registry <br/> Currently done via setting ACLs directly
-        Note over Tom, KMU_Pod: Save Access Grant in <br/> Social Agent Registration in Agent Registry
-
-        Tom ->>Bank_Pod: 6. GET BANK's WebID Profile Document
-        Bank_Pod -->> Tom: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
-        Tom->> Bank_Pod: 7. POST Access Receipt in BANK's Access Inbox
+        Note over Tom (via auth agent), KMU_Pod: Save Access Authorization in Authorization Registry <br/> Currently done via setting ACLs directly
+        Note over Tom (via auth agent), KMU_Pod: For documentation: Save Access Grant in <br/> Social Agent Registration in Agent Registry
+        Tom (via auth agent) -->>  KMU_Pod: document Access Grant [HTTP POST /profile/registry/Authorization-Registry]
+        KMU_Pod -->> Tom (via auth agent): [HTTP 201 Created] location /Authorization-Registry/{UUID}
+        
+        Tom (via auth agent) ->>Bank_Pod: 6. Set 'is Access Request Granted' flag in credit demand [/credits/demands/{uuid}] ; 
+        Tom (via auth agent) ->> Tom:  Redirect from  Auth Agent to Toms Bank App
     end
 
-    rect rgb(255, 10, 255)
-        opt
-        note over Lisa, KMU_Pod: Not implemented yet. Might also be obsolete, as the Information about additional requested data is already sent via a previous Access Request
-            %% note over Lisa: This Notification does not contain the request, only a link to the request.
-            Lisa->>+KMU_Pod: [HTTP POST /inbox/] Linked Data Notification
-            KMU_Pod-->>-Lisa: [HTTP 201 Created] location /inbox/{uuid}
-            Tom->>+KMU_Pod: [HTTP GET /inbox/]
-            KMU_Pod-->>-Tom: [HTTP 200 OK] Inbox
-            Tom->>+KMU_Pod: [HTTP GET /inbox/{uuid}]
-            KMU_Pod-->>-Tom: [HTTP 200 OK] notification
-       end
-    end
+    %% Aus altem Sequenzdiagramm übernommen. Kann eigentlich weg-> auskommentiert
+    %%rect rgb(255, 10, 255)
+    %%    opt
+    %%    note over Lisa, KMU_Pod: Not implemented yet. Might also be obsolete, as the Information about additional requested data is already sent via a previous Access Request
+    %%        %% note over Lisa: This Notification does not contain the request, only a link to the request.
+    %%        Lisa->>+KMU_Pod: [HTTP POST /inbox/] Linked Data Notification
+    %%        KMU_Pod-->>-Lisa: [HTTP 201 Created] location /inbox/{uuid}
+    %%        Tom->>+KMU_Pod: [HTTP GET /inbox/]
+    %%        KMU_Pod-->>-Tom: [HTTP 200 OK] Inbox
+    %%        Tom->>+KMU_Pod: [HTTP GET /inbox/{uuid}]
+    %%        KMU_Pod-->>-Tom: [HTTP 200 OK] notification
+    %%   end
+    %%end
 
     rect rgb(255, 10, 255)
-        note over Tom, StB_Pod: What data is sent via LDN ? Shapetree & ContainerURI ? If only shapetree is provided, StB has to lookup ContainerURI in SME Pod via shapetree.
+        note over Tom, StB_Pod: >>>>Not fully implemented yet! <<<<< <br/> Tom notifies Tax/Max to provide BWAs (for Lisa).  <br/> Tom  sends shapetree for destination location of BWAs. <br/> StB has to lookup ContainerURI in SME Pod via shapetree.
         Tom->>+StB_Pod: [HTTP POST /inbox/] Linked Data Notification
         StB_Pod-->>-Tom: [HTTP 201 Created] location /inbox/{uuid}
+
+        Max->>KMU_Pod: getContainerUris(SME Web ID , businessAssessmentShapeTree)
+        KMU_Pod -->> Max: 200 OK with  location of data registration for posting BWAs)
 
         %% provide data as reponse to LDN
         Max->>+KMU_Pod: [HTTP POST businessAssessments/businessAssessment/] provide requested data
@@ -110,16 +123,19 @@ note over Lisa,Tom: Initiation of partnership
         end
     end
 
+
+    note over Lisa, KMU_Pod: Lisa is notified about created BWAs and fetches them from KMU Pod
+
     Lisa->>KMU_Pod: getContainerUris(SME Web ID , businessAssessmentShapeTreeUri)
     KMU_Pod -->> Lisa: 200 OK with  location of data registration for businessAssessment)
 
     %% fetch business assessment list
-    Lisa->>Bank_Pod: [HTTP GET businessAssessments/businessAssessment/}]
-    Bank_Pod-->>Lisa: [HTTP 200 OK] businessAssessments
+    Lisa->>KMU_Pod: [HTTP GET businessAssessments/businessAssessment/}]
+    KMU_Pod-->>Lisa: [HTTP 200 OK] businessAssessments
 
     %% fetch specific business assessment
-    Lisa->>+Bank_Pod: [HTTP GET businessAssessments/businessAssessment/{uuid}]
-    Bank_Pod-->> Lisa: [HTTP 200 OK] businessAssessment
+    Lisa->>+KMU_Pod: [HTTP GET businessAssessments/businessAssessment/{uuid}]
+    KMU_Pod-->> Lisa: [HTTP 200 OK] businessAssessment
 
     Lisa->>Lisa: lisa looks at business assessment and evaluates it
 
@@ -135,8 +151,29 @@ note over Lisa,Tom: Initiation of partnership
     Lisa->>+Bank_Pod: [HTTP PATCH /credits/demands/{uuid}] (include offer {uuid})
     Bank_Pod-->>-Lisa: [HTTP 205 RESET CONTENT] location {uuid}
 
+    %% Create access request for offer for TOM/KMU: 
+    Lisa->>+Bank_Pod: [HTTP POST  /accessInbox] Access Request in Bank's Access Inbox (i.e. object of `interop:hasAccessInbox`) that Tom/KMU can read credit offer
+    Bank_Pod-->>+Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
+    
+    rect rgb(0, 150, 0)
+        note over  Lisa (via auth agent), Lisa: implemented via auth agent
+        Lisa ->> Lisa (via auth agent) :  Redirect from Lisa Bank app to Auth Agent
+        Lisa (via auth agent) ->> Bank_Pod:  GET Access Request from Access Inbox
+        Bank_Pod -->> Lisa (via auth agent): 200 OK with Access Request
+
+        Lisa (via auth agent) -->> Lisa (via auth agent): Lisa looks at the access request in the Auth App <br/> and sets access grants for Tom
+
+        Note over Lisa (via auth agent), Bank_Pod: Save Access Authorization in Authorization Registry<br/> for this specific offer (data instance) <br/> Currently done via setting ACLs directly
+        Note over Lisa (via auth agent), Bank_Pod: For documentation: Save Access Grant in <br/> Social Agent Registration in Agent Registry ?
+        Lisa (via auth agent) ->>  Bank_Pod: document Access Grant[HTTP POST /profile/registry/Authorization-Registry]
+        Bank_Pod -->> Lisa (via auth agent): [HTTP 201 Created] location /Authorization-Registry/{UUID}
+        Lisa (via auth agent) ->> Lisa:  Redirect from  Lisa Auth Agent to Lisa Bank App
+    end
+
+
+
     rect rgb(255, 10, 255)
-        note over Lisa,KMU_Pod: Not implemented yet!
+        note over Lisa,KMU_Pod: Not implemented yet! <br/> Still to be discussed. Notification of Tom from Lisa that an offer has been createds via LDNs or other solution?
         opt
             %% Notify KMU
             %% note over KMU_Pod,Lisa: This Notification does not contain the request, only a link to the request.
@@ -156,8 +193,10 @@ note over Lisa,Tom: Initiation of partnership
         Tom-)Tom: evaluates credit offer
     end
 
-    %% ((6)) Akzeptiert Kreditangebot
-    note over Tom,Bank_Pod: (7) make an order
-    %% create credit order in bank pod
-    Tom->>+Bank_Pod: [HTTP POST /credits/orders/] credit order
-    Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
+    rect rgb(255, 10, 255)
+        %% ((6)) Akzeptiert Kreditangebot
+        note over Tom,Bank_Pod:  make an order <br/> >>>>>Woher weiß Tom wohin die order im Bank-Pod geschrieben werden soll?<<<<<<< <br/> >>>>>Woher / Wie bekommt Tom die Berechtigung in den order Container zu schreiben?<<<<<<
+        %% create credit order in bank pod
+        Tom->>+Bank_Pod: [HTTP POST /credits/orders/] credit order
+        Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
+    end
