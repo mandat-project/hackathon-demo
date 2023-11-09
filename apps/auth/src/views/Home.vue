@@ -1,7 +1,5 @@
 <template>
-  <HeaderBar/>
-
-  <div v-if="isLoggedIn" class="grid">
+  <div class="grid">
     <div class="col lg:col-6">
       <div class="accordion" id="accessAccordion">
         <Accordion :activeIndex="-1">
@@ -34,7 +32,6 @@
       </div>
     </div>
   </div>
-  <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
 </template>
 
 <script lang="ts" setup>
