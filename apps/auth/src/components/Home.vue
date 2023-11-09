@@ -48,7 +48,7 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource, CREDIT
+  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource, CREDIT, FOAF
 } from "@shared/solid";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {HeaderBar} from "@shared/components";
@@ -218,30 +218,38 @@ async function postAccessAuthorization(accessRequest: AccessRequest, targetConta
 }
 
 async function postAccessControlList(accessRequest: AccessRequest, targetContainerURIs: string[]) {
+  
+const aclDataProcessed = `\
+@prefix acl: <${ACL()}>.
+@prefix foaf: <${FOAF()}>.
 
-  const aclDataProcessed = `\
-          @prefix acl: <${ACL()}>.
+<#owner>
+    a acl:Authorization;
+    acl:accessTo <${targetContainerURIs[0]}>;
+    acl:agent <${sessionInfo.webId}>;
+    acl:default <${targetContainerURIs[0]}>;
+    acl:mode acl:Control, acl:Read, acl:Write.
 
-    <#owner>
-        a           acl:Authorization;
-        acl:agent   <${sessionInfo.webId}>;
-        acl:mode    acl:Control,
-                    acl:Read,
-                    acl:Write;
-        acl:accessTo <${targetContainerURIs[0]}>.
+<#Read>
+    a acl:Authorization;
+    acl:accessTo <${targetContainerURIs[0]}>;
+    acl:agentClass foaf:Agent;
+    acl:mode acl:Read.
 
-    <#bank>
-        a acl:Authorization;
-        acl:accessTo <${targetContainerURIs[0]}> ;
-        acl:agent <${accessRequest.fromSocialAgentURI}>;
-        acl:mode <${accessRequest.accessModeURI}>.
+<#tax>
+    a acl:Authorization;
+    acl:accessTo <${targetContainerURIs[0]}>;
+    acl:agent <${tax.value}>;
+    acl:default <${targetContainerURIs[0]}>;
+    acl:mode acl:Read, acl:Write.
 
-    <#tax>
-        a               acl:Authorization;
-        acl:accessTo    <${targetContainerURIs[0]}>;
-        acl:agent       <${tax.value}>;
-        acl:mode        acl:Read,
-                        acl:Write.`;
+<#bank>
+    a acl:Authorization;
+    acl:accessTo <${targetContainerURIs[0]}>;
+    acl:agent <${accessRequest.fromSocialAgentURI}>;
+    acl:default <${targetContainerURIs[0]}>;
+    acl:mode <${accessRequest.accessModeURI}>.`;                        
+
 
   await putResource(targetContainerURIs[0] + ".acl", aclDataProcessed, authFetch.value)
     .catch((err) => {
