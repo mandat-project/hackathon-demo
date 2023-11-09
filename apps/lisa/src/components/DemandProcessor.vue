@@ -105,10 +105,10 @@ const loanTerms = [
   {label: "60 months", value: "5"}
 ];
 
-const selectedShapeTree = ref({label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#"});
+const selectedShapeTree = ref({label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"});
 const shapeTrees = [
-  {label: "Business Assessment 2022", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#"},
-  {label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#"}
+  {label: "Business Assessment 2022", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"},
+  {label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"}
 ];
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
@@ -223,8 +223,13 @@ async function fetchOrders() {
 }
 
 async function fetchProcessedData() {
-  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, authFetch.value);
-  window.open(businessAssessmentUri[0], '_blank');
+  
+  
+  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
+  window.open(businessAssessmentUri[0], '_tab');
+  
+  //await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value).then( x=> window.open(x[0], '_blank'));
+ // window.open(businessAssessmentUri[0], '_tab');
 }
 
 /**
