@@ -1,4 +1,5 @@
 import {createApp} from "vue";
+
 import PrimeVue from "primevue/config";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
@@ -20,25 +21,21 @@ import TabMenu from "primevue/tabmenu";
 import ContextMenu from 'primevue/contextmenu';
 import Menu from 'primevue/menu';
 import Divider from "primevue/divider";
-import BadgeDirective from 'primevue/badgedirective';
-import Tooltip from "primevue/tooltip";
-import ToastService from "primevue/toastservice";
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
+import Tooltip from "primevue/tooltip";
+import ToastService from "primevue/toastservice";
+import BadgeDirective from 'primevue/badgedirective';
 
-import App from "./App.vue";
-import router from "./router";
-
-import "./registerServiceWorker"; // service-worker
 import "primeflex/primeflex.css"; // layouts
 import "primevue/resources/themes/vela-green/theme.css"; // theme
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css"; // icons
+import App from "./App.vue";
 
 
 const app = createApp(App);
 
-app.use(router);
 app.use(PrimeVue, {ripple: true});
 app.use(ToastService);
 app.use(ConfirmationService);
@@ -49,9 +46,9 @@ app.component("Avatar", Avatar);
 app.component("Card", Card);
 app.component("Checkbox", Checkbox);
 app.component("Chips", Chips);
-app.component("InputSwitch", InputSwitch);
+app.component("InputSwitch", InputSwitch)
 app.component("InputText", InputText);
-app.component("RadioButton", RadioButton);
+app.component("RadioButton", RadioButton)
 app.component("Textarea", Textarea);
 app.component("Dialog", Dialog);
 app.component("Dropdown", Dropdown);

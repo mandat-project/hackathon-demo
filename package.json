@@ -6,6 +6,9 @@
     "lint": "lerna run lint",
     "build": "lerna run build",
     "serve": "lerna run serve",
+    "auth:serve": "lerna run serve --scope auth",
+    "auth:build": "lerna run build --scope auth",
+    "auth:lint": "lerna run lint --scope auth",
     "max:serve": "lerna run serve --scope max",
     "max:build": "lerna run build --scope max",
     "max:lint": "lerna run lint --scope max",
@@ -21,7 +24,9 @@
     "libs/*"
   ],
   "dependencies": {
+    "@comunica/query-sparql": "^2.8.0",
     "@inrupt/solid-client-authn-browser": "^1.12.2",
+    "@popperjs/core": "^2.11.8",
     "core-js": "^3.8.3",
     "n3": "^1.16.2",
     "primeflex": "^3.2.1",
@@ -33,7 +38,6 @@
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
-    "lerna": "^6.0.1",
     "@types/n3": "^1.10.4",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
@@ -46,6 +50,7 @@
     "@vue/eslint-config-typescript": "^9.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
+    "lerna": "^6.0.1",
     "typescript": "~4.5.5"
   }
 }
