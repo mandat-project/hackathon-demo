@@ -7,6 +7,10 @@ const routes: Array<RouteRecordRaw> = [
     path: "/",
     name: "Home",
     component: Home,
+    props: (route) => ({
+      inspectedAccessRequestURI: route.query.uri,
+      redirect: route.query.app_redirect,
+    }),
   },
   {
     path: "/accessRequest",

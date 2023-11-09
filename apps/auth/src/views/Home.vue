@@ -2,30 +2,65 @@
   <div class="grid">
     <div class="col lg:col-6">
       <div class="accordion" id="accessAccordion">
-        <Accordion :activeIndex="-1">
-          <AccordionTab v-for="(accessRequest) in accessRequests" :key="accessRequest.accessNeedURI"
-                        :header="accessRequest.fromSocialAgent">
-            <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
-              <a :href=accessRequest.fromSocialAgentURI>{{ accessRequest.fromSocialAgent }}</a>
-              <a>&nbsp;{{ "requests " + accessRequest.accessNeedGroupDescriptionLabel }}</a>
+        <Accordion :activeIndex="activeAccordionIndex">
+          <AccordionTab
+            v-for="accessRequest in accessRequests"
+            :key="accessRequest.accessNeedURI"
+            :header="accessRequest.fromSocialAgent"
+          >
+            <div
+              class="accordion-body"
+              style="padding-top: 5px; padding-bottom: 5px; text-align: left"
+            >
+              <a :href="accessRequest.fromSocialAgentURI">{{
+                accessRequest.fromSocialAgent
+              }}</a>
+              <a
+                >&nbsp;{{
+                  "requests " + accessRequest.accessNeedGroupDescriptionLabel
+                }}</a
+              >
             </div>
-            <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
-              <strong>Comment: </strong>{{ accessRequest.accessNeedGroupDescriptionDefinition }}
+            <div
+              class="accordion-body"
+              style="padding-top: 5px; padding-bottom: 5px; text-align: left"
+            >
+              <strong>Comment: </strong
+              >{{ accessRequest.accessNeedGroupDescriptionDefinition }}
             </div>
-            <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
+            <div
+              class="accordion-body"
+              style="padding-top: 5px; padding-bottom: 5px; text-align: left"
+            >
               <strong>Required Data: </strong>
-              <a :href="accessRequest.shapeTreeURI">{{ accessRequest.shapeTree }}</a>
+              <a :href="accessRequest.shapeTreeURI">{{
+                accessRequest.shapeTree
+              }}</a>
             </div>
-            <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
+            <div
+              class="accordion-body"
+              style="padding-top: 5px; padding-bottom: 5px; text-align: left"
+            >
               <strong>Access Mode: </strong>
-              <a :href="accessRequest.accessModeURI">{{ accessRequest.accessModeLabel }}</a>
+              <a :href="accessRequest.accessModeURI">{{
+                accessRequest.accessModeLabel
+              }}</a>
             </div>
-            <div class="accordion-body" style="padding-top: 5px; padding-bottom: 5px; text-align:left">
+            <div
+              class="accordion-body"
+              style="padding-top: 5px; padding-bottom: 5px; text-align: left"
+            >
               <strong>From Demand: </strong>
-              <a :href="accessRequest.fromDemandURI">{{ accessRequest.fromDemandURI }}</a>
+              <a :href="accessRequest.fromDemandURI">{{
+                accessRequest.fromDemandURI
+              }}</a>
             </div>
-            <Button @click="AuthorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px;"
-                    class="btn btn-primary">Authorize
+            <Button
+              @click="AuthorizeAndGrantAccess(accessRequest)"
+              type="button"
+              style="margin: 20px"
+              class="btn btn-primary"
+              >Authorize
             </Button>
           </AccordionTab>
         </Accordion>
@@ -45,44 +80,62 @@ import {
   RDF,
   XSD,
   ACL,
-  SHAPETREE, RDFS, VCARD, getDataRegistrationContainers, putResource, CREDIT, FOAF
+  SHAPETREE,
+  RDFS,
+  VCARD,
+  getDataRegistrationContainers,
+  putResource,
+  CREDIT,
+  FOAF,
 } from "@shared/solid";
-import {useSolidProfile, useSolidSession} from "@shared/composables";
-import {HeaderBar} from "@shared/components";
-import {ref, toRefs, watch} from "vue";
-import {useToast} from "primevue/usetoast";
-import {QueryEngine} from "@comunica/query-sparql/lib/QueryEngine";
-import {Quad, Store} from "n3";
+import { useSolidProfile, useSolidSession } from "@shared/composables";
+import { ref } from "vue";
+import { useToast } from "primevue/usetoast";
+import { QueryEngine } from "@comunica/query-sparql/lib/QueryEngine";
+import { Quad, Store } from "n3";
 
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
 
-const {authFetch, sessionInfo} = useSolidSession();
-const {isLoggedIn} = toRefs(sessionInfo);
-const {storage} = useSolidProfile();
+const { authFetch, sessionInfo } = useSolidSession();
+const { storage } = useSolidProfile();
 const toast = useToast();
 
 const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 const accessRequests = ref<AccessRequest[]>([]);
 
-watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? getAccessRequests() : {});
+const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
+const activeAccordionIndex = ref(-1)
 
-async function getAccessRequests(this: any) {
+getAccessRequests();
+
+async function getAccessRequests() {
   const storeProfileCard = await getStoreProfileCard();
 
-  const accessInboxURIs = storeProfileCard.getObjects(null, INTEROP("hasAccessInbox"), null);
+  const accessInboxURIs = storeProfileCard.getObjects(
+    null,
+    INTEROP("hasAccessInbox"),
+    null
+  );
 
   if (accessInboxURIs.length == 0) {
     toast.add({
       severity: "danger",
-      summary: "No access inbox found in your Pod"
-    })
+      summary: "No access inbox found in your Pod",
+    });
   } else {
     const accessInboxURI = accessInboxURIs[0].value;
     const accessInboxStore = await getAccessInboxStore(accessInboxURI);
-    const accessInboxEntries = accessInboxStore.getObjects(null, LDP('contains'), null);
-    if(this.$route.query.uri) {
-      accessInboxEntries.filter((value) => value == this.$route.query.uri);
+    let accessInboxEntries = accessInboxStore.getObjects(
+      null,
+      LDP("contains"),
+      null
+    );
+    if (props.inspectedAccessRequestURI) {
+      activeAccordionIndex.value = 0
+      accessInboxEntries = accessInboxEntries.filter(
+        (value) => value.id == props.inspectedAccessRequestURI
+      );
     }
     getAllAccessInboxEntriesAsStore(accessInboxEntries, accessInboxURI);
   }
@@ -104,7 +157,10 @@ async function getStoreProfileCard() {
     .then((parsedN3) => parsedN3.store);
 }
 
-function getAllAccessInboxEntriesAsStore(accessInboxEntries: Array<Quad["object"]>, accessInboxURI: string) {
+function getAllAccessInboxEntriesAsStore(
+  accessInboxEntries: Array<Quad["object"]>,
+  accessInboxURI: string
+) {
   for (const accessInboxEntry of accessInboxEntries) {
     getResource(accessInboxEntry.id, authFetch.value)
       .catch((err) => {
@@ -119,37 +175,45 @@ function getAllAccessInboxEntriesAsStore(accessInboxEntries: Array<Quad["object"
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, accessInboxURI))
       .then((parsedN3) => parsedN3.store)
-      .then(async store => {
-        await getSingleAccessRequest(store)
+      .then(async (store) => {
+        await getSingleAccessRequest(store);
       });
   }
 }
 
 async function getSingleAccessRequest(store: Store) {
-  const accessRequest = store.getSubjects(RDF("type"), INTEROP("AccessRequest"), null);
+  const accessRequest = store.getSubjects(
+    RDF("type"),
+    INTEROP("AccessRequest"),
+    null
+  );
   if (accessRequest.length != 0) {
-    const senderSocialAgent = store.getObjects(null, INTEROP("fromSocialAgent"), null)[0].value;
+    const senderSocialAgent = store.getObjects(
+      null,
+      INTEROP("fromSocialAgent"),
+      null
+    )[0].value;
     const SparqlEngine = new QueryEngine();
     const sparqlQuery = getSparqlForQueryingAccessRequests(senderSocialAgent);
     const bindingsStream = await SparqlEngine.queryBindings(sparqlQuery, {
-      sources: [store, ACL().replace('http:', 'https:'), senderSocialAgent]
+      sources: [store, ACL().replace("http:", "https:"), senderSocialAgent],
     });
-    bindingsStream.on('data', (binding: any) => {
+    bindingsStream.on("data", (binding: any) => {
       accessRequests.value.push({
         fromSocialAgentURI: senderSocialAgent,
-        fromSocialAgent: binding.get('vcardName').value,
-        toSocialAgent: binding.get('receiverSocialAgent').value,
-        accessNeedGroupDescriptionLabel: binding.get('label').value,
-        accessNeedGroupDescriptionDefinition: binding.get('definition').value,
-        necessity: binding.get('necessity').value,
-        shapeTreeURI: binding.get('shapeTree').value,
-        shapeTree: binding.get('shapeTree').value.split('#')[1],
-        accessNeedGroupURI: binding.get('accessNeedGroup').value,
-        accessModeLabel: binding.get('accessModeLabel').value,
-        accessModeURI: binding.get('accessMode').value,
-        accessNeedURI: binding.get('accessNeed').value,
-        fromDemandURI: binding.get('fromDemand').value
-      })
+        fromSocialAgent: binding.get("vcardName").value,
+        toSocialAgent: binding.get("receiverSocialAgent").value,
+        accessNeedGroupDescriptionLabel: binding.get("label").value,
+        accessNeedGroupDescriptionDefinition: binding.get("definition").value,
+        necessity: binding.get("necessity").value,
+        shapeTreeURI: binding.get("shapeTree").value,
+        shapeTree: binding.get("shapeTree").value.split("#")[1],
+        accessNeedGroupURI: binding.get("accessNeedGroup").value,
+        accessModeLabel: binding.get("accessModeLabel").value,
+        accessModeURI: binding.get("accessMode").value,
+        accessNeedURI: binding.get("accessNeed").value,
+        fromDemandURI: binding.get("fromDemand").value,
+      });
       // Dummy access request to display more than one access request in the UI
       //   Note: Invalid authorization. Can be overwritten by setting authorization for the bank
       //  accessRequests.value.push({
@@ -170,7 +234,10 @@ async function getSingleAccessRequest(store: Store) {
   }
 }
 
-async function postAccessAuthorization(accessRequest: AccessRequest, targetContainerURIs: string[]) {
+async function postAccessAuthorization(
+  accessRequest: AccessRequest,
+  targetContainerURIs: string[]
+) {
   const date = new Date().toISOString();
 
   const payload = `
@@ -200,7 +267,11 @@ async function postAccessAuthorization(accessRequest: AccessRequest, targetConta
       interop:hasDataRegistration  <${targetContainerURIs[0]}> ;
       interop:satisfiesAccessNeed <${accessRequest.accessNeedURI}> .`;
 
-  await createResource(`${storage.value}authorization-registry/`, payload, authFetch.value)
+  await createResource(
+    `${storage.value}authorization-registry/`,
+    payload,
+    authFetch.value
+  )
     .catch((err) => {
       toast.add({
         severity: "error",
@@ -210,16 +281,20 @@ async function postAccessAuthorization(accessRequest: AccessRequest, targetConta
       });
       throw new Error(err);
     })
-    .then(() => toast.add({
-      severity: "success",
-      summary: "Access authorized",
-      life: 5000
-    }));
+    .then(() =>
+      toast.add({
+        severity: "success",
+        summary: "Access authorized",
+        life: 5000,
+      })
+    );
 }
 
-async function postAccessControlList(accessRequest: AccessRequest, targetContainerURIs: string[]) {
-
-const aclDataProcessed = `\
+async function postAccessControlList(
+  accessRequest: AccessRequest,
+  targetContainerURIs: string[]
+) {
+  const aclDataProcessed = `\
 @prefix acl: <${ACL()}>.
 @prefix foaf: <${FOAF()}>.
 
@@ -250,20 +325,22 @@ const aclDataProcessed = `\
     acl:default <${targetContainerURIs[0]}>;
     acl:mode <${accessRequest.accessModeURI}>.`;
 
-
-  await putResource(targetContainerURIs[0] + ".acl", aclDataProcessed, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on put postAccessControlList!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
+  await putResource(
+    targetContainerURIs[0] + ".acl",
+    aclDataProcessed,
+    authFetch.value
+  ).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Error on put postAccessControlList!",
+      detail: err,
+      life: 5000,
     });
+    throw new Error(err);
+  });
 }
 
-async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fromDemandURI: string) {
+async function setDemandIsAccessRequestGranted(fromDemandURI: string) {
   getResource(fromDemandURI, authFetch.value)
     .catch((err) => {
       toast.add({
@@ -275,42 +352,46 @@ async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fro
       throw new Error(err);
     })
     .then((resp) => resp.text())
-    .then(txt => txt.replace("isAccessRequestGranted false", "isAccessRequestGranted true"))
-    .then(body => {
-      return putResource(fromDemandURI, body, authFetch.value)
-        .catch((err) => {
-          toast.add({
-            severity: "error",
-            summary: "Error on put Demand!",
-            detail: err,
-            life: 5000,
-          });
-          throw new Error(err);
+    .then((txt) =>
+      txt.replace("isAccessRequestGranted false", "isAccessRequestGranted true")
+    )
+    .then((body) => {
+      return putResource(fromDemandURI, body, authFetch.value).catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on put Demand!",
+          detail: err,
+          life: 5000,
         });
-    })
+        throw new Error(err);
+      });
+    });
 }
 
-async function AuthorizeAndGrantAccess(this: any, accessRequest: AccessRequest) {
+async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   const targetContainerURIs = await getTargetContainerURIs(accessRequest);
   await postAccessAuthorization(accessRequest, targetContainerURIs);
   await postAccessControlList(accessRequest, targetContainerURIs);
-  await setDemandIsAccessRequestGranted(accessRequest, accessRequest.fromDemandURI);
-  if(this.$route.query.redirect) {
-    window.open(this.$route.query.redirect,"_self");
+  await setDemandIsAccessRequestGranted(accessRequest.fromDemandURI);
+  if (props.redirect) {
+    window.open(`${props.redirect}?uri=${props.inspectedAccessRequestURI}&result=1`, "_self");
   }
 }
 
 async function getTargetContainerURIs(accessRequest: AccessRequest) {
-  return await getDataRegistrationContainers(`${sessionInfo.webId}`, accessRequest.shapeTreeURI, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on getDataRegistrationContainers!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
+  return await getDataRegistrationContainers(
+    `${sessionInfo.webId}`,
+    accessRequest.shapeTreeURI,
+    authFetch.value
+  ).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Error on getDataRegistrationContainers!",
+      detail: err,
+      life: 5000,
     });
+    throw new Error(err);
+  });
 }
 
 async function postAccessReceiptToGrantee() {
@@ -327,7 +408,11 @@ async function postAccessReceiptToGrantee() {
   interop:providedAt "2020-09-05T06:15:01Z"^^xsd:dateTime ;
   interop:grantedBy <${sessionInfo.webId}> .`;
 
-  await createResource(`${storage.value}agent-registry/`, payload, authFetch.value)
+  await createResource(
+    `${storage.value}agent-registry/`,
+    payload,
+    authFetch.value
+  )
     .catch((err) => {
       toast.add({
         severity: "error",
@@ -337,7 +422,12 @@ async function postAccessReceiptToGrantee() {
       });
       throw new Error(err);
     })
-    .then(() => toast.add({severity: "success", summary: "AccessReceipt sent to grantee"}));
+    .then(() =>
+      toast.add({
+        severity: "success",
+        summary: "AccessReceipt sent to grantee",
+      })
+    );
 }
 
 function getSparqlForQueryingAccessRequests(senderSocialAgent: string) {
@@ -392,7 +482,6 @@ async function getAccessInboxStore(accessInboxURI: string) {
     .then((parsedN3) => parsedN3.store);
 }
 
-
 interface AccessRequest {
   fromSocialAgentURI: string;
   fromSocialAgent: string;
@@ -408,5 +497,4 @@ interface AccessRequest {
   accessNeedGroupURI: string;
   fromDemandURI: string;
 }
-
 </script>
