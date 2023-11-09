@@ -428,8 +428,8 @@ async function createOfferResource(demandURI: string, accessRequestUri: string):
   const offerURI = await createOffer(body);
 
   await patchDemandOffer(demandURI, offerURI);
-  await grantAccessToResource(offerURI, demanderUri.value!);
-  await grantAccessToResource(demandURI, demanderUri.value!); // for demand
+  await grantAccessToResource(offerURI, demanderUri.value!); // TODO do via access request
+  await grantAccessToResource(demandURI, demanderUri.value!); // obsolete when custom CSS with creator handler is deployed
 
   await fetchDemand(); // trigger recalculation of isOfferAccepted
 }
