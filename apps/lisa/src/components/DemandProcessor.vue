@@ -262,14 +262,13 @@ function getAccessRequestBody() {
     @prefix credit: <${CREDIT()}> .
     @prefix xsd: <${XSD()}> .
     @prefix acl: <${ACL()}> .
-    @prefix shapeTree:  <${selectedShapeTree.value.value}>.
 
     # This could be hosted at the profle document of the application or social agent or at a
     # central location (e.g. together with the shapes/shapetress) for "standardized" access needs
     <#bwaAccessNeed>
       a interop:AccessNeed ;
       interop:accessMode acl:Read ;
-      interop:registeredShapeTree shapeTree:businessAssessmentTree ;
+      interop:registeredShapeTree <${selectedShapeTree.value.value}> ;
       interop:accessNecessity interop:accessRequired .
 
     <#bwaAccessNeedGroup>
@@ -336,6 +335,7 @@ function patchDemandAccessRequest(accessRequestUri: string) {
               throw new Error(err);
             });
       })
+      .then(()=>fetchDemand())
 }
 
 async function requestData() {

@@ -134,7 +134,7 @@ async function getAccessRequests() {
     if (props.inspectedAccessRequestURI) {
       activeAccordionIndex.value = 0
       accessInboxEntries = accessInboxEntries.filter(
-        (value) => value.id == props.inspectedAccessRequestURI
+        (value) => props.inspectedAccessRequestURI.includes(value.id)
       );
     }
     getAllAccessInboxEntriesAsStore(accessInboxEntries, accessInboxURI);
@@ -374,7 +374,7 @@ async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
   await postAccessControlList(accessRequest, targetContainerURIs);
   await setDemandIsAccessRequestGranted(accessRequest.fromDemandURI);
   if (props.redirect) {
-    window.open(`${props.redirect}?uri=${props.inspectedAccessRequestURI}&result=1`, "_self");
+    window.open(`${props.redirect}?uri=${encodeURIComponent(props.inspectedAccessRequestURI)}&result=1`, "_self");
   }
 }
 

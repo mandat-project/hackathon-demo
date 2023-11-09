@@ -30,6 +30,8 @@ async function filterDataRegistrationUrisByShapeTreeUri(dataRegistrationUris: Ar
         await getRegisteredShapeTree(dataRegistrationUri, authFetch)
             .then(getQuadValue)
             .then(dataRegistrationShapeTree => {
+                console.log(dataRegistrationShapeTree)
+                console.log(shapeTreeUri)
                 if (dataRegistrationShapeTree === shapeTreeUri) {
                     result.push(dataRegistrationUri);
                 }

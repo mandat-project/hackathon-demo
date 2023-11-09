@@ -1,6 +1,6 @@
 import {computed, ref, watch} from "vue";
 import {useSolidSession} from "./useSolidSession";
-import {getResource, LDP, parseToN3, SPACE, VCARD} from "@shared/solid";
+import {getResource, INTEROP, LDP, parseToN3, SPACE, VCARD} from "@shared/solid";
 import {Store} from "n3";
 
 const {authFetch, sessionInfo} = useSolidSession();
@@ -9,6 +9,7 @@ const name = ref("");
 const img = ref("");
 const inbox = ref("");
 const storage = ref("")
+const authAgent = ref("")
 
 watch(() => sessionInfo.webId, async () => {
     const webId = sessionInfo.webId as string
@@ -27,11 +28,13 @@ watch(() => sessionInfo.webId, async () => {
     inbox.value = query.length > 0 ? query[0].value : "";
     query = store.getObjects(webId, SPACE("storage"), null);
     storage.value = query.length > 0 ? query[0].value : "";
+    query = store.getObjects(webId, INTEROP("hasAuthorizationAgent"), null);
+    authAgent.value = query.length > 0 ? query[0].value : "";
 })
 
 const wallet = computed(() => storage.value !== "" ? `${storage.value}wallet/` : "");
 const credStatusDir = computed(() => storage.value !== "" ? `${storage.value}credentialStatus/` : "");
 
 export const useSolidProfile = () => {
-    return {name, img, inbox, storage, wallet, credStatusDir};
+    return {name, img, inbox, storage, wallet, credStatusDir, authAgent};
 };

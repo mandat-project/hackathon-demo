@@ -30,7 +30,7 @@ const demandUris = ref<string[]>([]);
 
 // refetch demandUris on login
 watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? fetchDemandUris() : {});
-
+fetchDemandUris()
 
 // discovers all containers including demands and add their contents (demands) to demandUris
 async function fetchDemandUris(): Promise<void> {
