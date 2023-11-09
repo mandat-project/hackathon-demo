@@ -70,7 +70,7 @@ const accessRequests = ref<AccessRequest[]>([]);
 
 watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? getAccessRequests() : {});
 
-async function getAccessRequests() {
+async function getAccessRequests(this: any) {
   const storeProfileCard = await getStoreProfileCard();
 
   const accessInboxURIs = storeProfileCard.getObjects(null, INTEROP("hasAccessInbox"), null);
@@ -84,6 +84,9 @@ async function getAccessRequests() {
     const accessInboxURI = accessInboxURIs[0].value;
     const accessInboxStore = await getAccessInboxStore(accessInboxURI);
     const accessInboxEntries = accessInboxStore.getObjects(null, LDP('contains'), null);
+    if(this.$route.query.uri) {
+      accessInboxEntries.filter((value) => value == this.$route.query.uri);
+    }
     getAllAccessInboxEntriesAsStore(accessInboxEntries, accessInboxURI);
   }
 }
@@ -218,7 +221,7 @@ async function postAccessAuthorization(accessRequest: AccessRequest, targetConta
 }
 
 async function postAccessControlList(accessRequest: AccessRequest, targetContainerURIs: string[]) {
-  
+
 const aclDataProcessed = `\
 @prefix acl: <${ACL()}>.
 @prefix foaf: <${FOAF()}>.
@@ -248,7 +251,7 @@ const aclDataProcessed = `\
     acl:accessTo <${targetContainerURIs[0]}>;
     acl:agent <${accessRequest.fromSocialAgentURI}>;
     acl:default <${targetContainerURIs[0]}>;
-    acl:mode <${accessRequest.accessModeURI}>.`;                        
+    acl:mode <${accessRequest.accessModeURI}>.`;
 
 
   await putResource(targetContainerURIs[0] + ".acl", aclDataProcessed, authFetch.value)
@@ -290,11 +293,14 @@ async function setDemandIsAccessRequestGranted(accessRequest: AccessRequest, fro
     })
 }
 
-async function AuthorizeAndGrantAccess(accessRequest: AccessRequest) {
+async function AuthorizeAndGrantAccess(this: any, accessRequest: AccessRequest) {
   const targetContainerURIs = await getTargetContainerURIs(accessRequest);
   await postAccessAuthorization(accessRequest, targetContainerURIs);
   await postAccessControlList(accessRequest, targetContainerURIs);
   await setDemandIsAccessRequestGranted(accessRequest, accessRequest.fromDemandURI);
+  if(this.$route.query.redirect) {
+    window.open(this.$route.query.redirect,"_self");
+  }
 }
 
 async function getTargetContainerURIs(accessRequest: AccessRequest) {

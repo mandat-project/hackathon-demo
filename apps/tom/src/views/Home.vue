@@ -83,7 +83,7 @@ import {
     LDP,
     parseToN3,
     SCHEMA,
-VCARD
+    VCARD
 } from "@shared/solid";
 import {Ref, ref, toRefs, watch} from "vue";
 import {Quad} from "n3";
