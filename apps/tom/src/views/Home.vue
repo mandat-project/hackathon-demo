@@ -63,7 +63,7 @@
               <span v-else>(currently no offer)</span>
             </div>
             <Button
-              v-if="demand.hasAccessRequest"
+              v-if="demand.hasAccessRequest && !(demand.isAccessRequestGranted=='true')"
               type="submit"
               label="Handle Access Request"
               icon="pi pi-question"
@@ -127,6 +127,7 @@ interface Demand {
   currency: string;
   offer?: Offer;
   hasAccessRequest: string;
+  isAccessRequestGranted: string;
 }
 
 interface Offer {
@@ -200,11 +201,22 @@ async function loadDemands() {
         CREDIT("hasAccessRequest"),
         null
       )[0].value;
+      let isAccessRequestGranted = 'false';
+      if (accessRequestURI) {
+        isAccessRequestGranted = demandStore.getObjects(
+          null,
+          CREDIT("isAccessRequestGranted"),
+          null
+        )[0].value;
+      }
       if (appMemory[accessRequestURI]) {
-        return handleAuthorizationRequestRedirect(demand.id, accessRequestURI).then(() => {
-          demands.value = []
-          loadDemands()
-        })
+        return handleAuthorizationRequestRedirect(
+          demand.id,
+          accessRequestURI
+        ).then(() => {
+          demands.value = [];
+          loadDemands();
+        });
       }
       const amount = demandStore.getObjects(null, SCHEMA("amount"), null)[0];
       const currency = demandStore.getObjects(
@@ -233,6 +245,7 @@ async function loadDemands() {
 
         demands.value.push({
           hasAccessRequest: accessRequestURI,
+          isAccessRequestGranted,
           providerName: bankname,
           providerWebID: bank.value,
           amount: parseFloat(amount.value),
@@ -246,6 +259,7 @@ async function loadDemands() {
       } else {
         demands.value.push({
           hasAccessRequest: accessRequestURI,
+          isAccessRequestGranted,
           providerName: bankname,
           providerWebID: bank.value,
           amount: parseFloat(amount.value),
@@ -450,7 +464,6 @@ async function handleAuthorizationRequestRedirect(
   demandUri: string,
   accessRequestURI: string
 ) {
-  console.log({demandUri,accessRequestURI})
   // patch demand
   return getResource(demandUri, authFetch.value)
     .then((resp) => resp.text())
@@ -481,7 +494,7 @@ async function handleAuthorizationRequestRedirect(
     .then((body) => {
       return putResource(demandUri, body, authFetch.value);
     })
-    .then(() => delete appMemory[accessRequestURI])
+    .then(() => delete appMemory[accessRequestURI]);
 }
 </script>
 
