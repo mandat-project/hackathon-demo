@@ -98,7 +98,11 @@
 
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-import { useSolidProfile, useSolidSession } from "@shared/composables";
+import {
+  useCache,
+  useSolidProfile,
+  useSolidSession,
+} from "@shared/composables";
 import {
   createResource,
   CREDIT,
@@ -107,11 +111,14 @@ import {
   getResource,
   LDP,
   parseToN3,
+  putResource,
   SCHEMA,
   VCARD,
+  XSD,
 } from "@shared/solid";
 import { Ref, ref, toRefs, watch } from "vue";
-import { Quad } from "n3";
+import { Literal, NamedNode, Quad, Writer } from "n3";
+import router from "@/router";
 
 interface Demand {
   providerName: string;
@@ -141,6 +148,7 @@ const { authFetch, sessionInfo } = useSolidSession();
 const { webId } = toRefs(sessionInfo);
 const { isLoggedIn } = toRefs(sessionInfo);
 const { storage, authAgent } = useSolidProfile();
+const appMemory = useCache();
 
 const demands = ref([]) as Ref<Demand[]>;
 const selectedCurrency = ref();
@@ -158,7 +166,6 @@ watch(storage, function () {
   if (!storage.value) return;
   loadDemands();
 });
-loadDemands();
 async function loadDemands() {
   isLoading.value = true;
 
@@ -193,6 +200,12 @@ async function loadDemands() {
         CREDIT("hasAccessRequest"),
         null
       )[0].value;
+      if (appMemory[accessRequestURI]) {
+        return handleAuthorizationRequestRedirect(demand.id, accessRequestURI).then(() => {
+          demands.value = []
+          loadDemands()
+        })
+      }
       const amount = demandStore.getObjects(null, SCHEMA("amount"), null)[0];
       const currency = demandStore.getObjects(
         null,
@@ -431,6 +444,44 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
     )}`,
     "_self"
   );
+}
+
+async function handleAuthorizationRequestRedirect(
+  demandUri: string,
+  accessRequestURI: string
+) {
+  console.log({demandUri,accessRequestURI})
+  // patch demand
+  return getResource(demandUri, authFetch.value)
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, demandUri))
+    .then((parsedN3) => {
+      parsedN3.store.removeQuads(
+        parsedN3.store.getQuads(
+          new NamedNode(demandUri),
+          new NamedNode(CREDIT("isAccessRequestGranted")),
+          null,
+          null
+        )
+      );
+      parsedN3.store.addQuad(
+        new NamedNode(demandUri),
+        new NamedNode(CREDIT("isAccessRequestGranted")),
+        new Literal(`"true"^^${XSD("boolean")}`)
+      );
+      const writer = new Writer({
+        format: "text/turtle",
+        prefixes: parsedN3.prefixes,
+      });
+      writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
+      let body = "";
+      writer.end((error, result) => (body = result));
+      return body;
+    })
+    .then((body) => {
+      return putResource(demandUri, body, authFetch.value);
+    })
+    .then(() => delete appMemory[accessRequestURI])
 }
 </script>
 
