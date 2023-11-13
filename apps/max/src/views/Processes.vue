@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
 import { ref, toRefs, watch, onUpdated } from "vue";
-import { Quad, Store, NamedNode, Literal, Writer, Parser } from 'n3';
+import { Quad, Store, NamedNode, Literal, Writer, Parser, BlankNode } from 'n3';
 import { createResource, CREDIT, getResource, LDP, parseToN3, putResource, getLocationHeader, ACL, SCHEMA, postResource, patchResource, createContainer, deleteResource, RDF, RDFS, WILD } from "@shared/solid";
 import { useSolidInbox, useSolidSession, useSolidProfile } from "@shared/composables";
 import { DataFactory } from "n3";
@@ -20,7 +20,7 @@ const isLoading = ref(false);
 const { ldns } = useSolidInbox();
 const { storage } = useSolidProfile()
 
-//@@@TODO: to be removed, when FROG is added to namespaces.ts
+//@@@TODO: to be removed, when FROG etc is added to namespaces.ts
 function Namespace(namespace: string) {
   return (thing?: string) => thing ? namespace.concat(thing) : namespace;
 }
@@ -29,6 +29,7 @@ function Namespace(namespace: string) {
 const FROG = Namespace("https://solid.ti.rw.fau.de/public/ns/frog#")
 const PROV = Namespace("http://www.w3.org/ns/prov#")
 const ORG = Namespace("http://www.w3.org/ns/org#")
+const TIME = Namespace("http://www.w3.org/2006/time#")
 
 const containerUri = ref("https://tax.solid.aifb.kit.edu/memberships/"); //container where open membership processes are stored
 const organizationUri = ref("https://tax.solid.aifb.kit.edu/organization/"); //location where the organization hierarchy is stored
@@ -38,7 +39,7 @@ const policyUri = ref("https://tax.solid.aifb.kit.edu/policies"); //location whe
 const requests = ref(new Map<string, Store | null>()); //requested memberships URI and store
 const requestsContainer = new Map<String, String>();//container containing requested memberships
 
-var requiredRole = ref(new Map<string, string>()) //tie membership application and roles together
+var requiredRole = ref(new Map<string, string[]>()) //tie membership application and roles together
 
 var userRole = ref<String[]>([]) //save webIDs roles according to organization and memberships
 
@@ -126,23 +127,31 @@ async function fetchProcesses() {
                 st.add(quad); //add all WFM info to store
               }
 
-              let activites = st.getObjects(wfm, new NamedNode(WILD('hasBehaviour')), null) //get activites, @@@TODO: get all activities that might be also in composite activities...
+              let rootAct = st.getObjects(wfm, new NamedNode(WILD('hasBehaviour')), null)[0].value //get activites
+              let activites = Array<string>() 
+
+              //we assume that all activites are in one place
+              const quadsActivity = p1.parse(String(await (await getResource(rootAct, authFetch.value)).text()))
+              for (const quad of quadsActivity) {
+                st.add(quad);
+              }
+
+              //gathers also activities that might be composite activities aka have child activities
+              getActivityTree(rootAct, st).forEach((val) => { activites.push(val) })
+              activites.push(rootAct) //also need to check root for WFM that have only AtomicActivities as root.
+              //get activity representation
+              requiredRole.value.set(completeUriofProcess, [])
 
               for (const act of activites) {
-                let actResp = await getResource(act.value, authFetch.value); //get activity representation
-                const quadsact = p1.parse(String(await actResp.text()))
-                for (const qu of quadsact) {
-                  st.add(qu); //add all activites info to store
+                for(const role of st.getObjects(act, FROG("needsRole"), null)){
+                  requiredRole.value.get(completeUriofProcess)?.push(role.value) //relation to WFI to required roles as defined by WFM and its activities
                 }
-                requiredRole.value.set(completeUriofProcess, st.getObjects(act, FROG("needsRole"), null)[0].value) //relation to containing container of approval process
               }
 
             }
 
             processURIs.push(String(completeUriofProcess))
             requestsContainer.set(String(completeUriofProcess), containerUri.value + cont) //relation to containing container of approval process
-
-
           }
 
         }
@@ -459,7 +468,6 @@ async function applyForRole() {
     const newMembershipResponse = await createResource(newMembershipContainer, templateBody, authFetch.value);
     const newMembership = getLocationHeader(newMembershipResponse);
 
-    //ACL stuff??
 
     toast.add({
       severity: "success",
@@ -482,10 +490,9 @@ async function applyForRole() {
 
 function getActivityTree(act : string, store : Store) : Array<string>
 {
-  console.log("getTree called on" + act)
   let uris = Array<string>()
   
-  //get "regular" wild:Activity objs
+  //get "regular" wild:Activity objs (@@@inserted by reasoning?)
   for(const cA of store.getObjects(new NamedNode(act), WILD("hasChildActivity"), null)) 
   {
     uris.push(cA.value)
@@ -502,7 +509,7 @@ function getActivityTree(act : string, store : Store) : Array<string>
     }
   }
 
-  if(uris.length == 0) //no children found, nothing two check
+  if(uris.length == 0) //no children found, nothing too check
   {
     return [];
 
@@ -530,10 +537,24 @@ function getDescription(store: Store): string {
   let requestedMembership = (store.getSubjects(RDF("type"), ORG("Membership"), null))[0]
   let role = store.getObjects(requestedMembership, new NamedNode(ORG("role")), null)[0].value
 
-  //@@@TODO: apply for some defined time interval 
-  //let timeStart = store.match(null, null, null)
-  //let timeEnd = store.match(null, null, null)
-  return `${applicant} applies for ${role}`
+  //application is for some a defined time interval 
+  let timeString = ""
+
+  //if membership application contains some duration, display accordingly
+  //@@@ include checks for sanity, e.g. end date lies after beginning date or no more than one end / beginning date?
+  if (store.getObjects(requestedMembership, ORG("memberDuring"), null).length > 0) {
+      let duration = store.getObjects(requestedMembership, ORG("memberDuring"), null)[0]
+      for (const quad of store.match(duration, new NamedNode(TIME("hasBeginning")), null, null))
+      {
+        timeString += ", beginning " + quad["object"].value
+      }
+      for (const quad of store.match(duration, new NamedNode(TIME("hasEnd")), null, null)) {
+        timeString += ", ending " + quad["object"].value
+      }
+  }
+
+
+  return `${applicant} applies for ${role}` + timeString
 
 }
 
@@ -542,19 +563,6 @@ function getObjects(store: Store, quad1: string, quad2?: Quad) {
   return store.getObjects(subjectUri, quad1, quad2 || null).map(obj => obj.value);
 }
 
-/*counts how many signature are already present in total (all users)*/
-function checkSignatures(store: Store) {
-
-  //collect all generated entities for this process  
-  let st = new Store();
-  for (const quad of store.match(null, new NamedNode(PROV('generated')), null)) {
-    st.add(quad);
-  }
-  //collect all entites that point to rdf:nil (= no signature / decision created)
-  const p = st.match(null, new NamedNode(PROV('generated')), new NamedNode(RDF('nil')))
-
-  return st.size - p.size; //difference gives already made decisions
-}
 
 /*checks if a process was already signed by a given WebID*/
 function checkAlreadySigned(store: Store, membershipProcess: string): Boolean {
@@ -597,29 +605,24 @@ function checkAlreadySigned(store: Store, membershipProcess: string): Boolean {
   }
 }
 
-/*returns an array of strings of all objects for a given predicate*/
-function getObjString(store: Store, predicate: string) {
-
-  let objectArray = []
-  for (const quad of store.match(null, new NamedNode(predicate), null)) {
-    objectArray.push(String(quad.object.value))
-  }
-  return objectArray
-}    
-
 </script>
   
 <template>
+    <Toolbar v-if="isLoggedIn">
+      <template  #start>
+        <router-link to="/">
+          <Button>Home</Button>
+        </router-link>
+        <router-link to="/processes/">
+          <Button >Processes</Button>
+        </router-link>
+      </template>
+    </Toolbar>
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <div class="p-inputgroup">
         <InputText placeholder="GET all my current processes." v-model=containerUri @keyup.enter="fetchProcesses()" />
         <Button @click="fetchProcesses()"> GET approval processes </Button>
-      </div>
-      <div>
-        <router-link to="/">
-          <Button>Return to requests</Button>
-        </router-link>
       </div>
       <ProgressBar v-if="isLoading" mode="indeterminate" class="progressbar" />
 
@@ -628,7 +631,7 @@ function getObjString(store: Store, predicate: string) {
   <div v-if="isLoggedIn" class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <div class="p-inputgroup">
-
+        <!--@@@TODO: Add input for beginning / ending of applied membership-->
         Apply for role membership:
         <select v-model="applyForNewMembership">
           <option value="none" selected> </option>
@@ -636,7 +639,7 @@ function getObjString(store: Store, predicate: string) {
           <option value="CEO">CEO</option>
           <option value="depleader">Department leader</option>
         </select>
-        <Button @click="applyForRole()"> Submit application </Button>
+        <Button style="height:25px;width:170px" @click="applyForRole()"> Submit application </Button>
       </div>
     </div>
   </div>
@@ -649,7 +652,6 @@ function getObjString(store: Store, predicate: string) {
           <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
             @click="fetchProcesses()"></Button>
         </p>
-        <!-- @@@ if requests is empty display "nothing to sign"-->
         <li v-for="([uri, store], index) of requests" :key="index">
 
           <p>Process #{{ index }}: {{ uri.replace(containerUri, '') }}</p>
@@ -658,12 +660,12 @@ function getObjString(store: Store, predicate: string) {
           {{ requiredRole.get(uri) }} required.<br>
           Your roles are {{ userRole }}.
 
-          <div v-if="requiredRole.get(uri) != '' && userRole.length > 0">
-            <div v-if="userRole.includes(requiredRole.get(uri)!) == true && (checkAlreadySigned(store!, uri) == false)">
+          <div v-if="requiredRole.get(uri)?.length != 0 && userRole.length > 0">
+            <div v-if=" userRole.some(r => requiredRole.get(uri)!.includes(r.toString())) == true && (checkAlreadySigned(store!, uri) == false)">
               <Button @click="giveSignature(uri, true)">Approve ✅️</Button>
               <Button @click="giveSignature(uri, false)">Deny ❌️</Button>
             </div>
-            <div v-else-if="userRole.includes(requiredRole.get(uri)!) == true && checkAlreadySigned(store!, uri) == true">
+            <div v-else-if="userRole.some(r => requiredRole.get(uri)!.includes(r.toString())) == true == true && checkAlreadySigned(store!, uri) == true">
               <Button :disabled="true">Nothing to sign for your roles ✒️ </Button>
             </div>
             <div v-else>
