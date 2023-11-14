@@ -75,15 +75,20 @@ import {
   ACL,
   createResource,
   CREDIT,
+  FOAF,
+  getDataRegistrationContainers,
   getLocationHeader,
   getResource,
+  INTEROP,
   LDP,
   parseToN3,
   putResource,
   SCHEMA,
-  getDataRegistrationContainers, FOAF, VCARD, INTEROP, XSD, SKOS
+  SKOS,
+  VCARD,
+  XSD
 } from '@shared/solid';
-import { Store} from 'n3';
+import {Store} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, ComputedRef, onMounted, reactive, ref, toRefs} from 'vue';
 
@@ -113,6 +118,7 @@ const shapeTrees = [
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
+const documentDemandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentDemandTree';
 
 let orderContainerUris: Array<string>;
 let offerContainerUris: Array<string>;
@@ -338,10 +344,10 @@ function patchDemandAccessRequest(accessRequestUri: string) {
       .then(()=>fetchDemand())
 }
 
-async function requestData() {
+async function postAccessRequest() {
   const accessRequest = getAccessRequestBody();
 
-  const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequest, authFetch.value)
+  return await createResource(demanderAccessInboxUri!.value!, accessRequest, authFetch.value)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -352,8 +358,49 @@ async function requestData() {
         throw new Error(err);
       })
       .then(getLocationHeader);
+}
 
+async function requestData() {
+  const accessRequestUri = await postAccessRequest();
   patchDemandAccessRequest(accessRequestUri);
+
+  const documentDemandPayload = createDemandPayload(accessRequestUri);
+  const documentDemandContainerUris = await getContainerUris(demanderUri.value!, documentDemandShapeTreeUri);
+  await createDemand(documentDemandContainerUris, documentDemandPayload);
+}
+
+async function createDemand(
+    documentDemandContainerUris: Array<string>,
+    payload: string
+) {
+  return await createResource(documentDemandContainerUris[0], payload, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((res) => getLocationHeader(res));
+}
+
+
+function createDemandPayload(accessRequestUri: string) {
+  return `\
+      @prefix schema: <${SCHEMA()}> .
+      @prefix credit: <${CREDIT()}> .
+      @prefix interop: <${INTEROP}> .
+
+      <> a schema:Demand ;
+      interop:fromSocialAgent <${webId!.value}> ;
+      credit:derivedFromDemand <${props.demandUri}> ;
+      credit:hasUnderlyingRequest <${accessRequestUri}> ;
+      interop:registeredShapeTree <${selectedShapeTree.value.value}> .
+
+      <${webId?.value}> schema:seeks <> .
+    `;
 }
 
 function patchDemandOffer(demandURI: string, offerURI: string): Promise<Response> {
