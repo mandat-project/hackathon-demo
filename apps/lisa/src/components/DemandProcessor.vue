@@ -229,13 +229,8 @@ async function fetchOrders() {
 }
 
 async function fetchProcessedData() {
-  
-  
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
   window.open(businessAssessmentUri[0], '_tab');
-  
-  //await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value).then( x=> window.open(x[0], '_blank'));
- // window.open(businessAssessmentUri[0], '_tab');
 }
 
 /**
@@ -391,7 +386,7 @@ function createDemandPayload(accessRequestUri: string) {
   return `\
       @prefix schema: <${SCHEMA()}> .
       @prefix credit: <${CREDIT()}> .
-      @prefix interop: <${INTEROP}> .
+      @prefix interop: <${INTEROP()}> .
 
       <> a schema:Demand ;
       interop:fromSocialAgent <${webId!.value}> ;

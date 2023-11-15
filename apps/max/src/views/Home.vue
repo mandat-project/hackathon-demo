@@ -3,13 +3,14 @@ import {useToast} from "primevue/usetoast";
 import {ref, toRefs, watch} from "vue";
 import {Quad, Store} from 'n3';
 import {
+  createResource,
   CREDIT,
   getDataRegistrationContainers,
   getResource,
   INTEROP,
   LDP,
   parseToN3,
-  putResource, RDF, SCHEMA, XSD
+  RDF, SCHEMA, XSD
 } from "@shared/solid";
 import {useSolidInbox, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
@@ -42,10 +43,10 @@ function fetchDemands() {
 }
 
 function getBusinessAssessmentPayload() {
-  return `@prefix schema: <${SCHEMA}> .
-          @prefix xsd: <${XSD}> .
-          @prefix rdf: <${RDF}> .
-          @prefix credit: <${CREDIT}> .
+  return `@prefix schema: <${SCHEMA()}> .
+          @prefix xsd: <${XSD()}> .
+          @prefix rdf: <${RDF()}> .
+          @prefix credit: <${CREDIT()}> .
 
           <> a credit:BusinessAssessment  ;
             credit:hasTotal     			71500.0 ;
@@ -68,7 +69,7 @@ async function processDemand(key: string) {
     const targetUri = await getContainerUris(fromSocialAgent, requestedShapeTree);
     const businessAssessmentPayload = getBusinessAssessmentPayload();
 
-    await putResource(targetUri[0], businessAssessmentPayload, authFetch.value)
+    await createResource(targetUri[0], businessAssessmentPayload, authFetch.value)
         .catch((err) => {
           toast.add({
             severity: "error",

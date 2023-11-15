@@ -320,7 +320,7 @@ function createDocumentDemandPayload() {
   // TODO: replace hardcoded businessAssessmentShapeTreeUri with businessAssessmentShapeTreeUri from underlying demand
   return `\
       @prefix schema: <${SCHEMA()}> .
-      @prefix interop: <${INTEROP}> .
+      @prefix interop: <${INTEROP()}> .
 
       <> a schema:Demand ;
       interop:fromSocialAgent <${webId!.value}> ;
