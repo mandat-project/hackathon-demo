@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "@/views/Home.vue";
-import AccessRequestView from "@/views/AccessRequestView.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,15 +9,6 @@ const routes: Array<RouteRecordRaw> = [
     props: (route) => ({
       inspectedAccessRequestURI: route.query.uri,
       redirect: route.query.app_redirect,
-    }),
-  },
-  {
-    path: "/accessRequest",
-    name: "AccessRequestView",
-    component: AccessRequestView,
-    props: (route) => ({
-      uri: route.query.uri,
-      redirect: route.query.redirect,
     }),
   },
 ];
