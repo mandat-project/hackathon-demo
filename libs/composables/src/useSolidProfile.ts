@@ -10,6 +10,7 @@ const img = ref("");
 const inbox = ref("");
 const storage = ref("")
 const authAgent = ref("")
+const accessInbox = ref("")
 
 watch(() => sessionInfo.webId, async () => {
     const webId = sessionInfo.webId as string
@@ -30,11 +31,13 @@ watch(() => sessionInfo.webId, async () => {
     storage.value = query.length > 0 ? query[0].value : "";
     query = store.getObjects(webId, INTEROP("hasAuthorizationAgent"), null);
     authAgent.value = query.length > 0 ? query[0].value : "";
+    query = store.getObjects(webId, INTEROP("hasAccessInbox"), null);
+    accessInbox.value = query.length > 0 ? query[0].value : "";
 })
 
 const wallet = computed(() => storage.value !== "" ? `${storage.value}wallet/` : "");
 const credStatusDir = computed(() => storage.value !== "" ? `${storage.value}credentialStatus/` : "");
 
 export const useSolidProfile = () => {
-    return {name, img, inbox, storage, wallet, credStatusDir, authAgent};
+    return {name, img, inbox, storage, wallet, credStatusDir, authAgent,accessInbox};
 };

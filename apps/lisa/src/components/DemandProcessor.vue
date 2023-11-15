@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import {useSolidSession} from '@shared/composables';
+import {useSolidProfile, useSolidSession} from '@shared/composables';
 import {
   ACL,
   createResource,
@@ -89,7 +89,7 @@ import {computed, ComputedRef, onMounted, reactive, ref, toRefs} from 'vue';
 
 
 const props = defineProps<{ demandUri: string }>();
-
+const {accessInbox} = useSolidProfile()
 const toast = useToast();
 const {authFetch, sessionInfo} = useSolidSession();
 const {webId} = toRefs(sessionInfo);
@@ -255,7 +255,7 @@ function addOrderDetails(): Promise<void[]> {
 }
 
 
-function getAccessRequestBody() {
+function getBwaAccessRequestBody() {
   return `@prefix interop: <${INTEROP()}> .
     @prefix ldp: <${LDP()}> .
     @prefix skos: <${SKOS()}> .
@@ -339,7 +339,7 @@ function patchDemandAccessRequest(accessRequestUri: string) {
 }
 
 async function requestData() {
-  const accessRequest = getAccessRequestBody();
+  const accessRequest = getBwaAccessRequestBody();
 
   const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequest, authFetch.value)
       .catch((err) => {
@@ -428,8 +428,9 @@ async function createOfferResource(demandURI: string, accessRequestUri: string):
   const offerURI = await createOffer(body);
 
   await patchDemandOffer(demandURI, offerURI);
-  await grantAccessToResource(offerURI, demanderUri.value!); // TODO do via access request
-  await grantAccessToResource(demandURI, demanderUri.value!); // obsolete when custom CSS with creator handler is deployed
+  await requestAccessBeingSet(offerURI,demanderUri.value!)
+  // await grantAccessToResource(offerURI, demanderUri.value!); // TODO do via access request
+  // await grantAccessToResource(demandURI, demanderUri.value!); // obsolete when custom CSS with creator handler is deployed
 
   await fetchDemand(); // trigger recalculation of isOfferAccepted
 }
@@ -459,7 +460,66 @@ function grantAccessToResource(resourceUri: string, agentUri: string): Promise<R
         throw new Error(err);
       });
 }
+function requestAccessBeingSet(resource:string,forAgent:string) {
+  const body = `@prefix interop: <${INTEROP()}> .
+    @prefix ldp: <${LDP()}> .
+    @prefix skos: <${SKOS()}> .
+    @prefix credit: <${CREDIT()}> .
+    @prefix xsd: <${XSD()}> .
+    @prefix acl: <${ACL()}> .
 
+
+    <#accessRequest>
+      a interop:AccessRequest ;
+      interop:fromSocialAgent <${webId!.value}> ;
+      interop:toSocialAgent  <${forAgent}> ;
+      interop:hasAccessNeedGroup <#accessNeedGroup> ;
+      credit:fromDemand <${props.demandUri}>.
+
+    <#accessNeedGroupDescription>
+      a interop:AccessNeedGroupDescription ;
+      interop:inAccessDescriptionSet <#accessDescriptionSet> ;
+      interop:hasAccessNeedGroup <#accessNeedGroup> ;
+      skos:prefLabel "Zugriff Offer"@de ;
+      skos:definition "Gib das Angebot frei."@de .
+
+    <#accessNeedGroup>
+      a interop:AccessNeedGroup ;
+      interop:hasAccessDescriptionSet <#accessDescriptionSet> ;
+      interop:accessNecessity interop:accessRequired ;
+      interop:accessScenario interop:sharedAccess ;
+      interop:authenticatesAs interop:SocialAgent ;
+      interop:hasAccessNeed <#accessNeed> .
+
+    <#accessNeedDescription>
+      a interop:AccessNeedDescription ;
+      interop:inAccessDescriptionSet <#accessNeedGroupDescription> ;
+      interop:hasAccessNeed <#accessNeed> ;
+      skos:prefLabel "Zugriff Offer"@de ;
+      skos:definition "Gib das Angebot frei."@de .
+
+    <#accessNeed>
+      a interop:AccessNeed ;
+      interop:accessMode acl:Read ;
+      interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.shape#creditOfferShape> ;
+      interop:hasDataInstance <${resource}> ;
+      interop:accessNecessity interop:accessRequired .
+
+    <#accessDescriptionSet>
+      a interop:AccessDescriptionSet ;
+      interop:usesLanguage "de"^^xsd:language .`;
+
+      return createResource(accessInbox.value, body, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on POSt!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
+}
 </script>
 
 <style>
