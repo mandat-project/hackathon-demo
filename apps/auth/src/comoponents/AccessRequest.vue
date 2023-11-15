@@ -385,33 +385,37 @@ async function updateAccessControlList(
   agent: string[],
   mode: string[]
 ) {
+  const txt = await getResource(accessTo + ".acl", authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on get Demand!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then((resp) => resp.text());
   const acl = `\
-@prefix acl: <${ACL()}>.
-@prefix foaf: <${FOAF()}>.
-
-<#owner>
-    a acl:Authorization;
-    acl:accessTo <${accessTo}.acl>;
-    acl:agent <${sessionInfo.webId}>;
-    acl:default <${accessTo}.acl>;
-    acl:mode acl:Control, acl:Read, acl:Write.
-
 <#grantee>
     a acl:Authorization;
-    acl:accessTo <${accessTo}.acl>;
+    acl:accessTo <./>;
     acl:agent ${agent.map((a) => "<" + a + ">").join(", ")};
-    acl:default <${accessTo}.acl>;
-    acl:mode ${mode.map((m) => "<" + m + ">").join(", ")} .`;
+    acl:default <./>;
+    acl:mode ${mode.map((m) => "<" + m + ">").join(", ")} .
+`;
 
-  await putResource(accessTo + ".acl", acl, authFetch.value).catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Error on put updateAccessControlList!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  });
+  await putResource(accessTo + ".acl", txt + acl, authFetch.value).catch(
+    (err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on put updateAccessControlList!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    }
+  );
 }
 
 async function setDemandIsAccessRequestGranted(fromDemandURI: string) {
