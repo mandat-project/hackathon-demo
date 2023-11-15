@@ -15,30 +15,20 @@ note over Lisa,Tom: Initiation of partnership
     note over Tom,Bank_Pod: (1) Tom fills in a credit form and requests a creditfrom the bank
 
     Tom->>Tom: Tom fills in the credit information (credit amount)
-    note over Bank_Pod,Tom: Tom needs to know location/container in  <br/> bank Pod  for posting  credit requests/demands
-    rect rgb(255, 10, 255)
-        note over Bank_Pod,Tom: This is unclear.  How does Tom know where to put thre credit demand <br/> 'demandShapeTreeUri' for getting  <br/> 'demandContainerUris' to put credit demand in Bank pod  <br/>  is hard coded in Tom App
-        Tom->>Bank_Pod: getContainerUris(bank Web ID , demandShapeTreeUri)
-        Bank_Pod -->> Tom: 200 OK with  location of data registration for posting credit requests / demands)
-    end
+    Tom->>+Bank_Pod: getContainerUris(bank Web ID , demandShapeTreeUri)
+    Bank_Pod -->>-Tom: 200 OK with  location of data registration for posting credit requests / demands)
     %% create credit demand in bank pod
     note over Bank_Pod,Tom: Tom posts credit demand in Bank Pod
     Tom->>+Bank_Pod: [HTTP POST /credits/demands/] credit demand
     Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
 
-    rect rgb(255, 10, 255)
-        note over Bank_Pod,Tom: Is this LDN needed or does the bank app implement a polling mechanism
-        Tom->>+Bank_Pod: [HTTP POST /inbox/] Linked Data Notification
-        Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
-    end
-
     note over Lisa,Bank_Pod: (2) Lisa fetches and processes credit request
 
     %% fetch credit demand
-    Lisa->>Bank_Pod: [HTTP GET /credits/demands/}]
-    Bank_Pod-->>Lisa: [HTTP 200 OK] credit demands
+    Lisa->>+Bank_Pod: [HTTP GET /credits/demands/}]
+    Bank_Pod-->>-Lisa: [HTTP 200 OK] credit demands
     Lisa->>+Bank_Pod: [HTTP GET /credits/demands/{uuid}]
-    Bank_Pod-->> Lisa: [HTTP 200 OK] credit demand
+    Bank_Pod-->>-Lisa: [HTTP 200 OK] credit demand
 
     %% grant access to that resource to KMU as they do not have access by default
     %% The following .acl patch is equivalent to acknowledging the demand.
@@ -54,94 +44,73 @@ note over Lisa,Tom: Initiation of partnership
     %% (2) Nachfrage aktuelle Unternehmenssituation
     note over Lisa, KMU_Pod: (2) Lisa knows WebID of SME and requests company data  (business analysis)
 
-    Lisa->>KMU_Pod: 3. GET SME WebID document
-    KMU_Pod -->> Lisa: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
+    Lisa->>+KMU_Pod: 3. GET SME WebID document
+    KMU_Pod -->>-Lisa: 200 OK with WebID Profile Document (incl. `interop:hasAccessInbox`)
 
-    Lisa->>KMU_Pod:  [HTTP POST  /accessInbox] Access Request in SME's Access Inbox (i.e. object of `interop:hasAccessInbox`)
-    KMU_Pod-->>+Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
+    Lisa->>+KMU_Pod:  [HTTP POST  /accessInbox] Access Request in SME's Access Inbox (i.e. object of `interop:hasAccessInbox`)
+    KMU_Pod-->>-Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
 
+
+    Lisa->>+KMU_Pod: getContainerUris(bank Web ID , documentDemandShapeTreeUri)
+    KMU_Pod -->>-Lisa: 200 OK with  location of data registration for posting document demands
+
+    Lisa->>+KMU_Pod:  [HTTP POST  /documents/demands] Document demand (bwa) in SME's documents/demands container  
+    KMU_Pod-->>-Lisa: [HTTP 201 Created] location /documents/demands/{UUID}
 
     
     rect rgb(0, 150, 0)
         note over Bank_Pod, KMU_Pod: implemented via auth agent
         Tom ->> Tom (via auth agent) :  Redirect from Toms Bank app to Auth Agent
-        Tom (via auth agent) ->> KMU_Pod:  GET Access Request from Access Inbox
-        KMU_Pod -->> Tom (via auth agent): 200 OK with Access Request
+        Tom (via auth agent) ->>+KMU_Pod:  GET Access Request from Access Inbox
+        KMU_Pod -->>- Tom (via auth agent): 200 OK with Access Request
 
         Tom (via auth agent) -->> Tom (via auth agent): Tom looks at the access request in the Auth App <br/> and decides what to do next
 
-        Note over Tom (via auth agent), KMU_Pod: Save Access Authorization in Authorization Registry <br/> Currently done via setting ACLs directly
-        Note over Tom (via auth agent), KMU_Pod: For documentation: Save Access Grant in <br/> Social Agent Registration in Agent Registry
-        Tom (via auth agent) -->>  KMU_Pod: document Access Grant [HTTP POST /profile/registry/Authorization-Registry]
-        KMU_Pod -->> Tom (via auth agent): [HTTP 201 Created] location /Authorization-Registry/{UUID}
+        Note over Tom (via auth agent), KMU_Pod: Save Access Authorization in Authorization Registry <br/> Currently done via setting ACL directly
+        Tom (via auth agent) -->>+  KMU_Pod: Modify ACL  Grant access to bwa container [HTTP PUT RESOURCE /businessAssessmnets/businessAssessment/.acl]
+        KMU_Pod -->>- Tom (via auth agent): [HTTP 201 Created] 
+
+        Tom (via auth agent) -->>+  KMU_Pod: document Access Grant [HTTP POST /profile/registry/Authorization-Registry]
+        KMU_Pod -->>- Tom (via auth agent): [HTTP 201 Created] location /Authorization-Registry/{UUID}
+
         
-        Tom (via auth agent) ->>Bank_Pod: 6. Set 'is Access Request Granted' flag in credit demand [/credits/demands/{uuid}] ; 
+        Tom (via auth agent) ->>Bank_Pod: Set 'is Access Request Granted' flag in credit demand [/credits/demands/{uuid}] ; 
         Tom (via auth agent) ->> Tom:  Redirect from  Auth Agent to Toms Bank App
     end
 
-    %% Aus altem Sequenzdiagramm übernommen. Kann eigentlich weg-> auskommentiert
-    %%rect rgb(255, 10, 255)
-    %%    opt
-    %%    note over Lisa, KMU_Pod: Not implemented yet. Might also be obsolete, as the Information about additional requested data is already sent via a previous Access Request
-    %%        %% note over Lisa: This Notification does not contain the request, only a link to the request.
-    %%        Lisa->>+KMU_Pod: [HTTP POST /inbox/] Linked Data Notification
-    %%        KMU_Pod-->>-Lisa: [HTTP 201 Created] location /inbox/{uuid}
-    %%        Tom->>+KMU_Pod: [HTTP GET /inbox/]
-    %%        KMU_Pod-->>-Tom: [HTTP 200 OK] Inbox
-    %%        Tom->>+KMU_Pod: [HTTP GET /inbox/{uuid}]
-    %%        KMU_Pod-->>-Tom: [HTTP 200 OK] notification
-    %%   end
-    %%end
-
-    rect rgb(255, 10, 255)
-        note over Tom, StB_Pod: >>>>Not fully implemented yet! <<<<< <br/> Tom notifies Tax/Max to provide BWAs (for Lisa).  <br/> Tom  sends shapetree for destination location of BWAs. <br/> StB has to lookup ContainerURI in SME Pod via shapetree.
-        Tom->>+StB_Pod: [HTTP POST /inbox/] Linked Data Notification
-        StB_Pod-->>-Tom: [HTTP 201 Created] location /inbox/{uuid}
-
-        Max->>KMU_Pod: getContainerUris(SME Web ID , businessAssessmentShapeTree)
-        KMU_Pod -->> Max: 200 OK with  location of data registration for posting BWAs)
-
-        %% provide data as reponse to LDN
-        Max->>+KMU_Pod: [HTTP POST businessAssessments/businessAssessment/] provide requested data
-        KMU_Pod-->>-Max: [HTTP 201 Created] location {uuid}
-    end
-
-    rect rgb(255, 10, 255)
-        opt
-        %% (4) Lieferung Nachweis
-        note over Bank_Pod, Max: forward information about requested data being provided <br/> if authorizations for business assessments are limited in time, this solution is sufficient. <br/> if authorizations are given for each individual business assessment, then authorizations must still be assigned here <br/> ! Only partially implemented !
-        %% Notify TAX
-            %% note over Lisa: This Notification does not contain the data, only a link to the data.
-            Max->>+KMU_Pod: [HTTP POST /inbox/] Linked Data Notification
-            KMU_Pod-->>-Max: [HTTP 201 Created] location /inbox/{uuid}
-            Tom->>+KMU_Pod: [HTTP GET /inbox/]
-            KMU_Pod-->>-Tom: [HTTP 200 OK] Inbox
-            Tom->>+KMU_Pod: [HTTP GET /inbox/{uuid}]
-            KMU_Pod-->>-Tom: [HTTP 200 OK] notification
-            Tom->>+Bank_Pod: [HTTP POST /inbox/] Linked Data Notification
-            Bank_Pod-->>-Tom: [HTTP 201 Created] location /inbox/{uuid}
-        end
-    end
 
 
-    note over Lisa, KMU_Pod: Lisa is notified about created BWAs and fetches them from KMU Pod
+    Tom->>+StB_Pod: getContainerUris(Tax Web ID , documentDemandShapeTreeUri)
+    StB_Pod -->>-Tom: 200 OK with  location of data registration for posting document demands
 
-    Lisa->>KMU_Pod: getContainerUris(SME Web ID , businessAssessmentShapeTreeUri)
-    KMU_Pod -->> Lisa: 200 OK with  location of data registration for businessAssessment)
+    Tom->>+StB_Pod:  [HTTP POST  /documents/demands] Document demand (bwa) in Tax's documents/demands container  
+    StB_Pod-->>-Tom: [HTTP 201 Created] location /documents/demands/{UUID}
+
+    Max->>+KMU_Pod: getContainerUris(SME Web ID , businessAssessmentShapeTree)
+    KMU_Pod -->>-Max: 200 OK with  location of data registration for posting BWAs)
+
+    %% provide data as reponse to LDN
+    Max->>+KMU_Pod: [HTTP POST businessAssessments/businessAssessment/] provide requested data
+    KMU_Pod-->>-Max: [HTTP 201 Created] location {uuid}
+
+    note over Lisa, KMU_Pod: Lisa checks regularly if BWAs are created and available  and fetches them from KMU Pod
+
+    Lisa->>+KMU_Pod: getContainerUris(SME Web ID , businessAssessmentShapeTreeUri)
+    KMU_Pod -->>- Lisa: 200 OK with  location of data registration for businessAssessment)
 
     %% fetch business assessment list
-    Lisa->>KMU_Pod: [HTTP GET businessAssessments/businessAssessment/}]
-    KMU_Pod-->>Lisa: [HTTP 200 OK] businessAssessments
+    Lisa->>+KMU_Pod: [HTTP GET businessAssessments/businessAssessment/}]
+    KMU_Pod-->>-Lisa: [HTTP 200 OK] businessAssessments
 
     %% fetch specific business assessment
     Lisa->>+KMU_Pod: [HTTP GET businessAssessments/businessAssessment/{uuid}]
-    KMU_Pod-->> Lisa: [HTTP 200 OK] businessAssessment
+    KMU_Pod-->>-Lisa: [HTTP 200 OK] businessAssessment
 
     Lisa->>Lisa: lisa looks at business assessment and evaluates it
 
     note over Lisa: Omitting the case where no offer is made.
 
-    note over Lisa,KMU_Pod: (6) make an offer
+    note over Lisa,KMU_Pod: make an offer
     %% create credit offer in bank pod
     Lisa->>+Bank_Pod: [HTTP POST /credits/offers/] credit offer
     Bank_Pod-->>-Lisa: [HTTP 201 CREATED] location {uuid}
@@ -151,36 +120,35 @@ note over Lisa,Tom: Initiation of partnership
     Lisa->>+Bank_Pod: [HTTP PATCH /credits/demands/{uuid}] (include offer {uuid})
     Bank_Pod-->>-Lisa: [HTTP 205 RESET CONTENT] location {uuid}
 
-    %% Create access request for offer for TOM/KMU: 
+    %% Create access request for offer container  for TOM/KMU (read access): 
     Lisa->>+Bank_Pod: [HTTP POST  /accessInbox] Access Request in Bank's Access Inbox (i.e. object of `interop:hasAccessInbox`) that Tom/KMU can read credit offer
-    Bank_Pod-->>+Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
-    
+    Bank_Pod-->>-Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
+
+    Lisa->>+Bank_Pod: [HTTP POST  /accessInbox] Access Request in Bank's Access Inbox (i.e. object of `interop:hasAccessInbox`) that Tom/KMU can write/post  credit order in order container
+    Bank_Pod-->>-Lisa: [HTTP 201 Created] location /accessInbox/{UUID}
+
     rect rgb(0, 150, 0)
         note over  Lisa (via auth agent), Lisa: implemented via auth agent
         Lisa ->> Lisa (via auth agent) :  Redirect from Lisa Bank app to Auth Agent
-        Lisa (via auth agent) ->> Bank_Pod:  GET Access Request from Access Inbox
-        Bank_Pod -->> Lisa (via auth agent): 200 OK with Access Request
+        Lisa (via auth agent) ->>+ Bank_Pod:  GET Access Requests from Access Inbox (one for offer and one for  order container)
+        Bank_Pod -->>- Lisa (via auth agent): 200 OK with Access Requests
 
-        Lisa (via auth agent) -->> Lisa (via auth agent): Lisa looks at the access request in the Auth App <br/> and sets access grants for Tom
+        Lisa (via auth agent) -->> Lisa (via auth agent): Lisa looks at the access requests in the Auth App <br/> and sets access grants for Tom
 
-        Note over Lisa (via auth agent), Bank_Pod: Save Access Authorization in Authorization Registry<br/> for this specific offer (data instance) <br/> Currently done via setting ACLs directly
-        Note over Lisa (via auth agent), Bank_Pod: For documentation: Save Access Grant in <br/> Social Agent Registration in Agent Registry ?
-        Lisa (via auth agent) ->>  Bank_Pod: document Access Grant[HTTP POST /profile/registry/Authorization-Registry]
-        Bank_Pod -->> Lisa (via auth agent): [HTTP 201 Created] location /Authorization-Registry/{UUID}
+        Note over Lisa (via auth agent), Bank_Pod: Save Access Authorization in Authorization Registry<br/> for this specific offer (data instance) and order container <br/> Currently done via setting ACLs directly
+
+        Lisa (via auth agent) -->>+  Bank_Pod: Modify ACL  Grant write access to order container [HTTP PUT RESOURCE /credits/order/.acl]
+        Bank_Pod -->>- Lisa (via auth agent): [HTTP 201 Created] 
+
+        Lisa (via auth agent) -->>+  Bank_Pod: Modify ACL  Grant read access to offer  instance [HTTP PUT RESOURCE /credits/offers/{UUID}.acl]
+        Bank_Pod -->>- Lisa (via auth agent): [HTTP 201 Created] 
+
+
+        Lisa (via auth agent) ->>+  Bank_Pod: document Access Grant[HTTP POST /profile/registry/Authorization-Registry]
+        Bank_Pod -->>- Lisa (via auth agent): [HTTP 201 Created] location /Authorization-Registry/{UUID}
         Lisa (via auth agent) ->> Lisa:  Redirect from  Lisa Auth Agent to Lisa Bank App
     end
 
-
-
-    rect rgb(255, 10, 255)
-        note over Lisa,KMU_Pod: Not implemented yet! <br/> Still to be discussed. Notification of Tom from Lisa that an offer has been createds via LDNs or other solution?
-        opt
-            %% Notify KMU
-            %% note over KMU_Pod,Lisa: This Notification does not contain the request, only a link to the request.
-            Lisa->>+KMU_Pod: [HTTP POST /inbox/] Linked Data Notification
-            KMU_Pod-->>-Lisa: [HTTP 201 Created] location /inbox/{uuid}
-        end
-    end
 
     %% Lookup demand update
     Tom->>+Bank_Pod: [HTTP GET /credits/demands/{uuid}]
@@ -193,10 +161,11 @@ note over Lisa,Tom: Initiation of partnership
         Tom-)Tom: evaluates credit offer
     end
 
-    rect rgb(255, 10, 255)
-        %% ((6)) Akzeptiert Kreditangebot
-        note over Tom,Bank_Pod:  make an order <br/> >>>>>Woher weiß Tom wohin die order im Bank-Pod geschrieben werden soll?<<<<<<< <br/> >>>>>Woher / Wie bekommt Tom die Berechtigung in den order Container zu schreiben?<<<<<<
-        %% create credit order in bank pod
-        Tom->>+Bank_Pod: [HTTP POST /credits/orders/] credit order
-        Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
-    end
+    %% ((6)) Akzeptiert Kreditangebot
+    note over Tom,Bank_Pod:  make an order 
+    Tom->>+Bank_Pod: getContainerUris(bank Web ID , orderShapeTreeUri)
+    Bank_Pod -->>-Tom: 200 OK with  location of data registration for posting credit order)
+
+    %% create credit order in bank pod
+    Tom->>+Bank_Pod: [HTTP POST /credits/orders/] credit order
+    Bank_Pod-->>-Tom: [HTTP 201 CREATED] location {uuid}
