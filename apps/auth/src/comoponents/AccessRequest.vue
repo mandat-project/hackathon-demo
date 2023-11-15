@@ -287,13 +287,16 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
           dataRegistrations,
           dataInstances
         );
-        await updateAccessControlList(
-          accessRequest,
-          accessNeedGroup,
-          accessNeed,
-          dataRegistrations,
-          dataInstances
-        );
+        const accessToResources =
+          dataInstances.length > 0 ? dataInstances : dataRegistrations;
+        // only grant specific resource access
+        for (const resource of accessToResources) {
+          await updateAccessControlList(
+            resource,
+            accessRequest.fromSocialAgent,
+            accessNeed.accessMode
+          );
+        }
         await setDemandIsAccessRequestGranted(accessRequest.fromDemand[0]); // naja, wenn da jemand mehr reinschreib, wirds komisch.
         if (props.redirect) {
           window.open(
@@ -378,40 +381,32 @@ async function createAccessAuthorization(
 }
 
 async function updateAccessControlList(
-  accessRequest: AccessRequest,
-  accessNeedGroup: AccessNeedGroup,
-  accessNeed: AccessNeed,
-  registrations: string[],
-  instances?: string[]
+  accessTo: string,
+  agent: string[],
+  mode: string[]
 ) {
-
-  if(instances && instances.length > 0) {
-    // dann keine container
-  }
   const acl = `\
 @prefix acl: <${ACL()}>.
 @prefix foaf: <${FOAF()}>.
 
 <#owner>
     a acl:Authorization;
-    acl:accessTo <${resourceAcl}>;
+    acl:accessTo <${accessTo}.acl>;
     acl:agent <${sessionInfo.webId}>;
-    acl:default <${resourceAcl}>;
+    acl:default <${accessTo}.acl>;
     acl:mode acl:Control, acl:Read, acl:Write.
 
 <#grantee>
     a acl:Authorization;
-    acl:accessTo <${resourceAcl}>;
-    acl:agent <${accessRequest.fromSocialAgentURI}>;
-    acl:default <${resourceAcl}>;
-    acl:mode ${accessRequest.accessModeURIs
-      .map((m) => "<" + m + ">")
-      .join(", ")} .`;
+    acl:accessTo <${accessTo}.acl>;
+    acl:agent ${agent.map((a) => "<" + a + ">").join(", ")};
+    acl:default <${accessTo}.acl>;
+    acl:mode ${mode.map((m) => "<" + m + ">").join(", ")} .`;
 
-  await putResource(resourceAcl, acl, authFetch.value).catch((err) => {
+  await putResource(accessTo + ".acl", acl, authFetch.value).catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Error on put postAccessControlList!",
+      summary: "Error on put updateAccessControlList!",
       detail: err,
       life: 5000,
     });
