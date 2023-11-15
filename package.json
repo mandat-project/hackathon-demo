@@ -24,7 +24,6 @@
     "libs/*"
   ],
   "dependencies": {
-    "@comunica/query-sparql": "^2.8.0",
     "@inrupt/solid-client-authn-browser": "^1.12.2",
     "@popperjs/core": "^2.11.8",
     "core-js": "^3.8.3",
