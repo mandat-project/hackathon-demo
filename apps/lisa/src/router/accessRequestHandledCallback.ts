@@ -1,5 +1,11 @@
-export default function onResult(accessRequestUri:String,result:String) {
-    console.log("App logic here:") 
-    console.log(accessRequestUri)
-    console.log(result)
+import { useCache } from "@shared/composables";
+import router from ".";
+
+export default async function onResult(
+  accessRequestUri: string,
+  result: string
+) {
+  const appMemory = useCache();
+  appMemory[accessRequestUri] = result;
+  router.push({ name: "Home" });
 }

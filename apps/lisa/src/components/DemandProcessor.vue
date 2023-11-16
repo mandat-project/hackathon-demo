@@ -1,6 +1,10 @@
 <template>
   <li>
-    <h3>Transaction number: <a :href="props.demandUri">{{ props.demandUri.split("/").pop() }}</a></h3>
+    <h3>
+      <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()" />
+      Transaction number:
+      <a :href="props.demandUri">{{ props.demandUri.split("/").pop() }}</a>
+    </h3>
 
     <ul class="flex flex-column gap-2">
 
@@ -31,7 +35,8 @@
       </li>
 
       <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary" v-bind:disabled="isAccessRequestGranted === 'false' || isOfferCreated"
+        <Button class="p-button p-button-secondary"
+          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
           @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
         </Button>
       </li>
@@ -57,8 +62,21 @@
           {{ demanderName }}
         </Button>
 
-        <span class="offerAcceptedStatus" v-if="isOfferAccepted">&check; Offer accepted</span>
-        <span class="offerAcceptedStatus" v-if="!isOfferAccepted && isOfferCreated">&#9749; Waiting for response</span>
+        <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
+          &check; Offer accepted
+        </span>
+        <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
+          <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
+            Make offer accessible
+            <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
+              <Button type="submit" label="Access Request" icon="pi pi-bolt" class="p-button-text p-button-danger"
+                @click="handleAuthorizationRequest(offerAccessRequest)" />
+            </span>
+          </span>
+          <span v-else>
+            &#9749; Waiting for response
+          </span>
+        </span>
       </li>
 
     </ul>
@@ -66,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSolidProfile, useSolidSession } from '@shared/composables';
+import { useCache, useSolidProfile, useSolidSession } from '@shared/composables';
 import {
   ACL,
   createResource,
@@ -83,15 +101,17 @@ import {
   INTEROP,
   XSD,
   SKOS,
-  createResourceInAnyRegistrationOfShape
+  createResourceInAnyRegistrationOfShape,
+  getContainerItems
 } from '@shared/solid';
-import { Store } from 'n3';
+import { Literal, NamedNode, Store, Writer } from 'n3';
 import { useToast } from 'primevue/usetoast';
-import { computed, reactive, ref, toRefs } from 'vue';
+import { computed, reactive, ref, toRefs, watch } from 'vue';
 
 const props = defineProps<{ demandUri: string }>();
-const { accessInbox } = useSolidProfile()
+const { accessInbox, authAgent } = useSolidProfile()
 const toast = useToast();
+const appMemory = useCache();
 const { authFetch, sessionInfo } = useSolidSession();
 const { webId } = toRefs(sessionInfo);
 
@@ -138,14 +158,21 @@ async function fetchStoreOf(uri: string): Promise<Store> {
     .then((parsedN3) => parsedN3.store);
 }
 
-async function fillLdpContainsItemsIntoStore(store: Store) {
+async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
   const itemStores: Store[] = await Promise.all(
-    store.getObjects(null, LDP("contains"), null)
-      .map((item) => fetchStoreOf(item.value))
+    itemUris.map((item) => fetchStoreOf(item))
   )
   itemStores
     .map(itemStore => itemStore.getQuads(null, null, null, null))
     .map((quads) => store.addQuads(quads))
+}
+
+function refreshState() {
+  state.demandStore = new Store()
+  state.offerStore = new Store()
+  state.orderStore = new Store()
+  state.demanderStore = new Store()
+  fetchStoreOf(props.demandUri).then(store => state.demandStore = store)
 }
 
 // DEMAND
@@ -156,25 +183,54 @@ const amount = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"
 const currency = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
 // DEMANDER
-state.demanderStore = await fetchStoreOf(demanderUri.value!);
+watch(() => demanderUri.value,
+  async () => {
+    if (demanderUri.value) {
+      state.demanderStore =
+        await fetchStoreOf(demanderUri.value)
+    }
+  }, { immediate: true }
+)
 const demanderName = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
 const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value);
 
 // OFFER
-let offerContainerUris = await getDataRegistrationContainers(webId!.value!, offerShapeTreeUri, authFetch.value);
-state.offerStore = await fetchStoreOf(offerContainerUris[0]);
-fillLdpContainsItemsIntoStore(state.offerStore)
+const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
+const isOfferCreated = computed(() => offersForDemand.value.length > 0);
+watch(() => offersForDemand.value, () =>
+  fillItemStoresIntoStore(offersForDemand.value, state.offerStore), { immediate: true })
+const offerIsAccessible = computed(() => state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value));
+const offerAccessRequests = computed(() => state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value));
+watch(() => offerAccessRequests.value,
+  async () => {
+    offerAccessRequests.value.forEach(accessRequestURI => {
+      if (appMemory[accessRequestURI]) {
+        offersForDemand.value.forEach(offerURI => {
+          if (state.offerStore.getQuads(new NamedNode(offerURI), CREDIT("hasAccessRequest"), new NamedNode(accessRequestURI), null).length > 0) {
+            handleAuthorizationRequestRedirect(
+              offerURI,
+              accessRequestURI
+            )
+          }
+        })
+      }
+    })
+  }, { immediate: true }
+)
 
-const offers = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasOffer"), null, null));
-const isOfferCreated = computed(() => offers.value.length > 0);
-const isOfferAccepted = computed(() => {
-  const offerUri = offers.value[0]?.object?.value;
-  return offerUri
-    ? state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), offerUri, null).length > 0
-    : false;
+// ORDER
+// meh. this imposes unnecessary requests and memory, should be application wide, but it works and I dont care at this point anymore.
+watch(() => offersForDemand.value,
+  async () => {
+    const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
+    const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
+    fillItemStoresIntoStore(orderItems, state.orderStore)
+  }, { immediate: true })
+const hasOrderForAnyOfferForThisDemand = computed(() => {
+  const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
+  return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
 });
-
 
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
@@ -194,8 +250,8 @@ async function patchBusinessResourceToHaveAccessRequest(businessResource: string
     })
     .then((resp) => resp.text())
     .then(txt => txt.concat(`
-        <> :hasAccessRequest <${accessRequest}> .
-        <> :isAccessRequestGranted false .
+        <> <${CREDIT('hasAccessRequest')}> <${accessRequest}> .
+        <> <${CREDIT('isAccessRequestGranted')}> false .
       `))
     .then(body => {
       return putResource(businessResource, body, authFetch.value)
@@ -275,7 +331,7 @@ async function requestData() {
     .then(getLocationHeader);
 
   await patchBusinessResourceToHaveAccessRequest(props.demandUri, accessRequestUri + "#bwaAccessRequest")
-  state.demandStore = await fetchStoreOf(props.demandUri);
+  refreshState();
 }
 
 async function patchDemandOffer(demandURI: string, offerURI: string): Promise<Response> {
@@ -347,7 +403,12 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
   await patchDemandOffer(demand, offerLocation)
   const offerSelfAcccessRequestLocation = await requestAccessBeingSet(offerLocation, demanderUri.value!)
   await patchBusinessResourceToHaveAccessRequest(offerLocation, offerSelfAcccessRequestLocation + "#accessRequest")
-  state.demandStore = await fetchStoreOf(props.demandUri); // trigger recalculation of isOfferAccepted
+  refreshState(); // update state
+  toast.add({
+    severity: "success",
+    summary: "Offer created sucessfully",
+    life: 5000,
+  });
 }
 
 async function requestAccessBeingSet(resource: string, forAgent: string) {
@@ -360,8 +421,8 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 
     <#accessRequest>
       a interop:AccessRequest ;
-      interop:fromSocialAgent <${webId!.value}> ;
-      interop:toSocialAgent  <${forAgent}> ;
+      interop:fromSocialAgent <${forAgent}> ;
+      interop:toSocialAgent  <${webId!.value}> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
       credit:fromDemand <${props.demandUri}>.
 
@@ -409,6 +470,54 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
       throw new Error(err);
     })
     .then(getLocationHeader);
+}
+
+function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
+  window.open(
+    `${authAgent.value}?uri=${encodeURIComponent(
+      inspectedAccessRequestURI
+    )}&app_redirect=${encodeURIComponent(
+      window.location.origin + "/accessRequestHandled"
+    )}`,
+    "_self"
+  );
+}
+
+async function handleAuthorizationRequestRedirect(
+  businessResourceURI: string,
+  accessRequestURI: string
+) {
+  // patch demand
+  return getResource(businessResourceURI, authFetch.value)
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, businessResourceURI))
+    .then((parsedN3) => {
+      parsedN3.store.removeQuads(
+        parsedN3.store.getQuads(
+          new NamedNode(businessResourceURI),
+          new NamedNode(CREDIT("isAccessRequestGranted")),
+          null,
+          null
+        )
+      );
+      parsedN3.store.addQuad(
+        new NamedNode(businessResourceURI),
+        new NamedNode(CREDIT("isAccessRequestGranted")),
+        new Literal(`"true"^^${XSD("boolean")}`)
+      );
+      const writer = new Writer({
+        format: "text/turtle",
+        prefixes: parsedN3.prefixes,
+      });
+      writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
+      let body = "";
+      writer.end((error, result) => (body = result));
+      return body;
+    })
+    .then((body) => {
+      return putResource(businessResourceURI, body, authFetch.value);
+    })
+    .then(() => delete appMemory[accessRequestURI]);
 }
 </script>
 

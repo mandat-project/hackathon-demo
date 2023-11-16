@@ -1,105 +1,61 @@
 <template>
-  <div
-    accessRequestObjects
-    v-for="accessRequest in accessRequestObjects"
-    :key="accessRequest.uri"
-  >
+  <div accessRequestObjects v-for="accessRequest in accessRequestObjects" :key="accessRequest.uri">
     <div>
       To
-      <a
-        v-for="recipient in accessRequest.toSocialAgent"
-        :key="recipient"
-        :href="recipient"
-      >
+      <a v-for="recipient in accessRequest.toSocialAgent" :key="recipient" :href="recipient">
         {{ recipient }}
       </a>
     </div>
     <div>
       From
-      <a
-        v-for="sender in accessRequest.fromSocialAgent"
-        :key="sender"
-        :href="sender"
-      >
+      <a v-for="sender in accessRequest.fromSocialAgent" :key="sender" :href="sender">
         {{ sender }}
       </a>
     </div>
     <div>
       <strong>From Demand: </strong>
-      <a
-        v-for="demand in accessRequest.fromDemand"
-        :key="demand"
-        :href="demand"
-      >
+      <a v-for="demand in accessRequest.fromDemand" :key="demand" :href="demand">
         {{ demand }}
       </a>
     </div>
     <!--  -->
-    <div
-      v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup"
-      :key="accessNeedGroup.uri"
-    >
+    <div v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup" :key="accessNeedGroup.uri">
       <div>
         Label:
-        <a
-          v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel"
-          :key="label"
-        >
+        <a v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel" :key="label">
           {{ label }}
         </a>
       </div>
       <div>
         Definition:
-        <a
-          v-for="definition in accessNeedGroup.accessNeedGroupDescriptionDefinition"
-          :key="definition"
-        >
+        <a v-for="definition in accessNeedGroup.accessNeedGroupDescriptionDefinition" :key="definition">
           {{ definition }}
         </a>
       </div>
       <!--  -->
-      <div
-        v-for="accessNeed in accessNeedGroup.hasAccessNeed"
-        :key="accessNeed.uri"
-      >
+      <div v-for="accessNeed in accessNeedGroup.hasAccessNeed" :key="accessNeed.uri">
         <div>
           <strong>Access Mode: </strong>
-          <a
-            v-for="accessMode in accessNeed.accessMode"
-            :key="accessMode"
-            :href="accessMode"
-          >
+          <a v-for="accessMode in accessNeed.accessMode" :key="accessMode" :href="accessMode">
             {{ accessMode }}
           </a>
         </div>
         <div>
           <strong>Required Data: </strong>
-          <a
-            v-for="shapeTree in accessNeed.registeredShapeTree"
-            :key="shapeTree"
-            :href="shapeTree"
-          >
+          <a v-for="shapeTree in accessNeed.registeredShapeTree" :key="shapeTree" :href="shapeTree">
             {{ shapeTree }}
           </a>
         </div>
         <div v-if="accessNeed.hasDataInstance.length > 0">
           <strong>Required Instances: </strong>
-          <a
-            v-for="dataInstance in accessNeed.hasDataInstance"
-            :key="dataInstance"
-            :href="dataInstance"
-          >
+          <a v-for="dataInstance in accessNeed.hasDataInstance" :key="dataInstance" :href="dataInstance">
             {{ dataInstance }}
           </a>
         </div>
       </div>
     </div>
-    <Button
-      @click="authorizeAndGrantAccess(accessRequest)"
-      type="button"
-      style="margin: 20px"
-      class="btn btn-primary"
-      >Authorize
+    <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
+      class="btn btn-primary">Authorize
     </Button>
   </div>
 </template>
@@ -330,8 +286,8 @@ async function createAccessAuthorization(
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${accessRequest.fromSocialAgent
-        .map((r) => "<" + r + ">")
-        .join(", ")} ;
+      .map((r) => "<" + r + ">")
+      .join(", ")} ;
       interop:hasAccessNeedGroup <${accessNeedGroup.uri}> ;
       interop:hasDataAuthorization <#dataAuthorization> .
 
@@ -339,26 +295,24 @@ async function createAccessAuthorization(
       a interop:DataAuthorization ;
       interop:grantee  <${sessionInfo.webId}> ;
       interop:registeredShapeTree ${accessNeed.registeredShapeTree
-        .map((t) => "<" + t + ">")
-        .join(", ")} ;
+      .map((t) => "<" + t + ">")
+      .join(", ")} ;
       interop:accessMode ${accessNeed.accessMode
-        .map((m) => "<" + m + ">")
-        .join(", ")} ;
-      interop:scopeOfAuthorization  ${
-        instances && instances.length > 0
-          ? "interop:SelectedFromRegistry"
-          : "interop:AllFromRegistry"
-      } ;
+      .map((m) => "<" + m + ">")
+      .join(", ")} ;
+      interop:scopeOfAuthorization  ${instances && instances.length > 0
+      ? "interop:SelectedFromRegistry"
+      : "interop:AllFromRegistry"
+    } ;
       interop:hasDataRegistration ${registrations
-        .map((r) => "<" + r + ">")
-        .join(", ")} ;
-      ${
-        instances && instances.length > 0
-          ? "interop:hasDataInstance " +
-            instances.map((i) => "<" + i + ">").join(", ") +
-            " ;"
-          : ""
-      }
+      .map((r) => "<" + r + ">")
+      .join(", ")} ;
+      ${instances && instances.length > 0
+      ? "interop:hasDataInstance " +
+      instances.map((i) => "<" + i + ">").join(", ") +
+      " ;"
+      : ""
+    }
       interop:satisfiesAccessNeed <${accessNeed.uri}> .`;
 
   await createResource(authorizationRegistry.value, payload, authFetch.value)
@@ -387,21 +341,26 @@ async function updateAccessControlList(
 ) {
   const txt = await getResource(accessTo + ".acl", authFetch.value)
     .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on get Demand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
+      const newACL = `\
+@prefix : <#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+<#owner> a acl:Authorization;
+    acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
+    acl:agent <${sessionInfo.webId}>;
+    acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
+    acl:mode acl:Read, acl:Write, acl:Control.
+`;
+      return putResource(accessTo + ".acl", newACL, authFetch.value)
+        .then(() => getResource(accessTo + ".acl", authFetch.value))
     })
     .then((resp) => resp.text());
   const acl = `\
 <#grantee>
     a acl:Authorization;
-    acl:accessTo <./>;
+    acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
     acl:agent ${agent.map((a) => "<" + a + ">").join(", ")};
-    acl:default <./>;
+    acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
     acl:mode ${mode.map((m) => "<" + m + ">").join(", ")} .
 `;
 

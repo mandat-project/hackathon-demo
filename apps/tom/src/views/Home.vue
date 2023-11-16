@@ -16,12 +16,8 @@
           <div class="grid">
             <span class="align-self-center font-bold">Currency</span>
             <div class="col">
-              <Dropdown
-                v-model="selectedCurrency"
-                :options="currencies"
-                optionLabel="label"
-                placeholder="Select a Currency"
-              />
+              <Dropdown v-model="selectedCurrency" :options="currencies" optionLabel="label"
+                placeholder="Select a Currency" />
             </div>
           </div>
 
@@ -34,19 +30,12 @@
       <div class="col lg:col-6 lg:col-offset-3">
         <h1>
           Demands
-          <Button
-            icon="pi pi-refresh"
-            class="p-button-text p-button-rounded p-button-icon-only"
-            @click="loadDemands()"
-          />
+          <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="loadDemands()" />
         </h1>
 
         <ul v-if="demands" class="flex flex-column p-0">
-          <li
-            v-for="(demand, index) in demands"
-            :key="JSON.stringify(demand)"
-            class="flex flex-wrap align-items-center justify-content-between"
-          >
+          <li v-for="(demand, index) in demands" :key="JSON.stringify(demand)"
+            class="flex flex-wrap align-items-center justify-content-between">
             <hr v-if="index !== 0" class="w-full" />
             <div class="flex flex-column md:flex-row gap-2 p-3">
               <span> From </span>
@@ -54,43 +43,22 @@
                 <a :href="demand.providerWebID">{{ demand.providerName }} </a> :
               </span>
               <span>{{ demand.amount }} {{ demand.currency }}</span>
-              <span v-if="demand.offer"
-                >(interest rate %: {{ demand.offer.interestRate }})</span
-              >
-              <span v-if="demand.offer"
-                >(duration: {{ demand.offer.duration }})</span
-              >
+              <span v-if="demand.offer">(interest rate %: {{ demand.offer.interestRate }})</span>
+              <span v-if="demand.offer">(duration: {{ demand.offer.duration }})</span>
               <span v-else>(currently no offer)</span>
             </div>
-            <Button
-              v-if="
-                demand.hasAccessRequest &&
-                !(demand.isAccessRequestGranted == 'true')
-              "
-              type="submit"
-              label="Handle Access Request"
-              icon="pi pi-question"
-              class="p-button-text"
-              @click="handleAuthorizationRequest(demand.hasAccessRequest)"
-            />
-            <Button
-              v-if="demand.offer"
-              type="submit"
-              label="Accept Offer"
-              icon="pi pi-check"
-              class="p-button-text"
-              @click="createOrder(demand.offer.id)"
-            />
+            <Button v-if="demand.hasAccessRequest &&
+              !(demand.isAccessRequestGranted == 'true')
+              " type="submit" label="Handle Access Request" icon="pi pi-question" class="p-button-text"
+              @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
+            <Button v-if="demand.offer" type="submit" label="Accept Offer" icon="pi pi-check" class="p-button-text"
+              @click="createOrder(demand.offer.id)" />
           </li>
         </ul>
 
         <p v-else>No released demands</p>
 
-        <ProgressBar
-          v-if="isLoading"
-          mode="indeterminate"
-          style="height: 2px"
-        />
+        <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
       </div>
     </div>
   </div>
@@ -203,14 +171,14 @@ async function loadDemands() {
         null,
         CREDIT("hasAccessRequest"),
         null
-      )[0].value;
+      )[0]?.value;
       let isAccessRequestGranted = "false";
       if (accessRequestURI) {
         isAccessRequestGranted = demandStore.getObjects(
           null,
           CREDIT("isAccessRequestGranted"),
           null
-        )[0].value;
+        )[0]?.value;
       }
       if (appMemory[accessRequestURI]) {
         return handleAuthorizationRequestRedirect(
@@ -231,45 +199,40 @@ async function loadDemands() {
       const bankname = profileCard.getObjects(bank.value, VCARD("fn"), null)[0]
         .value;
 
+      const demandObject = {
+        hasAccessRequest: accessRequestURI,
+        isAccessRequestGranted,
+        providerName: bankname,
+        providerWebID: bank.value,
+        amount: parseFloat(amount.value),
+        currency: currency.value,
+      } as any // you caught me. 
       if (demandOffers.length > 0) {
-        const offerStore = await getOfferStore(demandOffers);
+        try {
+          const offerStore = await getOfferStore(demandOffers);
 
-        const interestRate = offerStore.getObjects(
-          null,
-          SCHEMA("annualPercentageRate"),
-          null
-        )[0];
+          const interestRate = offerStore.getObjects(
+            null,
+            SCHEMA("annualPercentageRate"),
+            null
+          )[0];
 
-        const duration = offerStore.getObjects(
-          demandOffers[0].value + "#duration",
-          SCHEMA("value"),
-          null
-        )[0];
+          const duration = offerStore.getObjects(
+            demandOffers[0].value + "#duration",
+            SCHEMA("value"),
+            null
+          )[0];
 
-        demands.value.push({
-          hasAccessRequest: accessRequestURI,
-          isAccessRequestGranted,
-          providerName: bankname,
-          providerWebID: bank.value,
-          amount: parseFloat(amount.value),
-          currency: currency.value,
-          offer: {
+          demandObject['offer'] =
+          {
             id: demandOffers[0].id,
             interestRate: parseFloat(interestRate.value),
             duration: duration.value,
-          },
-        });
-      } else {
-        demands.value.push({
-          hasAccessRequest: accessRequestURI,
-          isAccessRequestGranted,
-          providerName: bankname,
-          providerWebID: bank.value,
-          amount: parseFloat(amount.value),
-          currency: currency.value,
-        });
+          }
+        } catch (e) { console.error(e) }
       }
-    } catch (e) {}
+      demands.value.push(demandObject);
+    } catch (e) { console.error(e) }
   }
   isLoading.value = false;
 }
@@ -315,15 +278,6 @@ async function getDemandContainerStore(demandContainerUris: Array<string>) {
 }
 async function getDemandStore(demand: any) {
   return await getResource(demand.id, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on get!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, demand.id))
     .then((parsedN3) => parsedN3.store);
@@ -331,15 +285,6 @@ async function getDemandStore(demand: any) {
 
 async function getOfferStore(demandOffers: Array<Quad["object"]>) {
   return await getResource(demandOffers[0].id, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on get!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, demandOffers[0].id))
     .then((parsedN3) => parsedN3.store);
