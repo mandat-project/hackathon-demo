@@ -9,6 +9,7 @@ import Checkbox from 'primevue/checkbox';
 import Chips from 'primevue/chips';
 import InputSwitch from 'primevue/inputswitch';
 import InputText from "primevue/inputtext";
+import InputNumber from 'primevue/inputnumber';
 import RadioButton from 'primevue/radiobutton';
 import Textarea from "primevue/textarea";
 import Dialog from "primevue/dialog";
@@ -52,6 +53,7 @@ app.component("Checkbox", Checkbox);
 app.component("Chips", Chips);
 app.component("InputSwitch", InputSwitch)
 app.component("InputText", InputText);
+app.component("InputNumber", InputNumber);
 app.component("RadioButton", RadioButton)
 app.component("Textarea", Textarea);
 app.component("Dialog", Dialog);

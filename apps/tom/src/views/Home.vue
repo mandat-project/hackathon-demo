@@ -9,7 +9,7 @@
           <div class="grid">
             <span class="align-self-center font-bold">Amount</span>
             <div class="col">
-              <InputText id="amount" type="number" v-model="enteredAmount" />
+              <InputNumber id="amount" type="number" v-model="enteredAmount" />
             </div>
           </div>
 
@@ -44,7 +44,7 @@
         <ul v-if="demands" class="flex flex-column p-0">
           <li
             v-for="(demand, index) in demands"
-            :key="demand"
+            :key="JSON.stringify(demand)"
             class="flex flex-wrap align-items-center justify-content-between"
           >
             <hr v-if="index !== 0" class="w-full" />
@@ -63,7 +63,10 @@
               <span v-else>(currently no offer)</span>
             </div>
             <Button
-              v-if="demand.hasAccessRequest && !(demand.isAccessRequestGranted=='true')"
+              v-if="
+                demand.hasAccessRequest &&
+                !(demand.isAccessRequestGranted == 'true')
+              "
               type="submit"
               label="Handle Access Request"
               icon="pi pi-question"
@@ -201,7 +204,7 @@ async function loadDemands() {
         CREDIT("hasAccessRequest"),
         null
       )[0].value;
-      let isAccessRequestGranted = 'false';
+      let isAccessRequestGranted = "false";
       if (accessRequestURI) {
         isAccessRequestGranted = demandStore.getObjects(
           null,

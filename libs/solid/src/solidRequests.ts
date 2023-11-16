@@ -190,7 +190,7 @@ export async function createContainer(
  * @param resp string location header
  */
 export function getLocationHeader(resp: Response): string {
-    let loc = resp.headers.get("Location"); // /public/56b25ba0-3574-11eb-a5fb-e5ba58d02f1a.ttl
+    let loc = resp.headers.get("Location");
     if (loc == null) {
         throw new Error(`Location Header at \`${resp.url}\` not set.`);
     }
