@@ -211,7 +211,7 @@ watch(() => offerAccessRequests.value,
             handleAuthorizationRequestRedirect(
               offerURI,
               accessRequestURI
-            )
+            ).then(() => refreshState())
           }
         })
       }
@@ -430,7 +430,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
       a interop:AccessNeedGroupDescription ;
       interop:inAccessDescriptionSet <#accessDescriptionSet> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
-      skos:prefLabel "Zugriff Offer"@de ;
+      skos:prefLabel "Zugriff Offer und Order container"@de ;
       skos:definition "Gib das Angebot frei."@de .
 
     <#accessNeedGroup>
@@ -439,7 +439,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
       interop:accessNecessity interop:accessRequired ;
       interop:accessScenario interop:sharedAccess ;
       interop:authenticatesAs interop:SocialAgent ;
-      interop:hasAccessNeed <#accessNeed> .
+      interop:hasAccessNeed <#accessNeed>, <#accessNeed2> .
 
     <#accessNeedDescription>
       a interop:AccessNeedDescription ;
@@ -451,8 +451,21 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
     <#accessNeed>
       a interop:AccessNeed ;
       interop:accessMode acl:Read ;
-      interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.shape#creditOfferShape> ;
+      interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree> ;
       interop:hasDataInstance <${resource}> ;
+      interop:accessNecessity interop:accessRequired .
+
+    <#accessNeedDescription2>
+      a interop:AccessNeedDescription ;
+      interop:inAccessDescriptionSet <#accessNeedGroupDescription> ;
+      interop:hasAccessNeed <#accessNeed2> ;
+      skos:prefLabel "Zugriff Order"@de ;
+      skos:definition "Gib den Order Container frei."@de .
+
+    <#accessNeed2>
+      a interop:AccessNeed ;
+      interop:accessMode acl:Append ;
+      interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree> ;
       interop:accessNecessity interop:accessRequired .
 
     <#accessDescriptionSet>

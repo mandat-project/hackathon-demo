@@ -1,5 +1,5 @@
 import { createResource, getResource, INTEROP, parseToN3 } from "@shared/solid";
-import { Quad_Object, Store } from "n3";
+import { Store } from "n3";
 
 export type AccessNeed = {
   uri: string;
@@ -42,93 +42,85 @@ export async function getDataRegistrationContainers(
   webId: string,
   shapeTreeUri: string,
   fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
-): Promise<Array<string>> {
-  let dataRegistrationContainerUris: Array<string> = [];
-
-  const registrySetUri = await getRegistrySet(webId, fetch).then(getQuadValue);
-
-  if (registrySetUri) {
-    const dataRegistryUris = await getDataRegistry(registrySetUri, fetch).then(
-      (dataRegistry) => dataRegistry.map(getQuadValue)
+): Promise<string[]> {
+  const registrySetUris = await getRegistrySet(webId, fetch);
+  const dataRegistryUris = [];
+  for (const registrySetUri of registrySetUris) {
+    dataRegistryUris.push(...(await getDataRegistry(registrySetUri, fetch)));
+  }
+  const dataRegistrationUris = [];
+  for (const dataRegistryUri of dataRegistryUris) {
+    dataRegistrationUris.push(
+      ...(await getDataRegistrations(dataRegistryUri, fetch))
     );
-
-    if (dataRegistryUris) {
-      const dataRegistrationUris = await getDataRegistrations(
-        dataRegistryUris,
-        fetch
-      );
-
-      dataRegistrationContainerUris =
-        await filterDataRegistrationUrisByShapeTreeUri(
-          dataRegistrationUris,
-          shapeTreeUri,
-          fetch
-        );
+  }
+  const dataRegistrationsOfShapeUris = [];
+  for (const dataRegistrationUri of dataRegistrationUris) {
+    const hasMatchingShape = await filterDataRegistrationUrisByShapeTreeUri(
+      dataRegistrationUri,
+      shapeTreeUri,
+      fetch
+    );
+    if (hasMatchingShape) {
+      dataRegistrationsOfShapeUris.push(dataRegistrationUri);
     }
   }
-
-  return dataRegistrationContainerUris;
-}
-
-async function filterDataRegistrationUrisByShapeTreeUri(
-  dataRegistrationUris: Array<string>,
-  shapeTreeUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
-) {
-  const result: Array<string> = [];
-  for (const dataRegistrationUri of dataRegistrationUris) {
-    await getRegisteredShapeTree(dataRegistrationUri, fetch)
-      .then(getQuadValue)
-      .then((dataRegistrationShapeTree) => {
-        if (dataRegistrationShapeTree === shapeTreeUri) {
-          result.push(dataRegistrationUri);
-        }
-      });
-  }
-  return result;
+  return dataRegistrationsOfShapeUris;
 }
 
 function getRegistrySet(
   webId: string,
   fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
-): Promise<Quad_Object> {
-  return getResourceAsStore(webId, fetch).then(
-    (store) => store.getObjects(null, INTEROP("hasRegistrySet"), null)[0]
+): Promise<string[]> {
+  return getResourceAsStore(webId, fetch).then((store) =>
+    store
+      .getObjects(null, INTEROP("hasRegistrySet"), null)
+      .map((term) => term.value)
   );
 }
 
 function getDataRegistry(
   registrySetUri: string,
   fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
-): Promise<Array<Quad_Object>> {
+): Promise<string[]> {
   return getResourceAsStore(registrySetUri, fetch).then((store) =>
-    store.getObjects(null, INTEROP("hasDataRegistry"), null)
+    store
+      .getObjects(null, INTEROP("hasDataRegistry"), null)
+      .map((term) => term.value)
   );
 }
 
 async function getDataRegistrations(
-  dataRegistryUris: string[],
+  dataRegistryUri: string,
   fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
 ): Promise<string[]> {
-  const result: string[] = [];
-  for (const dataRegistryUri of dataRegistryUris) {
-    await getResourceAsStore(dataRegistryUri, fetch)
-      .then((store) =>
-        store.getObjects(null, INTEROP("hasDataRegistration"), null)
-      )
-      .then((x) => x.map(getQuadValue))
-      .then((uri) => result.push(...uri));
-  }
-  return result;
+  return getResourceAsStore(dataRegistryUri, fetch).then((store) =>
+    store
+      .getObjects(null, INTEROP("hasDataRegistration"), null)
+      .map((term) => term.value)
+  );
 }
 
 function getRegisteredShapeTree(
   dataRegistrationUri: string,
   fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
-): Promise<Quad_Object> {
+): Promise<string> {
   return getResourceAsStore(dataRegistrationUri, fetch).then(
-    (store) => store.getObjects(null, INTEROP("registeredShapeTree"), null)[0]
+    (store) =>
+      store.getObjects(null, INTEROP("registeredShapeTree"), null)[0].value
   );
+}
+
+async function filterDataRegistrationUrisByShapeTreeUri(
+  dataRegistrationUri: string,
+  shapeTreeUri: string,
+  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+) {
+  const dataRegistrationShapeTree = await getRegisteredShapeTree(
+    dataRegistrationUri,
+    fetch
+  );
+  return dataRegistrationShapeTree === shapeTreeUri;
 }
 
 function getResourceAsStore(
@@ -139,8 +131,4 @@ function getResourceAsStore(
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, uri))
     .then((parsedN3) => parsedN3.store);
-}
-
-function getQuadValue(quad: Quad_Object): string {
-  return quad.value;
 }

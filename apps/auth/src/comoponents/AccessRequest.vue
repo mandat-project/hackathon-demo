@@ -20,6 +20,7 @@
     </div>
     <!--  -->
     <div v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup" :key="accessNeedGroup.uri">
+      <Divider />
       <div>
         Label:
         <a v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel" :key="label">
@@ -34,6 +35,7 @@
       </div>
       <!--  -->
       <div v-for="accessNeed in accessNeedGroup.hasAccessNeed" :key="accessNeed.uri">
+        <Divider />
         <div>
           <strong>Access Mode: </strong>
           <a v-for="accessMode in accessNeed.accessMode" :key="accessMode" :href="accessMode">
@@ -253,17 +255,17 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
             accessNeed.accessMode
           );
         }
-        await setDemandIsAccessRequestGranted(accessRequest.fromDemand[0]); // naja, wenn da jemand mehr reinschreib, wirds komisch.
-        if (props.redirect) {
-          window.open(
-            `${props.redirect}?uri=${encodeURIComponent(
-              accessRequest.uri
-            )}&result=1`,
-            "_self"
-          );
-        }
       }
     }
+  }
+  await setDemandIsAccessRequestGranted(accessRequest.fromDemand[0]); // naja, wenn da jemand mehr reinschreib, wirds komisch.
+  if (props.redirect) {
+    window.open(
+      `${props.redirect}?uri=${encodeURIComponent(
+        accessRequest.uri
+      )}&result=1`,
+      "_self"
+    );
   }
 }
 
