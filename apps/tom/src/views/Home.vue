@@ -21,7 +21,7 @@
             </div>
           </div>
 
-          <Button class="mt-2" @click="postDemand"> Submit demand</Button>
+          <Button class="mt-2" @click="postCreditDemand"> Submit demand</Button>
         </form>
       </div>
     </div>
@@ -30,7 +30,8 @@
       <div class="col lg:col-6 lg:col-offset-3">
         <h1>
           Demands
-          <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="loadDemands()" />
+          <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+            @click="loadCreditDemands()" />
         </h1>
 
         <ul v-if="demands" class="flex flex-column p-0">
@@ -80,6 +81,7 @@ import {
   getDataRegistrationContainers,
   getLocationHeader,
   getResource,
+  INTEROP,
   LDP,
   parseToN3,
   putResource,
@@ -89,7 +91,6 @@ import {
 } from "@shared/solid";
 import { Ref, ref, toRefs, watch } from "vue";
 import { Literal, NamedNode, Quad, Writer } from "n3";
-import router from "@/router";
 
 interface Demand {
   providerName: string;
@@ -110,7 +111,10 @@ interface Offer {
 const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
 const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 
-const demandShapeTreeUri =
+
+const businessAssessmentShapeTreeUri = "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree";
+const documentDemandShapeTreeUri = "https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentDemandTree";
+const creditDemandShapeTreeUri =
   "https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree";
 const orderContainer = "https://bank.solid.aifb.kit.edu/credits/orders/";
 
@@ -136,31 +140,31 @@ let isLoading = ref(false);
 
 watch(storage, function () {
   if (!storage.value) return;
-  loadDemands();
+  loadCreditDemands();
 });
-async function loadDemands() {
+async function loadCreditDemands() {
   isLoading.value = true;
 
   demands.value = [];
 
-  const demandContainerUris = await getDataRegistrationContainers(
+  const creditDemandContainerUris = await getDataRegistrationContainers(
     bank.value,
-    demandShapeTreeUri,
+    creditDemandShapeTreeUri,
     authFetch.value
   );
 
-  const demandContainerStore = await getDemandContainerStore(
-    demandContainerUris
+  const creditDemandContainerStore = await getCreditDemandContainerStore(
+    creditDemandContainerUris
   );
 
-  const allDemands = demandContainerStore.getObjects(
+  const allDemands = creditDemandContainerStore.getObjects(
     null,
     LDP("contains"),
     null
   );
   for (let demand of allDemands) {
     try {
-      const demandStore = await getDemandStore(demand);
+      const demandStore = await getCreditDemandStore(demand);
 
       const demandOffers = demandStore.getObjects(
         null,
@@ -186,7 +190,7 @@ async function loadDemands() {
           accessRequestURI
         ).then(() => {
           demands.value = [];
-          loadDemands();
+          loadCreditDemands();
         });
       }
       const amount = demandStore.getObjects(null, SCHEMA("amount"), null)[0];
@@ -236,20 +240,29 @@ async function loadDemands() {
   }
   isLoading.value = false;
 }
-const postDemand = async () => {
+const postCreditDemand = async () => {
   try {
     // Create demand resource
-    const payload = createDemandPayload();
+    const payload = `\
+      @prefix schema: <${SCHEMA()}> .
+      @prefix : <${CREDIT()}> .
+
+      <> a schema:Demand ;
+        schema:itemOffered [
+          a schema:LoanOrCredit ;
+            schema:amount ${enteredAmount.value} ;
+            schema:currency "${selectedCurrency.value.value}"
+        ] .
+
+      <${webId?.value}> schema:seeks <> .
+    `;
 
     const demandContainerUris = await getContainerUris(
       bank.value,
-      demandShapeTreeUri
+      creditDemandShapeTreeUri
     );
 
-    const demand = await createDemand(demandContainerUris, payload);
-
-    // Send LDN to bank about new demand
-    sendLDNtoBank(demand);
+    await createDemand(demandContainerUris, payload);
 
     // Success Message \o/
     toast.add({
@@ -266,7 +279,25 @@ const postDemand = async () => {
     });
   }
 };
-async function getDemandContainerStore(demandContainerUris: Array<string>) {
+
+// TODO: provided function to be called via UI
+async function postDocumentDemand() {
+  const documentDemandPayload = `\
+      @prefix schema: <${SCHEMA()}> .
+      @prefix interop: <${INTEROP()}> .
+      <> a schema:Demand ;
+      interop:fromSocialAgent <${webId!.value}> ;
+      interop:registeredShapeTree <${businessAssessmentShapeTreeUri}> .
+      <${webId?.value}> schema:seeks <> .
+    `;
+  const documentDemandContainerUris = await getContainerUris(
+    tax.value,
+    documentDemandShapeTreeUri
+  );
+  await createDemand(documentDemandContainerUris, documentDemandPayload);
+}
+
+async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {
   return await getResource(demandContainerUris[0], authFetch.value)
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, demandContainerUris[0]))
@@ -276,7 +307,7 @@ async function getDemandContainerStore(demandContainerUris: Array<string>) {
       throw err;
     });
 }
-async function getDemandStore(demand: any) {
+async function getCreditDemandStore(demand: any) {
   return await getResource(demand.id, authFetch.value)
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, demand.id))
@@ -363,38 +394,6 @@ async function createDemand(
       throw new Error(err);
     })
     .then((res) => getLocationHeader(res));
-}
-
-function sendLDNtoBank(demand: string) {
-  createResource(
-    "https://bank.solid.aifb.kit.edu/inbox/",
-    `<${webId?.value}> <${SCHEMA("seeks")}> <${demand}> .`,
-    authFetch.value
-  ).catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Error on create!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  });
-}
-
-function createDemandPayload() {
-  return `\
-      @prefix schema: <${SCHEMA()}> .
-      @prefix : <${CREDIT()}> .
-
-      <> a schema:Demand ;
-        schema:itemOffered [
-          a schema:LoanOrCredit ;
-            schema:amount ${enteredAmount.value} ;
-            schema:currency "${selectedCurrency.value.value}"
-        ] .
-
-      <${webId?.value}> schema:seeks <> .
-    `;
 }
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {

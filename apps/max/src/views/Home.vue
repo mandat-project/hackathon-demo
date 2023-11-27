@@ -2,7 +2,7 @@
 import {useToast} from "primevue/usetoast";
 import {ref, toRefs, watch} from "vue";
 import {Quad, Store} from 'n3';
-import {createResource, CREDIT, getResource, LDP, parseToN3, putResource} from "@shared/solid";
+import {createResource, CREDIT, getDataRegistrationContainers, getResource, INTEROP, LDP, parseToN3, RDF, SCHEMA, XSD} from "@shared/solid";
 import {useSolidInbox, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 
@@ -12,46 +12,48 @@ const {isLoggedIn} = toRefs(sessionInfo);
 const isLoading = ref(false);
 const {ldns} = useSolidInbox();
 
-const containerUri = ref("https://sme.solid.aifb.kit.edu/data-requests/");
-const inboxUri = ref("https://sme.solid.aifb.kit.edu/inbox/");
-const requests = ref(new Map<string, Store | null>());
+const documentCreationDemands = ref(new Map<string, Store | null>());
+const documentDemandContainerUri = ref("https://tax.solid.aifb.kit.edu/documents/demands/");
 
 // auto refetch on ldn
 watch(
     () => ldns.value,
-    () => isLoggedIn ? fetchRequests() : {}
+    () => isLoggedIn ? fetchDocumentCreationDemands() : {}
 );
 
-function fetchRequests() {
+function fetchDocumentCreationDemands() {
   isLoading.value = true;
-  getResourceAsStore(containerUri.value)
+  getResourceAsStore(documentDemandContainerUri.value)
     .then(containerStore => getObjects(containerStore, LDP('contains'))
-      .forEach(requestUri => {
-        getResourceAsStore(requestUri).then(requestStore => {
-          requests.value.set(requestUri, requestStore);
+      .forEach(documentCreationDemandUri => {
+        getResourceAsStore(documentCreationDemandUri).then(requestStore => {
+          documentCreationDemands.value.set(documentCreationDemandUri, requestStore);
         })
       }))
     .finally(() => isLoading.value = false);
 }
 
-async function processRequest(key: string) {
-  const store = requests.value.get(key);
+async function processDocumentCreationDemand(key: string) {
+  const store = documentCreationDemands.value.get(key);
   if (store) {
-    const targetUri = getObject(store, CREDIT('hasDataProcessed'));
-    const processedDataBody = `@prefix ex: <${CREDIT()}>. <> a ex:ProcessedData .`;
-    await putResource(targetUri, processedDataBody, authFetch.value)
-        .catch((err) => {
-          toast.add({
-            severity: "error",
-            summary: "Error on put!",
-            detail: err,
-            life: 5000,
-          });
-          throw new Error(err);
-        });
-
-    //LDN with targetUri as msgbody
-    await createResource(inboxUri.value, "change happened at " + targetUri, authFetch.value)
+    const requestedShapeTree = getObject(store, INTEROP('registeredShapeTree'));
+    const fromSocialAgent = getObject(store, INTEROP('fromSocialAgent'));
+    const targetUri = await getDataRegistrationContainers(fromSocialAgent, requestedShapeTree, authFetch.value);
+    const businessAssessmentPayload = `@prefix schema: <${SCHEMA()}> .
+          @prefix xsd: <${XSD()}> .
+          @prefix rdf: <${RDF()}> .
+          @prefix credit: <${CREDIT()}> .
+          <> a credit:BusinessAssessment ;
+            credit:hasTotal 71500.0 ;
+            credit:hasCapitalizedService 0.0 ;
+            credit:hasRevenue 70000.0 ;
+            credit:hasChangeinRevenue 1500.0 ;
+            credit:versionNo "9.12" ;
+            credit:createdAt "2023-03-28T14:45:47.000Z"^^xsd:dateTime ;
+            credit:referencedStartDate "2021-01-01T00:00:00.000Z"^^xsd:dateTime ;
+            credit:referencedStartEnd "2021-12-31T23:59:59.000Z"^^xsd:dateTime .
+    `;
+    await createResource(targetUri[0], businessAssessmentPayload, authFetch.value)
         .catch((err) => {
           toast.add({
             severity: "error",
@@ -101,11 +103,11 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
   <div class="grid">
     <div class="col lg:col-6 lg:col-offset-3">
       <ul v-if="isLoggedIn">
-        <li v-for="([uri, store], index) of requests" :key="index">
+        <li v-for="([uri, store], index) of documentCreationDemands" :key="index">
           <p>Request #{{ index }}: {{ uri }}</p>
-          <p>Target-Uri: {{ getObject(store, CREDIT('hasDataProcessed')) }}</p>
-          <p>Requested Data : {{ getObject(store, CREDIT('hasRequestedData')) }} </p>
-          <Button   @click="processRequest(uri)">Do Processing</Button>
+          <p>From: {{ getObject(store!, INTEROP('fromSocialAgent')) }}</p>
+          <p>Requested Data : {{ getObject(store!, INTEROP('registeredShapeTree')) }} </p>
+          <Button   @click="processDocumentCreationDemand(uri)">Provide requested Data</Button>
         </li>
       </ul>
       <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
@@ -122,9 +124,4 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
   padding-bottom: 0;
 }
 
-.progressbar {
-  height: 2px;
-  border-radius: 0 0 3px 3px;
-  transform: translateY(-2px);
-}
 </style>

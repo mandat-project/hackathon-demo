@@ -26,7 +26,7 @@
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-          @click="requestData()">Request business assessment data from {{ demanderName }}
+          @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
         </Button>
         <p>
           &rightarrow;
@@ -38,6 +38,13 @@
         <Button class="p-button p-button-secondary"
           v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
           @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
+        </Button>
+      </li>
+
+      <li class="flex align-items-center gap-2">
+        <Button class="p-button p-button-secondary"
+          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+          @click="requestCreationOfData()">Request creation of new business assessment data from {{ demanderName }}
         </Button>
       </li>
 
@@ -134,6 +141,7 @@ const shapeTrees = [
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
+const documentDemandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentDemandTree';
 
 const state = reactive({
   demandStore: new Store(),
@@ -267,8 +275,8 @@ async function patchBusinessResourceToHaveAccessRequest(businessResource: string
     })
 }
 
-async function requestData() {
-  const body = `@prefix interop: <${INTEROP()}> .
+async function requestAccessToData() {
+  const accessRequestBody = `@prefix interop: <${INTEROP()}> .
     @prefix ldp: <${LDP()}> .
     @prefix skos: <${SKOS()}> .
     @prefix credit: <${CREDIT()}> .
@@ -318,7 +326,7 @@ async function requestData() {
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
       credit:fromDemand <${props.demandUri}>.`;
 
-  const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, body, authFetch.value)
+  const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, authFetch.value)
     .catch((err) => {
       toast.add({
         severity: "error",
@@ -332,6 +340,30 @@ async function requestData() {
 
   await patchBusinessResourceToHaveAccessRequest(props.demandUri, accessRequestUri + "#bwaAccessRequest")
   refreshState();
+}
+
+async function requestCreationOfData() {
+  const documentCreationDemandBody = `\
+      @prefix schema: <${SCHEMA()}> .
+      @prefix credit: <${CREDIT()}> .
+      @prefix interop: <${INTEROP()}> .
+      <> a schema:Demand ;
+      interop:fromSocialAgent <${webId!.value}> ;
+      credit:derivedFromDemand <${props.demandUri}> ;
+      interop:registeredShapeTree <${selectedShapeTree.value.value}> .
+      <${webId!.value}> schema:seeks <> .
+    `;
+  const documentDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentDemandShapeTreeUri, authFetch.value);
+  await createResource(documentDemandContainerUris[0], documentCreationDemandBody, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on create!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
 }
 
 async function patchDemandOffer(demandURI: string, offerURI: string): Promise<Response> {
