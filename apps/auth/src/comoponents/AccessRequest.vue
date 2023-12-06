@@ -20,7 +20,7 @@
     </div>
     <!--  -->
     <div v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup" :key="accessNeedGroup.uri">
-      <Divider />
+      <Divider/>
       <div>
         Label:
         <a v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel" :key="label">
@@ -35,7 +35,7 @@
       </div>
       <!--  -->
       <div v-for="accessNeed in accessNeedGroup.hasAccessNeed" :key="accessNeed.uri">
-        <Divider />
+        <Divider/>
         <div>
           <strong>Access Mode: </strong>
           <a v-for="accessMode in accessNeed.accessMode" :key="accessMode" :href="accessMode">
@@ -57,13 +57,13 @@
       </div>
     </div>
     <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary">Authorize
+            class="btn btn-primary">Authorize
     </Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useSolidProfile, useSolidSession } from "@shared/composables";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -73,7 +73,6 @@ import {
   LDP,
   XSD,
   createResource,
-  FOAF,
   putResource,
   getDataRegistrationContainers,
   CREDIT,
@@ -82,13 +81,13 @@ import {
   AccessNeedGroup,
   AccessRequest,
 } from "@shared/solid";
-import { Store } from "n3";
-import { useToast } from "primevue/usetoast";
-import { computed, reactive } from "vue";
+import {Store} from "n3";
+import {useToast} from "primevue/usetoast";
+import {computed, reactive} from "vue";
 
 const props = defineProps(["resourceURI", "redirect"]);
-const { authFetch, sessionInfo } = useSolidSession();
-const { authorizationRegistry } = useSolidProfile();
+const {authFetch, sessionInfo} = useSolidSession();
+const {authorizationRegistry} = useSolidProfile();
 const toast = useToast();
 
 const store = reactive(new Store());
@@ -288,8 +287,8 @@ async function createAccessAuthorization(
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${accessRequest.fromSocialAgent
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
+    .map((r) => "<" + r + ">")
+    .join(", ")} ;
       interop:hasAccessNeedGroup <${accessNeedGroup.uri}> ;
       interop:hasDataAuthorization <#dataAuthorization> .
 
@@ -297,24 +296,24 @@ async function createAccessAuthorization(
       a interop:DataAuthorization ;
       interop:grantee  <${sessionInfo.webId}> ;
       interop:registeredShapeTree ${accessNeed.registeredShapeTree
-      .map((t) => "<" + t + ">")
-      .join(", ")} ;
+    .map((t) => "<" + t + ">")
+    .join(", ")} ;
       interop:accessMode ${accessNeed.accessMode
-      .map((m) => "<" + m + ">")
-      .join(", ")} ;
+    .map((m) => "<" + m + ">")
+    .join(", ")} ;
       interop:scopeOfAuthorization  ${instances && instances.length > 0
-      ? "interop:SelectedFromRegistry"
-      : "interop:AllFromRegistry"
-    } ;
+    ? "interop:SelectedFromRegistry"
+    : "interop:AllFromRegistry"
+  } ;
       interop:hasDataRegistration ${registrations
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
+    .map((r) => "<" + r + ">")
+    .join(", ")} ;
       ${instances && instances.length > 0
-      ? "interop:hasDataInstance " +
-      instances.map((i) => "<" + i + ">").join(", ") +
-      " ;"
-      : ""
-    }
+    ? "interop:hasDataInstance " +
+    instances.map((i) => "<" + i + ">").join(", ") +
+    " ;"
+    : ""
+  }
       interop:satisfiesAccessNeed <${accessNeed.uri}> .`;
 
   await createResource(authorizationRegistry.value, payload, authFetch.value)

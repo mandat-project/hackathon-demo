@@ -54,6 +54,8 @@
               @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
             <Button v-if="demand.offer" type="submit" label="Accept Offer" icon="pi pi-check" class="p-button-text"
               @click="createOrder(demand.offer.id)" />
+            <Button v-if="demand.documentCreationDemand" type="submit" label="Request creation of data" icon="pi pi-question" class="p-button-text"
+                    @click="postDocumentCreationDemand(demand.documentCreationDemand)" />
           </li>
         </ul>
 
@@ -100,6 +102,7 @@ interface Demand {
   offer?: Offer;
   hasAccessRequest: string;
   isAccessRequestGranted: string;
+  documentCreationDemand: string;
 }
 
 interface Offer {
@@ -111,9 +114,7 @@ interface Offer {
 const bank = ref("https://bank.solid.aifb.kit.edu/profile/card#me");
 const tax = ref("https://tax.solid.aifb.kit.edu/profile/card#me");
 
-
-const businessAssessmentShapeTreeUri = "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree";
-const documentDemandShapeTreeUri = "https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentDemandTree";
+const documentCreationDemandShapeTreeUri = "https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentCreationDemandTree";
 const creditDemandShapeTreeUri =
   "https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree";
 const orderContainer = "https://bank.solid.aifb.kit.edu/credits/orders/";
@@ -184,6 +185,11 @@ async function loadCreditDemands() {
           null
         )[0]?.value;
       }
+      const documentCreationDemandURI = demandStore.getObjects(
+          null,
+          CREDIT("hasDocumentCreationDemand"),
+          null
+      )[0]?.value;
       if (appMemory[accessRequestURI]) {
         return handleAuthorizationRequestRedirect(
           demand.id,
@@ -210,6 +216,7 @@ async function loadCreditDemands() {
         providerWebID: bank.value,
         amount: parseFloat(amount.value),
         currency: currency.value,
+        documentCreationDemand: documentCreationDemandURI
       } as any // you caught me. 
       if (demandOffers.length > 0) {
         try {
@@ -280,21 +287,31 @@ const postCreditDemand = async () => {
   }
 };
 
-// TODO: provided function to be called via UI
-async function postDocumentDemand() {
-  const documentDemandPayload = `\
+async function postDocumentCreationDemand(documentCreationDemandURI: string) {
+  const documentCreationDemandStore = await getResource(documentCreationDemandURI, authFetch.value)
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, documentCreationDemandURI))
+      .then((parsedN3) => parsedN3.store);
+
+  const requestedShapeTree = documentCreationDemandStore.getObjects(
+      null,
+      INTEROP("registeredShapeTree"),
+      null
+  )[0]?.value;
+
+  const documentCreationDemandPayload = `\
       @prefix schema: <${SCHEMA()}> .
       @prefix interop: <${INTEROP()}> .
       <> a schema:Demand ;
-      interop:fromSocialAgent <${webId!.value}> ;
-      interop:registeredShapeTree <${businessAssessmentShapeTreeUri}> .
+      interop:fromSocialAgent <${webId?.value}> ;
+      interop:registeredShapeTree <${requestedShapeTree}> .
       <${webId?.value}> schema:seeks <> .
     `;
-  const documentDemandContainerUris = await getContainerUris(
+  const documentCreationDemandContainerUris = await getContainerUris(
     tax.value,
-    documentDemandShapeTreeUri
+    documentCreationDemandShapeTreeUri
   );
-  await createDemand(documentDemandContainerUris, documentDemandPayload);
+  await createDemand(documentCreationDemandContainerUris, documentCreationDemandPayload);
 }
 
 async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {
@@ -379,10 +396,7 @@ async function getContainerUris(webId: string, shapeTreeUri: string) {
   });
 }
 
-async function createDemand(
-  demandContainerUris: Array<string>,
-  payload: string
-) {
+async function createDemand(demandContainerUris: Array<string>, payload: string) {
   return await createResource(demandContainerUris[0], payload, authFetch.value)
     .catch((err) => {
       toast.add({

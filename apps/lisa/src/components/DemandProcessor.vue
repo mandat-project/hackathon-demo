@@ -1,7 +1,7 @@
 <template>
   <li>
     <h3>
-      <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()" />
+      <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
       Transaction number:
       <a :href="props.demandUri">{{ props.demandUri.split("/").pop() }}</a>
     </h3>
@@ -20,13 +20,13 @@
       <li class="flex align-items-center gap-2">
         <div class="col">
           <span class="align-self-center font-bold">Select additional Data to Request</span>
-          <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data" />
+          <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
         </div>
       </li>
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-          @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
+                @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
         </Button>
         <p>
           &rightarrow;
@@ -36,15 +36,17 @@
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-          @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
+                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
         </Button>
       </li>
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-          @click="requestCreationOfData()">Request creation of new business assessment data from {{ demanderName }}
+                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                @click="requestCreationOfData()">Request creation of new business assessment data from {{
+            demanderName
+          }}
         </Button>
       </li>
 
@@ -52,20 +54,20 @@
         <div class="grid">
           <span class="align-self-center font-bold">Annual percentage rate % </span>
           <div class="col">
-            <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate" />
+            <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
           </div>
         </div>
         <div class="grid">
           <span class="align-self-center font-bold">Loan terms</span>
           <div class="col">
             <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
-              placeholder="Select loan term" />
+                      placeholder="Select loan term"/>
           </div>
         </div>
       </li>
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary" :disabled="!isAccessRequestGranted || isOfferCreated"
-          @click="createOfferResource(props.demandUri, accessRequestUri!)">Create an offer for
+                @click="createOfferResource(props.demandUri, accessRequestUri!)">Create an offer for
           {{ demanderName }}
         </Button>
 
@@ -77,7 +79,7 @@
             Make offer accessible
             <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
               <Button type="submit" label="Access Request" icon="pi pi-bolt" class="p-button-text p-button-danger"
-                @click="handleAuthorizationRequest(offerAccessRequest)" />
+                      @click="handleAuthorizationRequest(offerAccessRequest)"/>
             </span>
           </span>
           <span v-else>
@@ -91,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCache, useSolidProfile, useSolidSession } from '@shared/composables';
+import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
 import {
   ACL,
   createResource,
@@ -111,37 +113,46 @@ import {
   createResourceInAnyRegistrationOfShape,
   getContainerItems
 } from '@shared/solid';
-import { Literal, NamedNode, Store, Writer } from 'n3';
-import { useToast } from 'primevue/usetoast';
-import { computed, reactive, ref, toRefs, watch } from 'vue';
+import {Literal, NamedNode, Store, Writer} from 'n3';
+import {useToast} from 'primevue/usetoast';
+import {computed, reactive, ref, toRefs, watch} from 'vue';
 
 const props = defineProps<{ demandUri: string }>();
-const { accessInbox, authAgent } = useSolidProfile()
+const {accessInbox, authAgent} = useSolidProfile()
 const toast = useToast();
 const appMemory = useCache();
-const { authFetch, sessionInfo } = useSolidSession();
-const { webId } = toRefs(sessionInfo);
+const {authFetch, sessionInfo} = useSolidSession();
+const {webId} = toRefs(sessionInfo);
 
 const enteredAnnualPercentageRate = ref(1.08);
-const selectedLoanTerm = ref({ label: "60 months", value: "5" });
+const selectedLoanTerm = ref({label: "60 months", value: "5"});
 const loanTerms = [
-  { label: "6 months", value: "0.5" },
-  { label: "12 months", value: "1" },
-  { label: "24 months", value: "2" },
-  { label: "36 months", value: "3" },
-  { label: "48 months", value: "4" },
-  { label: "60 months", value: "5" }
+  {label: "6 months", value: "0.5"},
+  {label: "12 months", value: "1"},
+  {label: "24 months", value: "2"},
+  {label: "36 months", value: "3"},
+  {label: "48 months", value: "4"},
+  {label: "60 months", value: "5"}
 ];
 
-const selectedShapeTree = ref({ label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree" });
+const selectedShapeTree = ref({
+  label: "Business Assessment 2023",
+  value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"
+});
 const shapeTrees = [
-  { label: "Business Assessment 2022", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree" },
-  { label: "Business Assessment 2023", value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree" }
+  {
+    label: "Business Assessment 2022",
+    value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"
+  },
+  {
+    label: "Business Assessment 2023",
+    value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"
+  }
 ];
 
 const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
 const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
-const documentDemandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentDemandTree';
+const documentCreationDemandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentCreationDemandTree';
 
 const state = reactive({
   demandStore: new Store(),
@@ -152,27 +163,27 @@ const state = reactive({
 
 async function fetchStoreOf(uri: string): Promise<Store> {
   return getResource(uri, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on fetchDemand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, uri))
-    .then((parsedN3) => parsedN3.store);
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on fetchDemand!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, uri))
+      .then((parsedN3) => parsedN3.store);
 }
 
 async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
   const itemStores: Store[] = await Promise.all(
-    itemUris.map((item) => fetchStoreOf(item))
+      itemUris.map((item) => fetchStoreOf(item))
   )
   itemStores
-    .map(itemStore => itemStore.getQuads(null, null, null, null))
-    .map((quads) => store.addQuads(quads))
+      .map(itemStore => itemStore.getQuads(null, null, null, null))
+      .map((quads) => store.addQuads(quads))
 }
 
 function refreshState() {
@@ -190,14 +201,15 @@ const isAccessRequestGranted = computed(() => state.demandStore.getQuads(props.d
 const amount = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
 const currency = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
+
 // DEMANDER
 watch(() => demanderUri.value,
-  async () => {
-    if (demanderUri.value) {
-      state.demanderStore =
-        await fetchStoreOf(demanderUri.value)
-    }
-  }, { immediate: true }
+    async () => {
+      if (demanderUri.value) {
+        state.demanderStore =
+            await fetchStoreOf(demanderUri.value)
+      }
+    }, {immediate: true}
 )
 const demanderName = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
@@ -207,34 +219,35 @@ const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(nul
 const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
 watch(() => offersForDemand.value, () =>
-  fillItemStoresIntoStore(offersForDemand.value, state.offerStore), { immediate: true })
+    fillItemStoresIntoStore(offersForDemand.value, state.offerStore), {immediate: true})
 const offerIsAccessible = computed(() => state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value));
 const offerAccessRequests = computed(() => state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value));
 watch(() => offerAccessRequests.value,
-  async () => {
-    offerAccessRequests.value.forEach(accessRequestURI => {
-      if (appMemory[accessRequestURI]) {
-        offersForDemand.value.forEach(offerURI => {
-          if (state.offerStore.getQuads(new NamedNode(offerURI), CREDIT("hasAccessRequest"), new NamedNode(accessRequestURI), null).length > 0) {
-            handleAuthorizationRequestRedirect(
-              offerURI,
-              accessRequestURI
-            ).then(() => refreshState())
-          }
-        })
-      }
-    })
-  }, { immediate: true }
+    async () => {
+      offerAccessRequests.value.forEach(accessRequestURI => {
+        if (appMemory[accessRequestURI]) {
+          offersForDemand.value.forEach(offerURI => {
+            if (state.offerStore.getQuads(new NamedNode(offerURI), CREDIT("hasAccessRequest"), new NamedNode(accessRequestURI), null).length > 0) {
+              handleAuthorizationRequestRedirect(
+                  offerURI,
+                  accessRequestURI
+              ).then(() => refreshState())
+            }
+          })
+        }
+      })
+    }, {immediate: true}
 )
+
 
 // ORDER
 // meh. this imposes unnecessary requests and memory, should be application wide, but it works and I dont care at this point anymore.
 watch(() => offersForDemand.value,
-  async () => {
-    const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
-    const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
-    fillItemStoresIntoStore(orderItems, state.orderStore)
-  }, { immediate: true })
+    async () => {
+      const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
+      const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
+      fillItemStoresIntoStore(orderItems, state.orderStore)
+    }, {immediate: true})
 const hasOrderForAnyOfferForThisDemand = computed(() => {
   const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
@@ -247,32 +260,32 @@ async function fetchProcessedData() {
 
 async function patchBusinessResourceToHaveAccessRequest(businessResource: string, accessRequest: string) {
   return getResource(businessResource, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on get Demand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then(txt => txt.concat(`
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on get Demand!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then(txt => txt.concat(`
         <> <${CREDIT('hasAccessRequest')}> <${accessRequest}> .
         <> <${CREDIT('isAccessRequestGranted')}> false .
       `))
-    .then(body => {
-      return putResource(businessResource, body, authFetch.value)
-        .catch((err) => {
-          toast.add({
-            severity: "error",
-            summary: "Error on put Demand!",
-            detail: err,
-            life: 5000,
-          });
-          throw new Error(err);
-        });
-    })
+      .then(body => {
+        return putResource(businessResource, body, authFetch.value)
+            .catch((err) => {
+              toast.add({
+                severity: "error",
+                summary: "Error on put Demand!",
+                detail: err,
+                life: 5000,
+              });
+              throw new Error(err);
+            });
+      })
 }
 
 async function requestAccessToData() {
@@ -327,16 +340,16 @@ async function requestAccessToData() {
       credit:fromDemand <${props.demandUri}>.`;
 
   const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on put Demand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then(getLocationHeader);
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on put Demand!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(getLocationHeader);
 
   await patchBusinessResourceToHaveAccessRequest(props.demandUri, accessRequestUri + "#bwaAccessRequest")
   refreshState();
@@ -353,47 +366,79 @@ async function requestCreationOfData() {
       interop:registeredShapeTree <${selectedShapeTree.value.value}> .
       <${webId!.value}> schema:seeks <> .
     `;
-  const documentDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentDemandShapeTreeUri, authFetch.value);
-  await createResource(documentDemandContainerUris[0], documentCreationDemandBody, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on create!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
+  const documentCreationDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentCreationDemandShapeTreeUri, authFetch.value);
+  const documentCreationDemandURI = await createResource(documentCreationDemandContainerUris[0], documentCreationDemandBody, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(getLocationHeader)
+  await patchDocumentCreationDemandInDemand(props.demandUri, documentCreationDemandURI);
 }
 
-async function patchDemandOffer(demandURI: string, offerURI: string): Promise<Response> {
+async function patchDocumentCreationDemandInDemand(demandURI: string, documentCreationDemandURI: string): Promise<Response> {
   // GET the current data
   return getResource(demandURI, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on get Demand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then(txt => txt.concat(`
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on get Demand!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then(txt => txt.concat(`
+        <> <${CREDIT('hasDocumentCreationDemand')}> <${documentCreationDemandURI}> .
+      `))
+      .then(body => {
+        return putResource(demandURI, body, authFetch.value)
+            .catch((err) => {
+              toast.add({
+                severity: "error",
+                summary: "Error on put Demand!",
+                detail: err,
+                life: 5000,
+              });
+              throw new Error(err);
+            });
+      })
+}
+
+async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<Response> {
+  // GET the current data
+  return getResource(demandURI, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on get Demand!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then(txt => txt.concat(`
         <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
       `))
-    .then(body => {
-      return putResource(demandURI, body, authFetch.value)
-        .catch((err) => {
-          toast.add({
-            severity: "error",
-            summary: "Error on put Demand!",
-            detail: err,
-            life: 5000,
-          });
-          throw new Error(err);
-        });
-    })
+      .then(body => {
+        return putResource(demandURI, body, authFetch.value)
+            .catch((err) => {
+              toast.add({
+                severity: "error",
+                summary: "Error on put Demand!",
+                detail: err,
+                life: 5000,
+              });
+              throw new Error(err);
+            });
+      })
 }
 
 async function createOfferResource(demand: string, dataAccessRequest: string) {
@@ -422,17 +467,17 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
               schema:value "${selectedLoanTerm.value.value} years".
             `
   const offerLocation = await createResourceInAnyRegistrationOfShape(webId!.value!, offerShapeTreeUri, body, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on create offer!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then(getLocationHeader);
-  await patchDemandOffer(demand, offerLocation)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on create offer!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(getLocationHeader);
+  await patchOfferInDemand(demand, offerLocation)
   const offerSelfAcccessRequestLocation = await requestAccessBeingSet(offerLocation, demanderUri.value!)
   await patchBusinessResourceToHaveAccessRequest(offerLocation, offerSelfAcccessRequestLocation + "#accessRequest")
   refreshState(); // update state
@@ -505,64 +550,64 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
       interop:usesLanguage "de"^^xsd:language .`;
 
   return createResource(accessInbox.value, body, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on request access!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then(getLocationHeader);
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Error on request access!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then(getLocationHeader);
 }
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
   window.open(
-    `${authAgent.value}?uri=${encodeURIComponent(
-      inspectedAccessRequestURI
-    )}&app_redirect=${encodeURIComponent(
-      window.location.origin + "/accessRequestHandled"
-    )}`,
-    "_self"
+      `${authAgent.value}?uri=${encodeURIComponent(
+          inspectedAccessRequestURI
+      )}&app_redirect=${encodeURIComponent(
+          window.location.origin + "/accessRequestHandled"
+      )}`,
+      "_self"
   );
 }
 
 async function handleAuthorizationRequestRedirect(
-  businessResourceURI: string,
-  accessRequestURI: string
+    businessResourceURI: string,
+    accessRequestURI: string
 ) {
   // patch demand
   return getResource(businessResourceURI, authFetch.value)
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, businessResourceURI))
-    .then((parsedN3) => {
-      parsedN3.store.removeQuads(
-        parsedN3.store.getQuads(
-          new NamedNode(businessResourceURI),
-          new NamedNode(CREDIT("isAccessRequestGranted")),
-          null,
-          null
-        )
-      );
-      parsedN3.store.addQuad(
-        new NamedNode(businessResourceURI),
-        new NamedNode(CREDIT("isAccessRequestGranted")),
-        new Literal(`"true"^^${XSD("boolean")}`)
-      );
-      const writer = new Writer({
-        format: "text/turtle",
-        prefixes: parsedN3.prefixes,
-      });
-      writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
-      let body = "";
-      writer.end((error, result) => (body = result));
-      return body;
-    })
-    .then((body) => {
-      return putResource(businessResourceURI, body, authFetch.value);
-    })
-    .then(() => delete appMemory[accessRequestURI]);
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, businessResourceURI))
+      .then((parsedN3) => {
+        parsedN3.store.removeQuads(
+            parsedN3.store.getQuads(
+                new NamedNode(businessResourceURI),
+                new NamedNode(CREDIT("isAccessRequestGranted")),
+                null,
+                null
+            )
+        );
+        parsedN3.store.addQuad(
+            new NamedNode(businessResourceURI),
+            new NamedNode(CREDIT("isAccessRequestGranted")),
+            new Literal(`"true"^^${XSD("boolean")}`)
+        );
+        const writer = new Writer({
+          format: "text/turtle",
+          prefixes: parsedN3.prefixes,
+        });
+        writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
+        let body = "";
+        writer.end((error, result) => (body = result));
+        return body;
+      })
+      .then((body) => {
+        return putResource(businessResourceURI, body, authFetch.value);
+      })
+      .then(() => delete appMemory[accessRequestURI]);
 }
 </script>
 
