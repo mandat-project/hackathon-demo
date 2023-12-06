@@ -253,5 +253,3 @@ Dementsprechend ist ein npm install auch zwingend im **Root** Verzeichnis auszuf
 
 ### Getestet mit folgenden node-Versionen
 - v16.19.0
-#   a u t h T e s t  
- 
