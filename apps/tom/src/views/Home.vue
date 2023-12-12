@@ -54,7 +54,7 @@
               @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
             <Button v-if="demand.offer" type="submit" label="Accept Offer" icon="pi pi-check" class="p-button-text"
               @click="createOrder(demand.offer.id)" />
-            <Button v-if="demand.documentCreationDemand" type="submit" label="Request creation of data" icon="pi pi-question" class="p-button-text"
+            <Button v-if="demand.documentCreationDemand && !demand.offer" type="submit" label="Request creation of data" icon="pi pi-question" class="p-button-text"
                     @click="postDocumentCreationDemand(demand.documentCreationDemand)" />
           </li>
         </ul>
