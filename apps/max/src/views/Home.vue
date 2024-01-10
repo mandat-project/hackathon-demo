@@ -39,6 +39,7 @@ async function processDocumentCreationDemand(key: string) {
     const requestedShapeTree = getObject(store, INTEROP('registeredShapeTree'));
     const fromSocialAgent = getObject(store, INTEROP('fromSocialAgent'));
     const targetUri = await getDataRegistrationContainers(fromSocialAgent, requestedShapeTree, authFetch.value);
+    const date = new Date().toISOString();
     const businessAssessmentPayload = `@prefix schema: <${SCHEMA()}> .
           @prefix xsd: <${XSD()}> .
           @prefix rdf: <${RDF()}> .
@@ -49,7 +50,7 @@ async function processDocumentCreationDemand(key: string) {
             credit:hasRevenue 70000.0 ;
             credit:hasChangeinRevenue 1500.0 ;
             credit:versionNo "9.12" ;
-            credit:createdAt "2023-03-28T14:45:47.000Z"^^xsd:dateTime ;
+            credit:createdAt "${date}"^^xsd:dateTime ;
             credit:referencedStartDate "2021-01-01T00:00:00.000Z"^^xsd:dateTime ;
             credit:referencedStartEnd "2021-12-31T23:59:59.000Z"^^xsd:dateTime .
     `;

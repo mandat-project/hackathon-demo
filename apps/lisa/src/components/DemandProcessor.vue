@@ -28,10 +28,6 @@
         <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                 @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
         </Button>
-        <p>
-          &rightarrow;
-          <a v-if="accessRequestUri" :href=accessRequestUri>Access Request</a>
-        </p>
       </li>
 
       <li class="flex align-items-center gap-2">
@@ -76,10 +72,11 @@
         </span>
         <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
           <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
-            Make offer accessible
+            <!-- Make offer accessible -->
             <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
-              <Button type="submit" label="Access Request" icon="pi pi-bolt" class="p-button-text p-button-danger"
-                      @click="handleAuthorizationRequest(offerAccessRequest)"/>
+              <Button type="submit" class="p-button-text p-button-danger"
+                      @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
+              </Button>
             </span>
           </span>
           <span v-else>
@@ -563,6 +560,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 }
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
+  console.log(inspectedAccessRequestURI);
   window.open(
       `${authAgent.value}?uri=${encodeURIComponent(
           inspectedAccessRequestURI
