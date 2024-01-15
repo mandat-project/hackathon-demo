@@ -350,6 +350,11 @@ async function requestAccessToData() {
 
   await patchBusinessResourceToHaveAccessRequest(props.demandUri, accessRequestUri + "#bwaAccessRequest")
   refreshState();
+  toast.add({
+    severity: "success",
+    summary: "Request to data access sent.",
+    life: 5000,
+  });
 }
 
 async function requestCreationOfData() {
