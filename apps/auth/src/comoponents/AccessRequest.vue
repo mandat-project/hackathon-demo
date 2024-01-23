@@ -80,6 +80,7 @@ import {
   AccessNeed,
   AccessNeedGroup,
   AccessRequest,
+AUTH,
 } from "@shared/solid";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
@@ -281,9 +282,12 @@ async function createAccessAuthorization(
     @prefix ldp:<${LDP()}> .
     @prefix xsd:<${XSD()}> .
     @prefix acl:<${ACL()}> .
+    @prefix auth:<${AUTH()}> .
+    
 
     <#accessAuthorization>
       a interop:AccessAuthorization ;
+      auth:hasAccessRequest <${accessRequest.uri}> ;
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${accessRequest.fromSocialAgent
@@ -294,7 +298,9 @@ async function createAccessAuthorization(
 
     <#dataAuthorization>
       a interop:DataAuthorization ;
-      interop:grantee  <${sessionInfo.webId}> ;
+      interop:grantee ${accessRequest.fromSocialAgent
+    .map((r) => "<" + r + ">")
+    .join(", ")} ;
       interop:registeredShapeTree ${accessNeed.registeredShapeTree
     .map((t) => "<" + t + ">")
     .join(", ")} ;

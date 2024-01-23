@@ -20,6 +20,7 @@ export const WDT = Namespace("http://www.wikidata.org/prop/direct/");
 export const WD = Namespace("http://www.wikidata.org/entity/");
 export const LDP = Namespace("http://www.w3.org/ns/ldp#");
 export const ACL = Namespace("http://www.w3.org/ns/auth/acl#");
+export const AUTH = Namespace("http://www.example.org/vocab/datev/auth#");
 export const AS = Namespace("https://www.w3.org/ns/activitystreams#");
 export const XSD = Namespace("http://www.w3.org/2001/XMLSchema#");
 export const ETHON = Namespace("http://ethon.consensys.net/");
