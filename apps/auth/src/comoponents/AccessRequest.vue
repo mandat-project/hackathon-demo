@@ -77,8 +77,8 @@
       <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
         class="btn btn-primary">Authorize
       </Button>
-      <Button @click="console.log('decline')" type="button" style="margin: 20px"
-        class="btn btn-primary" severity="danger">Decline
+      <Button @click="declineAndDontGrantAccess(accessRequest)" type="button" style="margin: 20px"
+        class="btn btn-primary" severity="danger">Deny
       </Button>
     </div>
   </div>
@@ -240,6 +240,32 @@ const accessRequestObjects = computed(() => {
   return result;
 });
 
+async function declineAndDontGrantAccess(accessRequest: AccessRequest) {
+  // find registries
+  for (const accessNeedGroup of accessRequest.hasAccessNeedGroup) {
+    for (const accessNeed of accessNeedGroup.hasAccessNeed) {
+      for (const shapeTree of accessNeed.registeredShapeTree) {
+        const dataInstances = [] as string[];
+        dataInstances.push(...accessNeed.hasDataInstance); // potentially manually edited (added/removed) in auth agent
+        await createDeniedAccessAuthorization(
+          accessRequest,
+          accessNeedGroup,
+          accessNeed,
+        );
+      }
+    }
+  }
+  await setDemandIsAccessRequestGranted(accessRequest.fromDemand[0]); // naja, wenn da jemand mehr reinschreib, wirds komisch.
+  if (props.redirect) {
+    window.open(
+      `${props.redirect}?uri=${encodeURIComponent(
+        accessRequest.uri
+      )}&result=0`,
+      "_self"
+    );
+  }
+}
+
 async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
   // find registries
   for (const accessNeedGroup of accessRequest.hasAccessNeedGroup) {
@@ -260,7 +286,7 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
         });
         const dataInstances = [] as string[];
         dataInstances.push(...accessNeed.hasDataInstance); // potentially manually edited (added/removed) in auth agent
-        await createAccessAuthorization(
+        await createGrantedAccessAuthorization(
           accessRequest,
           accessNeedGroup,
           accessNeed,
@@ -291,7 +317,51 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
   }
 }
 
-async function createAccessAuthorization(
+async function createDeniedAccessAuthorization(
+  accessRequest: AccessRequest,
+  accessNeedGroup: AccessNeedGroup,
+  accessNeed: AccessNeed
+) {
+  const date = new Date().toISOString();
+  const payload = `
+    @prefix interop:<${INTEROP()}> .
+    @prefix ldp:<${LDP()}> .
+    @prefix xsd:<${XSD()}> .
+    @prefix acl:<${ACL()}> .
+    @prefix auth:<${AUTH()}> .
+    
+
+    <#accessAuthorization>
+      a interop:AccessAuthorization ;
+      auth:hasAccessRequest <${accessRequest.uri}> ;
+      interop:grantedBy <${sessionInfo.webId}> ;
+      interop:grantedAt "${date}"^^xsd:dateTime ;
+      interop:grantee ${accessRequest.fromSocialAgent
+      .map((r) => "<" + r + ">")
+      .join(", ")} ;
+      interop:hasAccessNeedGroup <${accessNeedGroup.uri}> .
+    `
+
+  await createResource(authorizationRegistry.value, payload, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Failed to create Access Authorization!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then(() =>
+      toast.add({
+        severity: "success",
+        summary: "Access Authorization created.",
+        life: 5000,
+      })
+    );
+}
+
+async function createGrantedAccessAuthorization(
   accessRequest: AccessRequest,
   accessNeedGroup: AccessNeedGroup,
   accessNeed: AccessNeed,
@@ -357,7 +427,7 @@ async function createAccessAuthorization(
     .then(() =>
       toast.add({
         severity: "success",
-        summary: "Access authorized.",
+        summary: "Access Authorization created.",
         life: 5000,
       })
     );
