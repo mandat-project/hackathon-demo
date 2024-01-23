@@ -84,7 +84,7 @@ import {
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 
 const props = defineProps(["resourceURI", "redirect"]);
 const { authFetch, sessionInfo } = useSolidSession();
@@ -377,14 +377,17 @@ async function getAuthorization(accessRequest: AccessRequest) {
       })
 
     if (authstore.getQuads(authorization, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
-      return {uri: authorization, store: authstore }
+      return { uri: authorization, store: authstore }
     }
   }
   return null;
 }
 
 let associatedAuthorization = null;
-getAuthorization(accessRequestObjects.value[0]).then(authorization =>{ associatedAuthorization= authorization}) 
+watch(() => accessRequestObjects.value,
+      () => getAuthorization(accessRequestObjects.value[0])
+              .then(authorization => { associatedAuthorization = authorization })
+)
 
 async function updateAccessControlList(
   accessTo: string,
