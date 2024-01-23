@@ -79,10 +79,10 @@
     </div>
     <div v-if="associatedAuthorization">
       <Button @click="console.log('revoke')" type="button" style="margin: 20px"
-        class="btn btn-primary" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Revoke
+        class="btn btn-primary p-button-danger" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Revoke
       </Button>
       <Button @click="console.log('revoke')" type="button" style="margin: 20px"
-        class="btn btn-primary" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Freeze
+        class="btn btn-primary p-button-danger" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Freeze
       </Button>
     </div>
     <div v-else>
@@ -90,7 +90,7 @@
         class="btn btn-primary">Authorize
       </Button>
       <Button @click="declineAndDontGrantAccess(accessRequest)" type="button" style="margin: 20px"
-        class="btn btn-primary" severity="danger">Deny
+        class="btn btn-primary p-button-danger" severity="danger">Deny
       </Button>
     </div>
   </div>
