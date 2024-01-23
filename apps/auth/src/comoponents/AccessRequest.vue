@@ -3,10 +3,16 @@
     <div>
       Status
       <span v-if="associatedAuthorization">
-          handled
+        handled
+        <span v-if="isAuthorizationEmpty(associatedAuthorization)">
+          (denied or revoked)
+        </span>
+        <span v-else>
+          (authorized)
+        </span>
       </span>
       <span v-else>
-          open
+        open
       </span>
     </div>
     <div>
@@ -67,10 +73,10 @@
     </div>
     <div v-if="associatedAuthorization">
       <Button @click="console.log('revoke')" type="button" style="margin: 20px"
-        class="btn btn-primary" severity="danger">Revoke
+        class="btn btn-primary" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Revoke
       </Button>
       <Button @click="console.log('revoke')" type="button" style="margin: 20px"
-        class="btn btn-primary" severity="danger">Freeze
+        class="btn btn-primary" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Freeze
       </Button>
     </div>
     <div v-else>
@@ -481,6 +487,10 @@ watch(() => accessRequestObjects.value,
   () => getAuthorization(accessRequestObjects.value[0])
     .then(authorization => { associatedAuthorization.value = authorization })
 )
+
+function isAuthorizationEmpty(authorization: {uri: string; store: Store}): boolean {
+  return authorization.store.getQuads(authorization.uri, INTEROP('hasDataAuthorization'), null, null).length > 0
+}
 
 async function updateAccessControlList(
   accessTo: string,
