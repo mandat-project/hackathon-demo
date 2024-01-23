@@ -1,6 +1,15 @@
 <template>
   <div accessRequestObjects v-for="accessRequest in accessRequestObjects" :key="accessRequest.uri">
     <div>
+      Status
+      <span v-if="associatedAuthorization">
+          handled
+      </span>
+      <span v-else>
+          open
+      </span>
+    </div>
+    <div>
       To
       <a v-for="recipient in accessRequest.toSocialAgent" :key="recipient" :href="recipient">
         {{ recipient }}
