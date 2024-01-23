@@ -292,6 +292,7 @@ async function requestAccessToData() {
     @prefix skos: <${SKOS()}> .
     @prefix credit: <${CREDIT()}> .
     @prefix xsd: <${XSD()}> .
+    @prefix acl: <${ACL()}> .
     @prefix gdprp: <${GDPRP()}> .
 
     # This could be hosted at the profle document of the application or social agent or at a
