@@ -24,6 +24,7 @@ export type AccessRequest = {
   fromSocialAgent: string[];
   fromDemand: string[];
   hasAccessNeedGroup: AccessNeedGroup[];
+  purpose: string[];
 };
 
 export async function createResourceInAnyRegistrationOfShape(

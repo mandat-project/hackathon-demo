@@ -16,6 +16,12 @@
       </span>
     </div>
     <div>
+      Purpose
+      <span v-for="label in purposeLabel.get(accessRequest)" :key="label">
+        {{ label }}
+      </span>
+    </div>
+    <div>
       To
       <a v-for="recipient in accessRequest.toSocialAgent" :key="recipient" :href="recipient">
         {{ recipient }}
@@ -100,6 +106,8 @@ import {
   ACL,
   LDP,
   XSD,
+  GDPRP,
+  RDFS,
   createResource,
   putResource,
   getDataRegistrationContainers,
@@ -158,6 +166,9 @@ const accessRequestObjects = computed(() => {
       INTEROP("hasAccessNeedGroup"),
       null
     );
+    const purpose = store
+      .getObjects(accessRequest, GDPRP('purposeForProcessing'), null)
+      .map((uri) => uri.value);
 
     const accessNeedGroupObjects = [];
     for (const accessNeedGroup of hasAccessNeedGroup) {
@@ -241,6 +252,7 @@ const accessRequestObjects = computed(() => {
       fromSocialAgent,
       fromDemand,
       hasAccessNeedGroup: accessNeedGroupObjects,
+      purpose,
     } as AccessRequest);
   }
   return result;
@@ -486,6 +498,16 @@ let associatedAuthorization: Ref<{ uri: string; store: Store}| null> = ref(null)
 watch(() => accessRequestObjects.value,
   () => getAuthorization(accessRequestObjects.value[0])
     .then(authorization => { associatedAuthorization.value = authorization })
+)
+
+let purposeLabel = ref(new Map())
+watch(() => accessRequestObjects.value,
+  () => getResource(GDPRP(''), authFetch.value)
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, GDPRP('')))
+    .then((parsedN3) => accessRequestObjects.value.map(ar => {
+      purposeLabel.value.set(ar, ar.purpose.map((uri) => parsedN3.store.getObjects(uri, RDFS('label'), null).map(o => o.value)[0]));
+    }))
 )
 
 function isAuthorizationEmpty(authorization: {uri: string; store: Store}): boolean {
