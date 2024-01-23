@@ -28,6 +28,7 @@ export const PDGR = Namespace("http://purl.org/pedigree#");
 export const LDCV = Namespace("http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#");
 export const WILD = Namespace("http://purl.org/wild/vocab#");
 export const VCARD = Namespace("http://www.w3.org/2006/vcard/ns#");
+export const GDPRP = Namespace("https://solid.ti.rw.fau.de/public/ns/gdpr-purposes#");
 
 export const PUSH = Namespace("https://purl.org/solid-web-push/vocab#");
 export const SEC = Namespace("https://w3id.org/security#")
