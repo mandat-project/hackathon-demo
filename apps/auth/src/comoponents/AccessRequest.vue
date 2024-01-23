@@ -59,6 +59,9 @@
     <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
       class="btn btn-primary">Authorize
     </Button>
+    <Button @click="freezeAuthorizations(accessRequest)" type="button" style="margin: 20px" class="p-button-warning">
+      Freeze
+    </Button>
   </div>
 </template>
 
@@ -81,6 +84,7 @@ import {
   AccessNeedGroup,
   AccessRequest,
   AUTH,
+  patchResource,
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
@@ -305,7 +309,7 @@ async function createAccessAuthorization(
       .map((t) => "<" + t + ">")
       .join(", ")} ;
       interop:accessMode ${accessNeed.accessMode
-      .map((m) => "<" + m + ">")
+      .map((mode) => "<" + mode + ">")
       .join(", ")} ;
       interop:scopeOfAuthorization  ${instances && instances.length > 0
       ? "interop:SelectedFromRegistry"
@@ -341,7 +345,7 @@ async function createAccessAuthorization(
     );
 }
 
-async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: string; store: Store} | null> {
+async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: string; store: Store } | null> {
 
   const authorizations = await
     getResource(authorizationRegistry.value, authFetch.value)
@@ -357,7 +361,6 @@ async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: st
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, authorizationRegistry.value))
       .then((parsedN3) => { return parsedN3.store.getObjects(authorizationRegistry.value, LDP("contains"), null).map(o => o.value); });
-
 
   for (const authorization of authorizations) {
     const authstore = await getResource(authorization, authFetch.value)
@@ -375,16 +378,18 @@ async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: st
       .then((parsedN3) => {
         return parsedN3.store;
       })
-
-    if (authstore.getQuads(authorization, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
-      return { uri: authorization, store: authstore }
+    const authorizationURIs = authstore.getSubjects(RDF("type"), INTEROP("AccessAuthorization"), null).map(s => s.value)
+    for (const authorizationURI of authorizationURIs) {
+      if (authstore.getQuads(authorizationURI, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
+        return { uri: authorizationURI, store: authstore }
+      }
     }
   }
   return null;
 }
 
-let associatedAuthorization: Ref<{ uri: string; store: Store}| null> = ref(null);
-watch(() => accessRequestObjects.value,
+let associatedAuthorization: Ref<{ uri: string; store: Store } | null> = ref(null);
+watch(() => accessRequestObjects.value.length,
   () => getAuthorization(accessRequestObjects.value[0])
     .then(authorization => { associatedAuthorization.value = authorization })
 )
@@ -416,7 +421,7 @@ async function updateAccessControlList(
     acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
     acl:agent ${agent.map((a) => "<" + a + ">").join(", ")};
     acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-    acl:mode ${mode.map((m) => "<" + m + ">").join(", ")} .
+    acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
 `;
 
   await putResource(accessTo + ".acl", txt + acl, authFetch.value).catch(
@@ -458,5 +463,101 @@ async function setDemandIsAccessRequestGranted(fromDemandURI: string) {
         throw new Error(err);
       });
     });
+}
+
+async function freezeAuthorizations(accessRequest: AccessRequest) {
+  const dataAuthorizations = associatedAuthorization.value?.store.getObjects(associatedAuthorization.value?.uri, INTEROP("hasDataAuthorization"), null).map(o => o.value)!
+  for (const dataAuthorization of dataAuthorizations) {
+    if (associatedAuthorization.value?.store.getQuads(dataAuthorization, INTEROP("scopeOfAuthorization"), INTEROP("SelectedFromRegistry"), null).length == 1) {
+      continue
+    }
+    const shapeTree = associatedAuthorization.value?.store.getObjects(dataAuthorization, INTEROP("registeredShapeTree"), null)[0].value!
+    const dataRegistrations = await getDataRegistrationContainers(
+      `${sessionInfo.webId}`,
+      shapeTree,
+      authFetch.value
+    ).catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on getDataRegistrationContainers!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    });
+    const dataInstances = [] as string[];
+    for (const dataRegistration of dataRegistrations) {
+      const dataInstancesOfRegistration = await getResource(dataRegistration, authFetch.value)
+        .catch((err) => {
+          toast.add({
+            severity: "error",
+            summary: "Could not get data registration!",
+            detail: err,
+            life: 5000,
+          });
+          throw new Error(err);
+        })
+        .then((resp) => resp.text())
+        .then((txt) => parseToN3(txt, dataRegistration))
+        .then((parsedN3) =>
+          parsedN3.store.getObjects(dataRegistration, LDP("contains"), null).map(o => o.value)
+        );
+      dataInstances.push(...dataInstancesOfRegistration);
+
+      // TODO acl anpassen: von Container Zugriff auf Data Instance Zugriff
+      for (const dataInstance of dataInstancesOfRegistration) {
+        // await patch resources add permissions (wie acl:acecssTo in AccessRequest oder in Authorization beschrieben)
+        // this is not how this is supposed to be. oh well.
+        const patchString = `\
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+_:rename a solid:InsertDeletePatch;
+  solid:inserts { _:auth
+    a acl:Authorization;
+    acl:accessTo <${dataInstance}>;
+    acl:agent ${accessRequest.fromSocialAgent.map((a) => "<" + a + ">").join(", ")};
+    acl:mode ${accessRequest.hasAccessNeedGroup
+            .map(accessNeedGroup => accessNeedGroup.hasAccessNeed
+              .map(accessNeed => accessNeed.accessMode
+                .map((mode) => "<" + mode + ">").join(", "))) } .
+  } .
+`
+        // await patchResource(dataInstance.split('#')[0] + ".acl", patchString, authFetch.value)
+        //   .catch((err) => {
+        //     toast.add({
+        //       severity: "error",
+        //       summary: "Could not patch data instance .acl!",
+        //       detail: err,
+        //       life: 5000,
+        //     });
+        //     throw new Error(err);
+        //   })
+        console.log(patchString)
+      }
+      // await patch container remove permissions (acl:default container und acl:accessTo container)
+      const patchString = `\
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+_:rename a solid:InsertDeletePatch;
+  solid:delete {  ?auth acl:agent ${accessRequest.fromSocialAgent.map((a) => "<" + a + ">").join(", ")}  } .
+`
+      // await patchResource(dataRegistration.split('#')[0] + ".acl", patchString, authFetch.value)
+      //   .catch((err) => {
+      //     toast.add({
+      //       severity: "error",
+      //       summary: "Could not patch data instance .acl!",
+      //       detail: err,
+      //       life: 5000,
+      //     });
+      //     throw new Error(err);
+      //   })       
+        console.log(patchString)
+    }
+    console.log(dataInstances)
+
+    // authorizations ersetzen wie beim Löschen
+  }
 }
 </script>
