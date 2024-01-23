@@ -333,7 +333,7 @@ async function requestAccessToData() {
     # Goes into the access inbox of sme
     <#bwaAccessRequest>
       a interop:AccessRequest ;
-      gdprp:purpose gdprp:contractualObligations ;
+      gdprp:purposeForProcessing gdprp:contractualObligations ;
       interop:fromSocialAgent <${webId!.value}> ;
       interop:toSocialAgent  <${demanderUri.value}> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
@@ -505,7 +505,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 
     <#accessRequest>
       a interop:AccessRequest ;
-      gdprp:purpose gdprp:contractualObligations ;
+      gdprp:purposeForProcessing gdprp:contractualObligations ;
       interop:fromSocialAgent <${forAgent}> ;
       interop:toSocialAgent  <${webId!.value}> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
