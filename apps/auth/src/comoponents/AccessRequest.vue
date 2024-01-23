@@ -20,7 +20,7 @@
     </div>
     <!--  -->
     <div v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup" :key="accessNeedGroup.uri">
-      <Divider />
+      <Divider/>
       <div>
         Label:
         <a v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel" :key="label">
@@ -35,7 +35,7 @@
       </div>
       <!--  -->
       <div v-for="accessNeed in accessNeedGroup.hasAccessNeed" :key="accessNeed.uri">
-        <Divider />
+        <Divider/>
         <div>
           <strong>Access Mode: </strong>
           <a v-for="accessMode in accessNeed.accessMode" :key="accessMode" :href="accessMode">
@@ -57,13 +57,13 @@
       </div>
     </div>
     <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary">Authorize
+            class="btn btn-primary">Authorize
     </Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useSolidProfile, useSolidSession } from "@shared/composables";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -80,15 +80,15 @@ import {
   AccessNeed,
   AccessNeedGroup,
   AccessRequest,
-  AUTH,
+  AUTH, patchResource, getLocationHeader, createContainer, deleteResource,
 } from "@shared/solid";
-import { Store } from "n3";
-import { useToast } from "primevue/usetoast";
-import { computed, reactive } from "vue";
+import {Store} from "n3";
+import {useToast} from "primevue/usetoast";
+import {computed, reactive, ref, Ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect"]);
-const { authFetch, sessionInfo } = useSolidSession();
-const { authorizationRegistry } = useSolidProfile();
+const {authFetch, sessionInfo} = useSolidSession();
+const {authorizationRegistry, storage} = useSolidProfile();
 const toast = useToast();
 
 const store = reactive(new Store());
@@ -218,6 +218,7 @@ const accessRequestObjects = computed(() => {
   return result;
 });
 
+
 async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
   // find registries
   for (const accessNeedGroup of accessRequest.hasAccessNeedGroup) {
@@ -269,6 +270,159 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
   }
 }
 
+async function deleteAccessRights(accessRequest: AccessRequest) {
+  // PATCH ACL
+  for (const accessNeedGroup of accessRequest.hasAccessNeedGroup) {
+    for (const accessNeed of accessNeedGroup.hasAccessNeed) {
+      for (const shapeTree of accessNeed.registeredShapeTree) {
+        const dataRegistrations = await getDataRegistrationContainers(
+          `${sessionInfo.webId}`,
+          shapeTree,
+          authFetch.value
+        ).catch((err) => {
+          toast.add({
+            severity: "error",
+            summary: "Error on getDataRegistrationContainers!",
+            detail: err,
+            life: 5000,
+          });
+          throw new Error(err);
+        });
+
+        const dataInstances = [] as string[];
+        dataInstances.push(...accessNeed.hasDataInstance); // potentially manually edited (added/removed) in auth agent
+
+        const accessToResources =
+          dataInstances.length > 0 ? dataInstances : dataRegistrations;
+
+        for (const resource of accessToResources) {
+          await deleteAccessControlListEntries(
+            resource,
+            accessRequest.fromSocialAgent,
+            accessNeed.accessMode,
+            dataRegistrations[0]
+          );
+        }
+      }
+    }
+  }
+
+  // Get content old AccessAuthorization
+  const accessAuthorizationContent = await getResource(associatedAuthorization.value?.uri!, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Could not get accessAuthorization Content!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then((resp) => resp.text());
+
+
+  // check if archive container exists
+  // create archive container if needed
+  const archiveContainerUri = storage.value + "/authorization-archive";
+  const archiveContainer = await getResource(archiveContainerUri, authFetch.value);
+
+  if(!archiveContainer) {
+    await createContainer(storage.value, "authorization-archive", authFetch.value)
+      .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Failed to create Authorization Archive Container!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+  }
+
+  // write old access authorization to archive
+  const archivedAccessAuthorizationURI = await createResource(archiveContainerUri, accessAuthorizationContent, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Failed to create Access Authorization!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then(() =>
+      toast.add({
+        severity: "success",
+        summary: "Access authorized.",
+        life: 5000,
+      })
+    );
+
+  // prepare content new AccessAuthorization
+  const newAccessAuthorizationContent = accessAuthorizationContent.replace("interop:hasDataAuthorization <#dataAuthorization> .",
+    "interop:replaces " + archivedAccessAuthorizationURI + " .")
+    .split("<#dataAuthorization>")[0];
+
+  // create new AccessAuthorization
+  await createResource(authorizationRegistry.value, newAccessAuthorizationContent, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Failed to create Access Authorization!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then(() =>
+      toast.add({
+        severity: "success",
+        summary: "Access authorized.",
+        life: 5000,
+      })
+    );
+
+  // delete old access authorization from authorization registry
+  deleteResource(associatedAuthorization.value?.uri!, authFetch.value)
+    .catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Failed to delete old Access Authorization!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  })
+}
+
+async function deleteAccessControlListEntries(resource: string, fromSocialAgent: string[], accessMode: string[], dataRegistrationUri: string) {
+  const body = `@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+                @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+                _:rename a solid:InsertDeletePatch;
+                solid:where   {
+                  ?aclEntry acl:agent ${fromSocialAgent
+    .map((r) => "<" + r + ">")
+    .join(", ")} .
+                  ?aclEntry acl:accessTo ${resource.substring(resource.lastIndexOf('/'))}.
+                };
+                solid:deletes { ?aclEntry acl:agent ${fromSocialAgent
+    .map((r) => "<" + r + ">")
+    .join(", ")} .`
+
+  await patchResource(dataRegistrationUri + ".acl", body, authFetch.value).catch(
+    (err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on patching ACL!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    }
+  );
+}
+
 async function createAccessAuthorization(
   accessRequest: AccessRequest,
   accessNeedGroup: AccessNeedGroup,
@@ -283,7 +437,7 @@ async function createAccessAuthorization(
     @prefix xsd:<${XSD()}> .
     @prefix acl:<${ACL()}> .
     @prefix auth:<${AUTH()}> .
-    
+
 
     <#accessAuthorization>
       a interop:AccessAuthorization ;
@@ -291,35 +445,35 @@ async function createAccessAuthorization(
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${accessRequest.fromSocialAgent
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
+    .map((r) => "<" + r + ">")
+    .join(", ")} ;
       interop:hasAccessNeedGroup <${accessNeedGroup.uri}> ;
       interop:hasDataAuthorization <#dataAuthorization> .
 
     <#dataAuthorization>
       a interop:DataAuthorization ;
       interop:grantee ${accessRequest.fromSocialAgent
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
+    .map((r) => "<" + r + ">")
+    .join(", ")} ;
       interop:registeredShapeTree ${accessNeed.registeredShapeTree
-      .map((t) => "<" + t + ">")
-      .join(", ")} ;
+    .map((t) => "<" + t + ">")
+    .join(", ")} ;
       interop:accessMode ${accessNeed.accessMode
-      .map((m) => "<" + m + ">")
-      .join(", ")} ;
+    .map((m) => "<" + m + ">")
+    .join(", ")} ;
       interop:scopeOfAuthorization  ${instances && instances.length > 0
-      ? "interop:SelectedFromRegistry"
-      : "interop:AllFromRegistry"
-    } ;
+    ? "interop:SelectedFromRegistry"
+    : "interop:AllFromRegistry"
+  } ;
       interop:hasDataRegistration ${registrations
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
+    .map((r) => "<" + r + ">")
+    .join(", ")} ;
       ${instances && instances.length > 0
-      ? "interop:hasDataInstance " +
-      instances.map((i) => "<" + i + ">").join(", ") +
-      " ;"
-      : ""
-    }
+    ? "interop:hasDataInstance " +
+    instances.map((i) => "<" + i + ">").join(", ") +
+    " ;"
+    : ""
+  }
       interop:satisfiesAccessNeed <${accessNeed.uri}> .`;
 
   await createResource(authorizationRegistry.value, payload, authFetch.value)
@@ -356,7 +510,9 @@ async function getAuthorization(accessRequest: AccessRequest) {
       })
       .then((resp) => resp.text())
       .then((txt) => parseToN3(txt, authorizationRegistry.value))
-      .then((parsedN3) => { return parsedN3.store.getObjects(authorizationRegistry.value, LDP("contains"), null).map(o => o.value); });
+      .then((parsedN3) => {
+        return parsedN3.store.getObjects(authorizationRegistry.value, LDP("contains"), null).map(o => o.value);
+      });
 
 
   for (const authorization of authorizations) {
@@ -377,14 +533,19 @@ async function getAuthorization(accessRequest: AccessRequest) {
       })
 
     if (authstore.getQuads(authorization, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
-      return {uri: authorization, store: authstore }
+      return {uri: authorization, store: authstore}
     }
   }
   return null;
 }
 
-let associatedAuthorization = null;
-getAuthorization(accessRequestObjects.value[0]).then(authorization =>{ associatedAuthorization= authorization}) 
+let associatedAuthorization: Ref<{ uri: string; store: Store } | null> = ref(null);
+watch(() => accessRequestObjects.value,
+  () => getAuthorization(accessRequestObjects.value[0])
+    .then(authorization => {
+      associatedAuthorization.value = authorization
+    })
+)
 
 async function updateAccessControlList(
   accessTo: string,
