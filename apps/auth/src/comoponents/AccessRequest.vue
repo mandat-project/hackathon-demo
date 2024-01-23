@@ -1,7 +1,7 @@
 <template>
   <div accessRequestObjects v-for="accessRequest in accessRequestObjects" :key="accessRequest.uri">
     <div>
-      Status
+      <strong>Status:</strong>
       <span v-if="associatedAuthorization">
         handled
         <span v-if="isAuthorizationEmpty(associatedAuthorization)">
@@ -16,19 +16,19 @@
       </span>
     </div>
     <div>
-      Purpose
+      <strong>Purpose: </strong>
       <span v-for="label in purposeLabel.get(accessRequest)" :key="label">
         {{ label }}
       </span>
     </div>
     <div>
-      To
+      <strong>To: </strong>
       <a v-for="recipient in accessRequest.toSocialAgent" :key="recipient" :href="recipient">
         {{ recipient }}
       </a>
     </div>
     <div>
-      From
+      <strong>From: </strong>
       <a v-for="sender in accessRequest.fromSocialAgent" :key="sender" :href="sender">
         {{ sender }}
       </a>
@@ -43,13 +43,13 @@
     <div v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup" :key="accessNeedGroup.uri">
       <Divider />
       <div>
-        Label:
+        <strong>Label: </strong>
         <a v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel" :key="label">
           {{ label }}
         </a>
       </div>
       <div>
-        Definition:
+        <strong>Definition: </strong>
         <a v-for="definition in accessNeedGroup.accessNeedGroupDescriptionDefinition" :key="definition">
           {{ definition }}
         </a>
