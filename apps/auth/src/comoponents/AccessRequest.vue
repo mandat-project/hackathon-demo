@@ -65,9 +65,22 @@
         </div>
       </div>
     </div>
-    <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary">Authorize
-    </Button>
+    <div v-if="associatedAuthorization">
+      <Button @click="console.log('revoke')" type="button" style="margin: 20px"
+        class="btn btn-primary" severity="danger">Revoke
+      </Button>
+      <Button @click="console.log('revoke')" type="button" style="margin: 20px"
+        class="btn btn-primary" severity="danger">Freeze
+      </Button>
+    </div>
+    <div v-else>
+      <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
+        class="btn btn-primary">Authorize
+      </Button>
+      <Button @click="console.log('decline')" type="button" style="margin: 20px"
+        class="btn btn-primary" severity="danger">Decline
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -352,7 +365,7 @@ async function createAccessAuthorization(
 
 async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: string; store: Store} | null> {
 
-  const authorizations = await
+  const authorizationDocuments = await
     getResource(authorizationRegistry.value, authFetch.value)
       .catch((err) => {
         toast.add({
@@ -368,8 +381,8 @@ async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: st
       .then((parsedN3) => { return parsedN3.store.getObjects(authorizationRegistry.value, LDP("contains"), null).map(o => o.value); });
 
 
-  for (const authorization of authorizations) {
-    const authstore = await getResource(authorization, authFetch.value)
+  for (const authorizationDocument of authorizationDocuments) {
+    const authstore = await getResource(authorizationDocument, authFetch.value)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -380,11 +393,12 @@ async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: st
         throw new Error(err);
       })
       .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, authorization))
+      .then((txt) => parseToN3(txt, authorizationDocument))
       .then((parsedN3) => {
         return parsedN3.store;
       })
 
+    const authorization = authstore.getSubjects(RDF('type'), INTEROP('AccessAuthorization'), null)[0].value;
     if (authstore.getQuads(authorization, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
       return { uri: authorization, store: authstore }
     }
