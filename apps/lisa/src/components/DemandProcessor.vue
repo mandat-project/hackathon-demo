@@ -108,7 +108,8 @@ import {
   XSD,
   SKOS,
   createResourceInAnyRegistrationOfShape,
-  getContainerItems
+  getContainerItems,
+GDPRP
 } from '@shared/solid';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
@@ -292,6 +293,7 @@ async function requestAccessToData() {
     @prefix credit: <${CREDIT()}> .
     @prefix xsd: <${XSD()}> .
     @prefix acl: <${ACL()}> .
+    @prefix gdprp: <${GDPRP()}> .
 
     # This could be hosted at the profle document of the application or social agent or at a
     # central location (e.g. together with the shapes/shapetress) for "standardized" access needs
@@ -331,9 +333,11 @@ async function requestAccessToData() {
     # Goes into the access inbox of sme
     <#bwaAccessRequest>
       a interop:AccessRequest ;
+      gdprp:purposeForProcessing gdprp:contractualObligations ;
       interop:fromSocialAgent <${webId!.value}> ;
       interop:toSocialAgent  <${demanderUri.value}> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
+
       credit:fromDemand <${props.demandUri}>.`;
 
   const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, authFetch.value)
@@ -497,9 +501,11 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
     @prefix credit: <${CREDIT()}> .
     @prefix xsd: <${XSD()}> .
     @prefix acl: <${ACL()}> .
+    @prefix gdprp: <${GDPRP()}> .
 
     <#accessRequest>
       a interop:AccessRequest ;
+      gdprp:purposeForProcessing gdprp:contractualObligations ;
       interop:fromSocialAgent <${forAgent}> ;
       interop:toSocialAgent  <${webId!.value}> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
