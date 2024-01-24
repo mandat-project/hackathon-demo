@@ -1,13 +1,34 @@
 <template>
   <div accessRequestObjects v-for="accessRequest in accessRequestObjects" :key="accessRequest.uri">
     <div>
-      To
+      <strong>Status:</strong>
+      <span v-if="associatedAuthorization">
+        handled
+        <span v-if="isAuthorizationEmpty(associatedAuthorization)">
+          (denied or revoked)
+        </span>
+        <span v-else>
+          (authorized)
+        </span>
+      </span>
+      <span v-else>
+        open
+      </span>
+    </div>
+    <div>
+      <strong>Purpose: </strong>
+      <span v-for="label in purposeLabel.get(accessRequest)" :key="label">
+        {{ label }}
+      </span>
+    </div>
+    <div>
+      <strong>To: </strong>
       <a v-for="recipient in accessRequest.toSocialAgent" :key="recipient" :href="recipient">
         {{ recipient }}
       </a>
     </div>
     <div>
-      From
+      <strong>From: </strong>
       <a v-for="sender in accessRequest.fromSocialAgent" :key="sender" :href="sender">
         {{ sender }}
       </a>
@@ -22,13 +43,13 @@
     <div v-for="accessNeedGroup in accessRequest.hasAccessNeedGroup" :key="accessNeedGroup.uri">
       <Divider />
       <div>
-        Label:
+        <strong>Label: </strong>
         <a v-for="label in accessNeedGroup.accessNeedGroupDescriptionLabel" :key="label">
           {{ label }}
         </a>
       </div>
       <div>
-        Definition:
+        <strong>Definition: </strong>
         <a v-for="definition in accessNeedGroup.accessNeedGroupDescriptionDefinition" :key="definition">
           {{ definition }}
         </a>
@@ -56,9 +77,22 @@
         </div>
       </div>
     </div>
-    <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary">Authorize
-    </Button>
+    <div v-if="associatedAuthorization">
+      <Button @click="console.log('revoke')" type="button" style="margin: 20px"
+        class="btn btn-primary p-button-danger" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Revoke
+      </Button>
+      <Button @click="console.log('revoke')" type="button" style="margin: 20px"
+        class="btn btn-primary p-button-danger" severity="danger" :disabled="isAuthorizationEmpty(associatedAuthorization)">Freeze
+      </Button>
+    </div>
+    <div v-else>
+      <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
+        class="btn btn-primary">Authorize
+      </Button>
+      <Button @click="declineAndDontGrantAccess(accessRequest)" type="button" style="margin: 20px"
+        class="btn btn-primary p-button-danger" severity="danger">Deny
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -72,6 +106,8 @@ import {
   ACL,
   LDP,
   XSD,
+  GDPRP,
+  RDFS,
   createResource,
   putResource,
   getDataRegistrationContainers,
@@ -130,6 +166,9 @@ const accessRequestObjects = computed(() => {
       INTEROP("hasAccessNeedGroup"),
       null
     );
+    const purpose = store
+      .getObjects(accessRequest, GDPRP('purposeForProcessing'), null)
+      .map((uri) => uri.value);
 
     const accessNeedGroupObjects = [];
     for (const accessNeedGroup of hasAccessNeedGroup) {
@@ -213,10 +252,37 @@ const accessRequestObjects = computed(() => {
       fromSocialAgent,
       fromDemand,
       hasAccessNeedGroup: accessNeedGroupObjects,
+      purpose,
     } as AccessRequest);
   }
   return result;
 });
+
+async function declineAndDontGrantAccess(accessRequest: AccessRequest) {
+  // find registries
+  for (const accessNeedGroup of accessRequest.hasAccessNeedGroup) {
+    for (const accessNeed of accessNeedGroup.hasAccessNeed) {
+      for (const shapeTree of accessNeed.registeredShapeTree) {
+        const dataInstances = [] as string[];
+        dataInstances.push(...accessNeed.hasDataInstance); // potentially manually edited (added/removed) in auth agent
+        await createDeniedAccessAuthorization(
+          accessRequest,
+          accessNeedGroup,
+          accessNeed,
+        );
+      }
+    }
+  }
+  await setDemandIsAccessRequestGranted(accessRequest.fromDemand[0]); // naja, wenn da jemand mehr reinschreib, wirds komisch.
+  if (props.redirect) {
+    window.open(
+      `${props.redirect}?uri=${encodeURIComponent(
+        accessRequest.uri
+      )}&result=0`,
+      "_self"
+    );
+  }
+}
 
 async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
   // find registries
@@ -238,7 +304,7 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
         });
         const dataInstances = [] as string[];
         dataInstances.push(...accessNeed.hasDataInstance); // potentially manually edited (added/removed) in auth agent
-        await createAccessAuthorization(
+        await createGrantedAccessAuthorization(
           accessRequest,
           accessNeedGroup,
           accessNeed,
@@ -269,7 +335,51 @@ async function authorizeAndGrantAccess(accessRequest: AccessRequest) {
   }
 }
 
-async function createAccessAuthorization(
+async function createDeniedAccessAuthorization(
+  accessRequest: AccessRequest,
+  accessNeedGroup: AccessNeedGroup,
+  accessNeed: AccessNeed
+) {
+  const date = new Date().toISOString();
+  const payload = `
+    @prefix interop:<${INTEROP()}> .
+    @prefix ldp:<${LDP()}> .
+    @prefix xsd:<${XSD()}> .
+    @prefix acl:<${ACL()}> .
+    @prefix auth:<${AUTH()}> .
+    
+
+    <#accessAuthorization>
+      a interop:AccessAuthorization ;
+      auth:hasAccessRequest <${accessRequest.uri}> ;
+      interop:grantedBy <${sessionInfo.webId}> ;
+      interop:grantedAt "${date}"^^xsd:dateTime ;
+      interop:grantee ${accessRequest.fromSocialAgent
+      .map((r) => "<" + r + ">")
+      .join(", ")} ;
+      interop:hasAccessNeedGroup <${accessNeedGroup.uri}> .
+    `
+
+  await createResource(authorizationRegistry.value, payload, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Failed to create Access Authorization!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then(() =>
+      toast.add({
+        severity: "success",
+        summary: "Access Authorization created.",
+        life: 5000,
+      })
+    );
+}
+
+async function createGrantedAccessAuthorization(
   accessRequest: AccessRequest,
   accessNeedGroup: AccessNeedGroup,
   accessNeed: AccessNeed,
@@ -335,7 +445,7 @@ async function createAccessAuthorization(
     .then(() =>
       toast.add({
         severity: "success",
-        summary: "Access authorized.",
+        summary: "Access Authorization created.",
         life: 5000,
       })
     );
@@ -343,7 +453,7 @@ async function createAccessAuthorization(
 
 async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: string; store: Store} | null> {
 
-  const authorizations = await
+  const authorizationDocuments = await
     getResource(authorizationRegistry.value, authFetch.value)
       .catch((err) => {
         toast.add({
@@ -359,8 +469,8 @@ async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: st
       .then((parsedN3) => { return parsedN3.store.getObjects(authorizationRegistry.value, LDP("contains"), null).map(o => o.value); });
 
 
-  for (const authorization of authorizations) {
-    const authstore = await getResource(authorization, authFetch.value)
+  for (const authorizationDocument of authorizationDocuments) {
+    const authstore = await getResource(authorizationDocument, authFetch.value)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -371,11 +481,12 @@ async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: st
         throw new Error(err);
       })
       .then((resp) => resp.text())
-      .then((txt) => parseToN3(txt, authorization))
+      .then((txt) => parseToN3(txt, authorizationDocument))
       .then((parsedN3) => {
         return parsedN3.store;
       })
 
+    const authorization = authstore.getSubjects(RDF('type'), INTEROP('AccessAuthorization'), null)[0].value;
     if (authstore.getQuads(authorization, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
       return { uri: authorization, store: authstore }
     }
@@ -388,6 +499,20 @@ watch(() => accessRequestObjects.value,
   () => getAuthorization(accessRequestObjects.value[0])
     .then(authorization => { associatedAuthorization.value = authorization })
 )
+
+let purposeLabel = ref(new Map())
+watch(() => accessRequestObjects.value,
+  () => getResource(GDPRP(''), authFetch.value)
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, GDPRP('')))
+    .then((parsedN3) => accessRequestObjects.value.map(ar => {
+      purposeLabel.value.set(ar, ar.purpose.map((uri) => parsedN3.store.getObjects(uri, RDFS('label'), null).map(o => o.value)[0]));
+    }))
+)
+
+function isAuthorizationEmpty(authorization: {uri: string; store: Store}): boolean {
+  return authorization.store.getQuads(authorization.uri, INTEROP('hasDataAuthorization'), null, null).length > 0
+}
 
 async function updateAccessControlList(
   accessTo: string,
