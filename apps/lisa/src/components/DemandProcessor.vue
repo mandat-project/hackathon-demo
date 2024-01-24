@@ -32,17 +32,18 @@
 
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' "
                 @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
         </Button>
-      </li>
 
+      </li>
+      <li>
+          {{ BAcontentMap.get(props.demandUri) }}
+      </li>
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
-                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                @click="requestCreationOfData()">Request creation of new business assessment data from {{
-            demanderName
-          }}
+                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' "
+                @click="requestCreationOfData()">Request creation of new business assessment data from {{ demanderName }}
         </Button>
       </li>
 
@@ -109,7 +110,8 @@ import {
   SKOS,
   createResourceInAnyRegistrationOfShape,
   getContainerItems,
-GDPRP
+GDPRP,
+RDF
 } from '@shared/solid';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
@@ -251,9 +253,76 @@ const hasOrderForAnyOfferForThisDemand = computed(() => {
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
 });
 
+const BAcontentMap = ref(new Map<string, string[]>());
+
 async function fetchProcessedData() {
-  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
-  window.open(businessAssessmentUri[0], '_tab');
+  const dataRegistrationUris = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
+  
+  //window.open(businessAssessmentUri[0], '_tab');
+
+  let businessAssessmentStore = new Store();
+
+  for(const dataRegistrationUri of dataRegistrationUris)
+  {
+    await getResource(dataRegistrationUri, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Could not get access request!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, dataRegistrationUri))
+      .then((parsedN3) =>
+        businessAssessmentStore.addQuads(parsedN3.store.getQuads(null, null, null, null))
+      );
+  }
+
+  const businessAssessments = businessAssessmentStore.getObjects(null, LDP("contains"),null).map(o => o.value);
+
+  for(const businessAssessmentUri of businessAssessments){
+    await getResource(businessAssessmentUri, authFetch.value)
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Could not get access request!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, businessAssessmentUri))
+      .then((parsedN3) =>
+        businessAssessmentStore.addQuads(parsedN3.store.getQuads(null, null, null, null))
+      );
+  }
+
+  const businessAssessmentContentsUris = businessAssessmentStore.getSubjects(RDF("type"), CREDIT("BusinessAssessment"), null).map(o=>o.value);
+  
+  for(const q of businessAssessmentStore.getQuads(null,null,null,null))
+  {console.log(q.subject.value + " " + q.predicate.value + " " + q.object.value)}
+
+
+  let BAcontent : string[] = [];
+
+  for(const businessAssessmentContentUri of businessAssessmentContentsUris){
+
+    const writer = new Writer({ prefixes: { credit: CREDIT() , schema: SCHEMA(),xsd: XSD(),rdf: RDF()} });
+
+    writer.addQuads(businessAssessmentStore.getQuads(businessAssessmentContentUri, null,null,null));
+
+    writer.end((error,result) => {
+      
+      BAcontent.push(result);
+    })
+
+  }
+
+  BAcontentMap.value.set(props.demandUri, BAcontent)
 }
 
 async function patchBusinessResourceToHaveAccessRequest(businessResource: string, accessRequest: string) {
