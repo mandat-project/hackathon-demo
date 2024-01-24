@@ -59,6 +59,9 @@
     <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
             class="btn btn-primary">Authorize
     </Button>
+    <Button @click="deleteAccessRights(accessRequest)" type="button" style="margin: 20px"
+            class="btn btn-primary">Delete
+    </Button>
   </div>
 </template>
 
@@ -320,11 +323,11 @@ async function deleteAccessRights(accessRequest: AccessRequest) {
     })
     .then((resp) => resp.text());
 
-
   // check if archive container exists
   // create archive container if needed
-  const archiveContainerUri = storage.value + "/authorization-archive";
-  const archiveContainer = await getResource(archiveContainerUri, authFetch.value);
+  const archiveContainerUri = storage.value + "authorization-archive/";
+  const archiveContainer = await getResource(archiveContainerUri, authFetch.value)
+    .catch(() => {});
 
   if(!archiveContainer) {
     await createContainer(storage.value, "authorization-archive", authFetch.value)
@@ -404,11 +407,11 @@ async function deleteAccessControlListEntries(resource: string, fromSocialAgent:
                   ?aclEntry acl:agent ${fromSocialAgent
     .map((r) => "<" + r + ">")
     .join(", ")} .
-                  ?aclEntry acl:accessTo ${resource.substring(resource.lastIndexOf('/'))}.
+                  ?aclEntry acl:accessTo <${resource}>.
                 };
                 solid:deletes { ?aclEntry acl:agent ${fromSocialAgent
     .map((r) => "<" + r + ">")
-    .join(", ")} .`
+    .join(", ")} . } .`
 
   await patchResource(dataRegistrationUri + ".acl", body, authFetch.value).catch(
     (err) => {
@@ -532,8 +535,11 @@ async function getAuthorization(accessRequest: AccessRequest) {
         return parsedN3.store;
       })
 
-    if (authstore.getQuads(authorization, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
-      return {uri: authorization, store: authstore}
+    const authorizationURIs = authstore.getSubjects(RDF("type"), INTEROP("AccessAuthorization"), null).map(s => s.value)
+    for (const authorizationURI of authorizationURIs) {
+      if (authstore.getQuads(authorizationURI, AUTH("hasAccessRequest"), accessRequest.uri, null).length == 1) {
+        return { uri: authorizationURI, store: authstore }
+      }
     }
   }
   return null;
