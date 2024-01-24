@@ -37,8 +37,8 @@
         </Button>
 
       </li>
-      <li>
-          {{ BAcontentMap.get(props.demandUri) }}
+      <li v-for = "item in BAcontentMap.get(props.demandUri)" v-bind:key="item">
+          {{ item }}
       </li>
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
@@ -258,8 +258,6 @@ const BAcontentMap = ref(new Map<string, string[]>());
 async function fetchProcessedData() {
   const dataRegistrationUris = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
   
-  //window.open(businessAssessmentUri[0], '_tab');
-
   let businessAssessmentStore = new Store();
 
   for(const dataRegistrationUri of dataRegistrationUris)
@@ -306,19 +304,18 @@ async function fetchProcessedData() {
   for(const q of businessAssessmentStore.getQuads(null,null,null,null))
   {console.log(q.subject.value + " " + q.predicate.value + " " + q.object.value)}
 
-
   let BAcontent : string[] = [];
 
   for(const businessAssessmentContentUri of businessAssessmentContentsUris){
 
-    const writer = new Writer({ prefixes: { credit: CREDIT() , schema: SCHEMA(),xsd: XSD(),rdf: RDF()} });
+    const revenue = businessAssessmentStore.getObjects(businessAssessmentContentUri, CREDIT("hasRevenue"), null).map(o => o.value);
+    const startDate = businessAssessmentStore.getObjects(businessAssessmentContentUri, CREDIT("referencedStartDate"), null).map(o => o.value); //should be only one..?
+    const endDate = businessAssessmentStore.getObjects(businessAssessmentContentUri, CREDIT("referencedStartEnd"), null).map(o => o.value); //should be only one..?
 
-    writer.addQuads(businessAssessmentStore.getQuads(businessAssessmentContentUri, null,null,null));
+    const parsedStartDate = new Date(Date.parse(startDate[0]));
+    const parsedEndDate = new Date(Date.parse(endDate[0]));
 
-    writer.end((error,result) => {
-      
-      BAcontent.push(result);
-    })
+    BAcontent.push(`Business assessment data: ${businessAssessmentContentUri} (from ${parsedStartDate.getFullYear() + '-' + (parsedStartDate.getMonth() + 1) + '-' + parsedStartDate.getDate()} to ${parsedEndDate.getFullYear() + '-' + (parsedEndDate.getMonth() + 1) + '-' + parsedEndDate.getDate()}): ${revenue}`);
 
   }
 
