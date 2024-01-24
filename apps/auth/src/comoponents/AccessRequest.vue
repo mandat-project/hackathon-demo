@@ -309,18 +309,6 @@ async function deleteAccessRights(accessRequest: AccessRequest) {
     }
   }
 
-  // Get content old AccessAuthorization
-  // const accessAuthorizationContent = await getResource(associatedAuthorization.value?.uri!, authFetch.value)
-  //   .catch((err) => {
-  //     toast.add({
-  //       severity: "error",
-  //       summary: "Could not get accessAuthorization Content!",
-  //       detail: err,
-  //       life: 5000,
-  //     });
-  //     throw new Error(err);
-  //   })
-  //   .then((resp) => resp.text());
 
   // check if archive container exists
   // create archive container if needed
@@ -437,9 +425,15 @@ async function deleteAccessRights(accessRequest: AccessRequest) {
         });
         throw new Error(err);
       })
+     getAuthorization(accessRequest)
+    .then(authorization => {
+      associatedAuthorization.value = authorization
+    })      
   });  // prepare content new AccessAuthorization
 
 });
+
+
 
 
 }
