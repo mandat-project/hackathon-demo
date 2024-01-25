@@ -1,31 +1,34 @@
 <template>
   <div class="grid">
-    <div class="col lg:col-6 lg:col-offset-3">
-      <Button
-        icon="pi pi-refresh"
-        class="p-button-text p-button-rounded p-button-icon-only"
-        @click="refreshAccessRequests"
-      />
-      <span>Your Access requests:</span>
+    <div class="col-12 lg:col-6 lg:col-offset-3">
+      <h2>Your Access requests</h2>
+      <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+        @click=" reloadFlag = !reloadFlag" />
     </div>
-    <div class="col lg:col-6 lg:col-offset-3">
-      <div class="accordion" id="accessAccordion">
-        <Accordion :activeIndex="activeAccordionIndex">
-          <AccordionTab
-            v-for="accessRequestResource in accessRequestResources"
-            :key="accessRequestResource"
-            :header="
-              accessRequestResource.substring(
-                accessRequestResource.lastIndexOf('/') + 1
-              )
-            "
-          >
-            <AccessRequest
-              :resourceURI="accessRequestResource"
-              :redirect="redirect"
-            />
-          </AccordionTab>
-        </Accordion>
+    <div class="col-12 lg:col-6 lg:col-offset-3">
+      <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
+        class="p-card" style="margin: 5px">
+        <Suspense>
+          <AccessReceipt :informationResourceURI="accessReceiptResource" @isReceiptForRequests="addRequestsToHandled" />
+          <template #fallback>
+            <span>
+              Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
+            </span>
+          </template>
+        </Suspense>
+      </div>
+      <div v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag" class="p-card"
+        style="margin: 5px">
+        <Suspense>
+          <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
+            :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
+            :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceipts" />
+          <template #fallback>
+            <span>
+              Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+            </span>
+          </template>
+        </Suspense>
       </div>
     </div>
   </div>
@@ -33,64 +36,117 @@
 
 <script lang="ts" setup>
 import AccessRequest from "../comoponents/AccessRequest.vue";
-import { getResource, LDP, parseToN3 } from "@shared/solid";
+import AccessReceipt from "../comoponents/AccessReceipt.vue";
+import { createContainer, getContainerItems, getResource } from "@shared/solid";
 import { useSolidProfile, useSolidSession } from "@shared/composables";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 
-import Accordion from "primevue/accordion";
-import AccordionTab from "primevue/accordiontab";
-
-const { authFetch } = useSolidSession();
-const { accessInbox } = useSolidProfile();
 const toast = useToast();
 
-const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
-const activeAccordionIndex = ref(-1);
+const { authFetch } = useSolidSession();
+const { accessInbox, storage } = useSolidProfile();
 
-const accessRequestResources = ref<Array<string>>([]);
+const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
+
+const accessRequestInformationResources = ref<Array<string>>([]);
+const handledAccessRequests = ref<Array<string>>([]);
+const displayAccessRequests = computed(() =>
+  accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
+)
+const accessReceiptInformationResources = ref<Array<string>>([]);
 watch(
   () => accessInbox.value,
-  () =>
+  () => {
     getAccessRequests(accessInbox.value).then((newAccessRequestResources) =>
-      accessRequestResources.value.push(...newAccessRequestResources)
+      accessRequestInformationResources.value.push(...newAccessRequestResources)
     )
+    getAccessReceipts().then(newAccessReceipts =>
+      accessReceiptInformationResources.value.push(...newAccessReceipts))
+  }
 );
 
 async function getAccessRequests(accessInbox: string) {
   if (!accessInbox) {
     return [];
   }
-  const accessInboxStore = await getResource(accessInbox, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Could not get access inbox!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, accessInbox))
-    .then((parsedN3) => parsedN3.store);
-  let accessInboxEntries = accessInboxStore.getObjects(
-    null,
-    LDP("contains"),
-    null
-  );
   if (props.inspectedAccessRequestURI) {
-    activeAccordionIndex.value = 0;
-    accessInboxEntries = accessInboxEntries.filter((value) =>
-      props.inspectedAccessRequestURI.includes(value.id)
-    );
+    return [props.inspectedAccessRequestURI]
   }
-  return accessInboxEntries.map((term) => term.value);
+  return await getContainerItems(accessInbox, authFetch.value)
 }
 
+function addRequestsToHandled(requests: string[]) {
+  handledAccessRequests.value.push(...requests)
+}
+
+async function getAccessReceipts() {
+  return await getContainerItems(accessReceiptContainer.value, authFetch.value)
+}
+
+const reloadFlag = ref(false)
+watch(() => reloadFlag.value, () => {
+  refreshAccessRequests()
+  refreshAccessReceipts()
+}
+)
 async function refreshAccessRequests() {
   const newListOfAccessRequests = await getAccessRequests(accessInbox.value);
-  accessRequestResources.value.length = 0;
-  accessRequestResources.value.push(...newListOfAccessRequests);
+  accessRequestInformationResources.value.length = 0;
+  accessRequestInformationResources.value.push(...newListOfAccessRequests);
 }
+async function refreshAccessReceipts() {
+  const newListOfAccessReceipts = await getAccessReceipts();
+  accessReceiptInformationResources.value.length = 0;
+  accessReceiptInformationResources.value.push(...newListOfAccessReceipts);
+}
+
+
+// create data authorization container if needed
+const dataAuthzContainerName = "data-authorizations"
+const dataAuthzContainer = computed(() => storage.value + dataAuthzContainerName + "/");
+// create access authorization container if needed
+const accessAuthzContainerName = "authorization-registry"
+const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
+// create access receipt container if needed
+const accessReceiptContainerName = "authorization-receipts"
+const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
+watch(() => storage.value,
+  async () => {
+    if (!storage.value) { return }
+    getResource(dataAuthzContainer.value, authFetch.value)
+      .catch(() => createContainer(storage.value, dataAuthzContainerName, authFetch.value))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Data Authorization Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+    getResource(accessAuthzContainer.value, authFetch.value)
+      .catch(() => createContainer(storage.value, accessAuthzContainerName, authFetch.value))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Access Authorization Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+    getResource(accessReceiptContainer.value, authFetch.value)
+      .catch(() => createContainer(storage.value, accessReceiptContainerName, authFetch.value))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Access Receipt Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+
+  })
 </script>
