@@ -31,7 +31,9 @@
                         </Button>
                     </div>
                     <div v-else>
-                        <Button disabled class="p-button-rounded p-button-danger"> Revoked </Button>
+                        <Button disabled class="p-button-rounded p-button-danger m-2">
+                            {{ accessAuthorizations.length > 0 ? 'Revoked' : 'Denied' }}
+                        </Button>
                     </div>
                     <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization"
                         class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">

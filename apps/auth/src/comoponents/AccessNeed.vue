@@ -18,10 +18,11 @@
                 {{ accessMode.split("#")[1] }}
             </a>
         </div>
-        <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
+        <!-- DO NOT REMOVE -->
+        <!-- <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
             :disabled="associatedDataAuthorization !== '' || groupAuthorizationTrigger">
             Authorize Need
-        </Button>
+        </Button> -->
     </div>
 </template>
 
