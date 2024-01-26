@@ -43,12 +43,10 @@
             </a>
         </div>
         <div>
-            <!-- TODO Freeze -->
-            <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
-                class="btn btn-primary p-button-warning">
-                Freeze
-            </Button> -->
-            <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
+            <Button @click="freezeRights" type="button" class="btn btn-primary m-2 p-button-warning" :disabled="isFrozen">
+                {{ isFrozen ? 'Frozen' : 'Freeze' }}
+            </Button>
+            <Button @click="revokeRights" type="button" class="btn btn-primary m-2 p-button-danger"
                 :disabled="groupRevokationTrigger">
                 Revoke
             </Button>
@@ -63,18 +61,24 @@ import {
     parseToN3,
     INTEROP,
     getAclResourceUri,
-    patchResource,
     getDataRegistrationContainers,
     ACL,
     RDF,
     putResource,
+    getContainerItems,
+    patchResource,
+    AUTH,
+    LDP,
+    XSD,
+    createResource,
+    getLocationHeader,
 } from "@shared/solid";
-import { NamedNode, Store, Writer } from "n3";
+import { Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, ref, watch } from "vue";
 
-const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
-const emit = defineEmits(["revokedDataAuthorization"])
+const props = defineProps(["resourceURI", "groupRevokationTrigger", "dataAuthzContainer"]);
+const emit = defineEmits(["revokedDataAuthorization", "replacedDataAuthorization"])
 const { authFetch, sessionInfo } = useSolidSession();
 const toast = useToast();
 
@@ -257,7 +261,172 @@ async function updateAccessControlListToDelete(
             });
             throw new Error(err);
         })
+}
 
 
+const isFrozen = computed(() => (
+    dataInstances.value.length > 0 &&
+    (accessModes.value.length == 0
+        ||
+        (accessModes.value.length == 1 && accessModes.value[0] === ACL('Read')))))
+
+async function freezeRights() {
+    for (const shapeTree of registeredShapeTrees.value) {
+        const dataRegistrations = await getDataRegistrationContainers(
+            `${sessionInfo.webId}`,
+            shapeTree,
+            authFetch.value
+        ).catch((err) => {
+            toast.add({
+                severity: "error",
+                summary: "Error on getDataRegistrationContainers!",
+                detail: err,
+                life: 5000,
+            });
+            throw new Error(err);
+        });
+        const dataInstancesForNeed = [] as string[];
+        dataInstancesForNeed.push(...dataInstances.value); // potentially manually edited (added/removed) in auth agent
+
+        for (const dataInstance of dataInstancesForNeed) {
+            await updateAccessControlListToDelete(dataInstance, grantees.value, accessModes.value.filter(mode => mode !== ACL("Read")))
+        }
+        if (accessModes.value.includes(ACL("Read"))) {
+            const registrationsDataInstances = [] as string[]
+            for (const dataRegistration of dataRegistrations) {
+                registrationsDataInstances.push(...(await getContainerItems(dataRegistration, authFetch.value)))
+            }
+            // only grant specific resource access
+            for (const resource of registrationsDataInstances) {
+                await updateAccessControlListToSet(resource, grantees.value, [ACL("Read")])
+            }
+            dataInstancesForNeed.push(...registrationsDataInstances)
+        }
+        // remove rights from containers
+        for (const registration of dataRegistrations) {
+            await updateAccessControlListToDelete(registration, grantees.value, accessModes.value)
+        }
+
+        // create new DataAuthorization and bubble up link
+        const dataAuthzLocation = createDataAuthorization(grantees.value, registeredShapeTrees.value, [ACL("Read")], dataRegistrations, dataInstancesForNeed);
+        const newDataAuthorization = (await dataAuthzLocation) + "#" + dataAuthzLocalName
+        emit("replacedDataAuthorization", newDataAuthorization, props.resourceURI)
+    }
+}
+
+
+/**
+ * 
+ * The following is replicated code from AccessNeed - extract to lib.
+ * 
+ */
+
+
+/**
+ * 
+ * @param accessTo 
+ * @param agent 
+ * @param mode 
+ */
+
+async function updateAccessControlListToSet(
+    accessTo: string,
+    agent: string[],
+    mode: string[]
+) {
+
+    const patchBody = `
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+_:rename a solid:InsertDeletePatch;
+    solid:inserts { 
+        <#owner> a acl:Authorization;
+            acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
+            acl:agent <${sessionInfo.webId}>;
+            acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
+            acl:mode acl:Read, acl:Write, acl:Control.
+
+        <#grantee-${new Date().toISOString()}>
+            a acl:Authorization;
+            acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
+            acl:agent ${agent.map((a) => "<" + a + ">").join(", ")};
+            acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
+            acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
+    } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
+    const aclURI = await getAclResourceUri(accessTo, authFetch.value);
+    await patchResource(aclURI, patchBody, authFetch.value).catch(
+        (err) => {
+            toast.add({
+                severity: "error",
+                summary: "Error on patch ACL!",
+                detail: err,
+                life: 5000,
+            });
+            throw new Error(err);
+        }
+    );
+}
+
+const dataAuthzLocalName = "dataAuthorization"
+async function createDataAuthorization(
+    forSocialAgents: string[],
+    registeredShapeTrees: string[],
+    accessModes: string[],
+    registrations: string[],
+    instances?: string[]
+) {
+    const payload = `
+    @prefix interop:<${INTEROP()}> .
+    @prefix ldp:<${LDP()}> .
+    @prefix xsd:<${XSD()}> .
+    @prefix acl:<${ACL()}> .
+    @prefix auth:<${AUTH()}> .
+
+    <#${dataAuthzLocalName}>
+      a interop:DataAuthorization ;
+      interop:grantee ${forSocialAgents
+            .map((t: string) => "<" + t + ">")
+            .join(", ")} ;
+      interop:registeredShapeTree ${registeredShapeTrees
+            .map((t) => "<" + t + ">")
+            .join(", ")} ;
+      interop:accessMode ${accessModes
+            .map((t) => "<" + t + ">")
+            .join(", ")} ;
+      interop:scopeOfAuthorization  ${instances && instances.length > 0
+            ? "interop:SelectedFromRegistry"
+            : "interop:AllFromRegistry"
+        } ;
+      interop:hasDataRegistration ${registrations
+            .map((t) => "<" + t + ">")
+            .join(", ")} ;
+      ${instances && instances.length > 0
+            ? "interop:hasDataInstance " +
+            instances.map((t) => "<" + t + ">").join(", ") +
+            " ;"
+            : ""
+        }
+      interop:satisfiesAccessNeed <${props.resourceURI}> .`;
+
+    return createResource(props.dataAuthzContainer, payload, authFetch.value)
+        .then((loc) => {
+            toast.add({
+                severity: "success",
+                summary: "Data Authorization created.",
+                life: 5000,
+            })
+            return getLocationHeader(loc)
+        }
+        )
+        .catch((err) => {
+            toast.add({
+                severity: "error",
+                summary: "Failed to create Data Authorization!",
+                detail: err,
+                life: 5000,
+            });
+            throw new Error(err);
+        })
 }
 </script>

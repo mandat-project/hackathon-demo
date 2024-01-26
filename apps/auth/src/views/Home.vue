@@ -10,7 +10,8 @@
         class="p-card" style="margin: 5px">
         <Suspense>
           <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
-            :accessAuthzArchiveContainer="accessAuthzArchiveContainer" @isReceiptForRequests="addRequestsToHandled" />
+            :accessAuthzArchiveContainer="accessAuthzArchiveContainer" :dataAuthzContainer="dataAuthzContainer"
+            @isReceiptForRequests="addRequestsToHandled" />
           <template #fallback>
             <span>
               Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}

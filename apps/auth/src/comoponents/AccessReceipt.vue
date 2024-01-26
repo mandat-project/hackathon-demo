@@ -41,6 +41,7 @@
                             <AccessAuthorization :resourceURI="accessAuthorization"
                                 :accessAuthzContainer="accessAuthzContainer"
                                 :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+                                :dataAuthzContainer="dataAuthzContainer"
                                 :receipRevokationTrigger="isWaitingForAccessAuthorizations"
                                 @updatedAccessAuthorization="updateAccessAuthorization"
                                 @isEmptyAuthorization="addToEmpty" />
@@ -72,7 +73,7 @@ import { NamedNode, Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, ref, watch } from "vue";
 
-const props = defineProps(["informationResourceURI", "accessAuthzContainer", "accessAuthzArchiveContainer"]);
+const props = defineProps(["informationResourceURI", "accessAuthzContainer", "accessAuthzArchiveContainer", "dataAuthzContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
 const { authFetch } = useSolidSession();
 const toast = useToast();

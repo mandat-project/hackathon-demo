@@ -1,6 +1,5 @@
 <template>
     <div class="accessAuthorization">
-        {{ resourceURI }}
         <div>
             <strong>Grant date: </strong>
             <div v-for="date in grantDates" :key="date">
@@ -25,7 +24,7 @@
             </div>
             <div>
                 <!-- TODO Freeze -->
-                <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
+                <!-- <Button @click="freezeRights()" type="button" style="margin: 20px"
                 class="btn btn-primary p-button-warning">
                 Freeze
             </Button> -->
@@ -38,8 +37,9 @@
                 class="p-card col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
                 <Suspense>
                     <DataAuthorization :resourceURI="dataAuthorization"
-                        :groupRevokationTrigger="isWaitingForDataAuthorizations"
-                        @revokedDataAuthorization="removeDataAuthorization" />
+                        :groupRevokationTrigger="isWaitingForDataAuthorizations" :dataAuthzContainer="dataAuthzContainer"
+                        @revokedDataAuthorization="removeDataAuthorization" 
+                        @replacedDataAuthorization="replaceDataAuthorization"/>
                     <template #fallback>
                         <span>
                             Loading {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
@@ -224,7 +224,6 @@ async function removeDataAuthorizations(dataAuthorizations: string[]) {
         new NamedNode(INTEROP("replaces")),
         new NamedNode(archivedLocation + "#" + accessAuthzLocale))
     // in new resource, update grantedAt
-
     const grantedAtQuads = store.value.getQuads(new NamedNode(newLocation + "#" + accessAuthzLocale), INTEROP("grantedAt"), null, null)
     store.value.removeQuads(grantedAtQuads)
     const dateLiteral = DataFactory.literal(new Date().toISOString(), new NamedNode(XSD("dateTime")));
@@ -233,6 +232,12 @@ async function removeDataAuthorizations(dataAuthorizations: string[]) {
         new NamedNode(INTEROP("grantedAt")),
         dateLiteral
     )
+
+
+
+
+    // this is the stuff happening on DATA AUTHZ revoke
+
     // in new resource, remove link to data authorization
     for (const dataAuthorization of dataAuthorizations) {
         store.value.removeQuads(store.value.getQuads(
@@ -240,6 +245,11 @@ async function removeDataAuthorizations(dataAuthorizations: string[]) {
             new NamedNode(INTEROP("hasDataAuthorization")),
             dataAuthorization, null))
     }
+
+
+
+
+
     // write to new authorization
     copyBody = n3Writer.quadsToString(store.value.getQuads(null, null, null, null))
     await putResource(newLocation, copyBody, authFetch.value)
