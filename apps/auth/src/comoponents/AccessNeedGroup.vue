@@ -17,7 +17,7 @@
                 <strong>Access Needs</strong>
             </div>
             <Button @click="grantAccessAuthorization" type="button" class="btn btn-primary mb-2"
-                :disabled="associatedAccessAuthorization !== ''">
+                :disabled="associatedAccessAuthorization !== '' || requestAuthorizationTrigger">
                 Authorize Group
             </Button>
             <div v-for="accessNeed in accessNeeds" :key="accessNeed" class="p-card col-12 lg:col-8 lg:col-offset-2"

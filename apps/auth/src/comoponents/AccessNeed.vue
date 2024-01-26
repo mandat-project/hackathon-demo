@@ -15,11 +15,11 @@
         <div>
             <strong>Access Mode: </strong>
             <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
-                {{ accessMode }}
+                {{ accessMode.split("#")[1] }}
             </a>
         </div>
         <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
-            :disabled="associatedDataAuthorization !== ''">
+            :disabled="associatedDataAuthorization !== '' || groupAuthorizationTrigger">
             Authorize Need
         </Button>
     </div>
@@ -108,6 +108,7 @@ const dataInstances = computed(() =>
 
 const associatedDataAuthorization = ref("")
 watch(() => props.groupAuthorizationTrigger, () => {
+    // if data authorization already exists for this access need, do nothing
     if (associatedDataAuthorization.value) { return }
     grantDataAuthorization()
 })
@@ -140,9 +141,6 @@ async function grantDataAuthorization() {
         const accessToResources = dataInstancesForNeed.length > 0 ? dataInstancesForNeed : dataRegistrations;
         // only grant specific resource access
         for (const resource of accessToResources) {
-            /**
-             * TODO it would be nicer if the update of the ACL was carried out based on the generated data authorization instead of based on the access need
-             */
             await updateAccessControlList(resource, props.forSocialAgents, accessModes.value);
         }
         associatedDataAuthorization.value = (await dataAuthzLocation) + "#" + dataAuthzLocalName
@@ -242,7 +240,7 @@ _:rename a solid:InsertDeletePatch;
         (err) => {
             toast.add({
                 severity: "error",
-                summary: "Error on put updateAccessControlList!",
+                summary: "Error on patch ACL!",
                 detail: err,
                 life: 5000,
             });

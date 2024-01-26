@@ -24,6 +24,12 @@
                 {{ scope.split("#")[1] }}
             </a>
         </div>
+        <div>
+            <strong>Data Registrations: </strong>
+            <a v-for="dataRegistration in dataRegistrations" :key="dataRegistration" :href="dataRegistration">
+                {{ dataRegistration }}
+            </a>
+        </div>
         <div v-if="dataInstances.length > 0">
             <strong>Authorized Instances: </strong>
             <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
@@ -36,10 +42,17 @@
                 {{ accessMode.split("#")[1] }}
             </a>
         </div>
-        <!-- <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
-            :disabled="associatedDataAuthorization !== ''">
-            Authorize Need
-        </Button> -->
+        <div>
+            <!-- TODO Freeze -->
+            <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
+                class="btn btn-primary p-button-warning">
+                Freeze
+            </Button> -->
+            <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
+                :disabled="groupRevokationTrigger">
+                Revoke
+            </Button>
+        </div>
     </div>
 </template>
 
@@ -49,13 +62,19 @@ import {
     getResource,
     parseToN3,
     INTEROP,
+    getAclResourceUri,
+    patchResource,
+    getDataRegistrationContainers,
+    ACL,
+    RDF,
+    putResource,
 } from "@shared/solid";
-import { Store } from "n3";
+import { NamedNode, Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
-const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
-const emit = defineEmits(["createdDataAuthorization"])
+const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
+const emit = defineEmits(["revokedDataAuthorization"])
 const { authFetch, sessionInfo } = useSolidSession();
 const toast = useToast();
 
@@ -96,4 +115,149 @@ const scopes = computed(() =>
 const accessNeeds = computed(() =>
     store.value.getObjects(props.resourceURI, INTEROP('satisfiesAccessNeed'), null).map(t => t.value)
 )
+
+
+//
+// 
+// 
+
+watch(() => props.groupRevokationTrigger, () => {
+    if (props.groupRevokationTrigger) {
+        revokeRights()
+    }
+})
+
+
+async function revokeRights() {
+    for (const shapeTree of registeredShapeTrees.value) {
+        const dataRegistrations = await getDataRegistrationContainers(
+            `${sessionInfo.webId}`,
+            shapeTree,
+            authFetch.value
+        ).catch((err) => {
+            toast.add({
+                severity: "error",
+                summary: "Error on getDataRegistrationContainers!",
+                detail: err,
+                life: 5000,
+            });
+            throw new Error(err);
+        });
+        const dataInstancesForNeed = [] as string[];
+        dataInstancesForNeed.push(...dataInstances.value); // potentially manually edited (added/removed) in auth agent
+
+        const accessToResources = dataInstancesForNeed.length > 0 ? dataInstancesForNeed : dataRegistrations;
+        // only grant specific resource access
+        for (const resource of accessToResources) {
+            await updateAccessControlListToDelete(resource, grantees.value, accessModes.value)
+        }
+        emit("revokedDataAuthorization", props.resourceURI)
+    }
+}
+
+async function updateAccessControlListToDelete(
+    accessTo: string,
+    agents: string[],
+    modes: string[]
+) {
+
+    const aclURI = await getAclResourceUri(accessTo, authFetch.value);
+
+    /**
+   * see problems below
+   */
+    //     const patchBody = `
+    // @prefix solid: <http://www.w3.org/ns/solid/terms#>.
+    // @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+    // _:rename a solid:InsertDeletePatch;
+    //     solid:where {
+    //         ?auth a acl:Authorization ;
+    //             acl:accessTo <${accessTo}>;
+    //             acl:agent ${agents.map((a) => "<" + a + ">").join(", ")};
+    //             acl:default <${accessTo}> ;
+    //             acl:mode ${modes.map((mode) => "<" + mode + ">").join(", ")} .
+    //     } ;
+    //     solid:deletes {
+    //         ?auth acl:agent ${agents.map((a) => "<" + a + ">").join(", ")} .
+    //     } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
+
+
+    // await patchResource(aclURI, patchBody, authFetch.value).catch(
+    //     (err) => {
+    //         toast.add({
+    //             severity: "error",
+    //             summary: "Error on patch ACL!",
+    //             detail: err,
+    //             life: 5000,
+    //         });
+    //         throw new Error(err);
+    //     }
+    // );
+
+    /**
+     * We have two problems:
+     * * cannot have mutliple matches for where clause on server side
+     * * no matches for where clause on server side
+     * 
+     */
+
+    //  therefore...
+
+    const aclStore = await getResource(aclURI, authFetch.value)
+        .catch((err) => {
+            toast.add({
+                severity: "error",
+                summary: "Could not load ACL!",
+                detail: err,
+                life: 5000,
+            });
+            throw new Error(err);
+        })
+        .then((resp) => resp.text())
+        .then((txt) => parseToN3(txt, aclURI))
+        .then((parsedN3) => parsedN3.store);
+
+
+    for (const agent of agents) {
+        for (const mode of modes) {
+            const agentAuthzQuads = aclStore.getQuads(null, ACL("agent"), agent, null)
+                .filter(quad => (aclStore.getQuads(quad.subject, ACL("mode"), mode, null).length == 1))
+                .filter(quad => (aclStore.getQuads(quad.subject, ACL("accessTo"), accessTo, null).length == 1))
+                .filter(quad => (aclStore.getQuads(quad.subject, ACL("default"), accessTo, null).length == 1))
+            aclStore.removeQuads(agentAuthzQuads)
+        }
+    }
+
+    // START cleanup of authorizations where no agent is attached 
+    aclStore.getSubjects(RDF("type"), ACL("Authorization"), null)
+        .filter(subj => (aclStore.getQuads(subj, ACL("agent"), null, null).length == 0))
+        .filter(subj => (aclStore.getQuads(subj, ACL("agentGroup"), null, null).length == 0))
+        .filter(subj => (aclStore.getQuads(subj, ACL("agentClass"), null, null).length == 0))
+        .forEach(subj => aclStore.removeQuads(aclStore.getQuads(subj, null, null, null)))
+
+    // START cleanup
+
+    const n3Writer = new Writer();
+    let aclBody = n3Writer.quadsToString(aclStore.getQuads(null, null, null, null))
+    await putResource(aclURI, aclBody, authFetch.value)
+        .then(() =>
+            toast.add({
+                severity: "success",
+                summary: "ACL updated.",
+                life: 5000,
+            })
+        )
+        .catch((err) => {
+            toast.add({
+                severity: "error",
+                summary: "Failed to updated ACL!",
+                detail: err,
+                life: 5000,
+            });
+            throw new Error(err);
+        })
+
+
+}
 </script>

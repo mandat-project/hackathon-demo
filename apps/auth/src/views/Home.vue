@@ -1,7 +1,7 @@
 <template>
   <div class="grid">
     <div class="col-12 lg:col-6 lg:col-offset-3">
-      <h2>Your Access requests</h2>
+      <h2>Your Access Manager</h2>
       <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
         @click=" reloadFlag = !reloadFlag" />
     </div>
@@ -9,7 +9,8 @@
       <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
         class="p-card" style="margin: 5px">
         <Suspense>
-          <AccessReceipt :informationResourceURI="accessReceiptResource" @isReceiptForRequests="addRequestsToHandled" />
+          <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
+            :accessAuthzArchiveContainer="accessAuthzArchiveContainer" @isReceiptForRequests="addRequestsToHandled" />
           <template #fallback>
             <span>
               Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
@@ -108,6 +109,9 @@ const dataAuthzContainer = computed(() => storage.value + dataAuthzContainerName
 // create access authorization container if needed
 const accessAuthzContainerName = "authorization-registry"
 const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
+// create access authorization container if needed
+const accessAuthzArchiveContainerName = "authorization-archive"
+const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzArchiveContainerName + "/");
 // create access receipt container if needed
 const accessReceiptContainerName = "authorization-receipts"
 const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
@@ -131,6 +135,17 @@ watch(() => storage.value,
         toast.add({
           severity: "error",
           summary: "Failed to create Access Authorization Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+    getResource(accessAuthzArchiveContainer.value, authFetch.value)
+      .catch(() => createContainer(storage.value, accessAuthzArchiveContainerName, authFetch.value))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Access Receipt Container!",
           detail: err,
           life: 5000,
         });

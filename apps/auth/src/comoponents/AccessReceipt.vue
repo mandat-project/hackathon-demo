@@ -19,14 +19,29 @@
                     <div>
                         <strong>Access Authoriztions</strong>
                     </div>
-                    <!-- <Button @click="grantAccessReceipt" type="button" class="btn btn-primary mb-2"
-                        :disabled="associatedAccessReceipt !== ''">
-                        Authorize Request
-                    </Button> -->
+                    <div v-if="nonEmptyAuthorizations.length > 0" style="margin: 20px">
+                        <!-- TODO Freeze -->
+                        <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
+                class="btn btn-primary p-button-warning">
+                Freeze
+            </Button> -->
+                        <Button @click="revokeRights" type="button" class="btn btn-primary p-button-danger"
+                            :disabled="isWaitingForAccessAuthorizations">
+                            Revoke Authorizations
+                        </Button>
+                    </div>
+                    <div v-else>
+                        <Button disabled class="p-button-rounded p-button-danger"> Revoked </Button>
+                    </div>
                     <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization"
                         class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
                         <Suspense>
-                            <AccessAuthorization :resourceURI="accessAuthorization" />
+                            <AccessAuthorization :resourceURI="accessAuthorization"
+                                :accessAuthzContainer="accessAuthzContainer"
+                                :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+                                :receipRevokationTrigger="isWaitingForAccessAuthorizations"
+                                @updatedAccessAuthorization="updateAccessAuthorization"
+                                @isEmptyAuthorization="addToEmpty" />
                             <template #fallback>
                                 <span>
                                     Loading {{ accessAuthorization.split("/")[accessAuthorization.split("/").length - 1] }}
@@ -49,12 +64,13 @@ import {
     RDF,
     INTEROP,
     AUTH,
+    patchResource,
 } from "@shared/solid";
-import { Store } from "n3";
+import { NamedNode, Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, ref, watch } from "vue";
 
-const props = defineProps(["informationResourceURI"]);
+const props = defineProps(["informationResourceURI", "accessAuthzContainer", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
 const { authFetch } = useSolidSession();
 const toast = useToast();
@@ -87,4 +103,86 @@ watch(() => accessRequests.value,
             emit("isReceiptForRequests", accessRequests.value)
         }
     }, { immediate: true })
+
+// 
+// 
+// 
+
+/**
+ * ensure synchronous operations
+ * idea: disable children while running
+ */
+
+const emptyAuthorizations = ref([] as string[])
+function addToEmpty(emptyAuth: string) {
+    emptyAuthorizations.value.push(emptyAuth)
+}
+const nonEmptyAuthorizations = computed(() => accessAuthorizations.value.filter(auth => !emptyAuthorizations.value.includes(auth)))
+
+type replacedAuthorizationWrapper = { newAuthorization: string, oldAuthorization: string }
+const isWaitingForAccessAuthorizations = ref(false)
+const replacedAccessAuthorizations = ref([] as replacedAuthorizationWrapper[])
+async function revokeRights() {
+    // trigger data authorizations to revoke acls
+    isWaitingForAccessAuthorizations.value = true // use this as trigger
+    // wait on all the data authorizations
+    while (replacedAccessAuthorizations.value.length !== nonEmptyAuthorizations.value.length) {
+        console.log("Waiting for access authorizations to be revoked ...");
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    // then removeDataAuthroizations
+    await updateAccessAuthorizations(replacedAccessAuthorizations.value)
+    isWaitingForAccessAuthorizations.value = false
+}
+
+
+async function updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
+    replacedAccessAuthorizations.value.push({ newAuthorization, oldAuthorization })
+    // if this component is waiting, do nothing, we will handle this in batch 
+    if (isWaitingForAccessAuthorizations.value) { return }
+    // else, just remove this one data authorization from the event
+    return updateAccessAuthorizations([{ newAuthorization, oldAuthorization }])
+        .then(() => replacedAccessAuthorizations.value.length = 0) // reset replaced, because otherwise old URIs are in cache
+}
+
+async function updateAccessAuthorizations(replacedAuthorization: replacedAuthorizationWrapper[]) {
+    for (const pairAuthorization of replacedAuthorization) {
+        const patchBody = `
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix interop: <${INTEROP()}>.
+
+_:rename a solid:InsertDeletePatch;
+    solid:where {
+        ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
+    } ;
+    solid:inserts {
+        ?receipt interop:hasAccessAuthorization <${pairAuthorization.newAuthorization}> .
+    } ;
+    solid:deletes {
+        ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
+    } .`
+        await patchResource(props.informationResourceURI, patchBody, authFetch.value)
+            .then(() =>
+                toast.add({
+                    severity: "success",
+                    summary: "Access Receipt updated.",
+                    life: 5000,
+                })
+            )
+            .catch(
+                (err) => {
+                    toast.add({
+                        severity: "error",
+                        summary: "Error on patch Receipt!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                }
+            );
+        store.value.removeQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.oldAuthorization))
+        store.value.addQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.newAuthorization))
+    }
+    store.value = new Store(store.value.getQuads(null, null, null, null))
+}
 </script>

@@ -37,10 +37,13 @@
           <div>
             <strong>Access Need Groups</strong>
           </div>
-          <Button @click="grantAccessReceipt" type="button" class="btn btn-primary mb-2"
-            :disabled="associatedAccessReceipt !== ''">
-            Authorize Request
-          </Button>
+          <div>
+            <Button @click="grantAccessReceipt" type="button" class="btn btn-primary mb-2"
+              :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger">
+              Authorize Request
+            </Button>
+            <!-- TODO Decline -->
+          </div>
           <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup"
             class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
             <Suspense>
@@ -56,25 +59,6 @@
             </Suspense>
           </div>
         </div>
-
-        <!-- <div v-if="associatedAuthorization">
-    <Button @click="deleteAccessRights(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary p-button-danger" severity="danger"
-      :disabled="isAuthorizationEmpty(associatedAuthorization)">Revoke
-    </Button>
-    <Button @click="freezeAuthorizations(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary p-button-danger" severity="danger"
-      :disabled="isAuthorizationEmpty(associatedAuthorization)">Freeze
-    </Button>
-  </div>
-  <div v-else>
-    <Button @click="authorizeAndGrantAccess(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary">Authorize
-    </Button>
-    <Button @click="declineAndDontGrantAccess(accessRequest)" type="button" style="margin: 20px"
-      class="btn btn-primary p-button-danger" severity="danger">Deny
-    </Button>
-  </div> -->
         <!-- </div> -->
       </template>
     </Card>
@@ -162,8 +146,18 @@ async function grantAccessReceipt() {
   const accessReceiptLocation = createAccessReceipt(
     [...accessAuthorizations.values()]
   )
+  // emit to overview
   associatedAccessReceipt.value = (await accessReceiptLocation) + "#" + accessReceiptLocalName
   emit("createdAccessReceipt", props.informationResourceURI, associatedAccessReceipt.value)
+  // redirect if wanted
+  if (props.redirect) {
+    window.open(
+      `${props.redirect}?uri=${encodeURIComponent(
+        accessRequest
+      )}&result=1`,
+      "_self"
+    );
+  }
 }
 
 async function createAccessReceipt(
@@ -237,10 +231,6 @@ async function createAccessReceipt(
 
 
 
-
-
-
-
 /*
 async function declineAndDontGrantAccess(accessRequest: AccessRequest) {
   // find registries
@@ -257,15 +247,7 @@ async function declineAndDontGrantAccess(accessRequest: AccessRequest) {
       }
     }
   }
-  await setDemandIsAccessRequestGranted(accessRequest.fromDemand[0]); // naja, wenn da jemand mehr reinschreib, wirds komisch.
-  if (props.redirect) {
-    window.open(
-      `${props.redirect}?uri=${encodeURIComponent(
-        accessRequest.uri
-      )}&result=0`,
-      "_self"
-    );
-  }
+  
   getAuthorization(accessRequest)
     .then(authorization => { associatedAuthorization.value = authorization })
 }
@@ -367,77 +349,6 @@ async function createDeniedAccessAuthorization(
     );
 }
 
-async function createGrantedAccessAuthorization(
-  accessRequest: AccessRequest,
-  accessNeedGroup: AccessNeedGroup,
-  accessNeed: AccessNeed,
-  registrations: string[],
-  instances?: string[]
-) {
-  const date = new Date().toISOString();
-  const payload = `
-    @prefix interop:<${INTEROP()}> .
-    @prefix ldp:<${LDP()}> .
-    @prefix xsd:<${XSD()}> .
-    @prefix acl:<${ACL()}> .
-    @prefix auth:<${AUTH()}> .
-
-
-    <#accessAuthorization>
-      a interop:AccessAuthorization ;
-      auth:hasAccessRequest <${accessRequest.uri}> ;
-      interop:grantedBy <${sessionInfo.webId}> ;
-      interop:grantedAt "${date}"^^xsd:dateTime ;
-      interop:grantee ${accessRequest.fromSocialAgent
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
-      interop:hasAccessNeedGroup <${accessNeedGroup.uri}> ;
-      interop:hasDataAuthorization <#dataAuthorization> .
-
-    <#dataAuthorization>
-      a interop:DataAuthorization ;
-      interop:grantee ${accessRequest.fromSocialAgent
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
-      interop:registeredShapeTree ${accessNeed.registeredShapeTree
-      .map((t) => "<" + t + ">")
-      .join(", ")} ;
-      interop:accessMode ${accessNeed.accessMode
-      .map((mode) => "<" + mode + ">")
-      .join(", ")} ;
-      interop:scopeOfAuthorization  ${instances && instances.length > 0
-      ? "interop:SelectedFromRegistry"
-      : "interop:AllFromRegistry"
-    } ;
-      interop:hasDataRegistration ${registrations
-      .map((r) => "<" + r + ">")
-      .join(", ")} ;
-      ${instances && instances.length > 0
-      ? "interop:hasDataInstance " +
-      instances.map((i) => "<" + i + ">").join(", ") +
-      " ;"
-      : ""
-    }
-      interop:satisfiesAccessNeed <${accessNeed.uri}> .`;
-
-  await createResource(authorizationRegistry.value, payload, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Failed to create Access Authorization!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then(() =>
-      toast.add({
-        severity: "success",
-        summary: "Access Authorization created.",
-        life: 5000,
-      })
-    );
-}
 
 async function getAuthorization(accessRequest: AccessRequest): Promise<{ uri: string; store: Store } | null> {
 
@@ -505,76 +416,7 @@ function isAuthorizationEmpty(authorization: { uri: string; store: Store }): boo
   return authorization.store.getQuads(authorization.uri, INTEROP('hasDataAuthorization'), null, null).length == 0
 }
 
-async function updateAccessControlList(
-  accessTo: string,
-  agent: string[],
-  mode: string[]
-) {
-  const txt = await getResource(accessTo + ".acl", authFetch.value)
-    .catch((err) => {
-      const newACL = `\
-@prefix : <#>.
-@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix foaf: <http://xmlns.com/foaf/0.1/>.
-<#owner> a acl:Authorization;
-    acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-    acl:agent <${sessionInfo.webId}>;
-    acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-    acl:mode acl:Read, acl:Write, acl:Control.
-`;
-      return putResource(accessTo + ".acl", newACL, authFetch.value)
-        .then(() => getResource(accessTo + ".acl", authFetch.value))
-    })
-    .then((resp) => resp.text());
-  const acl = `\
-<#grantee>
-    a acl:Authorization;
-    acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-    acl:agent ${agent.map((a) => "<" + a + ">").join(", ")};
-    acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-    acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
-`;
 
-  await putResource(accessTo + ".acl", txt + acl, authFetch.value).catch(
-    (err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on put updateAccessControlList!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    }
-  );
-}
-
-async function setDemandIsAccessRequestGranted(fromDemandURI: string) {
-  getResource(fromDemandURI, authFetch.value)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on get Demand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then((txt) =>
-      txt.replace("isAccessRequestGranted false", "isAccessRequestGranted true")
-    )
-    .then((body) => {
-      return putResource(fromDemandURI, body, authFetch.value).catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Error on put Demand!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      });
-    });
-}
 
 async function deleteAccessRights(accessRequest: AccessRequest) {
   // PATCH ACL
