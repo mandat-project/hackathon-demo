@@ -62,8 +62,11 @@ watch(
     getAccessRequests(accessInbox.value).then((newAccessRequestResources) =>
       accessRequestInformationResources.value.push(...newAccessRequestResources)
     )
-    getAccessReceipts().then(newAccessReceipts =>
-      accessReceiptInformationResources.value.push(...newAccessReceipts))
+    if (!props.inspectedAccessRequestURI) {
+      // TODO Anzeige schön machen: Focus item (und vllt trotzdem im Hintergrund Dinge laden? Oder eigene Komponente für Focus/Übersicht)
+      getAccessReceipts().then(newAccessReceipts =>
+        accessReceiptInformationResources.value.push(...newAccessReceipts))
+    }
   }
 );
 
