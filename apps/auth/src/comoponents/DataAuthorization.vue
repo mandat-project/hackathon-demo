@@ -63,13 +63,12 @@ import {
     parseToN3,
     INTEROP,
     getAclResourceUri,
-    patchResource,
     getDataRegistrationContainers,
     ACL,
     RDF,
     putResource,
 } from "@shared/solid";
-import { NamedNode, Store, Writer } from "n3";
+import { Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, ref, watch } from "vue";
 
@@ -78,6 +77,7 @@ const emit = defineEmits(["revokedDataAuthorization"])
 const { authFetch, sessionInfo } = useSolidSession();
 const toast = useToast();
 
+// get data
 const store = ref(new Store());
 store.value = await getResource(props.resourceURI, authFetch.value)
     .catch((err) => {
@@ -94,6 +94,7 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     .then((parsedN3) => (store.value = parsedN3.store));
 
 
+// compute properties
 const accessModes = computed(() =>
     store.value.getObjects(props.resourceURI, INTEROP("accessMode"), null).map(t => t.value)
 )
@@ -118,16 +119,19 @@ const accessNeeds = computed(() =>
 
 
 //
-// 
+// revoke data authorization
 // 
 
+// check if this component is being triggered to revoke from its parent
 watch(() => props.groupRevokationTrigger, () => {
     if (props.groupRevokationTrigger) {
         revokeRights()
     }
 })
 
-
+/**
+ * Set the .acl for any resource required in this data authorization.
+ */
 async function revokeRights() {
     for (const shapeTree of registeredShapeTrees.value) {
         const dataRegistrations = await getDataRegistrationContainers(
@@ -155,6 +159,16 @@ async function revokeRights() {
     }
 }
 
+/**
+ * Remove the rights specified in this data authorization from the ACL
+ * Make sure that the owner has still control as well.
+ * 
+ * ? This could potentially be extracted to a library. 
+ * 
+ * @param accessTo 
+ * @param agents 
+ * @param modes 
+ */
 async function updateAccessControlListToDelete(
     accessTo: string,
     agents: string[],
@@ -197,8 +211,8 @@ async function updateAccessControlListToDelete(
 
     /**
      * We have two problems:
-     * * cannot have mutliple matches for where clause on server side
-     * * no matches for where clause on server side
+     * * cannot have mutliple matches for where clause on server side (results in status 409)
+     * * no matches for where clause on server side (results in status 409)
      * 
      */
 
@@ -235,8 +249,7 @@ async function updateAccessControlListToDelete(
         .filter(subj => (aclStore.getQuads(subj, ACL("agentGroup"), null, null).length == 0))
         .filter(subj => (aclStore.getQuads(subj, ACL("agentClass"), null, null).length == 0))
         .forEach(subj => aclStore.removeQuads(aclStore.getQuads(subj, null, null, null)))
-
-    // START cleanup
+    // END cleanup
 
     const n3Writer = new Writer();
     let aclBody = n3Writer.quadsToString(aclStore.getQuads(null, null, null, null))

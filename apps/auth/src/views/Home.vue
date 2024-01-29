@@ -50,12 +50,31 @@ const { accessInbox, storage } = useSolidProfile();
 
 const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
 
+// keep track of access requests
 const accessRequestInformationResources = ref<Array<string>>([]);
+// handled access requests (not to display)
 const handledAccessRequests = ref<Array<string>>([]);
+// only display not yet handled
 const displayAccessRequests = computed(() =>
   accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
 )
-const accessReceiptInformationResources = ref<Array<string>>([]);
+
+/**
+ * Retrieve access requests from an access inbox
+ * @param accessInbox 
+ */
+async function getAccessRequests(accessInbox: string) {
+  if (!accessInbox) {
+    return [];
+  }
+  if (props.inspectedAccessRequestURI) {
+    return [props.inspectedAccessRequestURI]
+  }
+  return await getContainerItems(accessInbox, authFetch.value)
+}
+
+// once an access inbox is available, get the access requests from there
+// except when we have a specific access request to focus on. then only focus on that one.
 watch(
   () => accessInbox.value,
   () => {
@@ -70,24 +89,28 @@ watch(
   }
 );
 
-async function getAccessRequests(accessInbox: string) {
-  if (!accessInbox) {
-    return [];
-  }
-  if (props.inspectedAccessRequestURI) {
-    return [props.inspectedAccessRequestURI]
-  }
-  return await getContainerItems(accessInbox, authFetch.value)
-}
 
+// keep track of access receipts
+const accessReceiptInformationResources = ref<Array<string>>([]);
+/**
+ * get the access receipts
+ */
+async function getAccessReceipts() {
+  return await getContainerItems(accessReceiptContainer.value, authFetch.value)
+}
+/**
+ * when an access receipt states that it is associated to specific access requests
+ * @param requests 
+ */
 function addRequestsToHandled(requests: string[]) {
   handledAccessRequests.value.push(...requests)
 }
 
-async function getAccessReceipts() {
-  return await getContainerItems(accessReceiptContainer.value, authFetch.value)
-}
 
+
+/**
+ * refresh view
+ */
 const reloadFlag = ref(false)
 watch(() => reloadFlag.value, () => {
   refreshAccessRequests()
@@ -105,6 +128,10 @@ async function refreshAccessReceipts() {
   accessReceiptInformationResources.value.push(...newListOfAccessReceipts);
 }
 
+/**
+ * ! Dirty hack for archiving stuff
+ * TODO re-visit.
+ */
 
 // create data authorization container if needed
 const dataAuthzContainerName = "data-authorizations"

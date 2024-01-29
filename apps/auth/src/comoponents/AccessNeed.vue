@@ -51,6 +51,7 @@ const emit = defineEmits(["createdDataAuthorization"])
 const { authFetch, sessionInfo } = useSolidSession();
 const toast = useToast();
 
+// get data
 const store = ref(new Store());
 store.value = await getResource(props.resourceURI, authFetch.value)
     .catch((err) => {
@@ -66,7 +67,7 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     .then((txt) => parseToN3(txt, props.resourceURI))
     .then((parsedN3) => (store.value = parsedN3.store));
 
-
+// compute properties to display
 const accessModes = computed(() =>
     store.value.getObjects(props.resourceURI, INTEROP("accessMode"), null).map(t => t.value)
 )
@@ -104,20 +105,27 @@ const dataInstances = computed(() =>
  */
 
 //  
-// 
+// Authorize Access Need
 // 
 
+// know which data authorization this component created
 const associatedDataAuthorization = ref("")
+
+// define a 'local name', i.e. the URI fragment, for the data authorization URI
+const dataAuthzLocalName = "dataAuthorization"
+
+// check if this component is being triggered to authorize by its parent component
 watch(() => props.groupAuthorizationTrigger, () => {
     // if data authorization already exists for this access need, do nothing
     if (associatedDataAuthorization.value) { return }
+    // else create a new data authroization and set acls
     grantDataAuthorization()
 })
 
-const dataAuthzLocalName = "dataAuthorization"
+
 
 /**
- * This function sets the .acl for any resource required in this access need.
+ * Set the .acl for any resource required in this access need.
  */
 async function grantDataAuthorization() {
     // find registries
@@ -149,7 +157,17 @@ async function grantDataAuthorization() {
     }
 }
 
-
+/**
+ * Create a new data authorization.
+ * 
+ * ? This could potentially be extracted to a library. 
+ * 
+ * @param forSocialAgents 
+ * @param registeredShapeTrees 
+ * @param accessModes 
+ * @param registrations 
+ * @param instances 
+ */
 async function createDataAuthorization(
     forSocialAgents: string[],
     registeredShapeTrees: string[],
@@ -211,6 +229,17 @@ async function createDataAuthorization(
         })
 }
 
+
+/**
+ * Set the .acl according to the access need.
+ * Make sure that the owner has still control as well.
+ * 
+ * ? This could potentially be extracted to a library. 
+ * 
+ * @param accessTo 
+ * @param agent 
+ * @param mode 
+ */
 async function updateAccessControlList(
     accessTo: string,
     agent: string[],

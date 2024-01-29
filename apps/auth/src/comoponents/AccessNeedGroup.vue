@@ -59,6 +59,7 @@ const emit = defineEmits(["createdAccessAuthorization"])
 const { authFetch, sessionInfo } = useSolidSession();
 const toast = useToast();
 
+// get data
 const store = ref(new Store());
 store.value = await getResource(props.resourceURI, authFetch.value)
     .catch((err) => {
@@ -74,6 +75,7 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     .then((txt) => parseToN3(txt, props.resourceURI))
     .then((parsedN3) => (store.value = parsedN3.store));
 
+// compute properties
 const accessNeeds = computed(() =>
     store.value.getObjects(props.resourceURI, INTEROP("hasAccessNeed"), null).map(t => t.value)
 )
@@ -136,23 +138,37 @@ const definitions = computed(() => {
 })
 
 // 
-// 
+// Authorize Access Need Group
 // 
 
+// know which access authorization this component created
+const associatedAccessAuthorization = ref("")
+
+// define a 'local name', i.e. the URI fragment, for the access authorization URI
 const accessAuthzLocalName = "accessAuthorization"
 
-const associatedAccessAuthorization = ref("")
+// check if this component is being triggered to authorize by its parent component
 watch(() => props.requestAuthorizationTrigger, () => {
+    // if access authorization already exists for this access need group, do nothing
     if (associatedAccessAuthorization.value) { return }
+    // else create a new access authroization and trigger children
     grantAccessAuthorization()
 })
 
+// keep track of which children access needs already created a data authorization
 const dataAuthorizations = reactive(new Map());
+// be able to trigger children to authoirze access needs (create data authorizations and set acls)
 const dataAuthorizationTrigger = ref(false)
+// when a child access need emits their authoirzed event, add the data authorization to the map to keep record
 function addToDataAuthorizations(accessNeed: string, dataAuthorization: string) {
     dataAuthorizations.set(accessNeed, dataAuthorization)
 }
 
+/**
+ * Trigger children access needs to create data authorization and set acls,
+ * wait until all children have done so, 
+ * then create access authorization and emit finish event to parent
+ */
 async function grantAccessAuthorization() {
     // trigger data grants
     dataAuthorizationTrigger.value = true
@@ -170,6 +186,14 @@ async function grantAccessAuthorization() {
     emit("createdAccessAuthorization", props.resourceURI, associatedAccessAuthorization.value)
 }
 
+/**
+ *  Create a new access authorization.
+ * 
+ * ? This could potentially be extracted to a library. 
+ * 
+ * @param forSocialAgents 
+ * @param dataAuthorizations 
+ */
 async function createAccessAuthorization(
     forSocialAgents: string[],
     dataAuthorizations: string[]

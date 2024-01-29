@@ -77,6 +77,7 @@ const emit = defineEmits(["isReceiptForRequests"])
 const { authFetch } = useSolidSession();
 const toast = useToast();
 
+// get data
 const store = ref(new Store());
 store.value = await getResource(props.informationResourceURI, authFetch.value)
     .catch((err) => {
@@ -92,6 +93,11 @@ store.value = await getResource(props.informationResourceURI, authFetch.value)
     .then((txt) => parseToN3(txt, props.informationResourceURI))
     .then((parsedN3) => (store.value = parsedN3.store));
 
+// compute properties to display
+
+
+// // because we get the information resource URI, we need to find the Access Receipt URI, in theory there could be many, 
+// // but we only consider the first access receipt in an information resource. Not perfect, but makes it easier right now.
 // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
 const accessReceipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)[0]
 
@@ -99,6 +105,7 @@ const provisionDates = computed(() => store.value.getObjects(accessReceipt, INTE
 const accessRequests = computed(() => store.value.getObjects(accessReceipt, AUTH("hasAccessRequest"), null).map(t => t.value))
 const accessAuthorizations = computed(() => store.value.getObjects(accessReceipt, INTEROP("hasAccessAuthorization"), null).map(t => t.value))
 
+// check which Access Request this Access Receipt belongs to and notify the parent component, e.g. for filtering.
 watch(() => accessRequests.value,
     () => {
         if (accessRequests.value.length > 0) {
@@ -107,47 +114,69 @@ watch(() => accessRequests.value,
     }, { immediate: true })
 
 // 
-// 
+// revoke access
 // 
 
+
+// keep track of which children access authorizations are alreay revoked
+const emptyAuthorizations = ref([] as string[])
+// when a child access authorization emits event that it is empty, i.e. revoked
+function addToEmpty(emptyAuth: string) {
+    emptyAuthorizations.value.push(emptyAuth)
+}
+// keep track of which children access authorizations did not yet revoked rights
+// to keep track if this access receipt is revoked yet
+const nonEmptyAuthorizations = computed(() => accessAuthorizations.value.filter(auth => !emptyAuthorizations.value.includes(auth)))
+
+
+// a quick and dirty wrapper for type-saftey
+type replacedAuthorizationWrapper = { newAuthorization: string, oldAuthorization: string }
 /**
  * ensure synchronous operations
  * idea: disable children while running
  */
-
-const emptyAuthorizations = ref([] as string[])
-function addToEmpty(emptyAuth: string) {
-    emptyAuthorizations.value.push(emptyAuth)
-}
-const nonEmptyAuthorizations = computed(() => accessAuthorizations.value.filter(auth => !emptyAuthorizations.value.includes(auth)))
-
-type replacedAuthorizationWrapper = { newAuthorization: string, oldAuthorization: string }
 const isWaitingForAccessAuthorizations = ref(false)
+// keep track of which children access authorizations already revoked rights
 const replacedAccessAuthorizations = ref([] as replacedAuthorizationWrapper[])
+/**
+ * Trigger children access authorizations to revoke rights,
+ * wait until all children have done so, 
+ * then upate this access receipt
+ */
 async function revokeRights() {
-    // trigger data authorizations to revoke acls
+    // trigger access authorizations to revoke rights
     isWaitingForAccessAuthorizations.value = true // use this as trigger
-    // wait on all the data authorizations
+    // wait on all the not yet empty (i.e. revoked) access authorizations
     while (replacedAccessAuthorizations.value.length !== nonEmptyAuthorizations.value.length) {
         console.log("Waiting for access authorizations to be revoked ...");
         await new Promise(resolve => setTimeout(resolve, 500));
     }
-    // then removeDataAuthroizations
-    await updateAccessAuthorizations(replacedAccessAuthorizations.value)
+    // then removeAccessAuthroizations
+    await updateAccessReceipt(replacedAccessAuthorizations.value)
     isWaitingForAccessAuthorizations.value = false
 }
 
-
+/**
+ * 
+ * When a children access authorization is updated, we add it to the replace list
+ * and update access receipt accrodingly
+ * @param newAuthorization 
+ * @param oldAuthorization 
+ */
 async function updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
     replacedAccessAuthorizations.value.push({ newAuthorization, oldAuthorization })
     // if this component is waiting, do nothing, we will handle this in batch 
     if (isWaitingForAccessAuthorizations.value) { return }
     // else, just remove this one data authorization from the event
-    return updateAccessAuthorizations([{ newAuthorization, oldAuthorization }])
+    return updateAccessReceipt([{ newAuthorization, oldAuthorization }])
         .then(() => replacedAccessAuthorizations.value.length = 0) // reset replaced, because otherwise old URIs are in cache
 }
 
-async function updateAccessAuthorizations(replacedAuthorization: replacedAuthorizationWrapper[]) {
+/**
+ * Update the access receipt, replace the access authorizations as queued up in the list
+ * @param replacedAuthorization 
+ */
+async function updateAccessReceipt(replacedAuthorization: replacedAuthorizationWrapper[]) {
     for (const pairAuthorization of replacedAuthorization) {
         const patchBody = `
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.

@@ -81,6 +81,7 @@ const emit = defineEmits(["updatedAccessAuthorization", "isEmptyAuthorization"])
 const { authFetch } = useSolidSession();
 const toast = useToast();
 
+// get data
 const store = ref(new Store());
 store.value = await getResource(props.resourceURI, authFetch.value)
     .catch((err) => {
@@ -96,21 +97,26 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     .then((txt) => parseToN3(txt, props.resourceURI))
     .then((parsedN3) => (store.value = parsedN3.store));
 
+
+// compute properties
 const grantDates = computed(() => store.value.getObjects(props.resourceURI, INTEROP('grantedAt'), null).map(t => t.value))
 const grantees = computed(() => store.value.getObjects(props.resourceURI, INTEROP('grantee'), null).map(t => t.value))
 const accessNeedGroups = computed(() => store.value.getObjects(props.resourceURI, INTEROP('hasAccessNeedGroup'), null).map(t => t.value))
 const dataAuthorizations = computed(() => store.value.getObjects(props.resourceURI, INTEROP('hasDataAuthorization'), null).map(t => t.value))
 
 // 
-// 
+// revoke access authorization
 // 
 
+// check if this component is being triggered to revoke from its parent
 watch(() => props.receipRevokationTrigger, () => {
     if (props.receipRevokationTrigger) {
         revokeRights()
     }
 })
 
+// check if this component is an revoked authorization, 
+// i.e. it is an access authoirzation that does not link to any data authorization
 watch(() => dataAuthorizations.value,
     () => {
         if (dataAuthorizations.value.length == 0) {
@@ -123,7 +129,13 @@ watch(() => dataAuthorizations.value,
  * idea: disable children while running
  */
 const isWaitingForDataAuthorizations = ref(false)
+// keep track of which children data authorizations already revoked rights
 const revokedDataAuthorizations = ref([] as string[])
+/**
+ * Trigger children data authorizations to revoke rights,
+ * wait until all children have done so, 
+ * then create new access authorization to replace this current one and emit finish event to parent
+ */
 async function revokeRights() {
     // trigger data authorizations to revoke acls
     isWaitingForDataAuthorizations.value = true // use this as trigger
@@ -133,20 +145,34 @@ async function revokeRights() {
         await new Promise(resolve => setTimeout(resolve, 500));
     }
     // then removeDataAuthroizations
-    await removeDataAuthorizations(dataAuthorizations.value)
+    await removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations.value)
     isWaitingForDataAuthorizations.value = false
 }
 
-
+/**
+ * When a children data authorization is revoked, we add it to the revoked list
+ * and create a new and updated access authorization to replace this current one.
+ * @param dataAuthorization to remove from the current access authorization
+ */
 async function removeDataAuthorization(dataAuthorization: string) {
     revokedDataAuthorizations.value.push(dataAuthorization)
     // if this component is waiting, do nothing, we will handle this in batch 
     if (isWaitingForDataAuthorizations.value) { return }
     // else, just remove this one data authorization from the event
-    return removeDataAuthorizations([dataAuthorization])
+    return removeDataAuthorizationsAndCreateNewAccessAuthorization([dataAuthorization])
 }
 
-async function removeDataAuthorizations(dataAuthorizations: string[]) {
+/**
+ * create a new and updated access authorization to replace this current one, 
+ * given the data authorizations to remove from the current access authorization
+ * 
+ * emit to the parent component, i.e. an Access Receipt, that there is a new access authorization to link to
+ * 
+ * ? this could be refractored, indeed, to make it nicer but it works.
+ * 
+ * @param dataAuthorizations to remove from the current access authorization
+ */
+async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations: string[]) {
     // copy authorization to archive
     const archivedLocation = await createResource(props.accessAuthzArchiveContainer, "", authFetch.value)
         .then((loc) => {
@@ -239,6 +265,7 @@ async function removeDataAuthorizations(dataAuthorizations: string[]) {
             new NamedNode(newLocation + "#" + accessAuthzLocale),
             new NamedNode(INTEROP("hasDataAuthorization")),
             dataAuthorization, null))
+        // Notice: this is also the place, where you could update a data authorization, e.g. for freeze
     }
     // write to new authorization
     copyBody = n3Writer.quadsToString(store.value.getQuads(null, null, null, null))

@@ -54,7 +54,7 @@
               <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"
                 :accessAuthzContainer="accessAuthzContainer" :dataAuthzContainer="dataAuthzContainer"
                 :requestAuthorizationTrigger="accessAuthorizationTrigger"
-                @createdAccessAuthorization="addToDataAuthorizations" />
+                @createdAccessAuthorization="addToAccessAuthorizations" />
               <template #fallback>
                 <span>
                   Loading {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
@@ -92,6 +92,7 @@ const emit = defineEmits(["createdAccessReceipt"])
 const { authFetch } = useSolidSession();
 const toast = useToast();
 
+// get data
 const store = ref(new Store());
 store.value = await getResource(props.informationResourceURI, authFetch.value)
   .catch((err) => {
@@ -107,6 +108,10 @@ store.value = await getResource(props.informationResourceURI, authFetch.value)
   .then((txt) => parseToN3(txt, props.informationResourceURI))
   .then((parsedN3) => (store.value = parsedN3.store));
 
+// compute properties to display
+
+// // because we get the information resource URI, we need to find the Access Request URI, in theory there could be many, 
+// // but we only consider the first access request in an information resource. Not perfect, but makes it easier right now.
 // const requests = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)
 const accessRequest = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
 
@@ -125,20 +130,23 @@ const accessNeedGroups = computed(() => store.value.getObjects(accessRequest, IN
 
 
 // 
-// 
+// authorize access request
 // 
 
-const accessReceiptLocalName = "accessReceipt"
-
+// know which access receipt this component created
 const associatedAccessReceipt = ref("")
 
+// define a 'local name', i.e. the URI fragment, for the access receipt URI
+const accessReceiptLocalName = "accessReceipt"
+
+// keep track of which children access needs already created a access authorization
 const accessAuthorizations = reactive(new Map());
+// be able to trigger children to authoirze access need groups (create access authorizations and trigger their children)
 const accessAuthorizationTrigger = ref(false)
-function addToDataAuthorizations(accessNeedGroup: string, accessAuthorization: string) {
+// when a child access need emits their authoirzed event, add the access authorization to the map to keep record
+function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization: string) {
   accessAuthorizations.set(accessNeedGroup, accessAuthorization)
 }
-
-const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
 
 /**
  * TODO manage partial decision
@@ -148,7 +156,16 @@ const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
  * 
  * <!-- DO NOT REMOVE -->
  */
+const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
 
+
+/**
+* Trigger children access need groups to create access authorization and trigger their children,
+* wait until all children have done so, 
+* then create access receipt and emit finish event to parent,
+* if redirect present,
+* redirect
+*/
 async function grantWithAccessReceipt() {
   // trigger access grants
   accessAuthorizationTrigger.value = true
@@ -175,6 +192,13 @@ async function grantWithAccessReceipt() {
   }
 }
 
+/**
+ *  Create a new access receipt.
+ * 
+ * ? This could potentially be extracted to a library. 
+ * 
+ * @param accessAuthorizations 
+ */
 async function createAccessReceipt(
   accessAuthorizations: string[]
 ) {
@@ -218,6 +242,10 @@ async function createAccessReceipt(
 
 }
 
+/**
+ * Decline a request.
+ * Create an access receipt that does not link to any access authorizations
+ */
 async function declineWithAccessReceipt() {
   // create receipt
   const accessReceiptLocation = createAccessReceipt([])
