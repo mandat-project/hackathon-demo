@@ -1,6 +1,8 @@
 <template>
     <div class="accessAuthorization">
-        {{ resourceURI }}
+        <a :href="resourceURI">
+          {{ resourceURI.split("/").pop() }}
+        </a>
         <div>
             <strong>Grant date: </strong>
             <div v-for="date in grantDates" :key="date">
@@ -16,7 +18,7 @@
         <div>
             <strong>Access Need Groups: </strong>
             <a v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup" :href="accessNeedGroup">
-                {{ accessNeedGroup }}
+                {{ accessNeedGroup.split("/").pop() }}
             </a>
         </div>
         <div class="p-card" style="margin: 5px" v-if="dataAuthorizations.length > 0">
@@ -104,9 +106,9 @@ const grantees = computed(() => store.value.getObjects(props.resourceURI, INTERO
 const accessNeedGroups = computed(() => store.value.getObjects(props.resourceURI, INTEROP('hasAccessNeedGroup'), null).map(t => t.value))
 const dataAuthorizations = computed(() => store.value.getObjects(props.resourceURI, INTEROP('hasDataAuthorization'), null).map(t => t.value))
 
-// 
+//
 // revoke access authorization
-// 
+//
 
 // check if this component is being triggered to revoke from its parent
 watch(() => props.receipRevokationTrigger, () => {
@@ -115,7 +117,7 @@ watch(() => props.receipRevokationTrigger, () => {
     }
 })
 
-// check if this component is an revoked authorization, 
+// check if this component is an revoked authorization,
 // i.e. it is an access authoirzation that does not link to any data authorization
 watch(() => dataAuthorizations.value,
     () => {
@@ -133,7 +135,7 @@ const isWaitingForDataAuthorizations = ref(false)
 const revokedDataAuthorizations = ref([] as string[])
 /**
  * Trigger children data authorizations to revoke rights,
- * wait until all children have done so, 
+ * wait until all children have done so,
  * then create new access authorization to replace this current one and emit finish event to parent
  */
 async function revokeRights() {
@@ -156,20 +158,20 @@ async function revokeRights() {
  */
 async function removeDataAuthorization(dataAuthorization: string) {
     revokedDataAuthorizations.value.push(dataAuthorization)
-    // if this component is waiting, do nothing, we will handle this in batch 
+    // if this component is waiting, do nothing, we will handle this in batch
     if (isWaitingForDataAuthorizations.value) { return }
     // else, just remove this one data authorization from the event
     return removeDataAuthorizationsAndCreateNewAccessAuthorization([dataAuthorization])
 }
 
 /**
- * create a new and updated access authorization to replace this current one, 
+ * create a new and updated access authorization to replace this current one,
  * given the data authorizations to remove from the current access authorization
- * 
+ *
  * emit to the parent component, i.e. an Access Receipt, that there is a new access authorization to link to
- * 
+ *
  * ? this could be refractored, indeed, to make it nicer but it works.
- * 
+ *
  * @param dataAuthorizations to remove from the current access authorization
  */
 async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations: string[]) {

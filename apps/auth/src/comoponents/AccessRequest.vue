@@ -5,9 +5,9 @@
         <!-- <div class="accessRequest" v-for="request in requests" :key="request"> -->
         <div>
           <strong>Purpose: </strong>
-          <span v-for="label in purposes" :key="label">
-            {{ label }}
-          </span>
+          <a v-for="label in purposes" :key="label" :href="label">
+            {{ label.split('#').pop() }}
+          </a>
         </div>
         <div>
           <strong>To: </strong>
@@ -27,10 +27,10 @@
             {{ grantee }}
           </a>
         </div>
-        <div>
+        <div v-if="fromDemands.length > 0">
           <strong>From Demand: </strong>
           <a v-for="demand in fromDemands" :key="demand" :href="demand">
-            {{ demand }}
+            {{ demand.split("/").pop() }}
           </a>
         </div>
         <div class="p-card" style="margin: 5px">
@@ -39,22 +39,22 @@
           </div>
           <div>
             <Button @click="grantWithAccessReceipt" type="button" class="btn btn-primary m-2"
-              :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger">
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger">
               Authorize Request
             </Button>
             <Button @click="declineWithAccessReceipt" type="button" class="btn btn-primary m-2 p-button-danger"
-              :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized">
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized">
               Decline Request
             </Button>
             <!-- TODO Decline -->
           </div>
           <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup"
-            class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
+               class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
             <Suspense>
               <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"
-                :accessAuthzContainer="accessAuthzContainer" :dataAuthzContainer="dataAuthzContainer"
-                :requestAuthorizationTrigger="accessAuthorizationTrigger"
-                @createdAccessAuthorization="addToAccessAuthorizations" />
+                               :accessAuthzContainer="accessAuthzContainer" :dataAuthzContainer="dataAuthzContainer"
+                               :requestAuthorizationTrigger="accessAuthorizationTrigger"
+                               @createdAccessAuthorization="addToAccessAuthorizations" />
               <template #fallback>
                 <span>
                   Loading {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
@@ -110,7 +110,7 @@ store.value = await getResource(props.informationResourceURI, authFetch.value)
 
 // compute properties to display
 
-// // because we get the information resource URI, we need to find the Access Request URI, in theory there could be many, 
+// // because we get the information resource URI, we need to find the Access Request URI, in theory there could be many,
 // // but we only consider the first access request in an information resource. Not perfect, but makes it easier right now.
 // const requests = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)
 const accessRequest = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
@@ -129,9 +129,9 @@ const fromDemands = computed(() => store.value.getObjects(accessRequest, CREDIT(
 const accessNeedGroups = computed(() => store.value.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
 
 
-// 
+//
 // authorize access request
-// 
+//
 
 // know which access receipt this component created
 const associatedAccessReceipt = ref("")
@@ -151,21 +151,21 @@ function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization:
 /**
  * TODO manage partial decision
  * related to denying single things
- * 
+ *
  * see the commented buttons of access need and group
- * 
+ *
  * <!-- DO NOT REMOVE -->
  */
 const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
 
 
 /**
-* Trigger children access need groups to create access authorization and trigger their children,
-* wait until all children have done so, 
-* then create access receipt and emit finish event to parent,
-* if redirect present,
-* redirect
-*/
+ * Trigger children access need groups to create access authorization and trigger their children,
+ * wait until all children have done so,
+ * then create access receipt and emit finish event to parent,
+ * if redirect present,
+ * redirect
+ */
 async function grantWithAccessReceipt() {
   // trigger access grants
   accessAuthorizationTrigger.value = true
@@ -194,10 +194,10 @@ async function grantWithAccessReceipt() {
 
 /**
  *  Create a new access receipt.
- * 
- * ? This could potentially be extracted to a library. 
- * 
- * @param accessAuthorizations 
+ *
+ * ? This could potentially be extracted to a library.
+ *
+ * @param accessAuthorizations
  */
 async function createAccessReceipt(
   accessAuthorizations: string[]
@@ -216,19 +216,19 @@ async function createAccessReceipt(
     payload += `
     ;
       interop:hasAccessAuthorization ${accessAuthorizations
-        .map((t) => "<" + t + ">")
-        .join(", ")}`;
+      .map((t) => "<" + t + ">")
+      .join(", ")}`;
   }
   payload += ' .'
   return createResource(props.accessReceiptContainer, payload, authFetch.value)
     .then((loc) => {
-      toast.add({
-        severity: "success",
-        summary: "Access Receipt created.",
-        life: 5000,
-      })
-      return getLocationHeader(loc)
-    }
+        toast.add({
+          severity: "success",
+          summary: "Access Receipt created.",
+          life: 5000,
+        })
+        return getLocationHeader(loc)
+      }
     )
     .catch((err) => {
       toast.add({
@@ -263,4 +263,4 @@ async function declineWithAccessReceipt() {
   }
 }
 
-</script> 
+</script>

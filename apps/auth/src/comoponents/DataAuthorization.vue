@@ -3,7 +3,7 @@
         <div>
             <strong>Access Needs: </strong>
             <a v-for="accessNeed in accessNeeds" :key="accessNeed" :href="accessNeed">
-                {{ accessNeed }}
+                {{ accessNeed.split("/").pop() }}
             </a>
         </div>
         <div>
@@ -15,7 +15,7 @@
         <div>
             <strong>Authorized Data: </strong>
             <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
-                {{ shapeTree }}
+                {{ shapeTree.split("/").pop() }}
             </a>
         </div>
         <div>
@@ -27,7 +27,7 @@
         <div>
             <strong>Data Registrations: </strong>
             <a v-for="dataRegistration in dataRegistrations" :key="dataRegistration" :href="dataRegistration">
-                {{ dataRegistration }}
+                {{ dataRegistration.split("/").reverse()[1] }}
             </a>
         </div>
         <div v-if="dataInstances.length > 0">
@@ -120,7 +120,7 @@ const accessNeeds = computed(() =>
 
 //
 // revoke data authorization
-// 
+//
 
 // check if this component is being triggered to revoke from its parent
 watch(() => props.groupRevokationTrigger, () => {
@@ -162,12 +162,12 @@ async function revokeRights() {
 /**
  * Remove the rights specified in this data authorization from the ACL
  * Make sure that the owner has still control as well.
- * 
- * ? This could potentially be extracted to a library. 
- * 
- * @param accessTo 
- * @param agents 
- * @param modes 
+ *
+ * ? This could potentially be extracted to a library.
+ *
+ * @param accessTo
+ * @param agents
+ * @param modes
  */
 async function updateAccessControlListToDelete(
     accessTo: string,
@@ -213,7 +213,7 @@ async function updateAccessControlListToDelete(
      * We have two problems:
      * * cannot have mutliple matches for where clause on server side (results in status 409)
      * * no matches for where clause on server side (results in status 409)
-     * 
+     *
      */
 
     //  therefore...
@@ -243,7 +243,7 @@ async function updateAccessControlListToDelete(
         }
     }
 
-    // START cleanup of authorizations where no agent is attached 
+    // START cleanup of authorizations where no agent is attached
     aclStore.getSubjects(RDF("type"), ACL("Authorization"), null)
         .filter(subj => (aclStore.getQuads(subj, ACL("agent"), null, null).length == 0))
         .filter(subj => (aclStore.getQuads(subj, ACL("agentGroup"), null, null).length == 0))

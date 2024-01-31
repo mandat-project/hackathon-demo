@@ -3,13 +3,13 @@
         <div>
             <strong>Required Data: </strong>
             <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
-                {{ shapeTree }}
+                {{ shapeTree.split("#").pop() }}
             </a>
         </div>
         <div v-if="dataInstances.length > 0">
             <strong>Required Instances: </strong>
             <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
-                {{ dataInstance }}
+                {{ dataInstance.split("/").pop() }}
             </a>
         </div>
         <div>
@@ -81,32 +81,32 @@ const dataInstances = computed(() =>
 /**
  * ! SPEC - data model problem:
  * The access need does not link to the access description set or similar.
- * 
+ *
  * The access need group only links to the access description set, but from that set, there is no link to any further description.
  * That is, based on an access request, we can not discover its description.
- * 
+ *
  * So, we cannot retrieve labels and definitions for acceess needs via graph traversal.
- * 
+ *
  * One could easily solve such problems by directly describing the access need.
  * Such as it would be correct.
- * 
+ *
  * The way the spec handles description is incorrect:
- * 
+ *
  * <#accessNeedGroupDescription>
       a interop:AccessNeedGroupDescription ;
       interop:inAccessDescriptionSet <#accessDescriptionSet> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
       skos:prefLabel "Zugriff Offer und Order container"@de ;
 
- * means that there is something of type AccessNeedGroupDescription, 
+ * means that there is something of type AccessNeedGroupDescription,
  * and the preferred label of that description is "Zugriff ..."
- * 
+ *
  * Isnt that the preferred label of the access need group? Why the level of indirection?
  */
 
-//  
+//
 // Authorize Access Need
-// 
+//
 
 // know which data authorization this component created
 const associatedDataAuthorization = ref("")
@@ -159,14 +159,14 @@ async function grantDataAuthorization() {
 
 /**
  * Create a new data authorization.
- * 
- * ? This could potentially be extracted to a library. 
- * 
- * @param forSocialAgents 
- * @param registeredShapeTrees 
- * @param accessModes 
- * @param registrations 
- * @param instances 
+ *
+ * ? This could potentially be extracted to a library.
+ *
+ * @param forSocialAgents
+ * @param registeredShapeTrees
+ * @param accessModes
+ * @param registrations
+ * @param instances
  */
 async function createDataAuthorization(
     forSocialAgents: string[],
@@ -233,12 +233,12 @@ async function createDataAuthorization(
 /**
  * Set the .acl according to the access need.
  * Make sure that the owner has still control as well.
- * 
- * ? This could potentially be extracted to a library. 
- * 
- * @param accessTo 
- * @param agent 
- * @param mode 
+ *
+ * ? This could potentially be extracted to a library.
+ *
+ * @param accessTo
+ * @param agent
+ * @param mode
  */
 async function updateAccessControlList(
     accessTo: string,
@@ -251,7 +251,7 @@ async function updateAccessControlList(
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 
 _:rename a solid:InsertDeletePatch;
-    solid:inserts { 
+    solid:inserts {
         <#owner> a acl:Authorization;
             acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:agent <${sessionInfo.webId}>;

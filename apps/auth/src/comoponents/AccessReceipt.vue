@@ -12,7 +12,7 @@
                 <div>
                     <strong>For Access Request: </strong>
                     <a v-for="accessRequest in accessRequests" :key="accessRequest" :href="accessRequest">
-                        {{ accessRequest }}
+                        {{ accessRequest.split("/").pop() }}
                     </a>
                 </div>
                 <div class="p-card" style="margin: 5px">
@@ -56,7 +56,7 @@
         </Card>
     </div>
 </template>
-  
+
 <script setup lang="ts">
 import AccessAuthorization from "../comoponents/AccessAuthorization.vue";
 import { useSolidSession } from "@shared/composables";
@@ -96,7 +96,7 @@ store.value = await getResource(props.informationResourceURI, authFetch.value)
 // compute properties to display
 
 
-// // because we get the information resource URI, we need to find the Access Receipt URI, in theory there could be many, 
+// // because we get the information resource URI, we need to find the Access Receipt URI, in theory there could be many,
 // // but we only consider the first access receipt in an information resource. Not perfect, but makes it easier right now.
 // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
 const accessReceipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)[0]
@@ -113,9 +113,9 @@ watch(() => accessRequests.value,
         }
     }, { immediate: true })
 
-// 
+//
 // revoke access
-// 
+//
 
 
 // keep track of which children access authorizations are alreay revoked
@@ -140,7 +140,7 @@ const isWaitingForAccessAuthorizations = ref(false)
 const replacedAccessAuthorizations = ref([] as replacedAuthorizationWrapper[])
 /**
  * Trigger children access authorizations to revoke rights,
- * wait until all children have done so, 
+ * wait until all children have done so,
  * then upate this access receipt
  */
 async function revokeRights() {
@@ -157,15 +157,15 @@ async function revokeRights() {
 }
 
 /**
- * 
+ *
  * When a children access authorization is updated, we add it to the replace list
  * and update access receipt accrodingly
- * @param newAuthorization 
- * @param oldAuthorization 
+ * @param newAuthorization
+ * @param oldAuthorization
  */
 async function updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
     replacedAccessAuthorizations.value.push({ newAuthorization, oldAuthorization })
-    // if this component is waiting, do nothing, we will handle this in batch 
+    // if this component is waiting, do nothing, we will handle this in batch
     if (isWaitingForAccessAuthorizations.value) { return }
     // else, just remove this one data authorization from the event
     return updateAccessReceipt([{ newAuthorization, oldAuthorization }])
@@ -174,7 +174,7 @@ async function updateAccessAuthorization(newAuthorization: string, oldAuthorizat
 
 /**
  * Update the access receipt, replace the access authorizations as queued up in the list
- * @param replacedAuthorization 
+ * @param replacedAuthorization
  */
 async function updateAccessReceipt(replacedAuthorization: replacedAuthorizationWrapper[]) {
     for (const pairAuthorization of replacedAuthorization) {
