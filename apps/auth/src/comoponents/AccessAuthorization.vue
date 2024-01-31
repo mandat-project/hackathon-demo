@@ -66,7 +66,7 @@ import {
     deleteResource,
     XSD,
 } from "@shared/solid";
-import { DataFactory, Literal, NamedNode, Store, Writer } from "n3";
+import { DataFactory, NamedNode, Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, ref, watch } from "vue";
 
