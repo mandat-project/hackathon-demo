@@ -506,8 +506,9 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
     <#accessRequest>
       a interop:AccessRequest ;
       gdprp:purposeForProcessing gdprp:contractualObligations ;
-      interop:fromSocialAgent <${forAgent}> ;
+      interop:fromSocialAgent <${webId!.value}> ;
       interop:toSocialAgent  <${webId!.value}> ;
+      interop:forSocialAgent <${forAgent}> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
       credit:fromDemand <${props.demandUri}>.
 

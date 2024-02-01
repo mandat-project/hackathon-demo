@@ -12,19 +12,19 @@
         <div>
           <strong>To: </strong>
           <a v-for="recipient in toSocialAgents" :key="recipient" :href="recipient">
-            {{ recipient }}
+            {{ recipientName }}
           </a>
         </div>
         <div>
           <strong>From: </strong>
           <a v-for="sender in fromSocialAgents" :key="sender" :href="sender">
-            {{ sender }}
+            {{ senderName }}
           </a>
         </div>
         <div>
           <strong>For: </strong>
           <a v-for="grantee in forSocialAgents" :key="grantee" :href="grantee">
-            {{ grantee }}
+            {{ granteeName }}
           </a>
         </div>
         <div v-if="fromDemands.length > 0">
@@ -81,7 +81,7 @@ import {
   GDPRP,
   createResource,
   CREDIT,
-  AUTH, getLocationHeader,
+  AUTH, getLocationHeader, FOAF,
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
@@ -92,9 +92,15 @@ const emit = defineEmits(["createdAccessReceipt"])
 const { authFetch } = useSolidSession();
 const toast = useToast();
 
+const state = reactive({
+  informationResourceStore: new Store(),
+  recipientStore: new Store(),
+  senderStore: new Store(),
+  granteeStore: new Store()
+});
+
 // get data
-const store = ref(new Store());
-store.value = await getResource(props.informationResourceURI, authFetch.value)
+state.informationResourceStore = await getResource(props.informationResourceURI, authFetch.value)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -106,28 +112,74 @@ store.value = await getResource(props.informationResourceURI, authFetch.value)
   })
   .then((resp) => resp.text())
   .then((txt) => parseToN3(txt, props.informationResourceURI))
-  .then((parsedN3) => (store.value = parsedN3.store));
+  .then((parsedN3) => (state.informationResourceStore = parsedN3.store));
 
 // compute properties to display
 
 // // because we get the information resource URI, we need to find the Access Request URI, in theory there could be many,
 // // but we only consider the first access request in an information resource. Not perfect, but makes it easier right now.
 // const requests = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)
-const accessRequest = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
+const accessRequest = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
 
-const purposes = computed(() => store.value.getObjects(accessRequest, GDPRP('purposeForProcessing'), null).map(t => t.value))
-const toSocialAgents = computed(() => store.value.getObjects(accessRequest, INTEROP("toSocialAgent"), null).map(t => t.value))
-const fromSocialAgents = computed(() => store.value.getObjects(accessRequest, INTEROP("fromSocialAgent"), null).map(t => t.value))
+const purposes = computed(() => state.informationResourceStore.getObjects(accessRequest, GDPRP('purposeForProcessing'), null).map(t => t.value))
+const toSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("toSocialAgent"), null).map(t => t.value))
+const fromSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("fromSocialAgent"), null).map(t => t.value))
 const forSocialAgents = computed(() => {
-  const forSocialAgentsDirect = store.value.getObjects(accessRequest, INTEROP("forSocialAgent"), null).map(t => t.value)
+  const forSocialAgentsDirect = state.informationResourceStore.getObjects(accessRequest, INTEROP("forSocialAgent"), null).map(t => t.value)
   if (forSocialAgentsDirect.length > 0) {
     return forSocialAgentsDirect
   }
   return fromSocialAgents.value
 })
-const fromDemands = computed(() => store.value.getObjects(accessRequest, CREDIT("fromDemand"), null).map(t => t.value))
-const accessNeedGroups = computed(() => store.value.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
+const fromDemands = computed(() => state.informationResourceStore.getObjects(accessRequest, CREDIT("fromDemand"), null).map(t => t.value))
+const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
 
+// get access request address data
+state.recipientStore = await getResource(toSocialAgents.value[0], authFetch.value)
+  .catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Could not get recipient!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  })
+  .then((resp) => resp.text())
+  .then((txt) => parseToN3(txt, toSocialAgents.value[0]))
+  .then((parsedN3) => (state.recipientStore = parsedN3.store));
+
+state.senderStore = await getResource(fromSocialAgents.value[0], authFetch.value)
+  .catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Could not get sender!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  })
+  .then((resp) => resp.text())
+  .then((txt) => parseToN3(txt, fromSocialAgents.value[0]))
+  .then((parsedN3) => (state.senderStore = parsedN3.store));
+
+state.granteeStore = await getResource(forSocialAgents.value[0], authFetch.value)
+  .catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Could not get grantee!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  })
+  .then((resp) => resp.text())
+  .then((txt) => parseToN3(txt, forSocialAgents.value[0]))
+  .then((parsedN3) => (state.granteeStore = parsedN3.store));
+
+const recipientName = computed(() => state.recipientStore.getObjects(null, FOAF("name"), null)[0]?.value);
+const senderName = computed(() => state.senderStore.getObjects(null, FOAF("name"), null)[0]?.value);
+const granteeName = computed(() => state.granteeStore.getObjects(null, FOAF("name"), null)[0]?.value);
 
 //
 // authorize access request

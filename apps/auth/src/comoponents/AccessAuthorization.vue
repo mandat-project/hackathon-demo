@@ -12,7 +12,7 @@
         <div>
             <strong>Grantees: </strong>
             <a v-for="grantee in grantees" :key="grantee" :href="grantee">
-                {{ grantee }}
+                {{ granteeName }}
             </a>
         </div>
         <div>
@@ -57,18 +57,18 @@
 import DataAuthorization from "../comoponents/DataAuthorization.vue";
 import { useSolidSession } from "@shared/composables";
 import {
-    getResource,
-    parseToN3,
-    INTEROP,
-    createResource,
-    getLocationHeader,
-    putResource,
-    deleteResource,
-    XSD,
+  getResource,
+  parseToN3,
+  INTEROP,
+  createResource,
+  getLocationHeader,
+  putResource,
+  deleteResource,
+  XSD, FOAF,
 } from "@shared/solid";
 import { DataFactory, NamedNode, Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
-import { computed, ref, watch } from "vue";
+import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps([
     "resourceURI",
@@ -83,9 +83,13 @@ const emit = defineEmits(["updatedAccessAuthorization", "isEmptyAuthorization"])
 const { authFetch } = useSolidSession();
 const toast = useToast();
 
+const state = reactive({
+  resourceStore: new Store(),
+  granteeStore: new Store()
+});
+
 // get data
-const store = ref(new Store());
-store.value = await getResource(props.resourceURI, authFetch.value)
+state.resourceStore = await getResource(props.resourceURI, authFetch.value)
     .catch((err) => {
         toast.add({
             severity: "error",
@@ -97,14 +101,31 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     })
     .then((resp) => resp.text())
     .then((txt) => parseToN3(txt, props.resourceURI))
-    .then((parsedN3) => (store.value = parsedN3.store));
+    .then((parsedN3) => (state.resourceStore = parsedN3.store));
 
 
 // compute properties
-const grantDates = computed(() => store.value.getObjects(props.resourceURI, INTEROP('grantedAt'), null).map(t => t.value))
-const grantees = computed(() => store.value.getObjects(props.resourceURI, INTEROP('grantee'), null).map(t => t.value))
-const accessNeedGroups = computed(() => store.value.getObjects(props.resourceURI, INTEROP('hasAccessNeedGroup'), null).map(t => t.value))
-const dataAuthorizations = computed(() => store.value.getObjects(props.resourceURI, INTEROP('hasDataAuthorization'), null).map(t => t.value))
+const grantDates = computed(() => state.resourceStore.getObjects(props.resourceURI, INTEROP('grantedAt'), null).map(t => t.value))
+const grantees = computed(() => state.resourceStore.getObjects(props.resourceURI, INTEROP('grantee'), null).map(t => t.value))
+const accessNeedGroups = computed(() => state.resourceStore.getObjects(props.resourceURI, INTEROP('hasAccessNeedGroup'), null).map(t => t.value))
+const dataAuthorizations = computed(() => state.resourceStore.getObjects(props.resourceURI, INTEROP('hasDataAuthorization'), null).map(t => t.value))
+
+//get grantee data
+state.granteeStore = await getResource(grantees.value[0], authFetch.value)
+  .catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Could not get grantee!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  })
+  .then((resp) => resp.text())
+  .then((txt) => parseToN3(txt, props.resourceURI))
+  .then((parsedN3) => (state.granteeStore = parsedN3.store));
+
+const granteeName = computed(() => state.granteeStore.getObjects(null, FOAF("name"), null)[0]?.value);
 
 //
 // revoke access authorization
