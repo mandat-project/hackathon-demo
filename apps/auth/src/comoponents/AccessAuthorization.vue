@@ -218,7 +218,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
         })
     const n3Writer = new Writer();
     const archiveStore = new Store();
-    const oldQuads = store.value.getQuads(props.resourceURI, null, null, null)
+    const oldQuads = state.resourceStore.getQuads(props.resourceURI, null, null, null)
     const accessAuthzLocale = props.resourceURI.split("#")[1]
     for (const quad of oldQuads) {
         archiveStore.addQuad(new NamedNode(archivedLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph)
@@ -264,34 +264,34 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
 
     // in new resource, update uris
     for (const quad of oldQuads) {
-        store.value.addQuad(new NamedNode(newLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph)
-        store.value.removeQuad(quad)
+        state.resourceStore.addQuad(new NamedNode(newLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph)
+        state.resourceStore.removeQuad(quad)
     }
     // in new resource, add replaces
-    store.value.addQuad(
+    state.resourceStore.addQuad(
         new NamedNode(newLocation + "#" + accessAuthzLocale),
         new NamedNode(INTEROP("replaces")),
         new NamedNode(archivedLocation + "#" + accessAuthzLocale))
     // in new resource, update grantedAt
 
-    const grantedAtQuads = store.value.getQuads(new NamedNode(newLocation + "#" + accessAuthzLocale), INTEROP("grantedAt"), null, null)
-    store.value.removeQuads(grantedAtQuads)
+    const grantedAtQuads = state.resourceStore.getQuads(new NamedNode(newLocation + "#" + accessAuthzLocale), INTEROP("grantedAt"), null, null)
+    state.resourceStore.removeQuads(grantedAtQuads)
     const dateLiteral = DataFactory.literal(new Date().toISOString(), new NamedNode(XSD("dateTime")));
-    store.value.addQuad(
+    state.resourceStore.addQuad(
         new NamedNode(newLocation + "#" + accessAuthzLocale),
         new NamedNode(INTEROP("grantedAt")),
         dateLiteral
     )
     // in new resource, remove link to data authorization
     for (const dataAuthorization of dataAuthorizations) {
-        store.value.removeQuads(store.value.getQuads(
+        state.resourceStore.removeQuads(state.resourceStore.getQuads(
             new NamedNode(newLocation + "#" + accessAuthzLocale),
             new NamedNode(INTEROP("hasDataAuthorization")),
             dataAuthorization, null))
         // Notice: this is also the place, where you could update a data authorization, e.g. for freeze
     }
     // write to new authorization
-    copyBody = n3Writer.quadsToString(store.value.getQuads(null, null, null, null))
+    copyBody = n3Writer.quadsToString(state.resourceStore.getQuads(null, null, null, null))
     await putResource(newLocation, copyBody, authFetch.value)
         .then(() =>
             toast.add({
