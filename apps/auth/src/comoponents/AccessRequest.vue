@@ -27,10 +27,10 @@
             {{ granteeName }}
           </a>
         </div>
-        <div v-if="fromDemands.length > 0">
-          <strong>From Demand: </strong>
-          <a v-for="demand in fromDemands" :key="demand" :href="demand">
-            {{ demand.split("/").pop() }}
+        <div v-if="seeAlso.length > 0">
+          <strong>See also: </strong>
+          <a v-for="reference in seeAlso" :key="reference" :href="reference">
+            {{ reference.split("/").pop() }}
           </a>
         </div>
         <div class="p-card" style="margin: 5px">
@@ -80,8 +80,7 @@ import {
   XSD,
   GDPRP,
   createResource,
-  CREDIT,
-  AUTH, getLocationHeader, FOAF,
+  AUTH, getLocationHeader, FOAF, RDFS,
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
@@ -131,7 +130,7 @@ const forSocialAgents = computed(() => {
   }
   return fromSocialAgents.value
 })
-const fromDemands = computed(() => state.informationResourceStore.getObjects(accessRequest, CREDIT("fromDemand"), null).map(t => t.value))
+const seeAlso = computed(() => state.informationResourceStore.getObjects(accessRequest, RDFS("seeAlso"), null).map(t => t.value))
 const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
 
 // get access request address data

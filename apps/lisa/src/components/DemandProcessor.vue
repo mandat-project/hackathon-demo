@@ -109,7 +109,7 @@ import {
   SKOS,
   createResourceInAnyRegistrationOfShape,
   getContainerItems,
-GDPRP
+  GDPRP, RDFS
 } from '@shared/solid';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
@@ -294,6 +294,7 @@ async function requestAccessToData() {
     @prefix xsd: <${XSD()}> .
     @prefix acl: <${ACL()}> .
     @prefix gdprp: <${GDPRP()}> .
+    @prefix rdfs: <${RDFS()}> .
 
     # This could be hosted at the profle document of the application or social agent or at a
     # central location (e.g. together with the shapes/shapetress) for "standardized" access needs
@@ -338,7 +339,7 @@ async function requestAccessToData() {
       interop:toSocialAgent  <${demanderUri.value}> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
 
-      credit:fromDemand <${props.demandUri}>.`;
+      rdfs:seeAlso <${props.demandUri}>.`;
 
   const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, authFetch.value)
       .catch((err) => {
@@ -385,6 +386,11 @@ async function requestCreationOfData() {
       })
       .then(getLocationHeader)
   await patchDocumentCreationDemandInDemand(props.demandUri, documentCreationDemandURI);
+  toast.add({
+    severity: "success",
+    summary: "Request for data creation sent.",
+    life: 5000,
+  });
 }
 
 async function patchDocumentCreationDemandInDemand(demandURI: string, documentCreationDemandURI: string): Promise<Response> {
@@ -502,6 +508,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
     @prefix xsd: <${XSD()}> .
     @prefix acl: <${ACL()}> .
     @prefix gdprp: <${GDPRP()}> .
+    @prefix rdfs: <${RDFS()}> .
 
     <#accessRequest>
       a interop:AccessRequest ;
@@ -510,7 +517,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
       interop:toSocialAgent  <${webId!.value}> ;
       interop:forSocialAgent <${forAgent}> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
-      credit:fromDemand <${props.demandUri}>.
+      rdfs:seeAlso <${props.demandUri}>.
 
     <#accessNeedGroupDescription>
       a interop:AccessNeedGroupDescription ;

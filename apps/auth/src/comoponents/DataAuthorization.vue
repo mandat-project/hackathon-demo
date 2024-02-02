@@ -33,7 +33,7 @@
         <div v-if="dataInstances.length > 0">
             <strong>Authorized Instances: </strong>
             <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
-                {{ dataInstance }}
+                {{ dataInstance.split("/").pop() }}
             </a>
         </div>
         <div>

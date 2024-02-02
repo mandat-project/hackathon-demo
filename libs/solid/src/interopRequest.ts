@@ -22,7 +22,7 @@ export type AccessRequest = {
   uri: string;
   toSocialAgent: string[];
   fromSocialAgent: string[];
-  fromDemand: string[];
+  seeAlso: string[];
   hasAccessNeedGroup: AccessNeedGroup[];
   purpose: string[];
 };
