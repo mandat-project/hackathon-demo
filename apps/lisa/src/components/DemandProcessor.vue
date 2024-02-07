@@ -321,15 +321,15 @@ async function requestAccessToData() {
       a interop:AccessNeedGroupDescription ;
       interop:inAccessDescriptionSet <#bwaAccessDescriptionSet> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
-      skos:prefLabel "Zugriff BWA (Gruppe)"@de ;
-      skos:definition "Die Bank muss deine BWAs kennen, um ein für dich passendes Kreditangebot zu erstellen"@de .
+      skos:prefLabel "Access business analyses (Group)"@en ;
+      skos:definition "The bank needs to know your business analyses in order to prepare a suitable loan offer for you"@en .
 
     <#bwaAccessNeedDescription>
       a interop:AccessNeedDescription ;
       interop:inAccessDescriptionSet <#bwaAccessDescriptionSet> ;
       interop:hasAccessNeed <#bwaAccessNeed> ;
-      skos:prefLabel "Zugriff BWA"@de ;
-      skos:definition "Die Bank muss deine BWAs kennen, um ein für dich passendes Kreditangebot zu erstellen"@de .
+      skos:prefLabel "Access business analyses"@en ;
+      skos:definition "The bank needs to know your business analyses in order to prepare a suitable loan offer for you"@en .
 
     # Goes into the access inbox of sme
     <#bwaAccessRequest>

@@ -1,21 +1,18 @@
 <template>
     <div class="accessNeedGroup">
         <div>
-            <strong>Label: </strong>
+            <strong>Short description of requested access: </strong>
             <div v-for="label in prefLabels" :key="label">
                 {{ label }}
             </div>
         </div>
         <div>
-            <strong>Definition: </strong>
+            <strong>Explanation: </strong>
             <div v-for="definition in definitions" :key="definition">
                 {{ definition }}
             </div>
         </div>
         <div class="p-card" style="margin: 5px">
-            <div>
-                <strong>Access Needs</strong>
-            </div>
             <!-- DO NOT REMOVE -->
             <!-- <Button @click="grantAccessAuthorization" type="button" class="btn btn-primary mb-2"
                 :disabled="associatedAccessAuthorization !== '' || requestAuthorizationTrigger">
@@ -84,7 +81,7 @@ const accessNeeds = computed(() =>
  * ! SPEC - data model problem:
  * The access need group only links to the access description set, but from that set, there is no link to any further description.
  * That is, based on an access request, we can not discover its description.
- * 
+ *
  * So, we assume that we have all knowledge we need and query the data
  */
 
@@ -108,7 +105,7 @@ for (const descriptionResource of descriptionResources) {
 const prefLabels = computed(() => {
     /**
  * ! SPEC - data model problem:
- * interop:hasAccessNeedGroup 
+ * interop:hasAccessNeedGroup
  *  domain -> interop:AccessRequest OR AccessNeedGroupDescription
  */
     const sthsThatHasAccessNeedGroup = store.value.getSubjects(INTEROP('hasAccessNeedGroup'), props.resourceURI, null).map(t => t.value)
@@ -124,7 +121,7 @@ const prefLabels = computed(() => {
 const definitions = computed(() => {
     /**
      * ! SPEC - data model problem:
-     * interop:hasAccessNeedGroup 
+     * interop:hasAccessNeedGroup
      *  domain -> interop:AccessRequest OR AccessNeedGroupDescription
      */
     const sthsThatHasAccessNeedGroup = store.value.getSubjects(INTEROP('hasAccessNeedGroup'), props.resourceURI, null).map(t => t.value)
@@ -137,9 +134,9 @@ const definitions = computed(() => {
     return []
 })
 
-// 
+//
 // Authorize Access Need Group
-// 
+//
 
 // know which access authorization this component created
 const associatedAccessAuthorization = ref("")
@@ -166,7 +163,7 @@ function addToDataAuthorizations(accessNeed: string, dataAuthorization: string) 
 
 /**
  * Trigger children access needs to create data authorization and set acls,
- * wait until all children have done so, 
+ * wait until all children have done so,
  * then create access authorization and emit finish event to parent
  */
 async function grantAccessAuthorization() {
@@ -188,11 +185,11 @@ async function grantAccessAuthorization() {
 
 /**
  *  Create a new access authorization.
- * 
- * ? This could potentially be extracted to a library. 
- * 
- * @param forSocialAgents 
- * @param dataAuthorizations 
+ *
+ * ? This could potentially be extracted to a library.
+ *
+ * @param forSocialAgents
+ * @param dataAuthorizations
  */
 async function createAccessAuthorization(
     forSocialAgents: string[],
@@ -213,7 +210,7 @@ async function createAccessAuthorization(
       interop:hasAccessNeedGroup <${props.resourceURI}> ;
       interop:hasDataAuthorization ${dataAuthorizations
             .map((t) => "<" + t + ">")
-            .join(", ")} . 
+            .join(", ")} .
 `;
     return createResource(props.accessAuthzContainer, payload, authFetch.value)
         .then((loc) => {

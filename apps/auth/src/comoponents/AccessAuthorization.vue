@@ -33,7 +33,7 @@
             </Button> -->
                 <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
                     :disabled="isWaitingForDataAuthorizations">
-                    Revoke Group
+                    Revoke all authorizations in this group
                 </Button>
             </div>
             <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization"

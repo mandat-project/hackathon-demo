@@ -1,13 +1,13 @@
 <template>
     <div class="accessNeed">
         <div>
-            <strong>Required Data: </strong>
+            <strong>Access need for required data format: </strong>
             <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
                 {{ shapeTree.split("#").pop() }}
             </a>
         </div>
         <div v-if="dataInstances.length > 0">
-            <strong>Required Instances: </strong>
+            <strong>Access need for resources: </strong>
             <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
                 {{ dataInstance.split("/").pop() }}
             </a>
