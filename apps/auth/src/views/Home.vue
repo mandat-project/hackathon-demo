@@ -1,11 +1,11 @@
 <template>
   <div class="grid">
-    <div class="col-12 lg:col-6 lg:col-offset-3">
+    <div class="col-12 lg:col-12 lg:col-offset-0">
       <h2>Your Access Manager</h2>
       <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
         @click=" reloadFlag = !reloadFlag" />
     </div>
-    <div class="col-12 lg:col-6 lg:col-offset-3">
+    <div class="col-12 lg:col-12 lg:col-offset-0">
       <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
         class="p-card" style="margin: 5px">
         <Suspense>

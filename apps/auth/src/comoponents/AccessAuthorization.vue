@@ -21,7 +21,7 @@
                 {{ accessNeedGroup.split("/").pop() }}
             </a>
         </div>
-        <div class="p-card" style="margin: 5px" v-if="dataAuthorizations.length > 0">
+        <div class="p-card" style="margin: 5px;" v-if="dataAuthorizations.length > 0">
             <div>
                 <strong>Data Authorizations</strong>
             </div>
