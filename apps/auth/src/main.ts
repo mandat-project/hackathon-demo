@@ -28,7 +28,8 @@ import ToastService from "primevue/toastservice";
 import BadgeDirective from 'primevue/badgedirective';
 
 import "primeflex/primeflex.css"; // layouts
-import "primevue/resources/themes/vela-green/theme.css"; // theme
+// import "primevue/resources/themes/vela-green/theme.css"; // theme
+import "primevue/resources/themes/nova/theme.css";
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css"; // icons
 import App from "./App.vue";

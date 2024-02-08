@@ -378,33 +378,18 @@ export async function getLinkHeader(
         .then(_parseLinkHeader);
 }
 
-/**
- * This function gets the access control definition for the input resource.
- * If there is no ACL defined for the resource, the parents ACLs will be searched (inheritance)!
- * @param uri the resource
- * @param fetch OPTIONAL - fetch function to use, e.g. session.fetch of a solid session
- * @returns Response of the GET for the relevant ACL definition for the resource
- */
-export async function getACL(
+export async function getAclResourceUri(
     uri: string,
     fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
-): Promise<Response> {
+): Promise<string> {
     console.log("### SoLiD\t| ACL\n" + uri);
     if (fetch === undefined) fetch = window.fetch;
     return getLinkHeader(uri, fetch)
-        .then((lnk) => lnk.acl as string)
+        .then((lnk) => _stripUriFromStartAndEndParentheses(lnk.acl as string))
         .then((acl) => {
-            if (acl.startsWith("<http://") || acl.startsWith("<https://>")) {
+            if (acl.startsWith("http://")  || acl.startsWith("https://")) {
                 return acl;
             }
-            return _getSameLocationAs(uri) + _stripUriFromStartAndEndParentheses(acl);
+            return _getSameLocationAs(uri) + acl;
         })
-        .then((aclUri) => getResource(aclUri, fetch))
-        .catch((err) => {
-            if (!err.message.includes("404")) throw err;
-            //  Error: Fetching the Resource at `https://uvdsl.inrupt.net/private/secret.ttl.acl` failed: `404` `Not Found`.
-            const uri = err.message.split("`")[1];
-            const parent = _getParentUri(uri);
-            return getACL(parent, fetch);
-        });
 }

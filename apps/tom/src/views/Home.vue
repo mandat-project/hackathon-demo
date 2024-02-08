@@ -312,6 +312,11 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
     documentCreationDemandShapeTreeUri
   );
   await createDemand(documentCreationDemandContainerUris, documentCreationDemandPayload);
+  toast.add({
+    severity: "success",
+    summary: "Request for data creation sent.",
+    life: 5000,
+  });
 }
 
 async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {

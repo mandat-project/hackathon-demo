@@ -17,7 +17,6 @@
 <script setup lang="ts">
 import { HeaderBar } from "@shared/components";
 import Toast from "primevue/toast";
-import "primevue/resources/themes/nova/theme.css";
 import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import { useSolidSession } from "@shared/composables";
 import router from "./router";
