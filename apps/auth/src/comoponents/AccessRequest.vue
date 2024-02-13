@@ -46,12 +46,15 @@
             </Suspense>
           </div>
           <div>
+            <div v-if="noDataRegistrationsFound">
+              <strong>No matching Data Registrations were found!</strong>
+            </div>
             <Button @click="grantWithAccessReceipt" type="button" class="btn btn-primary m-2"
-                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger">
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationsFound">
               Authorize Request
             </Button>
             <Button @click="declineWithAccessReceipt" type="button" class="btn btn-primary m-2 p-button-danger"
-                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized">
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationsFound">
               Decline Request
             </Button>
             <!-- TODO Decline -->
@@ -74,7 +77,7 @@ import {
   XSD,
   GDPRP,
   createResource,
-  AUTH, getLocationHeader, FOAF, RDFS,
+  AUTH, getLocationHeader, FOAF, RDFS, getDataRegistrationContainers,
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
@@ -114,6 +117,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
 const accessRequest = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
 
 const purposes = computed(() => state.informationResourceStore.getObjects(accessRequest, GDPRP('purposeForProcessing'), null).map(t => t.value))
+const toSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("toSocialAgent"), null).map(t => t.value))
 const fromSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("fromSocialAgent"), null).map(t => t.value))
 const forSocialAgents = computed(() => {
   const forSocialAgentsDirect = state.informationResourceStore.getObjects(accessRequest, INTEROP("forSocialAgent"), null).map(t => t.value)
@@ -124,6 +128,25 @@ const forSocialAgents = computed(() => {
 })
 const seeAlso = computed(() => state.informationResourceStore.getObjects(accessRequest, RDFS("seeAlso"), null).map(t => t.value))
 const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
+const shapeTree = computed(() => state.informationResourceStore.getObjects(null, INTEROP("registeredShapeTree"), null).map(t => t.value))
+
+
+// check if any data registration exists for given shape tree
+
+const dataRegistrations = await getDataRegistrationContainers(
+  toSocialAgents.value[0],
+  shapeTree.value[0],
+  authFetch.value
+).catch((err) => {
+  toast.add({
+    severity: "error",
+    summary: "Error on getDataRegistrationContainers!",
+    detail: err,
+    life: 5000,
+  });
+  throw new Error(err);
+});
+const noDataRegistrationsFound = dataRegistrations.length <= 0;
 
 // get access request address data
 

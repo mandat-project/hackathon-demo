@@ -38,11 +38,11 @@ const { isLoggedIn } = toRefs(sessionInfo);
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  
-  .p-card{
+
+  /*.p-card{
     border: solid;
   }
-  /* .accessAuthorization{
+  .accessAuthorization{
     background-color:red;
   }
   .dataAuthorization{
