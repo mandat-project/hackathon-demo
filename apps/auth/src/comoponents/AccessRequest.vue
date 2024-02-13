@@ -128,25 +128,32 @@ const forSocialAgents = computed(() => {
 })
 const seeAlso = computed(() => state.informationResourceStore.getObjects(accessRequest, RDFS("seeAlso"), null).map(t => t.value))
 const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
-const shapeTree = computed(() => state.informationResourceStore.getObjects(null, INTEROP("registeredShapeTree"), null).map(t => t.value))
+const shapeTrees = computed(() => state.informationResourceStore.getObjects(null, INTEROP("registeredShapeTree"), null).map(t => t.value))
 
 
 // check if any data registration exists for given shape tree
-
-const dataRegistrations = await getDataRegistrationContainers(
-  toSocialAgents.value[0],
-  shapeTree.value[0],
-  authFetch.value
-).catch((err) => {
-  toast.add({
-    severity: "error",
-    summary: "Error on getDataRegistrationContainers!",
-    detail: err,
-    life: 5000,
+let noDataRegistrationsFound = true;
+for (const shapeTree in shapeTrees.value) {
+  const dataRegistrations = await getDataRegistrationContainers(
+    toSocialAgents.value[0],
+    shapeTree,
+    authFetch.value
+  ).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Error on getDataRegistrationContainers!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
   });
-  throw new Error(err);
-});
-const noDataRegistrationsFound = dataRegistrations.length <= 0;
+  if(dataRegistrations.length > 0){
+    noDataRegistrationsFound = false;
+  }
+}
+
+
+
 
 // get access request address data
 
