@@ -37,7 +37,8 @@
               <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"
                                :accessAuthzContainer="accessAuthzContainer" :dataAuthzContainer="dataAuthzContainer"
                                :requestAuthorizationTrigger="accessAuthorizationTrigger"
-                               @createdAccessAuthorization="addToAccessAuthorizations" />
+                               @createdAccessAuthorization="addToAccessAuthorizations"
+                               @noDataRegistrationFound="setNoDataRegistrationFound"/>
               <template #fallback>
                 <span>
                   Loading {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
@@ -46,15 +47,12 @@
             </Suspense>
           </div>
           <div>
-            <div v-if="noDataRegistrationsFound">
-              <strong>No matching Data Registrations were found!</strong>
-            </div>
             <Button @click="grantWithAccessReceipt" type="button" class="btn btn-primary m-2"
-                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationsFound">
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
               Authorize Request
             </Button>
             <Button @click="declineWithAccessReceipt" type="button" class="btn btn-primary m-2 p-button-danger"
-                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationsFound">
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
               Decline Request
             </Button>
             <!-- TODO Decline -->
@@ -77,7 +75,7 @@ import {
   XSD,
   GDPRP,
   createResource,
-  AUTH, getLocationHeader, FOAF, RDFS, getDataRegistrationContainers,
+  AUTH, getLocationHeader, FOAF, RDFS
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
@@ -117,7 +115,6 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
 const accessRequest = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
 
 const purposes = computed(() => state.informationResourceStore.getObjects(accessRequest, GDPRP('purposeForProcessing'), null).map(t => t.value))
-const toSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("toSocialAgent"), null).map(t => t.value))
 const fromSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("fromSocialAgent"), null).map(t => t.value))
 const forSocialAgents = computed(() => {
   const forSocialAgentsDirect = state.informationResourceStore.getObjects(accessRequest, INTEROP("forSocialAgent"), null).map(t => t.value)
@@ -128,32 +125,6 @@ const forSocialAgents = computed(() => {
 })
 const seeAlso = computed(() => state.informationResourceStore.getObjects(accessRequest, RDFS("seeAlso"), null).map(t => t.value))
 const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
-const shapeTrees = computed(() => state.informationResourceStore.getObjects(null, INTEROP("registeredShapeTree"), null).map(t => t.value))
-
-
-// check if any data registration exists for given shape tree
-let noDataRegistrationsFound = true;
-for (const shapeTree in shapeTrees.value) {
-  const dataRegistrations = await getDataRegistrationContainers(
-    toSocialAgents.value[0],
-    shapeTree,
-    authFetch.value
-  ).catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Error on getDataRegistrationContainers!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  });
-  if(dataRegistrations.length > 0){
-    noDataRegistrationsFound = false;
-  }
-}
-
-
-
 
 // get access request address data
 
@@ -188,6 +159,9 @@ state.granteeStore = await getResource(forSocialAgents.value[0], authFetch.value
 const senderName = computed(() => state.senderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const granteeName = computed(() => state.granteeStore.getObjects(null, FOAF("name"), null)[0]?.value);
 
+// set if no matching data registrations are found for any of the child elements registeredShapeTrees
+const noDataRegistrationFound = ref(false);
+
 //
 // authorize access request
 //
@@ -205,6 +179,10 @@ const accessAuthorizationTrigger = ref(false)
 // when a child access need emits their authoirzed event, add the access authorization to the map to keep record
 function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization: string) {
   accessAuthorizations.set(accessNeedGroup, accessAuthorization)
+}
+
+function setNoDataRegistrationFound() {
+  noDataRegistrationFound.value = true;
 }
 
 /**
