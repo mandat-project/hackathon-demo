@@ -39,27 +39,5 @@ const { isLoggedIn } = toRefs(sessionInfo);
   text-align: center;
   color: #2c3e50;
 
-  /*.p-card{
-    border: solid;
-  }
-  .accessAuthorization{
-    background-color:red;
-  }
-  .dataAuthorization{
-    background-color:blue;
-  }
-  .accessNeed{
-    background-color: green;
-  }
-  .accessNeedGroup{
-    background-color: orange;
-  }
-  /* .accessReceipt{
-    background-color: pink;
-  } */
-  /* .accessRequests{
-    background-color: pink;
-  }  */
-
 }
 </style>

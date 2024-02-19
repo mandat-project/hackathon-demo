@@ -46,6 +46,12 @@
               </template>
             </Suspense>
           </div>
+          <div v-if="noDataRegistrationFound">
+            <strong>No matching Data Registrations were found for: </strong>
+            <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree" :href="shapeTree">
+              {{ shapeTree.split('#').pop() }}
+            </a>
+          </div>
           <div>
             <Button @click="grantWithAccessReceipt" type="button" class="btn btn-primary m-2"
                     :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
@@ -161,6 +167,7 @@ const granteeName = computed(() => state.granteeStore.getObjects(null, FOAF("nam
 
 // set if no matching data registrations are found for any of the child elements registeredShapeTrees
 const noDataRegistrationFound = ref(false);
+const shapeTreesOfMissingDataRegs = ref([] as String[]);
 
 //
 // authorize access request
@@ -181,8 +188,9 @@ function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization:
   accessAuthorizations.set(accessNeedGroup, accessAuthorization)
 }
 
-function setNoDataRegistrationFound() {
+function setNoDataRegistrationFound(shapeTreeURI: string) {
   noDataRegistrationFound.value = true;
+  shapeTreesOfMissingDataRegs.value.push(shapeTreeURI);
 }
 
 /**

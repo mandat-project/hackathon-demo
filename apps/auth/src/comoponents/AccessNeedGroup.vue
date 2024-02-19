@@ -29,10 +29,11 @@
         </Suspense>
       </div>
       <!-- DO NOT REMOVE -->
+      <!--
       <Button @click="grantAccessAuthorization" type="button" class="btn btn-primary mb-2"
               :disabled="associatedAccessAuthorization !== '' || requestAuthorizationTrigger || noDataRegistrationFound">
         Authorize Group
-      </Button>
+      </Button> -->
     </div>
   </div>
 </template>
@@ -156,9 +157,6 @@ watch(() => props.requestAuthorizationTrigger, () => {
   grantAccessAuthorization()
 })
 
-// set if no matching data registrations are found for any of the child elements registeredShapeTrees
-const noDataRegistrationFound = ref(false);
-
 // keep track of which children access needs already created a data authorization
 const dataAuthorizations = reactive(new Map());
 // be able to trigger children to authoirze access needs (create data authorizations and set acls)
@@ -169,9 +167,8 @@ function addToDataAuthorizations(accessNeed: string, dataAuthorization: string) 
   dataAuthorizations.set(accessNeed, dataAuthorization)
 }
 
-function setNoDataRegistrationFound() {
-  noDataRegistrationFound.value = true;
-  emit("noDataRegistrationFound");
+function setNoDataRegistrationFound(shapeTreeUri: string) {
+  emit("noDataRegistrationFound", shapeTreeUri);
 }
 
 /**

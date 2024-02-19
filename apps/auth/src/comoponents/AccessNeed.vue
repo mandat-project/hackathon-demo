@@ -18,14 +18,11 @@
         {{ accessMode.split("#")[1] }}
       </a>
     </div>
-    <div v-if="noDataRegistrationFound">
-      <strong>No matching Data Registrations were found!</strong>
-    </div>
     <!-- DO NOT REMOVE -->
-    <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
+    <!-- <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
             :disabled="associatedDataAuthorization !== '' || groupAuthorizationTrigger || noDataRegistrationFound">
       Authorize Need
-    </Button>
+    </Button> -->
   </div>
 </template>
 
@@ -47,7 +44,7 @@ import {
 } from "@shared/solid";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
 const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
@@ -107,8 +104,6 @@ const dataInstances = computed(() =>
  * Isnt that the preferred label of the access need group? Why the level of indirection?
  */
 
-// set if no matching data registrations are found for registeredShapeTree
-let noDataRegistrationFound = ref(true);
 
 //
 // Authorize Access Need
@@ -130,10 +125,7 @@ watch(() => props.groupAuthorizationTrigger, () => {
   grantDataAuthorization()
 })
 
-onMounted(() => {
-  checkIfMatchingDataRegistrationExists();
-})
-
+watch(() => registeredShapeTrees.value, () => checkIfMatchingDataRegistrationExists(), {immediate:true})
 
 async function checkIfMatchingDataRegistrationExists() {
   const dataRegistrations = await getDataRegistrationContainers(
@@ -149,11 +141,8 @@ async function checkIfMatchingDataRegistrationExists() {
     });
     throw new Error(err);
   });
-  if (dataRegistrations.length > 0) {
-    noDataRegistrationFound.value = false;
-  }
-  if (noDataRegistrationFound.value == true) {
-    emit("noDataRegistrationFound")
+  if (dataRegistrations.length <= 0) {
+    emit("noDataRegistrationFound", registeredShapeTrees.value[0])
   }
 }
 
