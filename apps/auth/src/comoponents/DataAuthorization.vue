@@ -50,7 +50,7 @@
             </Button> -->
             <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
                 :disabled="groupRevokationTrigger">
-                Revoke
+                Revoke this authorization
             </Button>
         </div>
     </div>
@@ -87,7 +87,7 @@ state.resourceStore = await getResource(props.resourceURI, authFetch.value)
     .catch((err) => {
         toast.add({
             severity: "error",
-            summary: "Could not get access request!",
+            summary: "Could not get data authorization!",
             detail: err,
             life: 5000,
         });

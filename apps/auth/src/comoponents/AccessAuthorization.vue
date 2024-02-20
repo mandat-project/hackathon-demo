@@ -21,7 +21,7 @@
                 {{ accessNeedGroup.split("/").pop() }}
             </a>
         </div>
-        <div class="p-card" style="margin: 5px" v-if="dataAuthorizations.length > 0">
+        <div class="p-card" style="margin: 5px;" v-if="dataAuthorizations.length > 0">
             <div>
                 <strong>Data Authorizations</strong>
             </div>
@@ -33,7 +33,7 @@
             </Button> -->
                 <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
                     :disabled="isWaitingForDataAuthorizations">
-                    Revoke Group
+                    Revoke all authorizations in this group
                 </Button>
             </div>
             <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization"

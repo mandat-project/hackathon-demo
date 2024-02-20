@@ -1,81 +1,81 @@
 <template>
-    <div class="accessNeed">
-        <div>
-            <strong>Required Data: </strong>
-            <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
-                {{ shapeTree.split("#").pop() }}
-            </a>
-        </div>
-        <div v-if="dataInstances.length > 0">
-            <strong>Required Instances: </strong>
-            <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
-                {{ dataInstance.split("/").pop() }}
-            </a>
-        </div>
-        <div>
-            <strong>Access Mode: </strong>
-            <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
-                {{ accessMode.split("#")[1] }}
-            </a>
-        </div>
-        <!-- DO NOT REMOVE -->
-        <!-- <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
-            :disabled="associatedDataAuthorization !== '' || groupAuthorizationTrigger">
-            Authorize Need
-        </Button> -->
+  <div class="accessNeed">
+    <div>
+      <strong>Access need for required data format: </strong>
+      <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
+        {{ shapeTree.split("#").pop() }}
+      </a>
     </div>
+    <div v-if="dataInstances.length > 0">
+      <strong>Access need for resources: </strong>
+      <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
+        {{ dataInstance.split("/").pop() }}
+      </a>
+    </div>
+    <div>
+      <strong>Access Mode: </strong>
+      <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
+        {{ accessMode.split("#")[1] }}
+      </a>
+    </div>
+    <!-- DO NOT REMOVE -->
+    <!-- <Button @click="grantDataAuthorization" type="button" style="margin: 20px" class="btn btn-primary"
+            :disabled="associatedDataAuthorization !== '' || groupAuthorizationTrigger || noDataRegistrationFound">
+      Authorize Need
+    </Button> -->
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useSolidSession } from "@shared/composables";
+import {useSolidSession} from "@shared/composables";
 import {
-    getResource,
-    parseToN3,
-    INTEROP,
-    getDataRegistrationContainers,
-    LDP,
-    ACL,
-    AUTH,
-    XSD,
-    createResource,
-    patchResource,
-    getAclResourceUri,
-    getLocationHeader,
+  getResource,
+  parseToN3,
+  INTEROP,
+  getDataRegistrationContainers,
+  LDP,
+  ACL,
+  AUTH,
+  XSD,
+  createResource,
+  patchResource,
+  getAclResourceUri,
+  getLocationHeader,
 } from "@shared/solid";
-import { Store } from "n3";
-import { useToast } from "primevue/usetoast";
-import { computed, ref, watch } from "vue";
+import {Store} from "n3";
+import {useToast} from "primevue/usetoast";
+import {computed, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
-const emit = defineEmits(["createdDataAuthorization"])
-const { authFetch, sessionInfo } = useSolidSession();
+const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
+const {authFetch, sessionInfo} = useSolidSession();
 const toast = useToast();
 
 // get data
 const store = ref(new Store());
 store.value = await getResource(props.resourceURI, authFetch.value)
-    .catch((err) => {
-        toast.add({
-            severity: "error",
-            summary: "Could not get access request!",
-            detail: err,
-            life: 5000,
-        });
-        throw new Error(err);
-    })
-    .then((resp) => resp.text())
-    .then((txt) => parseToN3(txt, props.resourceURI))
-    .then((parsedN3) => (store.value = parsedN3.store));
+  .catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Could not get access request!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  })
+  .then((resp) => resp.text())
+  .then((txt) => parseToN3(txt, props.resourceURI))
+  .then((parsedN3) => (store.value = parsedN3.store));
 
 // compute properties to display
 const accessModes = computed(() =>
-    store.value.getObjects(props.resourceURI, INTEROP("accessMode"), null).map(t => t.value)
+  store.value.getObjects(props.resourceURI, INTEROP("accessMode"), null).map(t => t.value)
 )
 const registeredShapeTrees = computed(() =>
-    store.value.getObjects(props.resourceURI, INTEROP("registeredShapeTree"), null).map(t => t.value)
+  store.value.getObjects(props.resourceURI, INTEROP("registeredShapeTree"), null).map(t => t.value)
 )
 const dataInstances = computed(() =>
-    store.value.getObjects(props.resourceURI, INTEROP("hasDataInstance"), null).map(t => t.value)
+  store.value.getObjects(props.resourceURI, INTEROP("hasDataInstance"), null).map(t => t.value)
 )
 
 /**
@@ -93,16 +93,17 @@ const dataInstances = computed(() =>
  * The way the spec handles description is incorrect:
  *
  * <#accessNeedGroupDescription>
-      a interop:AccessNeedGroupDescription ;
-      interop:inAccessDescriptionSet <#accessDescriptionSet> ;
-      interop:hasAccessNeedGroup <#accessNeedGroup> ;
-      skos:prefLabel "Zugriff Offer und Order container"@de ;
+ a interop:AccessNeedGroupDescription ;
+ interop:inAccessDescriptionSet <#accessDescriptionSet> ;
+ interop:hasAccessNeedGroup <#accessNeedGroup> ;
+ skos:prefLabel "Zugriff Offer und Order container"@de ;
 
  * means that there is something of type AccessNeedGroupDescription,
  * and the preferred label of that description is "Zugriff ..."
  *
  * Isnt that the preferred label of the access need group? Why the level of indirection?
  */
+
 
 //
 // Authorize Access Need
@@ -116,45 +117,67 @@ const dataAuthzLocalName = "dataAuthorization"
 
 // check if this component is being triggered to authorize by its parent component
 watch(() => props.groupAuthorizationTrigger, () => {
-    // if data authorization already exists for this access need, do nothing
-    if (associatedDataAuthorization.value) { return }
-    // else create a new data authroization and set acls
-    grantDataAuthorization()
+  // if data authorization already exists for this access need, do nothing
+  if (associatedDataAuthorization.value) {
+    return
+  }
+  // else create a new data authroization and set acls
+  grantDataAuthorization()
 })
 
+watch(() => registeredShapeTrees.value, () => checkIfMatchingDataRegistrationExists(), {immediate:true})
+
+async function checkIfMatchingDataRegistrationExists() {
+  const dataRegistrations = await getDataRegistrationContainers(
+    `${sessionInfo.webId}`,
+    registeredShapeTrees.value[0],
+    authFetch.value
+  ).catch((err) => {
+    toast.add({
+      severity: "error",
+      summary: "Error on getDataRegistrationContainers!",
+      detail: err,
+      life: 5000,
+    });
+    throw new Error(err);
+  });
+  if (dataRegistrations.length <= 0) {
+    emit("noDataRegistrationFound", registeredShapeTrees.value[0])
+  }
+}
 
 
 /**
  * Set the .acl for any resource required in this access need.
  */
 async function grantDataAuthorization() {
-    // find registries
-    for (const shapeTree of registeredShapeTrees.value) {
-        const dataRegistrations = await getDataRegistrationContainers(
-            `${sessionInfo.webId}`,
-            shapeTree,
-            authFetch.value
-        ).catch((err) => {
-            toast.add({
-                severity: "error",
-                summary: "Error on getDataRegistrationContainers!",
-                detail: err,
-                life: 5000,
-            });
-            throw new Error(err);
-        });
-        const dataInstancesForNeed = [] as string[];
-        dataInstancesForNeed.push(...dataInstances.value); // potentially manually edited (added/removed) in auth agent
-        const dataAuthzLocation = createDataAuthorization(props.forSocialAgents, registeredShapeTrees.value, accessModes.value, dataRegistrations, dataInstancesForNeed);
-        // if selected data instances given, then only give access to those, else, give to registration
-        const accessToResources = dataInstancesForNeed.length > 0 ? dataInstancesForNeed : dataRegistrations;
-        // only grant specific resource access
-        for (const resource of accessToResources) {
-            await updateAccessControlList(resource, props.forSocialAgents, accessModes.value);
-        }
-        associatedDataAuthorization.value = (await dataAuthzLocation) + "#" + dataAuthzLocalName
-        emit("createdDataAuthorization", props.resourceURI, associatedDataAuthorization.value)
+  // find registries
+  for (const shapeTree of registeredShapeTrees.value) {
+    const dataRegistrations = await getDataRegistrationContainers(
+      `${sessionInfo.webId}`,
+      shapeTree,
+      authFetch.value
+    ).catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on getDataRegistrationContainers!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    });
+    const dataInstancesForNeed = [] as string[];
+    dataInstancesForNeed.push(...dataInstances.value); // potentially manually edited (added/removed) in auth agent
+    const dataAuthzLocation = createDataAuthorization(props.forSocialAgents, registeredShapeTrees.value, accessModes.value, dataRegistrations, dataInstancesForNeed);
+    // if selected data instances given, then only give access to those, else, give to registration
+    const accessToResources = dataInstancesForNeed.length > 0 ? dataInstancesForNeed : dataRegistrations;
+    // only grant specific resource access
+    for (const resource of accessToResources) {
+      await updateAccessControlList(resource, props.forSocialAgents, accessModes.value);
     }
+    associatedDataAuthorization.value = (await dataAuthzLocation) + "#" + dataAuthzLocalName
+    emit("createdDataAuthorization", props.resourceURI, associatedDataAuthorization.value)
+  }
 }
 
 /**
@@ -169,13 +192,13 @@ async function grantDataAuthorization() {
  * @param instances
  */
 async function createDataAuthorization(
-    forSocialAgents: string[],
-    registeredShapeTrees: string[],
-    accessModes: string[],
-    registrations: string[],
-    instances?: string[]
+  forSocialAgents: string[],
+  registeredShapeTrees: string[],
+  accessModes: string[],
+  registrations: string[],
+  instances?: string[]
 ) {
-    const payload = `
+  const payload = `
     @prefix interop:<${INTEROP()}> .
     @prefix ldp:<${LDP()}> .
     @prefix xsd:<${XSD()}> .
@@ -185,48 +208,48 @@ async function createDataAuthorization(
     <#${dataAuthzLocalName}>
       a interop:DataAuthorization ;
       interop:grantee ${forSocialAgents
-            .map((t: string) => "<" + t + ">")
-            .join(", ")} ;
+    .map((t: string) => "<" + t + ">")
+    .join(", ")} ;
       interop:registeredShapeTree ${registeredShapeTrees
-            .map((t) => "<" + t + ">")
-            .join(", ")} ;
+    .map((t) => "<" + t + ">")
+    .join(", ")} ;
       interop:accessMode ${accessModes
-            .map((t) => "<" + t + ">")
-            .join(", ")} ;
+    .map((t) => "<" + t + ">")
+    .join(", ")} ;
       interop:scopeOfAuthorization  ${instances && instances.length > 0
-            ? "interop:SelectedFromRegistry"
-            : "interop:AllFromRegistry"
-        } ;
+    ? "interop:SelectedFromRegistry"
+    : "interop:AllFromRegistry"
+  } ;
       interop:hasDataRegistration ${registrations
-            .map((t) => "<" + t + ">")
-            .join(", ")} ;
+    .map((t) => "<" + t + ">")
+    .join(", ")} ;
       ${instances && instances.length > 0
-            ? "interop:hasDataInstance " +
-            instances.map((t) => "<" + t + ">").join(", ") +
-            " ;"
-            : ""
-        }
+    ? "interop:hasDataInstance " +
+    instances.map((t) => "<" + t + ">").join(", ") +
+    " ;"
+    : ""
+  }
       interop:satisfiesAccessNeed <${props.resourceURI}> .`;
 
-    return createResource(props.dataAuthzContainer, payload, authFetch.value)
-        .then((loc) => {
-            toast.add({
-                severity: "success",
-                summary: "Data Authorization created.",
-                life: 5000,
-            })
-            return getLocationHeader(loc)
-        }
-        )
-        .catch((err) => {
-            toast.add({
-                severity: "error",
-                summary: "Failed to create Data Authorization!",
-                detail: err,
-                life: 5000,
-            });
-            throw new Error(err);
+  return createResource(props.dataAuthzContainer, payload, authFetch.value)
+    .then((loc) => {
+        toast.add({
+          severity: "success",
+          summary: "Data Authorization created.",
+          life: 5000,
         })
+        return getLocationHeader(loc)
+      }
+    )
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Failed to create Data Authorization!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
 }
 
 
@@ -241,12 +264,12 @@ async function createDataAuthorization(
  * @param mode
  */
 async function updateAccessControlList(
-    accessTo: string,
-    agent: string[],
-    mode: string[]
+  accessTo: string,
+  agent: string[],
+  mode: string[]
 ) {
 
-    const patchBody = `
+  const patchBody = `
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
 @prefix acl: <http://www.w3.org/ns/auth/acl#>.
 
@@ -265,18 +288,18 @@ _:rename a solid:InsertDeletePatch;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
     } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
-    const aclURI = await getAclResourceUri(accessTo, authFetch.value);
-    await patchResource(aclURI, patchBody, authFetch.value).catch(
-        (err) => {
-            toast.add({
-                severity: "error",
-                summary: "Error on patch ACL!",
-                detail: err,
-                life: 5000,
-            });
-            throw new Error(err);
-        }
-    );
+  const aclURI = await getAclResourceUri(accessTo, authFetch.value);
+  await patchResource(aclURI, patchBody, authFetch.value).catch(
+    (err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on patch ACL!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    }
+  );
 }
 
 </script>

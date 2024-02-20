@@ -10,25 +10,19 @@
           </a>
         </div>
         <div>
-          <strong>To: </strong>
-          <a v-for="recipient in toSocialAgents" :key="recipient" :href="recipient">
-            {{ recipientName }}
-          </a>
-        </div>
-        <div>
-          <strong>From: </strong>
+          <strong>Data requester: </strong>
           <a v-for="sender in fromSocialAgents" :key="sender" :href="sender">
             {{ senderName }}
           </a>
         </div>
         <div>
-          <strong>For: </strong>
+          <strong>Access will be granted to: </strong>
           <a v-for="grantee in forSocialAgents" :key="grantee" :href="grantee">
             {{ granteeName }}
           </a>
         </div>
         <div v-if="seeAlso.length > 0">
-          <strong>See also: </strong>
+          <strong>For additional information see also: </strong>
           <a v-for="reference in seeAlso" :key="reference" :href="reference">
             {{ reference.split("/").pop() }}
           </a>
@@ -37,30 +31,37 @@
           <div>
             <strong>Access Need Groups</strong>
           </div>
-          <div>
-            <Button @click="grantWithAccessReceipt" type="button" class="btn btn-primary m-2"
-                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger">
-              Authorize Request
-            </Button>
-            <Button @click="declineWithAccessReceipt" type="button" class="btn btn-primary m-2 p-button-danger"
-                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized">
-              Decline Request
-            </Button>
-            <!-- TODO Decline -->
-          </div>
           <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup"
                class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
             <Suspense>
               <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"
                                :accessAuthzContainer="accessAuthzContainer" :dataAuthzContainer="dataAuthzContainer"
                                :requestAuthorizationTrigger="accessAuthorizationTrigger"
-                               @createdAccessAuthorization="addToAccessAuthorizations" />
+                               @createdAccessAuthorization="addToAccessAuthorizations"
+                               @noDataRegistrationFound="setNoDataRegistrationFound"/>
               <template #fallback>
                 <span>
                   Loading {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
                 </span>
               </template>
             </Suspense>
+          </div>
+          <div v-if="noDataRegistrationFound">
+            <strong>No matching Data Registrations were found for: </strong>
+            <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree" :href="shapeTree">
+              {{ shapeTree.split('#').pop() }}
+            </a>
+          </div>
+          <div>
+            <Button @click="grantWithAccessReceipt" type="button" class="btn btn-primary m-2"
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
+              Authorize Request
+            </Button>
+            <Button @click="declineWithAccessReceipt" type="button" class="btn btn-primary m-2 p-button-danger"
+                    :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
+              Decline Request
+            </Button>
+            <!-- TODO Decline -->
           </div>
         </div>
         <!-- </div> -->
@@ -80,7 +81,7 @@ import {
   XSD,
   GDPRP,
   createResource,
-  AUTH, getLocationHeader, FOAF, RDFS,
+  AUTH, getLocationHeader, FOAF, RDFS
 } from "@shared/solid";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
@@ -93,7 +94,6 @@ const toast = useToast();
 
 const state = reactive({
   informationResourceStore: new Store(),
-  recipientStore: new Store(),
   senderStore: new Store(),
   granteeStore: new Store()
 });
@@ -121,7 +121,6 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
 const accessRequest = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
 
 const purposes = computed(() => state.informationResourceStore.getObjects(accessRequest, GDPRP('purposeForProcessing'), null).map(t => t.value))
-const toSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("toSocialAgent"), null).map(t => t.value))
 const fromSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("fromSocialAgent"), null).map(t => t.value))
 const forSocialAgents = computed(() => {
   const forSocialAgentsDirect = state.informationResourceStore.getObjects(accessRequest, INTEROP("forSocialAgent"), null).map(t => t.value)
@@ -134,19 +133,6 @@ const seeAlso = computed(() => state.informationResourceStore.getObjects(accessR
 const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
 
 // get access request address data
-state.recipientStore = await getResource(toSocialAgents.value[0], authFetch.value)
-  .catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Could not get recipient!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  })
-  .then((resp) => resp.text())
-  .then((txt) => parseToN3(txt, toSocialAgents.value[0]))
-  .then((parsedN3) => (state.recipientStore = parsedN3.store));
 
 state.senderStore = await getResource(fromSocialAgents.value[0], authFetch.value)
   .catch((err) => {
@@ -176,9 +162,12 @@ state.granteeStore = await getResource(forSocialAgents.value[0], authFetch.value
   .then((txt) => parseToN3(txt, forSocialAgents.value[0]))
   .then((parsedN3) => (state.granteeStore = parsedN3.store));
 
-const recipientName = computed(() => state.recipientStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const senderName = computed(() => state.senderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const granteeName = computed(() => state.granteeStore.getObjects(null, FOAF("name"), null)[0]?.value);
+
+// set if no matching data registrations are found for any of the child elements registeredShapeTrees
+const noDataRegistrationFound = ref(false);
+const shapeTreesOfMissingDataRegs = ref([] as String[]);
 
 //
 // authorize access request
@@ -197,6 +186,11 @@ const accessAuthorizationTrigger = ref(false)
 // when a child access need emits their authoirzed event, add the access authorization to the map to keep record
 function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization: string) {
   accessAuthorizations.set(accessNeedGroup, accessAuthorization)
+}
+
+function setNoDataRegistrationFound(shapeTreeURI: string) {
+  noDataRegistrationFound.value = true;
+  shapeTreesOfMissingDataRegs.value.push(shapeTreeURI);
 }
 
 /**
