@@ -1,0 +1,138 @@
+sequenceDiagram
+actor Tom
+participant KMU_Pod
+actor Lisa
+participant Bank_Pod
+actor Max 
+participant StB_Pod
+
+
+
+%% Anbahnung Partnerschaft
+rect rgb(150, 180, 240) 
+note over Tom,StB_Pod: Anbahnung Partnerschaft
+
+    %% (1) Anfrage Kreditvertrag
+    note over Tom,StB_Pod: (1) Anfrage Kreditvertrag
+    Tom-)Bank_Pod: POST request_for_contract
+
+    Lisa->>+Bank_Pod: GET request
+    Bank_Pod-->>-Lisa: 200 OK (with body)
+    opt process request
+        Lisa-)Lisa: ...
+    end
+
+    %% (2) Nachfrage aktuelle Unternehmenssituation
+    note over Tom,StB_Pod: (2) Nachfrage aktuelle Unternehmenssituation
+    Lisa-)KMU_Pod: POST request_for_data
+
+    Tom->>+KMU_Pod: GET request
+    KMU_Pod-->>-Tom: 200 OK (with body)
+
+    %% (3) Anfrage Nachweis über Unternehmenssituation
+    note over Tom,StB_Pod: (3) Anfrage Nachweis über Unternehmenssituation
+    Tom-)StB_Pod: POST forward_request_for_data
+
+    Max->>+StB_Pod: GET request
+    StB_Pod-->>-Max: 200 OK (with body)
+    opt process request
+        Max->>StB_Pod: collect_data
+    end
+    Max->>StB_Pod: set_authorization
+
+    %% (4) Lieferung Nachweis
+    note over Tom,StB_Pod: (4) Lieferung Nachweis
+    alt 
+    Max-)KMU_Pod: POST notify_access
+    Tom->>+KMU_Pod: GET notify
+    KMU_Pod-->>-Tom: 200 OK (with body)
+    Tom-)Bank_Pod: POST notify_access
+    else
+    Max-)Bank_Pod: POST notify_access
+    end
+
+    Lisa->>+Bank_Pod: GET notify
+    Bank_Pod-->>-Lisa: 200 OK (with body)
+    Lisa->>+StB_Pod: GET data
+    StB_Pod-->>-Lisa: 200 OK (with body)
+    opt process request
+        Lisa-)Lisa: ...
+    end
+    note over Lisa: Omitting the case where no offer is made.
+
+    %% (5) Lieferung Kreditangebot
+    note over Tom,StB_Pod: (5) Lieferung Kreditangebot
+    Lisa-)KMU_Pod: POST offer_contract
+
+    Tom->>+KMU_Pod: GET offer
+    KMU_Pod-->>-Tom: 200 OK (with body)
+    opt process request
+        Tom-)Tom: ...
+    end
+    Tom-)Bank_Pod: POST accept_contract
+end
+
+%% Durchführung und Überwachung der Partnerschaft
+rect rgb(180, 240, 150) 
+note over Tom,StB_Pod: Durchführung und Überwachung der Partnerschaft
+    loop
+        %% (6) Nachfrage aktuelle Unternehmenssituation
+        note over Tom,StB_Pod: (6) Nachfrage aktuelle Unternehmenssituation
+        Lisa-)KMU_Pod: POST request_for_data
+
+        Tom->>+KMU_Pod: GET request
+        KMU_Pod-->>-Tom: 200 OK (with body)
+       
+
+        %% (7) Anfrage Nachweis über Unternehmenssituation
+        note over Tom,StB_Pod: (7) Anfrage Nachweis über Unternehmenssituation
+        Tom-)StB_Pod: POST forward_request_for_data
+        Max->>+StB_Pod: GET request
+        StB_Pod-->>-Max: 200 OK (with body)
+        opt process request
+            Max->>StB_Pod: collect_data
+            Max->>StB_Pod: set_authorization
+        end
+
+        %% (8) Lieferung Nachweis
+        note over Tom,StB_Pod: (8) Lieferung Nachweis
+        alt 
+        Max-)KMU_Pod: POST notify_access
+        Tom->>+KMU_Pod: GET notify
+        KMU_Pod-->>-Tom: 200 OK (with body)
+        Tom-)Bank_Pod: POST notify_access
+        else
+        Max-)Bank_Pod: POST notify_access
+        end
+
+        Lisa->>+Bank_Pod: GET notify
+        Bank_Pod-->>-Lisa: 200 OK (with body)
+        Lisa->>+StB_Pod: GET data
+        StB_Pod-->>-Lisa: 200 OK (with body)
+        opt process request
+            Lisa-)Lisa: ...
+        end
+        Note over Lisa: What may happen here?
+    end
+end
+
+%% Beendigung der Partnerschaft
+rect rgb(240, 150, 180)
+note over Tom,StB_Pod: Beendigung der Partnerschaft
+    %% (9) Beendigung Vertrag
+    note over Tom,StB_Pod: (9) Beendigung Vertrag
+    alt
+        Tom-)Bank_Pod: POST cancel_contract
+        Lisa->>+Bank_Pod: GET cancel
+    Bank_Pod-->>-Lisa: 200 OK (with body)
+    else
+        Lisa-)KMU_Pod: POST cancel_contract
+    end
+    %% (10) Rückgabe oder archivierung der Nachweise
+    note over Tom,StB_Pod: (10) Rückgabe oder archivierung der Nachweise
+    Lisa-)KMU_Pod: POST settle_contract_data
+    Tom->>+KMU_Pod: GET settle
+    KMU_Pod-->>-Tom: 200 OK (with body)
+end
+
+Tom->>Tom:Live happily ever after.

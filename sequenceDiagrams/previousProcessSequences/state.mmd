@@ -1,0 +1,22 @@
+stateDiagram-v2
+    pre_pending_contract_request: pending_contract_request
+    pre_pending_data_request: pending_data_request
+    pre_pending_contract_offer: pending_contract_offer
+    in_pending_data_request: pending_data_request
+
+    %% Anbahnung Partnerschaft
+    [*] --> pre_pending_contract_request: [KMU] request_for_contract
+    pre_pending_contract_request --> pre_pending_contract_request: [BANK] analyse available data
+    pre_pending_contract_request --> pre_pending_data_request: [BANK] request_for_data
+    pre_pending_data_request --> pre_pending_data_request: [KMU] forward_request_for_data
+    pre_pending_data_request --> pre_pending_contract_request: [STB] collect data & authorize for access
+    pre_pending_contract_request --> pre_pending_contract_offer: [BANK] offer_contract
+    pre_pending_contract_offer --> in_contract: [KMU] accept_contract
+    %% Durchführung und Überwachung der Partnerschaft
+    in_contract --> in_pending_data_request: [BANK] request_for_data
+    in_pending_data_request --> in_pending_data_request: [KMU] forward_request_for_data
+    in_pending_data_request --> in_contract: [STB] collect data & authorize for access
+    in_contract --> in_contract: [BANK] analyse available data
+    %% Beendigung der Partnerschaft
+    in_contract --> contract_settlement: [KMU/BANK] cancel_contract
+    contract_settlement --> [*]: [BANK] settle_contract_data
