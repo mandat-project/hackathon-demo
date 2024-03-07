@@ -29,7 +29,7 @@ import ToastService from "primevue/toastservice";
 import BadgeDirective from 'primevue/badgedirective';
 
 import "primeflex/primeflex.css"; // layouts
-import "primevue/resources/themes/vela-green/theme.css"; // theme
+import "@shared/theme";
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css"; // icons
 

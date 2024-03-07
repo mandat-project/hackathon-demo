@@ -1,0 +1,11 @@
+{
+  "name": "@shared/theme",
+  "version": "1.0.0",
+  "main": "src/themes/mytheme/theme.css",
+  "scripts": {
+    "build": "sass --update src/themes/mytheme/theme.scss:src/themes/mytheme/theme.css"
+  },
+  "devDependencies": {
+    "sass": "^1.71.1"
+  }
+}
