@@ -3,8 +3,8 @@
   "short_name": "Lisa PWA",
   "start_url": "./",
   "display": "standalone",
-  "themeColor": "#195B78",
-  "background_color": "#F6F7F9",
+  "themeColor": "#1f2d40",
+  "background_color": "#1f2d40",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",

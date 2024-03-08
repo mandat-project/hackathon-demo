@@ -73,7 +73,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div>
+  <div class="header">
     <Toolbar>
       <template #start>
         <router-link to="/inbox/">
@@ -111,20 +111,28 @@ export default defineComponent({
         <LogoutButton v-else/>
       </template>
     </Toolbar>
-    <div style="height: 75px" id="header-bar-spacer"/>
   </div>
+  <div style="height: 75px" id="header-bar-spacer"/>
 </template>
 
 <style scoped>
-.p-toolbar {
+.header {
+  background: linear-gradient(90deg, #195B78 0%, #287F8F 100%);
+  padding: 1.5rem;
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
-  height: 75px;
   border: 0;
   box-shadow: 0 0 10px -5px black;
   z-index: 1;
+}
+
+.p-toolbar {
+  height: 75px;
+  background: white;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.9);
 }
 
 .p-toolbar-group-left span {
