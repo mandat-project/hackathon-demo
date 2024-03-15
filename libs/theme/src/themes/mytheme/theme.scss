@@ -1,9 +1,0 @@
-@import './variables';
-@import './_fonts';
-@import '../../theme-base/_components';
-@import './_extensions';
-
-h1, title {
-    font-family: var(--font-family-serif);
-    font-weight: 400;
-}

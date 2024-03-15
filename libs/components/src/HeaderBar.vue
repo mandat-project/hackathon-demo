@@ -77,7 +77,7 @@ export default defineComponent({
     <Toolbar>
       <template #start>
         <router-link to="/inbox/">
-          <div v-if="inboxBadge === 0">
+          <div v-if="inboxBadge === 0" class="flex align-items-center">
             <Avatar v-if="isLoggedIn" shape="circle" style="border: 2px solid var(--primary-color)">
               <img v-if="img && isLoggedIn" :src="img"/>
               <i v-if="!img && isLoggedIn" class="pi pi-user"/>
@@ -97,6 +97,8 @@ export default defineComponent({
         >
           <span>{{ name }}</span>
         </a>
+        <Divider v-if="webId" layout="vertical" />
+        <Button v-if="webId" class="p-button-rounded">Demands</Button>
       </template>
       <template #end>
         <Button
@@ -128,25 +130,16 @@ export default defineComponent({
   z-index: 1;
 }
 
-.p-toolbar {
-  height: 75px;
-  background: white;
-  border-radius: 8px;
-  color: rgba(0, 0, 0, 0.9);
-}
-
 .p-toolbar-group-left span {
-  margin-left: 10px;
-  margin-right: 10px;
-  font-size: 150%;
+  margin-left: 0.5rem;
   max-width: 59.5vw;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .p-toolbar-group-left .p-avatar {
-  width: 2.357rem;
-  height: 2.357rem;
+  width: 2rem;
+  height: 2rem;
 }
 
 .p-toolbar-group-left a {

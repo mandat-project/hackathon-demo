@@ -1,0 +1,15 @@
+/* Customizations to the designer theme should be defined here */
+
+h1, title {
+    font-family: var(--font-family-serif);
+    font-weight: 400;
+}
+
+.p-toolbar {
+    background: white;
+    font-size: 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+
+    border-radius: 8px;
+    color: rgba(0, 0, 0, 0.9);
+}

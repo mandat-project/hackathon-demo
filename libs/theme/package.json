@@ -1,9 +1,9 @@
 {
   "name": "@shared/theme",
   "version": "1.0.0",
-  "main": "src/themes/mytheme/theme.css",
+  "main": "src/datev-theme/theme.scss",
   "scripts": {
-    "build": "sass --update src/themes/mytheme/theme.scss:src/themes/mytheme/theme.css"
+    "build": "sass --update src/datev-theme/theme.scss:src/datev-themes/theme.css"
   },
   "devDependencies": {
     "sass": "^1.71.1"
