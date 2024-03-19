@@ -1,7 +1,7 @@
 <template>
   <HeaderBar />
 
-  <div v-if="isLoggedIn" class="m-0 lg:m-5">
+  <div v-if="isLoggedIn" class="m-0">
     <router-view />
   </div>
   <span v-else>

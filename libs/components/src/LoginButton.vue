@@ -1,7 +1,14 @@
 <template>
   <div class="login-button" @click="isDisplaingIDPs = !isDisplaingIDPs">
     <slot>
-      <Button icon="pi pi-sign-in" class="p-button-rounded"/>
+      <Button  class=" p-button-text p-button-rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+          <path fill="#3B3B3B" fill-opacity=".9" d="M10 1a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9Z"/>
+          <path fill="#fff" d="M10 2c4.411 0 8 3.589 8 8s-3.589 8-8 8-8-3.589-8-8 3.589-8 8-8Z"/>
+          <path fill="#00451D" fill-opacity=".9" d="M15.946 15.334C15.684 13.265 14.209 12 11.944 12H8.056c-2.265 0-3.74 1.265-4.001 3.334A7.97 7.97 0 0 0 10 18a7.975 7.975 0 0 0 5.946-2.666ZM10 4c-1.629 0-3 .969-3 3 0 1.155.664 4 3 4 2.143 0 3-2.845 3-4 0-1.906-1.543-3-3-3Z"/>
+          <path fill="#7AD200" d="M8 7c0-1.74 1.253-2 2-2 .969 0 2 .701 2 2 0 .723-.602 3-2 3-1.652 0-2-2.507-2-3Zm3.944 6H8.056C6.222 13 5 14 5 16v.235A7.954 7.954 0 0 0 10 18a7.954 7.954 0 0 0 5-1.765V16c0-2-1.222-3-3.056-3Z"/>
+        </svg>
+      </Button>
     </slot>
   </div>
   <Dialog
