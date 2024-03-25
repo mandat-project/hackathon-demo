@@ -343,6 +343,7 @@ async function getOfferStore(demandOffers: Array<Quad["object"]>) {
     .then((parsedN3) => parsedN3.store);
 }
 
+// TODO Patch order (get order, set schema:acceptedOffer)
 const createOrder = async (offerId: String) => {
   const payload = `\
       @prefix schema: <${SCHEMA()}> .

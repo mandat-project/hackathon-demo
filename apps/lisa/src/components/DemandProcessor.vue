@@ -489,7 +489,12 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
         throw new Error(err);
       })
       .then(getLocationHeader);
+  // TODO create order and get location
+
+  // TODO PatchOrderInOffer
   await patchOfferInDemand(demand, offerLocation)
+
+  // TODO Grant Access for specific order instead of container
   const offerSelfAcccessRequestLocation = await requestAccessBeingSet(offerLocation, demanderUri.value!)
   await patchBusinessResourceToHaveAccessRequest(offerLocation, offerSelfAcccessRequestLocation + "#accessRequest")
   refreshState(); // update state
