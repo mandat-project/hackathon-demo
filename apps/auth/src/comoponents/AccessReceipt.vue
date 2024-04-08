@@ -42,7 +42,7 @@
             </Button>
           </div>
           <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization"
-               class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
+               class="p-card " style="margin: 5px">
             <Suspense>
               <AccessAuthorization :resourceURI="accessAuthorization"
                                    :accessAuthzContainer="accessAuthzContainer"

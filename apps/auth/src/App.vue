@@ -34,6 +34,7 @@ const { isLoggedIn } = toRefs(sessionInfo);
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
+  /* font-size: x-large; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -42,24 +43,32 @@ const { isLoggedIn } = toRefs(sessionInfo);
   .p-card{
     border: solid;
   }
-  /* .accessAuthorization{
-    background-color:red;
-  }
-  .dataAuthorization{
-    background-color:blue;
-  }
-  .accessNeed{
-    background-color: green;
-  }
-  .accessNeedGroup{
-    background-color: orange;
-  }
-  /* .accessReceipt{
-    background-color: pink;
-  } */
-  /* .accessRequests{
-    background-color: pink;
-  }  */
+
+  /* .accessAuthorization{ */
+    /* background-color:red; */
+    /* font-size:x-large; */
+  /* } */
+  /* .dataAuthorization{ */
+    /* background-color:blue; */
+    /* font-size:x-large; */
+  /* } */
+  /* .accessNeed{ */
+    /* background-color: green; */
+    /* font-size:x-large; */
+  /* } */
+  /* .accessNeedGroup{ */
+    /* background-color: orange; */
+    /* font-size:x-large; */
+  /* } */
+   /* .accessReceipt{ */
+    /* background-color: pink; */
+    /* font-size:x-large; */
+  /* }  */
+   /* .accessRequests{ */
+    /* background-color: pink; */
+    /* font-size:x-large; */
+  /* }  */
+  
 
 }
 </style>

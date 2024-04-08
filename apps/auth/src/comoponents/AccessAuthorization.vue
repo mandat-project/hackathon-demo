@@ -37,7 +37,7 @@
                 </Button>
             </div>
             <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization"
-                class="p-card col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
+                class="p-card" style="margin: 5px">
                 <Suspense>
                     <DataAuthorization :resourceURI="dataAuthorization"
                         :groupRevokationTrigger="isWaitingForDataAuthorizations"

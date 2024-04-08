@@ -32,7 +32,7 @@
             <strong>Access Need Groups</strong>
           </div>
           <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup"
-               class="p-card  col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
+               class="p-card  " style="margin: 5px">
             <Suspense>
               <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"
                                :accessAuthzContainer="accessAuthzContainer" :dataAuthzContainer="dataAuthzContainer"
