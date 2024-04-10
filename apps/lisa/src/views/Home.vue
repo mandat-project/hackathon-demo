@@ -8,10 +8,12 @@
     <ul class="col-12 flex flex-column gap-4">
       <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
-        <hr class="w-full" v-if="index !== 0">
+        <div class="w-full" v-if="index === 0"></div>
         <Suspense>
           <!-- main content -->
-          <DemandProcessor :demandUri="demandUri" />
+          <li>
+            <DemandProcessor :demandUri="demandUri" />
+          </li>
           <!-- loading state -->
           <template #fallback>
             <div>

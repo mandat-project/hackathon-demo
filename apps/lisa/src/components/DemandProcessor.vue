@@ -1,93 +1,207 @@
 <template>
-  <li>
-    <h3>
-      <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
-      Transaction number:
-      <a :href="props.demandUri">{{ props.demandUri.split("/").pop() }}</a>
-    </h3>
+  <div class="container">
 
-    <ul class="flex flex-column gap-2">
+    <div class="content-left">
+      <div class="refresh-container">
+        <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
+      </div>
 
-      <li class="flex align-items-center gap-1">
-        <p>From: <a :href="demanderUri">{{ demanderName }} </a></p>
-        <img :src="demanderIconUri" width="25" alt="demander icon">
-      </li>
+      <Stepper orientation="vertical">
+        <StepperPanel :header="`Request business assessment data from ${demanderName}`">
+            <template #content="{ nextCallback }">
+                <div class="flex flex-column h-12rem">
+                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content I</div>
+                </div>
+                <div class="flex py-4">
+                    <Button label="Next" @click="nextCallback" />
+                </div>
+            </template>
+        </StepperPanel>
+        <StepperPanel :header="`Fetch processed business assessment data from ${demanderName}`">
+            <template #content="{ prevCallback, nextCallback }">
+                <div class="flex flex-column h-12rem">
+                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content II</div>
+                </div>
+                <div class="flex py-4 gap-2">
+                    <Button label="Back" severity="secondary" @click="prevCallback" />
+                    <Button label="Next" @click="nextCallback" />
+                </div>
+            </template>
+        </StepperPanel>
+        <StepperPanel :header="`Request creation of new business assessment data from ${demanderName}`">
+            <template #content="{ prevCallback, nextCallback }">
+                <div class="flex flex-column h-12rem">
+                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content II</div>
+                </div>
+                <div class="flex py-4 gap-2">
+                    <Button label="Back" severity="secondary" @click="prevCallback" />
+                    <Button label="Next" @click="nextCallback" />
+                </div>
+            </template>
+        </StepperPanel>
+        <StepperPanel :header="`Create an offer for ${demanderName}`">
+            <template #content="{ prevCallback }">
+                <div class="flex flex-column h-12rem">
+                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content III</div>
+                </div>
+                <div class="flex py-4">
+                    <Button label="Back" severity="secondary" @click="prevCallback" />
+                </div>
+            </template>
+        </StepperPanel>
+      </Stepper>
 
-      <li class="flex align-items-center gap-1">
-        <p>Amount: {{ amount }} {{ currency }}</p>
-      </li>
-
-      <li class="flex align-items-center gap-2">
-        <div class="col">
-          <span class="align-self-center font-bold">Select additional Data to Request</span>
-          <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
-        </div>
-      </li>
-
-      <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-                @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
-        </Button>
-      </li>
-
-      <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary"
-                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
-        </Button>
-      </li>
-
-      <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary"
-                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                @click="requestCreationOfData()">Request creation of new business assessment data from {{
-            demanderName
-          }}
-        </Button>
-      </li>
-
-      <li class="flex align-items-center gap-2">
-        <div class="grid">
-          <span class="align-self-center font-bold">Annual percentage rate % </span>
+      <ul class="flex flex-column gap-2">
+        <li class="flex align-items-center gap-2">
           <div class="col">
-            <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
+            <span class="align-self-center font-bold">Select additional Data to Request</span>
+            <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
           </div>
-        </div>
-        <div class="grid">
-          <span class="align-self-center font-bold">Loan terms</span>
-          <div class="col">
-            <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
-                      placeholder="Select loan term"/>
+        </li>
+        <li class="flex align-items-center gap-2">
+          <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
+                  @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
+          </Button>
+        </li>
+        <li class="flex align-items-center gap-2">
+          <Button class="p-button p-button-secondary"
+                  v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                  @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
+          </Button>
+        </li>
+        <li class="flex align-items-center gap-2">
+          <Button class="p-button p-button-secondary"
+                  v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                  @click="requestCreationOfData()">Request creation of new business assessment data from {{
+              demanderName
+            }}
+          </Button>
+        </li>
+        <li class="flex align-items-center gap-2">
+          <div class="grid">
+            <span class="align-self-center font-bold">Annual percentage rate % </span>
+            <div class="col">
+              <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
+            </div>
           </div>
-        </div>
-      </li>
-      <li class="flex align-items-center gap-2">
-        <Button class="p-button p-button-secondary" :disabled="!isAccessRequestGranted || isOfferCreated"
-                @click="createOfferResource(props.demandUri, accessRequestUri!)">Create an offer for
-          {{ demanderName }}
-        </Button>
+          <div class="grid">
+            <span class="align-self-center font-bold">Loan terms</span>
+            <div class="col">
+              <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
+                        placeholder="Select loan term"/>
+            </div>
+          </div>
+        </li>
+        <li class="flex align-items-center gap-2">
+          <Button class="p-button p-button-secondary" :disabled="!isAccessRequestGranted || isOfferCreated"
+                  @click="createOfferResource(props.demandUri, accessRequestUri!)">Create an offer for
+            {{ demanderName }}
+          </Button>
 
-        <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
-          &check; Offer accepted
-        </span>
-        <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
-          <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
-            <!-- Make offer accessible -->
-            <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
-              <Button type="submit" class="p-button-text p-button-danger"
-                      @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
-              </Button>
+          <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
+            &check; Offer accepted
+          </span>
+          <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
+            <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
+              <!-- Make offer accessible -->
+              <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
+                <Button type="submit" class="p-button-text p-button-danger"
+                        @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
+                </Button>
+              </span>
+            </span>
+            <span v-else>
+              &#9749; Waiting for response
             </span>
           </span>
-          <span v-else>
-            &#9749; Waiting for response
-          </span>
-        </span>
-      </li>
+        </li>
+      </ul>
+    </div>
 
-    </ul>
-  </li>
+    <div class="content-right">
+      <div class="amount">
+        <p class="amount-label">Amount</p>
+        <p class="amount-value">{{ amount }} {{ currency }}</p>
+      </div>
+
+      <div class="demand">
+        <a :href="props.demandUri">Demand</a>
+      </div>
+    </div>
+  </div>
 </template>
+
+
+
+<style>
+.container {
+  display: flex;
+  border-radius: 0.5rem;
+  box-shadow: 0px 1px 6px 0px rgba(44, 51, 53, 0.06), 0px 1px 24px 0px rgba(44, 51, 53, 0.09);
+  overflow: hidden;
+  margin-left: 1rem;
+  margin-right: 2rem;
+}
+
+.content-left {
+  flex: 1;
+  background-color: white;
+  padding: 1.5rem;
+}
+
+.content-right {
+  width: 21rem;
+  background-color: rgba(208, 222, 227, 1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.refresh-container {
+  position: relative;
+
+  Button {
+    position: absolute;
+    top: 0;
+    right: -0.5rem;
+    z-index: 1;
+  }
+}
+
+.amount {
+  width: 100%;
+
+  .amount-label {
+    text-align: right;
+
+  }
+
+  .amount-value {
+    font-size: 2rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 1);
+    text-align: right;
+  }
+}
+
+.demand {
+  display: flex;
+  justify-content: space-between;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: white;
+}
+
+hr {
+  border: 1px solid var(--surface-d);
+}
+</style>
 
 <script setup lang="ts">
 import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
@@ -627,17 +741,3 @@ async function handleAuthorizationRequestRedirect(
       .then(() => delete appMemory[accessRequestURI]);
 }
 </script>
-
-<style>
-p {
-  margin: 0;
-}
-
-a {
-  color: white;
-}
-
-hr {
-  border: 1px solid var(--surface-d);
-}
-</style>

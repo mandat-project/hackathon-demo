@@ -22,6 +22,9 @@ import TabMenu from "primevue/tabmenu";
 import ContextMenu from 'primevue/contextmenu';
 import Menu from 'primevue/menu';
 import Divider from "primevue/divider";
+import Stepper from 'primevue/stepper';
+import StepperPanel from 'primevue/stepperpanel';
+
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from "primevue/tooltip";
@@ -67,6 +70,8 @@ app.component("ContextMenu", ContextMenu);
 app.component("ConfirmDialog", ConfirmDialog);
 app.component("Menu", Menu);
 app.component("Divider", Divider);
+app.component("Stepper", Stepper);
+app.component("StepperPanel", StepperPanel);
 
 app.directive('badge', BadgeDirective);
 app.directive("tooltip", Tooltip);
