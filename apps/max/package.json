@@ -9,5 +9,13 @@
   },
   "vuePlugins": {
     "resolveFrom": "../../"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.24.3",
+    "@vue/test-utils": "^2.4.5",
+    "@vue/vue3-jest": "^29.2.6",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
   }
 }

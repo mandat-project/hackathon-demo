@@ -1,3 +1,16 @@
 module.exports = {
-    extends: '../../babel.base-config.js',
+    env: {
+        test: {
+            presets: [
+                [
+                    "@babel/preset-env",
+                    {
+                        targets: {
+                            node: "current",
+                        },
+                    },
+                ],
+            ],
+        },
+    },
 }
