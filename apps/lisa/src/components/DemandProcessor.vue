@@ -9,8 +9,13 @@
       <Stepper orientation="vertical">
         <StepperPanel :header="`Request business assessment data from ${demanderName}`">
             <template #content="{ nextCallback }">
-                <div class="flex flex-column h-12rem">
-                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content I</div>
+                <div class="flex flex-column">
+                  <div class="col">
+                    <span class="align-self-center font-bold">Select additional Data to Request: </span>
+                    <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
+                  </div>
+                  <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
+                          @click="requestAccessToData()">Data Request</Button>
                 </div>
                 <div class="flex py-4">
                     <Button label="Next" @click="nextCallback" />
@@ -19,8 +24,10 @@
         </StepperPanel>
         <StepperPanel :header="`Fetch processed business assessment data from ${demanderName}`">
             <template #content="{ prevCallback, nextCallback }">
-                <div class="flex flex-column h-12rem">
-                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content II</div>
+                <div class="flex flex-column">
+                  <Button class="p-button p-button-secondary"
+                          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                          @click="fetchProcessedData()">Processed Data</Button>
                 </div>
                 <div class="flex py-4 gap-2">
                     <Button label="Back" severity="secondary" @click="prevCallback" />
@@ -30,8 +37,13 @@
         </StepperPanel>
         <StepperPanel :header="`Request creation of new business assessment data from ${demanderName}`">
             <template #content="{ prevCallback, nextCallback }">
-                <div class="flex flex-column h-12rem">
-                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content II</div>
+                <div class="flex flex-column">
+                  <Button class="p-button p-button-secondary"
+                          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                          @click="requestCreationOfData()">Request creation of new business assessment data from {{
+                      demanderName
+                    }}
+                  </Button>
                 </div>
                 <div class="flex py-4 gap-2">
                     <Button label="Back" severity="secondary" @click="prevCallback" />
@@ -41,8 +53,38 @@
         </StepperPanel>
         <StepperPanel :header="`Create an offer for ${demanderName}`">
             <template #content="{ prevCallback }">
-                <div class="flex flex-column h-12rem">
-                    <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">Content III</div>
+                <div class="flex flex-column">
+                  <div class="grid">
+                    <span class="align-self-center font-bold">Annual percentage rate % </span>
+                    <div class="col">
+                      <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
+                    </div>
+                  </div>
+                  <div class="grid">
+                    <span class="align-self-center font-bold">Loan terms</span>
+                    <div class="col">
+                      <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
+                                placeholder="Select loan term"/>
+                    </div>
+                  </div>
+                  <Button class="p-button p-button-secondary" :disabled="!isAccessRequestGranted || isOfferCreated"
+                          @click="createOfferResource(props.demandUri, accessRequestUri!)">Offer Creation</Button>
+                  <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
+                    &check; Offer accepted
+                  </span>
+                  <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
+                    <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
+                      <!-- Make offer accessible -->
+                      <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
+                        <Button type="submit" class="p-button-text p-button-danger"
+                                @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
+                        </Button>
+                      </span>
+                    </span>
+                    <span v-else>
+                      &#9749; Waiting for response
+                    </span>
+                  </span>
                 </div>
                 <div class="flex py-4">
                     <Button label="Back" severity="secondary" @click="prevCallback" />
@@ -53,67 +95,8 @@
 
       <ul class="flex flex-column gap-2">
         <li class="flex align-items-center gap-2">
-          <div class="col">
-            <span class="align-self-center font-bold">Select additional Data to Request</span>
-            <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
-          </div>
         </li>
         <li class="flex align-items-center gap-2">
-          <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-                  @click="requestAccessToData()">Request business assessment data from {{ demanderName }}
-          </Button>
-        </li>
-        <li class="flex align-items-center gap-2">
-          <Button class="p-button p-button-secondary"
-                  v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                  @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
-          </Button>
-        </li>
-        <li class="flex align-items-center gap-2">
-          <Button class="p-button p-button-secondary"
-                  v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                  @click="requestCreationOfData()">Request creation of new business assessment data from {{
-              demanderName
-            }}
-          </Button>
-        </li>
-        <li class="flex align-items-center gap-2">
-          <div class="grid">
-            <span class="align-self-center font-bold">Annual percentage rate % </span>
-            <div class="col">
-              <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
-            </div>
-          </div>
-          <div class="grid">
-            <span class="align-self-center font-bold">Loan terms</span>
-            <div class="col">
-              <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
-                        placeholder="Select loan term"/>
-            </div>
-          </div>
-        </li>
-        <li class="flex align-items-center gap-2">
-          <Button class="p-button p-button-secondary" :disabled="!isAccessRequestGranted || isOfferCreated"
-                  @click="createOfferResource(props.demandUri, accessRequestUri!)">Create an offer for
-            {{ demanderName }}
-          </Button>
-
-          <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
-            &check; Offer accepted
-          </span>
-          <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
-            <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
-              <!-- Make offer accessible -->
-              <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
-                <Button type="submit" class="p-button-text p-button-danger"
-                        @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
-                </Button>
-              </span>
-            </span>
-            <span v-else>
-              &#9749; Waiting for response
-            </span>
-          </span>
         </li>
       </ul>
     </div>
@@ -125,7 +108,12 @@
       </div>
 
       <div class="demand">
-        <a :href="props.demandUri">Demand</a>
+        <a :href="props.demandUri">
+          Demand
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0504 10L7 3.97107L8.13615 3L14 10L8.13615 17L7 16.0289L12.0504 10Z" fill="black" fill-opacity="0.9"/>
+          </svg>
+        </a>
       </div>
     </div>
   </div>
@@ -152,13 +140,14 @@
 .content-right {
   width: 21rem;
   background-color: rgba(208, 222, 227, 1);
-  padding: 1.5rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .refresh-container {
+  display: none;
   position: relative;
 
   Button {
@@ -187,7 +176,16 @@
 
 .demand {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.9);
+  }
 }
 
 p {
@@ -401,6 +399,7 @@ async function patchBusinessResourceToHaveAccessRequest(businessResource: string
 }
 
 async function requestAccessToData() {
+  console.log('request access data');
   const accessRequestBody = `@prefix interop: <${INTEROP()}> .
     @prefix ldp: <${LDP()}> .
     @prefix skos: <${SKOS()}> .
