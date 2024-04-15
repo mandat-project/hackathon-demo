@@ -7,67 +7,59 @@
       </div>
 
       <Stepper orientation="vertical">
-        <StepperPanel :header="`Request business assessment data from ${demanderName}`">
+        <StepperPanel class="stepper-panel" :header="`Request business assessment data from ${demanderName}`">
             <template #content="{ nextCallback }">
                 <div class="flex flex-column">
-                  <div class="col">
-                    <span class="align-self-center font-bold">Select additional Data to Request: </span>
+                  <div class="dropdown-container">
+                    <span>Select additional Data to Request:</span>
                     <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
                   </div>
-                  <Button class="p-button p-button-secondary" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
+                  <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                           @click="requestAccessToData()">Data Request</Button>
                 </div>
-                <div class="flex py-4">
-                    <Button label="Next" @click="nextCallback" />
+                <div class="flex p-2">
+                  <Button class="button-next" label="Next" @click="nextCallback" />
                 </div>
             </template>
         </StepperPanel>
         <StepperPanel :header="`Fetch processed business assessment data from ${demanderName}`">
             <template #content="{ prevCallback, nextCallback }">
                 <div class="flex flex-column">
-                  <Button class="p-button p-button-secondary"
+                  <Button class="step-button"
                           v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
                           @click="fetchProcessedData()">Processed Data</Button>
                 </div>
-                <div class="flex py-4 gap-2">
-                    <Button label="Back" severity="secondary" @click="prevCallback" />
-                    <Button label="Next" @click="nextCallback" />
+                <div class="flex p-2 gap-2">
+                    <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
+                    <Button class="button-next" label="Next" @click="nextCallback" />
                 </div>
             </template>
         </StepperPanel>
         <StepperPanel :header="`Request creation of new business assessment data from ${demanderName}`">
             <template #content="{ prevCallback, nextCallback }">
                 <div class="flex flex-column">
-                  <Button class="p-button p-button-secondary"
+                  <Button class="step-button"
                           v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                          @click="requestCreationOfData()">Request creation of new business assessment data from {{
-                      demanderName
-                    }}
-                  </Button>
+                          @click="requestCreationOfData()">Business Assessment</Button>
                 </div>
-                <div class="flex py-4 gap-2">
-                    <Button label="Back" severity="secondary" @click="prevCallback" />
-                    <Button label="Next" @click="nextCallback" />
+                <div class="flex p-2 gap-2">
+                    <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
+                    <Button class="button-next" label="Next" @click="nextCallback" />
                 </div>
             </template>
         </StepperPanel>
         <StepperPanel :header="`Create an offer for ${demanderName}`">
             <template #content="{ prevCallback }">
                 <div class="flex flex-column">
-                  <div class="grid">
-                    <span class="align-self-center font-bold">Annual percentage rate % </span>
-                    <div class="col">
-                      <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
-                    </div>
+                  <div class="dropdown-container">
+                    <span>Annual percentage rate %:</span>
+                    <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
                   </div>
-                  <div class="grid">
-                    <span class="align-self-center font-bold">Loan terms</span>
-                    <div class="col">
-                      <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label"
-                                placeholder="Select loan term"/>
-                    </div>
+                  <div class="dropdown-container">
+                    <span>Loan terms:</span>
+                    <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>
                   </div>
-                  <Button class="p-button p-button-secondary" :disabled="!isAccessRequestGranted || isOfferCreated"
+                  <Button class="step-button" :disabled="!isAccessRequestGranted || isOfferCreated"
                           @click="createOfferResource(props.demandUri, accessRequestUri!)">Offer Creation</Button>
                   <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
                     &check; Offer accepted
@@ -76,7 +68,7 @@
                     <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
                       <!-- Make offer accessible -->
                       <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
-                        <Button type="submit" class="p-button-text p-button-danger"
+                        <Button type="submit" class="step-button"
                                 @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
                         </Button>
                       </span>
@@ -86,8 +78,8 @@
                     </span>
                   </span>
                 </div>
-                <div class="flex py-4">
-                    <Button label="Back" severity="secondary" @click="prevCallback" />
+                <div class="flex p-2">
+                    <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
                 </div>
             </template>
         </StepperPanel>
@@ -144,6 +136,52 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.p-stepper-title {
+  font-family: "Noto Sans Display", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: rgba(0, 0, 0, 1);
+}
+
+.dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.step-button {
+  color: rgba(0, 108, 110, 1);
+  text-decoration: underline;
+  width: fit-content;
+  font-weight: bold;
+}
+
+.button-next {
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 500;
+  min-width: 4rem;
+  background: rgba(153, 232, 39, 1);
+  border-radius: 4px;
+  border-width: 1px, 1px, 0px, 1px;
+  border-style: solid;
+  border-color: rgba(32, 151, 12, 0.5);
+  box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
+}
+
+.button-back {
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 500;
+  min-width: 4rem;
+  background: rgba(246, 247, 249, 1);
+  border-radius: 4px;
+  border-width: 1px, 1px, 0px, 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
 }
 
 .refresh-container {
