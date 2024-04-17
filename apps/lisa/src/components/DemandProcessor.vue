@@ -33,7 +33,8 @@
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
+                @click="fetchProcessedData()">Fetch processed business assessment data from
+          {{ demanderName }}
         </Button>
       </li>
 
@@ -70,6 +71,7 @@
         <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
           &check; Offer accepted
         </span>
+
         <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
           <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
             <!-- Make offer accessible -->
@@ -82,6 +84,13 @@
           <span v-else>
             &#9749; Waiting for response
           </span>
+        </span>
+      </li>
+
+      <li class="flex align-items-center gap-2">
+        <span>
+          <Button v-bind:disabled="!hasOrderForAnyOfferForThisDemand && hasTerminatedOrder" class="p-button p-button-secondary" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
+          </Button>
         </span>
       </li>
 
@@ -244,11 +253,20 @@ watch(() => offersForDemand.value,
     async () => {
       const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
       const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
-      fillItemStoresIntoStore(orderItems, state.orderStore)
+      await fillItemStoresIntoStore(orderItems, state.orderStore)
     }, {immediate: true})
 const hasOrderForAnyOfferForThisDemand = computed(() => {
   const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
+});
+
+const hasTerminatedOrder = computed(() => {
+  let acceptedOrders : string[] = [];
+  for (const offer of offersForDemand.value){
+    acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
+  }
+  const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), "true", null).map(subject => subject.value);
+  return acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
 
 async function fetchProcessedData() {
@@ -423,6 +441,36 @@ async function patchDocumentCreationDemandInDemand(demandURI: string, documentCr
       })
 }
 
+async function SetTerminationFlagInOrder(offersForDemand: string[]) {
+  const orderURIs = state.orderStore.getSubjects( SCHEMA("acceptedOffer"), offersForDemand[0], null).map(x => x.value);
+  return getResource(orderURIs[0], authFetch.value)
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, orderURIs[0]))
+      .then((parsedN3) => {
+        parsedN3.store.addQuad(
+            new NamedNode(orderURIs[0]),
+            new NamedNode(CREDIT("isTerminated")),
+            new Literal(`"true"^^${XSD("boolean")}`)
+        );
+        const writer = new Writer({
+          format: "text/turtle",
+          prefixes: parsedN3.prefixes,
+        });
+        writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
+        let body = "";
+        writer.end((error, result) => (body = result));
+        return body;
+      })
+      .then((body) => {
+        return putResource(orderURIs[0], body, authFetch.value);
+      })
+      .then(_ => toast.add({
+        severity: "success",
+        summary: "Termination set successfully",
+        life: 5000,
+      }));
+}
+
 async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<Response> {
   // GET the current data
   return getResource(demandURI, authFetch.value)
@@ -489,18 +537,15 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
         throw new Error(err);
       })
       .then(getLocationHeader);
-  // TODO create order and get location
 
-  // TODO PatchOrderInOffer
   await patchOfferInDemand(demand, offerLocation)
 
-  // TODO Grant Access for specific order instead of container
   const offerSelfAcccessRequestLocation = await requestAccessBeingSet(offerLocation, demanderUri.value!)
   await patchBusinessResourceToHaveAccessRequest(offerLocation, offerSelfAcccessRequestLocation + "#accessRequest")
   refreshState(); // update state
   toast.add({
     severity: "success",
-    summary: "Offer created sucessfully",
+    summary: "Offer created successfully",
     life: 5000,
   });
 }
@@ -562,7 +607,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 
     <#accessNeed2>
       a interop:AccessNeed ;
-      interop:accessMode acl:Append ;
+      interop:accessMode acl:Append, acl:Read ;
       interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree> ;
       interop:accessNecessity interop:accessRequired .
 
