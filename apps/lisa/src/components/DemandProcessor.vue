@@ -89,7 +89,8 @@
 
       <li class="flex align-items-center gap-2">
         <span>
-          <Button v-bind:disabled="!hasOrderForAnyOfferForThisDemand && hasTerminatedOrder" class="p-button p-button-secondary" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
+          <Button v-bind:disabled="!hasOrderForAnyOfferForThisDemand && hasTerminatedOrder"
+                  class="p-button p-button-secondary" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
           </Button>
         </span>
       </li>
