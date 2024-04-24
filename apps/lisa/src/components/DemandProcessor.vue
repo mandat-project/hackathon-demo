@@ -15,7 +15,7 @@
                     <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
                   </div>
                   <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-                          @click="requestAccessToData()">Data Request</Button>
+                          @click="requestAccessToData()">Request Data</Button>
                 </div>
                 <div class="flex p-2">
                   <Button class="button-next" label="Next" @click="nextCallback" />
@@ -27,7 +27,7 @@
                 <div class="flex flex-column">
                   <Button class="step-button"
                           v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                          @click="fetchProcessedData()">Processed Data</Button>
+                          @click="fetchProcessedData()">Fetch Processed Data</Button>
                 </div>
                 <div class="flex p-2 gap-2">
                     <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
@@ -40,7 +40,7 @@
                 <div class="flex flex-column">
                   <Button class="step-button"
                           v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                          @click="requestCreationOfData()">Business Assessment</Button>
+                          @click="requestCreationOfData()">Request New Data</Button>
                 </div>
                 <div class="flex p-2 gap-2">
                     <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
@@ -158,6 +158,15 @@
   text-decoration: underline;
   width: fit-content;
   font-weight: bold;
+  border: none;
+
+  &:hover {
+    background-color: rgba(65, 132, 153, 0.2);
+  }
+
+  &:disabled {
+    color: rgba(0, 0, 0, 0.7);
+  }
 }
 
 .button-next {

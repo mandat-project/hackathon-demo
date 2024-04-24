@@ -32,7 +32,7 @@ import router from "./router";
 
 import "./registerServiceWorker"; // service-worker
 import "primeflex/primeflex.css"; // layouts
-import "primevue/resources/themes/vela-green/theme.css"; // theme
+import "@shared/theme";
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css"; // icons
 
