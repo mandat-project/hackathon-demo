@@ -260,12 +260,13 @@ const hasOrderForAnyOfferForThisDemand = computed(() => {
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
 });
 
-const hasTerminatedOrder = computed(() => {
+const hasTerminatedOrder = ref(false);
+watch(state.orderStore, () => {
   let acceptedOrders : string[] = [];
   for (const offer of offersForDemand.value){
     acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
   }
-  const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), "true", null).map(subject => subject.value);
+  const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), `"true"^^${XSD("boolean")}`, null).map(subject => subject.value);
   return acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
 
