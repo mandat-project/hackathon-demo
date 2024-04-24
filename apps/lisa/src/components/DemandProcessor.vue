@@ -6,7 +6,7 @@
         <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
       </div>
 
-      <Stepper orientation="vertical">
+      <Stepper orientation="vertical" v-model:active-step="activeStep">
         <StepperPanel class="stepper-panel" :header="`Request business assessment data from ${demanderName}`">
             <template #content="{ nextCallback }">
                 <div class="flex flex-column">
@@ -335,6 +335,7 @@ async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
 }
 
 function refreshState() {
+  setActiveProcessStep();
   state.demandStore = new Store()
   state.offerStore = new Store()
   state.orderStore = new Store()
@@ -349,6 +350,7 @@ const isAccessRequestGranted = computed(() => state.demandStore.getQuads(props.d
 const amount = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
 const currency = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
+let activeStep = computed(() => setActiveProcessStep());
 
 // DEMANDER
 watch(() => demanderUri.value,
@@ -400,6 +402,20 @@ const hasOrderForAnyOfferForThisDemand = computed(() => {
   const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
 });
+
+function setActiveProcessStep(): number {
+  let step = 0;
+  if (accessRequestUri.value === undefined && !isOfferCreated.value) {
+    step = 0;
+  }
+  if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
+    step = 1;
+  }
+  if (isAccessRequestGranted.value && offerAccessRequests.value.length > 0) {
+    step = 3;
+  }
+  return step;
+}
 
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
