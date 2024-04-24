@@ -267,7 +267,7 @@ watch(state.orderStore, () => {
     acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
   }
   const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), `"true"^^${XSD("boolean")}`, null).map(subject => subject.value);
-  return acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
+  hasTerminatedOrder.value = acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
 
 async function fetchProcessedData() {
