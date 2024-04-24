@@ -89,7 +89,7 @@
 
       <li class="flex align-items-center gap-2">
         <span>
-          <Button v-bind:disabled="!hasOrderForAnyOfferForThisDemand && hasTerminatedOrder"
+          <Button v-bind:disabled="!(hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder)"
                   class="p-button p-button-secondary" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
           </Button>
         </span>
@@ -267,7 +267,9 @@ watch(state.orderStore, () => {
   for (const offer of offersForDemand.value){
     acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
   }
-  const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), `"true"^^${XSD("boolean")}`, null).map(subject => subject.value);
+  console.log("AcceptedOrders :" + acceptedOrders)
+  const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), null, null).map(subject => subject.value);
+  console.log("TerminatedOrders : " + terminatedOrders)
   hasTerminatedOrder.value = acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
 
