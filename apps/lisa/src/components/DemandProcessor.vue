@@ -267,9 +267,7 @@ watch(state.orderStore, () => {
   for (const offer of offersForDemand.value){
     acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
   }
-  console.log("AcceptedOrders :" + acceptedOrders)
   const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), null, null).map(subject => subject.value);
-  console.log("TerminatedOrders : " + terminatedOrders)
   hasTerminatedOrder.value = acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
 
