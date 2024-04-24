@@ -57,7 +57,7 @@ const accessRequestInformationResources = ref<Array<string>>([]);
 const handledAccessRequests = ref<Array<string>>([]);
 // only display not yet handled
 const displayAccessRequests = computed(() =>
-  accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
+    accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
 )
 
 /**
@@ -69,7 +69,7 @@ async function getAccessRequests(accessInbox: string) {
     return [];
   }
   if (props.inspectedAccessRequestURI) {
-    return [props.inspectedAccessRequestURI]
+    return [props.inspectedAccessRequestURI.split('#')[0]]
   }
   return await getContainerItems(accessInbox, authFetch.value)
 }
