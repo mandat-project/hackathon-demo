@@ -68,7 +68,7 @@
           {{ demanderName }}
         </Button>
 
-        <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
+        <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder">
           &check; Offer accepted
         </span>
 
@@ -92,6 +92,9 @@
           <Button v-bind:disabled="!(hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder)"
                   class="p-button p-button-secondary" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
           </Button>
+        </span>
+        <span v-if="hasTerminatedOrder">
+            ❌ Credit contract terminated!
         </span>
       </li>
 
