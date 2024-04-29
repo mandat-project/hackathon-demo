@@ -30,7 +30,7 @@ import RadioButton from "primevue/radiobutton";
 import InputSwitch from "primevue/inputswitch"; // icons
 
 import "primeflex/primeflex.css"; // layouts
-import "primevue/resources/themes/vela-blue/theme.css"; // theme
+import "@shared/theme"; // theme
 import "primevue/resources/primevue.min.css"; // core css
 import "primeicons/primeicons.css";
 

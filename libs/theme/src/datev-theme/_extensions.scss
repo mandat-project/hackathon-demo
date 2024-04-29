@@ -16,6 +16,11 @@ h1, title {
 
 .p-button {
     padding: 0.5rem;
+    font-weight: bold;
+
+    &:hover {
+      background-color: rgba(65, 132, 153, 0.2);
+    }
 }
 
 .p-button-rounded {

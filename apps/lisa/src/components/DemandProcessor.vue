@@ -1,88 +1,123 @@
 <template>
   <div class="container">
-
     <div class="content-left">
       <div class="refresh-container">
         <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
       </div>
-
       <Stepper orientation="vertical" v-model:active-step="activeStep">
-        <StepperPanel class="stepper-panel" :header="`Request business assessment data from ${demanderName}`">
-            <template #content="{ nextCallback }">
-                <div class="flex flex-column">
-                  <div class="dropdown-container">
-                    <span>Select additional Data to Request:</span>
-                    <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
-                  </div>
-                  <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-                          @click="requestAccessToData()">Request Data</Button>
-                </div>
-                <div class="flex p-2">
-                  <Button class="button-next" label="Next" @click="nextCallback" />
-                </div>
-            </template>
+          
+        <StepperPanel>
+          <template #header="{ index, clickCallback }">
+            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
+              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
+              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
+                {{ `Request business assessment data from ${demanderName}` }}
+              </span>
+            </button>
+          </template>
+          <template #content="{ nextCallback }">
+            <div class="flex flex-column">
+              <div class="dropdown-container">
+                <span>Select additional Data to Request:</span>
+                <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
+              </div>
+              <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
+                      @click="requestAccessToData()">Request Data</Button>
+            </div>
+            <div class="flex p-2">
+              <Button class="button-next" label="Next" @click="nextCallback" />
+            </div>
+          </template>
         </StepperPanel>
-        <StepperPanel :header="`Fetch processed business assessment data from ${demanderName}`">
-            <template #content="{ prevCallback, nextCallback }">
-                <div class="flex flex-column">
-                  <Button class="step-button"
-                          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                          @click="fetchProcessedData()">Fetch Processed Data</Button>
-                </div>
-                <div class="flex p-2 gap-2">
-                    <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-                    <Button class="button-next" label="Next" @click="nextCallback" />
-                </div>
-            </template>
+
+        <StepperPanel>
+          <template #header="{ index, clickCallback }">
+            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
+              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
+              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
+                {{ `Fetch processed business assessment data from ${demanderName}` }}
+              </span>
+            </button>
+          </template>
+          <template #content="{ prevCallback, nextCallback }">
+            <div class="flex flex-column">
+              <Button class="step-button"
+                      v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                      @click="fetchProcessedData()">Fetch Processed Data</Button>
+            </div>
+            <div class="flex p-2 gap-2">
+              <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
+              <Button class="button-next" label="Next" @click="nextCallback" />
+            </div>
+          </template>
         </StepperPanel>
-        <StepperPanel :header="`Request creation of new business assessment data from ${demanderName}`">
-            <template #content="{ prevCallback, nextCallback }">
-                <div class="flex flex-column">
-                  <Button class="step-button"
-                          v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                          @click="requestCreationOfData()">Request New Data</Button>
-                </div>
-                <div class="flex p-2 gap-2">
-                    <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-                    <Button class="button-next" label="Next" @click="nextCallback" />
-                </div>
-            </template>
+
+        <StepperPanel>
+          <template #header="{ index, clickCallback }">
+            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
+              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
+              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
+                {{ `Request creation of new business assessment data from ${demanderName}` }}
+              </span>
+            </button>
+          </template>
+          <template #content="{ prevCallback, nextCallback }">
+            <div class="flex flex-column">
+              <Button class="step-button"
+                      v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
+                      @click="requestCreationOfData()">Request New Data</Button>
+            </div>
+            <div class="flex p-2 gap-2">
+              <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
+              <Button class="button-next" label="Next" @click="nextCallback" />
+            </div>
+          </template>
         </StepperPanel>
-        <StepperPanel :header="`Create an offer for ${demanderName}`">
-            <template #content="{ prevCallback }">
-                <div class="flex flex-column">
-                  <div class="dropdown-container">
-                    <span>Annual percentage rate %:</span>
-                    <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
-                  </div>
-                  <div class="dropdown-container">
-                    <span>Loan terms:</span>
-                    <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>
-                  </div>
-                  <Button class="step-button" :disabled="!isAccessRequestGranted || isOfferCreated"
-                          @click="createOfferResource(props.demandUri, accessRequestUri!)">Offer Creation</Button>
-                  <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
-                    &check; Offer accepted
+
+        <StepperPanel>
+          <template #header="{ index, clickCallback }">
+            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
+              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
+              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
+                {{ `Create an offer for ${demanderName}` }}
+              </span>
+            </button>
+          </template>
+          <template #content="{ prevCallback }">
+            <div class="flex flex-column">
+              <div class="dropdown-container">
+                <span>Annual percentage rate %:</span>
+                <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
+              </div>
+              <div class="dropdown-container">
+                <span>Loan terms:</span>
+                <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>
+              </div>
+              <Button class="step-button" :disabled="!isAccessRequestGranted || isOfferCreated"
+                      @click="createOfferResource(props.demandUri, accessRequestUri!)">Offer Creation</Button>
+              <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
+                &check; Offer accepted
+              </span>
+              <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
+                <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
+                  <!-- Make offer accessible -->
+                  <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
+                    <Button type="submit" class="step-button"
+                            @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
+                    </Button>
                   </span>
-                  <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
-                    <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
-                      <!-- Make offer accessible -->
-                      <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
-                        <Button type="submit" class="step-button"
-                                @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
-                        </Button>
-                      </span>
-                    </span>
-                    <span v-else>
-                      &#9749; Waiting for response
-                    </span>
-                  </span>
-                </div>
-                <div class="flex p-2">
-                    <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-                </div>
-            </template>
+                </span>
+                <span v-else>
+                  &#9749; Waiting for response
+                </span>
+              </span>
+            </div>
+            <div class="flex p-2">
+                <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
+            </div>
+          </template>
         </StepperPanel>
+
       </Stepper>
 
       <ul class="flex flex-column gap-2">
@@ -138,11 +173,21 @@
   justify-content: space-between;
 }
 
+.p-stepper-number {
+  &.step-inactive {
+    background-color: rgb(200, 200, 200);
+  }
+}
+
 .p-stepper-title {
   font-family: "Noto Sans Display", Arial, sans-serif;
   font-weight: 500;
   font-size: 1rem;
   color: rgba(0, 0, 0, 1);
+
+  &.step-inactive {
+    color: rgba(0, 0, 0, 0.6);
+  }
 }
 
 .dropdown-container {
@@ -153,12 +198,18 @@
   margin-bottom: 0.5rem;
 }
 
+.p-dropdown-panel {
+  /* causes known bug: https://github.com/primefaces/primevue/issues/4043 */
+  /* display: none; */
+}
+
 .step-button {
   color: rgba(0, 108, 110, 1);
   text-decoration: underline;
   width: fit-content;
   font-weight: bold;
   border: none;
+  margin-left: 0.5rem;
 
   &:hover {
     background-color: rgba(65, 132, 153, 0.2);
