@@ -68,6 +68,7 @@
   <span v-else>
     401 Unauthenticated : Login using the button in the top-right corner!
   </span>
+  <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase" data-ribbon="GitHub" title="GitHub">GitHub</a>
 </template>
 
 <script setup lang="ts">

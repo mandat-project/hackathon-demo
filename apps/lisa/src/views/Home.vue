@@ -24,6 +24,7 @@
       </template>
     </ul>
   </div>
+  <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase" data-ribbon="GitHub" title="GitHub">GitHub</a>
 </template>
 
 <style scoped>

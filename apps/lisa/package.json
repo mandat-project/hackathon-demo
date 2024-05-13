@@ -18,5 +18,8 @@
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0"
+  },
+  "dependencies": {
+    "github-fork-ribbon-css": "^0.2.3"
   }
 }
