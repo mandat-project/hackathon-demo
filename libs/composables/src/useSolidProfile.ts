@@ -38,8 +38,24 @@ watch(
     inbox.value = query.length > 0 ? query[0].value : "";
     query = store.getObjects(webId, SPACE("storage"), null);
     storage.value = query.length > 0 ? query[0].value : "";
+
     query = store.getObjects(webId, INTEROP("hasAuthorizationAgent"), null);
-    authAgent.value = query.length > 0 ? query[0].value : "";
+    const localAuthApp = query.filter(x => x.value.includes("localhost"));
+    const remoteAuthApp = query.filter(x => !x.value.includes("localhost"));
+    const request = new XMLHttpRequest();
+    request.open('GET', localAuthApp[0].value, true);
+    request.onreadystatechange = function(){
+      if (request.readyState === 4){
+        if (request.status === 404) {
+          authAgent.value = remoteAuthApp.length > 0 ? remoteAuthApp[0]. value : "";
+        }
+        else {
+          authAgent.value = localAuthApp.length > 0 ? localAuthApp[0].value : "";
+        }
+      }
+    };
+    request.send();
+
     query = store.getObjects(webId, INTEROP("hasAccessInbox"), null);
     accessInbox.value = query.length > 0 ? query[0].value : "";
   }
