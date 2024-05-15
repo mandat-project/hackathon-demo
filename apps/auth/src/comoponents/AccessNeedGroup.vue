@@ -48,7 +48,7 @@ import {
   SKOS,
   createResource,
   getLocationHeader,
-  XSD,
+  XSD, GDPRP,
 } from "@shared/solid";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
@@ -58,6 +58,7 @@ const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "access
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
 const {authFetch, sessionInfo} = useSolidSession();
 const toast = useToast();
+const sharingPurposeURI = "https://sme.solid.aifb.kit.edu/GDPR-Purposes/bwaSharingPurpose.ttl#sharingPurposeP1";
 
 // get data
 const store = ref(new Store());
@@ -209,9 +210,11 @@ async function createAccessAuthorization(
   const payload = `
     @prefix interop:<${INTEROP()}> .
     @prefix xsd:<${XSD()}> .
+    @prefix gdprp:<${GDPRP()}> .
 
     <#${accessAuthzLocalName}>
       a interop:AccessAuthorization ;
+      gdprp:purposeForProcessing <${sharingPurposeURI}> ;
       interop:grantedBy <${sessionInfo.webId}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${forSocialAgents
