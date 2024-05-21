@@ -1,39 +1,62 @@
 <template>
-  <div class="grid">
-    <div class="col-12 lg:col-12 lg:col-offset-0">
-      <h2>Your Access Manager</h2>
-      <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-        @click=" reloadFlag = !reloadFlag" />
+  <h1 class="header col-12 flex align-items-center gap-2">
+    Your Access Manager
+    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click=" reloadFlag = !reloadFlag"/>
+  </h1>
+  <div style="height: 75px" id="header-bar-spacer" />
+  <div class="requestContainer">
+    <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
+      class="p-card" style="margin: 5px">
+      <Suspense>
+        <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
+          :accessAuthzArchiveContainer="accessAuthzArchiveContainer" @isReceiptForRequests="addRequestsToHandled" />
+        <template #fallback>
+          <span>
+            Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
+          </span>
+        </template>
+      </Suspense>
     </div>
-    <div class="col-12 lg:col-12 lg:col-offset-0">
-      <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
-        class="p-card" style="margin: 5px">
-        <Suspense>
-          <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
-            :accessAuthzArchiveContainer="accessAuthzArchiveContainer" @isReceiptForRequests="addRequestsToHandled" />
-          <template #fallback>
-            <span>
-              Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
-            </span>
-          </template>
-        </Suspense>
-      </div>
-      <div v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag" class="p-card"
-        style="margin: 5px">
-        <Suspense>
-          <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
-            :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
-            :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceipts" />
-          <template #fallback>
-            <span>
-              Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
-            </span>
-          </template>
-        </Suspense>
-      </div>
+    <div v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
+      <Suspense>
+        <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
+          :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
+          :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceipts" />
+        <template #fallback>
+          <span>
+            Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+          </span>
+        </template>
+      </Suspense>
     </div>
   </div>
 </template>
+
+<style scoped>
+.header {
+  background: linear-gradient(90deg, #195B78 0%, #287F8F 100%);
+  color: white;
+  position: fixed;
+  padding: 0.5rem 2.5rem 1rem 2.5rem;
+  box-shadow: 0 0 10px -5px black;
+  z-index: 1;
+
+  .p-button {
+    margin-left: 0.5rem;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.05);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.requestContainer {
+  width: 60rem;
+  margin: 2rem auto;
+}
+</style>
 
 <script lang="ts" setup>
 import AccessRequest from "../comoponents/AccessRequest.vue";
@@ -61,7 +84,7 @@ const displayAccessRequests = computed(() =>
 
 /**
  * Retrieve access requests from an access inbox
- * @param accessInbox 
+ * @param accessInbox
  */
 async function getAccessRequests(accessInbox: string) {
   if (!accessInbox) {
@@ -100,7 +123,7 @@ async function getAccessReceipts() {
 }
 /**
  * when an access receipt states that it is associated to specific access requests
- * @param requests 
+ * @param requests
  */
 function addRequestsToHandled(requests: string[]) {
   handledAccessRequests.value.push(...requests)

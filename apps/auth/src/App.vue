@@ -1,7 +1,7 @@
 <template>
   <HeaderBar />
 
-  <div v-if="isLoggedIn" class="m-0 lg:m-5">
+  <div v-if="isLoggedIn">
     <router-view />
   </div>
   <span v-else>
@@ -32,12 +32,61 @@ const { isLoggedIn } = toRefs(sessionInfo);
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+html {
+  width: 100vw;
+  height: 100vh;
+  overscroll-behavior-y: contain;
+}
 
+body {
+  overscroll-behavior-y: contain;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--surface-b);
+  font-family: var(--font-family);
+  font-weight: 400;
+  color: var(--text-color);
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#app {
+  height: 100%;
+  width: 100%;
+}
+
+.no-tap-highlight {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border: none;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: cadetblue;
+}
+
+/* PrimeFlex Overrides */
+.grid {
+  margin: 5px !important;
+}
+.p-button {
+  -webkit-tap-highlight-color: transparent;
 }
 </style>
