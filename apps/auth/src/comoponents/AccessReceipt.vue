@@ -26,7 +26,7 @@
             <div>
               <div class="fieldLabel">Access Authorizations</div>
             </div>
-            <div v-if="nonEmptyAuthorizations.length > 0" style="margin: 20px">
+            <div v-if="nonEmptyAuthorizations.length > 0" style="margin: 1rem 0">
               <!-- TODO Freeze -->
               <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
       class="btn btn-primary p-button-warning">
@@ -38,7 +38,7 @@
               </Button>
             </div>
             <div v-else>
-              <Button disabled class="p-button-rounded p-button-danger m-2">
+              <Button disabled class="p-button-rounded p-button-danger" style="margin-bottom: 1rem;">
                 {{ accessAuthorizations.length > 0 ? 'Revoked' : 'Denied' }}
               </Button>
             </div>

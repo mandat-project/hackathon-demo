@@ -22,7 +22,7 @@
             </a>
         </div>
         <div v-if="dataAuthorizations.length > 0">
-            <div>
+            <div class="dataAuthorizations">
                 <div class="fieldLabel">Data Authorizations</div>
             </div>
             <div>
@@ -31,7 +31,7 @@
                 class="btn btn-primary p-button-warning">
                 Freeze
             </Button> -->
-                <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
+                <Button @click="revokeRights" type="button" style="margin: 1rem 0" class="btn btn-primary p-button-danger"
                     :disabled="isWaitingForDataAuthorizations">
                     Revoke all authorizations in this group
                 </Button>
@@ -75,6 +75,14 @@ a {
   color: rgba(0, 108, 110, 1);
   text-decoration: underline;
   font-weight: bold;
+}
+
+.dataAuthorizations {
+  margin-top: 1rem;
+
+  .fieldLabel {
+    font-size: 1.1rem;
+  }
 }
 </style>
 

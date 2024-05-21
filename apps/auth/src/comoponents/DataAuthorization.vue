@@ -36,7 +36,7 @@
                 {{ dataInstance.split("/").pop() }}
             </a>
         </div>
-        <div>
+        <div class="field">
             <div class="fieldLabel">Access Mode: </div>
             <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
                 {{ accessMode.split("#")[1] }}
@@ -48,7 +48,7 @@
                 class="btn btn-primary p-button-warning">
                 Freeze
             </Button> -->
-            <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
+            <Button @click="revokeRights" type="button" style="margin: 1rem 0" class="btn btn-primary p-button-danger"
                 :disabled="groupRevokationTrigger">
                 Revoke this authorization
             </Button>
