@@ -47,7 +47,7 @@
               <span v-if="demand.offer && !demand.order?.isTerminated">(interest rate %: {{ demand.offer.interestRate }})</span>
               <span v-if="demand.offer && !demand.order?.isTerminated">(duration: {{ demand.offer.duration }})</span>
               <span v-if="demand.order?.isTerminated">(credit contract terminated)</span>
-              <span v-else>(currently no offer)</span>
+              <span v-if="!demand.offer">(currently no offer)</span>
             </div>
             <Button v-if="demand.hasAccessRequest &&
               !(demand.isAccessRequestGranted == 'true')
