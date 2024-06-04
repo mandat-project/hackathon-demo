@@ -80,7 +80,7 @@ import {NamedNode, Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
 
-const props = defineProps(["informationResourceURI", "accessAuthzContainer", "accessAuthzArchiveContainer"]);
+const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
 const {authFetch} = useSolidSession();
 const toast = useToast();
@@ -187,6 +187,15 @@ async function revokeRights() {
   // then removeAccessAuthroizations
   await updateAccessReceipt(replacedAccessAuthorizations.value)
   isWaitingForAccessAuthorizations.value = false
+
+  if (props.redirect) {
+    window.open(
+      `${props.redirect}?uri=${encodeURIComponent(
+        props.informationResourceURI
+      )}`,
+      "_self"
+    );
+  }
 }
 
 /**
@@ -203,8 +212,17 @@ async function updateAccessAuthorization(newAuthorization: string, oldAuthorizat
     return
   }
   // else, just remove this one data authorization from the event
-  return updateAccessReceipt([{newAuthorization, oldAuthorization}])
+  await updateAccessReceipt([{newAuthorization, oldAuthorization}])
     .then(() => replacedAccessAuthorizations.value.length = 0) // reset replaced, because otherwise old URIs are in cache
+
+  if (props.redirect) {
+    window.open(
+      `${props.redirect}?uri=${encodeURIComponent(
+        props.informationResourceURI
+      )}`,
+      "_self"
+    );
+  }
 }
 
 /**

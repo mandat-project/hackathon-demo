@@ -9,7 +9,7 @@
       <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
         class="p-card" style="margin: 5px">
         <Suspense>
-          <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
+          <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer" :redirect="redirect"
             :accessAuthzArchiveContainer="accessAuthzArchiveContainer" @isReceiptForRequests="addRequestsToHandled" />
           <template #fallback>
             <span>
@@ -23,7 +23,7 @@
         <Suspense>
           <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
             :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
-            :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceipts" />
+            :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceiptInformationResources" />
           <template #fallback>
             <span>
               Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
@@ -38,10 +38,11 @@
 <script lang="ts" setup>
 import AccessRequest from "../comoponents/AccessRequest.vue";
 import AccessReceipt from "../comoponents/AccessReceipt.vue";
-import { createContainer, getContainerItems, getResource } from "@shared/solid";
+import {AUTH, createContainer, getContainerItems, getResource, parseToN3} from "@shared/solid";
 import { useSolidProfile, useSolidSession } from "@shared/composables";
 import { computed, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
+import {Store} from "n3";
 
 const toast = useToast();
 
@@ -56,19 +57,19 @@ const accessRequestInformationResources = ref<Array<string>>([]);
 const handledAccessRequests = ref<Array<string>>([]);
 // only display not yet handled
 const displayAccessRequests = computed(() =>
-  accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
+    accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
 )
 
 /**
  * Retrieve access requests from an access inbox
- * @param accessInbox 
+ * @param accessInbox
  */
-async function getAccessRequests(accessInbox: string) {
+async function getAccessRequestInformationResources(accessInbox: string) {
   if (!accessInbox) {
     return [];
   }
   if (props.inspectedAccessRequestURI) {
-    return [props.inspectedAccessRequestURI]
+    return [props.inspectedAccessRequestURI.split('#')[0]]
   }
   return await getContainerItems(accessInbox, authFetch.value)
 }
@@ -78,13 +79,16 @@ async function getAccessRequests(accessInbox: string) {
 watch(
   () => accessInbox.value,
   () => {
-    getAccessRequests(accessInbox.value).then((newAccessRequestResources) =>
+    getAccessRequestInformationResources(accessInbox.value).then((newAccessRequestResources) =>
       accessRequestInformationResources.value.push(...newAccessRequestResources)
     )
     if (!props.inspectedAccessRequestURI) {
       // TODO Anzeige schön machen: Focus item (und vllt trotzdem im Hintergrund Dinge laden? Oder eigene Komponente für Focus/Übersicht)
-      getAccessReceipts().then(newAccessReceipts =>
+      getAccessReceiptInformationResources().then(newAccessReceipts =>
         accessReceiptInformationResources.value.push(...newAccessReceipts))
+    } else {
+      getAccessReceiptInformationResourcesForAccessRequest(props.inspectedAccessRequestURI).then(accessReceipts =>
+        accessReceiptInformationResources.value.push(...accessReceipts));
     }
   }
 );
@@ -95,17 +99,55 @@ const accessReceiptInformationResources = ref<Array<string>>([]);
 /**
  * get the access receipts
  */
-async function getAccessReceipts() {
+async function getAccessReceiptInformationResources() {
   return await getContainerItems(accessReceiptContainer.value, authFetch.value)
 }
+
+async function getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
+  const accessReceiptStore = new Store();
+  const accessReceiptContainerItems = await getAccessReceiptInformationResources();
+
+  await fillItemStoresIntoStore(accessReceiptContainerItems, accessReceiptStore)
+
+  return accessReceiptStore.getSubjects(AUTH("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
+}
+
+
 /**
  * when an access receipt states that it is associated to specific access requests
- * @param requests 
+ * @param requests
  */
 function addRequestsToHandled(requests: string[]) {
   handledAccessRequests.value.push(...requests)
 }
 
+/**
+ * Util Functions
+ */
+async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
+  const itemStores: Store[] = await Promise.all(
+    itemUris.map((item) => fetchStoreOf(item))
+  )
+  itemStores
+    .map(itemStore => itemStore.getQuads(null, null, null, null))
+    .map((quads) => store.addQuads(quads))
+}
+
+async function fetchStoreOf(uri: string): Promise<Store> {
+  return getResource(uri, authFetch.value)
+    .catch((err) => {
+      toast.add({
+        severity: "error",
+        summary: "Error on fetchDemand!",
+        detail: err,
+        life: 5000,
+      });
+      throw new Error(err);
+    })
+    .then((resp) => resp.text())
+    .then((txt) => parseToN3(txt, uri))
+    .then((parsedN3) => parsedN3.store);
+}
 
 
 /**
@@ -113,17 +155,17 @@ function addRequestsToHandled(requests: string[]) {
  */
 const reloadFlag = ref(false)
 watch(() => reloadFlag.value, () => {
-  refreshAccessRequests()
-  refreshAccessReceipts()
+  refreshAccessRequestInformationResources()
+  refreshAccessReceiptInformationResources()
 }
 )
-async function refreshAccessRequests() {
-  const newListOfAccessRequests = await getAccessRequests(accessInbox.value);
+async function refreshAccessRequestInformationResources() {
+  const newListOfAccessRequests = await getAccessRequestInformationResources(accessInbox.value);
   accessRequestInformationResources.value.length = 0;
   accessRequestInformationResources.value.push(...newListOfAccessRequests);
 }
-async function refreshAccessReceipts() {
-  const newListOfAccessReceipts = await getAccessReceipts();
+async function refreshAccessReceiptInformationResources() {
+  const newListOfAccessReceipts = await getAccessReceiptInformationResources();
   accessReceiptInformationResources.value.length = 0;
   accessReceiptInformationResources.value.push(...newListOfAccessReceipts);
 }

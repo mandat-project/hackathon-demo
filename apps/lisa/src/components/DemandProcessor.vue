@@ -33,7 +33,8 @@
       <li class="flex align-items-center gap-2">
         <Button class="p-button p-button-secondary"
                 v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false' || isOfferCreated"
-                @click="fetchProcessedData()">Fetch processed business assessment data from {{ demanderName }}
+                @click="fetchProcessedData()">Fetch processed business assessment data from
+          {{ demanderName }}
         </Button>
       </li>
 
@@ -67,9 +68,10 @@
           {{ demanderName }}
         </Button>
 
-        <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
+        <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder">
           &check; Offer accepted
         </span>
+
         <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
           <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
             <!-- Make offer accessible -->
@@ -82,6 +84,17 @@
           <span v-else>
             &#9749; Waiting for response
           </span>
+        </span>
+      </li>
+
+      <li class="flex align-items-center gap-2">
+        <span>
+          <Button v-bind:disabled="!(hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder)"
+                  class="p-button p-button-secondary" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
+          </Button>
+        </span>
+        <span v-if="hasTerminatedOrder">
+            ❌ Credit contract terminated!
         </span>
       </li>
 
@@ -113,7 +126,7 @@ import {
 } from '@shared/solid';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
-import {computed, reactive, ref, toRefs, watch} from 'vue';
+import {Ref, computed, reactive, ref, toRefs, watch} from 'vue';
 
 const props = defineProps<{ demandUri: string }>();
 const {accessInbox, authAgent} = useSolidProfile()
@@ -175,13 +188,14 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       .then((parsedN3) => parsedN3.store);
 }
 
-async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
+async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag:Ref<boolean> ) {
   const itemStores: Store[] = await Promise.all(
       itemUris.map((item) => fetchStoreOf(item))
   )
   itemStores
       .map(itemStore => itemStore.getQuads(null, null, null, null))
       .map((quads) => store.addQuads(quads))
+  flag.value = !flag.value
 }
 
 function refreshState() {
@@ -214,10 +228,11 @@ const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCAR
 const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value);
 
 // OFFER
+const orderStoreFilledFlag = ref(false)
 const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
 watch(() => offersForDemand.value, () =>
-    fillItemStoresIntoStore(offersForDemand.value, state.offerStore), {immediate: true})
+    fillItemStoresIntoStore(offersForDemand.value, state.offerStore,orderStoreFilledFlag), {immediate: true})
 const offerIsAccessible = computed(() => state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value));
 const offerAccessRequests = computed(() => state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value));
 watch(() => offerAccessRequests.value,
@@ -244,11 +259,21 @@ watch(() => offersForDemand.value,
     async () => {
       const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
       const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
-      fillItemStoresIntoStore(orderItems, state.orderStore)
+      await fillItemStoresIntoStore(orderItems, state.orderStore, orderStoreFilledFlag)
     }, {immediate: true})
 const hasOrderForAnyOfferForThisDemand = computed(() => {
   const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
+});
+
+const hasTerminatedOrder = ref(false);
+watch(() => orderStoreFilledFlag.value == true, () => {
+  let acceptedOrders : string[] = [];
+  for (const offer of offersForDemand.value){
+    acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
+  }
+  const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), null, null).map(subject => subject.value);
+  hasTerminatedOrder.value = acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
 
 async function fetchProcessedData() {
@@ -423,6 +448,37 @@ async function patchDocumentCreationDemandInDemand(demandURI: string, documentCr
       })
 }
 
+async function SetTerminationFlagInOrder(offersForDemand: string[]) {
+  const orderURIs = state.orderStore.getSubjects( SCHEMA("acceptedOffer"), offersForDemand[0], null).map(x => x.value);
+  return getResource(orderURIs[0], authFetch.value)
+      .then((resp) => resp.text())
+      .then((txt) => parseToN3(txt, orderURIs[0]))
+      .then((parsedN3) => {
+        parsedN3.store.addQuad(
+            new NamedNode(orderURIs[0]),
+            new NamedNode(CREDIT("isTerminated")),
+            new Literal(`"true"^^${XSD("boolean")}`)
+        );
+        const writer = new Writer({
+          format: "text/turtle",
+          prefixes: parsedN3.prefixes,
+        });
+        writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
+        let body = "";
+        writer.end((error, result) => (body = result));
+        return body;
+      })
+      .then((body) => {
+        return putResource(orderURIs[0], body, authFetch.value);
+      })
+      .then(_ => toast.add({
+        severity: "success",
+        summary: "Termination set successfully",
+        life: 5000,
+      }))
+      .then(() => refreshState());
+}
+
 async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<Response> {
   // GET the current data
   return getResource(demandURI, authFetch.value)
@@ -489,13 +545,15 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
         throw new Error(err);
       })
       .then(getLocationHeader);
+
   await patchOfferInDemand(demand, offerLocation)
+
   const offerSelfAcccessRequestLocation = await requestAccessBeingSet(offerLocation, demanderUri.value!)
   await patchBusinessResourceToHaveAccessRequest(offerLocation, offerSelfAcccessRequestLocation + "#accessRequest")
   refreshState(); // update state
   toast.add({
     severity: "success",
-    summary: "Offer created sucessfully",
+    summary: "Offer created successfully",
     life: 5000,
   });
 }
