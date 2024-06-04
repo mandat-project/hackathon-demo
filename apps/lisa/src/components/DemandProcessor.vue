@@ -612,7 +612,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 
     <#accessNeed2>
       a interop:AccessNeed ;
-      interop:accessMode acl:Append, acl:Read ;
+      interop:accessMode acl:Append ;
       interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree> ;
       interop:accessNecessity interop:accessRequired .
 
