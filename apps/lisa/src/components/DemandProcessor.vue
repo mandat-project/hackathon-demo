@@ -126,7 +126,7 @@ import {
 } from '@shared/solid';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
-import {computed, reactive, ref, toRefs, watch} from 'vue';
+import {Ref, computed, reactive, ref, toRefs, watch} from 'vue';
 
 const props = defineProps<{ demandUri: string }>();
 const {accessInbox, authAgent} = useSolidProfile()
@@ -188,13 +188,14 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       .then((parsedN3) => parsedN3.store);
 }
 
-async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
+async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag:Ref<boolean> ) {
   const itemStores: Store[] = await Promise.all(
       itemUris.map((item) => fetchStoreOf(item))
   )
   itemStores
       .map(itemStore => itemStore.getQuads(null, null, null, null))
       .map((quads) => store.addQuads(quads))
+  flag.value = !flag.value
 }
 
 function refreshState() {
@@ -227,10 +228,11 @@ const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCAR
 const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value);
 
 // OFFER
+const orderStoreFilledFlag = ref(false)
 const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
 watch(() => offersForDemand.value, () =>
-    fillItemStoresIntoStore(offersForDemand.value, state.offerStore), {immediate: true})
+    fillItemStoresIntoStore(offersForDemand.value, state.offerStore,orderStoreFilledFlag), {immediate: true})
 const offerIsAccessible = computed(() => state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value));
 const offerAccessRequests = computed(() => state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value));
 watch(() => offerAccessRequests.value,
@@ -257,7 +259,7 @@ watch(() => offersForDemand.value,
     async () => {
       const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
       const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
-      await fillItemStoresIntoStore(orderItems, state.orderStore)
+      await fillItemStoresIntoStore(orderItems, state.orderStore, orderStoreFilledFlag)
     }, {immediate: true})
 const hasOrderForAnyOfferForThisDemand = computed(() => {
   const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
@@ -265,7 +267,7 @@ const hasOrderForAnyOfferForThisDemand = computed(() => {
 });
 
 const hasTerminatedOrder = ref(false);
-watch(state.orderStore, () => {
+watch(() => orderStoreFilledFlag.value == true, () => {
   let acceptedOrders : string[] = [];
   for (const offer of offersForDemand.value){
     acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
@@ -473,7 +475,8 @@ async function SetTerminationFlagInOrder(offersForDemand: string[]) {
         severity: "success",
         summary: "Termination set successfully",
         life: 5000,
-      }));
+      }))
+      .then(() => refreshState());
 }
 
 async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<Response> {
