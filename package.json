@@ -24,7 +24,7 @@
     "libs/*"
   ],
   "dependencies": {
-    "@inrupt/solid-client-authn-browser": "^1.12.2",
+    "@inrupt/solid-client-authn-browser": "^1.17.5",
     "@popperjs/core": "^2.11.8",
     "core-js": "^3.8.3",
     "n3": "^1.16.2",
