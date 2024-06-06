@@ -4,9 +4,11 @@
   <div v-if="isLoggedIn">
     <router-view />
   </div>
-  <span v-else>
-    401 Unauthenticated : Login using the button in the top-right corner!
-  </span>
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+    <template #content>
+      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+    </template>
+  </Card>
 
   <Toast
     position="bottom-right"
@@ -21,6 +23,7 @@ import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import { useSolidSession } from "@shared/composables";
 import router from "./router";
 import { toRefs } from "vue";
+import Card from "primevue/card";
 
 // bring user back to the current location
 onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));

@@ -3,7 +3,7 @@
     Your Access Manager
     <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click=" reloadFlag = !reloadFlag"/>
   </h1>
-  <div style="height: 75px" id="header-bar-spacer" />
+  <div style="height: 100px" id="header-bar-spacer" />
   <div class="requestContainer">
     <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
       class="p-card" style="margin: 5px">
@@ -21,7 +21,7 @@
       <Suspense>
         <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
           :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
-          :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceipts" />
+          :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceiptInformationResources" />
         <template #fallback>
           <span>
             Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}

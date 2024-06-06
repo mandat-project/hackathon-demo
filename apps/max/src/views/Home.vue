@@ -125,7 +125,11 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
           </template>
         </Card>
       </ul>
-      <span v-else> 401 Unauthenticated : Login using the button in the top-right corner! </span>
+      <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+        <template #content>
+          <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+        </template>
+      </Card>
     </div>
   </div>
   <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase" data-ribbon="GitHub" title="GitHub">GitHub</a>

@@ -5,9 +5,12 @@
   <div v-if="isLoggedIn" class="m-0 lg:m-5">
     <router-view />
   </div>
-  <span v-else>
-    401 Unauthenticated : Login using the button in the top-right corner!
-  </span>
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+    <template #content>
+      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+    </template>
+  </Card>
+
 
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
   <div style="height: 75px" />
@@ -40,6 +43,8 @@ import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
 import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import router from "./router";
+import Button from "primevue/button";
+import Card from "primevue/card";
 
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
