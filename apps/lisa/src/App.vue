@@ -1,12 +1,15 @@
 <template>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
   <HeaderBar />
 
-  <div v-if="isLoggedIn" class="m-0 lg:m-5">
+  <div v-if="isLoggedIn" class="m-0">
     <router-view />
   </div>
-  <span v-else>
-    401 Unauthenticated : Login using the button in the top-right corner!
-  </span>
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+    <template #content>
+      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+    </template>
+  </Card>
 
   <Dialog
     header="We updated the App!"
@@ -35,6 +38,7 @@ import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
 import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import router from "./router";
+import Card from "primevue/card";
 
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);

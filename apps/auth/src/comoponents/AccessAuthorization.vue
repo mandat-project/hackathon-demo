@@ -1,29 +1,29 @@
 <template>
-    <div class="accessAuthorization">
+    <div class="p-card accessAuthorization">
         <a :href="resourceURI">
           {{ resourceURI.split("/").pop() }}
         </a>
-        <div>
-            <strong>Grant date: </strong>
+        <div class="field">
+            <div class="fieldLabel">Grant date: </div>
             <div v-for="date in grantDates" :key="date">
                 {{ date }}
             </div>
         </div>
-        <div>
-            <strong>Grantees: </strong>
+        <div class="field">
+            <div class="fieldLabel">Grantees: </div>
             <a v-for="grantee in grantees" :key="grantee" :href="grantee">
                 {{ granteeName }}
             </a>
         </div>
-        <div>
-            <strong>Access Need Groups: </strong>
+        <div class="field">
+            <div class="fieldLabel">Access Need Groups: </div>
             <a v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup" :href="accessNeedGroup">
                 {{ accessNeedGroup.split("/").pop() }}
             </a>
         </div>
-        <div class="p-card" style="margin: 5px;" v-if="dataAuthorizations.length > 0">
-            <div>
-                <strong>Data Authorizations</strong>
+        <div v-if="dataAuthorizations.length > 0">
+            <div class="dataAuthorizations">
+                <div class="fieldLabel">Data Authorizations</div>
             </div>
             <div>
                 <!-- TODO Freeze -->
@@ -31,13 +31,12 @@
                 class="btn btn-primary p-button-warning">
                 Freeze
             </Button> -->
-                <Button @click="revokeRights" type="button" style="margin: 20px" class="btn btn-primary p-button-danger"
+                <Button @click="revokeRights" type="button" style="margin: 1rem 0" class="btn btn-primary p-button-danger"
                     :disabled="isWaitingForDataAuthorizations">
                     Revoke all authorizations in this group
                 </Button>
             </div>
-            <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization"
-                class="p-card col-12 lg:col-8 lg:col-offset-2" style="margin: 5px">
+            <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization">
                 <Suspense>
                     <DataAuthorization :resourceURI="dataAuthorization"
                         :groupRevokationTrigger="isWaitingForDataAuthorizations"
@@ -52,6 +51,40 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+.accessAuthorization {
+  margin: 0 0 1rem 1rem;
+  padding: 1rem;
+  border-radius: 7px;
+  background-color: var(--surface-b);
+}
+
+.field {
+  display: flex;
+  margin-bottom: 0;
+}
+
+.fieldLabel {
+  min-width: 18rem;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+a {
+  color: rgba(0, 108, 110, 1);
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.dataAuthorizations {
+  margin-top: 1rem;
+
+  .fieldLabel {
+    font-size: 1.1rem;
+  }
+}
+</style>
 
 <script setup lang="ts">
 import DataAuthorization from "../comoponents/DataAuthorization.vue";
