@@ -87,7 +87,7 @@
             <div class="flex flex-column">
               <div class="dropdown-container">
                 <span>Annual percentage rate %:</span>
-                <InputNumber id="amount" type="number" v-model="enteredAnnualPercentageRate"/>
+                <InputNumber id="amount" type="number" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate"/>
               </div>
               <div class="dropdown-container">
                 <span>Loan terms:</span>
