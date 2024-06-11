@@ -400,7 +400,7 @@ export async function getLinkHeader(
     .then(_checkResponseStatus)
     .then((resp) => {
       if (
-        !(resp.headers instanceof AxiosHeaders && resp.headers.has("Location"))
+        !(resp.headers instanceof AxiosHeaders && resp.headers.has("Link"))
       ) {
         throw new Error(`Link Header at \`${resp.request.url}\` not set.`);
       }

@@ -85,7 +85,7 @@ export default defineComponent({
       .then((resp) => {
           const txt = resp.data
           if (
-            !(resp.headers instanceof AxiosHeaders && resp.headers.has("Location"))
+            !(resp.headers instanceof AxiosHeaders && resp.headers.has("Link"))
           ) {
             throw new Error(`Link Header at \`${resp.request.url}\` not set.`);
           }
