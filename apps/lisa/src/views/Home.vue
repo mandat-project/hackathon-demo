@@ -1,7 +1,8 @@
 <template>
   <h1 class="header col-12 flex align-items-center gap-2">
     Credit Demands
-    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="fetchDemandUris()" />
+    <Button v-if="sessionInfo.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+      @click="fetchDemandUris(sessionInfo.webId)" />
   </h1>
   <div style="height: 100px" id="header-bar-spacer" />
   <div class="grid">
@@ -24,7 +25,8 @@
       </template>
     </ul>
   </div>
-  <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase" data-ribbon="GitHub" title="GitHub">GitHub</a>
+  <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase"
+    data-ribbon="GitHub" title="GitHub">GitHub</a>
 </template>
 
 <style scoped>
@@ -59,16 +61,14 @@ const toast = useToast();
 const { authFetch, sessionInfo } = useSolidSession();
 
 const shapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
-const webId = 'https://bank.solid.aifb.kit.edu/profile/card#me';
 const isLoading = ref(false);
 const demandUris = ref<string[]>([]);
 
 // refetch demandUris on login
-watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? fetchDemandUris() : {});
-fetchDemandUris()
+watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? fetchDemandUris(sessionInfo.webId!) : {}, { immediate: true });
 
 // discovers all containers including demands and add their contents (demands) to demandUris
-async function fetchDemandUris(): Promise<void> {
+async function fetchDemandUris(webId: string): Promise<void> {
 
   demandUris.value = [];
   isLoading.value = true;
@@ -85,7 +85,7 @@ async function fetchDemandUris(): Promise<void> {
         isLoading.value = false;
         throw new Error(err);
       })
-      .then(resp => resp.text())
+      .then(resp => resp.data)
       .then(txt => parseToN3(txt, containerUri))
       .then(parsedN3 => parsedN3.store)
 

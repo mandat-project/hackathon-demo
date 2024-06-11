@@ -161,8 +161,6 @@ const onIncomingRedirect = async () => {
       key_pair
     )
   ).data;
-  // try again, just to be sure, vue router seems to put the code back in, tbd what the issue is, maybe creation of web history?
-  window.history.pushState({}, document.title, url.toString());
 
   // TODO double check if I need to check token for ISS = IDP
 

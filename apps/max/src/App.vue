@@ -1,16 +1,13 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
   <HeaderBar />
 
   <div class="m-0 lg:m-5">
     <router-view />
   </div>
 
-  <Dialog
-    header="We updated the App!"
-    v-model:visible="isOpen"
-    position="bottomright"
-  >
+  <Dialog header="We updated the App!" v-model:visible="isOpen" position="bottomright">
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
     <template #footer>
@@ -18,10 +15,7 @@
     </template>
   </Dialog>
 
-  <Toast
-    position="bottom-right"
-    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
-  />
+  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
 
   <ConfirmDialog />
 </template>
@@ -31,7 +25,6 @@ import { ref, watch } from "vue/";
 import Toast from "primevue/toast";
 import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import { HeaderBar } from "@shared/components";
-import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import router from "./router";
 
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
@@ -39,10 +32,9 @@ const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => {
   isOpen.value = hasUpdatedAvailable.value;
 });
-// bring user back to the current location
-onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
+const { restoreSession } = useSolidSession();
 // re-use Solid session
-useSolidSession().restoreSession();
+router.isReady().then(restoreSession)
 </script>
 
 <style>
@@ -75,6 +67,7 @@ body {
 .grid {
   margin: 5px !important;
 }
+
 .p-button {
   -webkit-tap-highlight-color: transparent;
 }

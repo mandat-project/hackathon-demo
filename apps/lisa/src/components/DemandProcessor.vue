@@ -191,6 +191,7 @@ import {
   getContainerItems,
   GDPRP, RDFS
 } from '@shared/solid';
+import { AxiosResponse } from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {Ref, computed, reactive, ref, toRefs, watch} from 'vue';
@@ -250,7 +251,7 @@ async function fetchStoreOf(uri: string): Promise<Store> {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, uri))
       .then((parsedN3) => parsedN3.store);
 }
@@ -378,7 +379,7 @@ async function patchBusinessResourceToHaveAccessRequest(businessResource: string
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then(txt => txt.concat(`
         <> <${CREDIT('hasAccessRequest')}> <${accessRequest}> .
         <> <${CREDIT('isAccessRequestGranted')}> false .
@@ -504,7 +505,7 @@ async function requestCreationOfData() {
   });
 }
 
-async function patchDocumentCreationDemandInDemand(demandURI: string, documentCreationDemandURI: string): Promise<Response> {
+async function patchDocumentCreationDemandInDemand(demandURI: string, documentCreationDemandURI: string): Promise<AxiosResponse<any, any>> {
   // GET the current data
   return getResource(demandURI, authFetch.value)
       .catch((err) => {
@@ -516,7 +517,7 @@ async function patchDocumentCreationDemandInDemand(demandURI: string, documentCr
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then(txt => txt.concat(`
         <> <${CREDIT('hasDocumentCreationDemand')}> <${documentCreationDemandURI}> .
       `))
@@ -537,7 +538,7 @@ async function patchDocumentCreationDemandInDemand(demandURI: string, documentCr
 async function SetTerminationFlagInOrder(offersForDemand: string[]) {
   const orderURIs = state.orderStore.getSubjects( SCHEMA("acceptedOffer"), offersForDemand[0], null).map(x => x.value);
   return getResource(orderURIs[0], authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, orderURIs[0]))
       .then((parsedN3) => {
         parsedN3.store.addQuad(
@@ -565,7 +566,7 @@ async function SetTerminationFlagInOrder(offersForDemand: string[]) {
       .then(() => refreshState());
 }
 
-async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<Response> {
+async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<AxiosResponse<any, any>> {
   // GET the current data
   return getResource(demandURI, authFetch.value)
       .catch((err) => {
@@ -577,7 +578,7 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then(txt => txt.concat(`
         <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
       `))
@@ -740,7 +741,7 @@ async function handleAuthorizationRequestRedirect(
 ) {
   // patch demand
   return getResource(businessResourceURI, authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, businessResourceURI))
       .then((parsedN3) => {
         parsedN3.store.removeQuads(

@@ -97,7 +97,7 @@ function getResourceAsStore(uri: string): Promise<any> {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then(txt => parseToN3(txt, uri))
       .then(n3 => n3.store);
 }

@@ -332,7 +332,7 @@ const postCreditDemand = async () => {
 
 async function postDocumentCreationDemand(documentCreationDemandURI: string) {
   const documentCreationDemandStore = await getResource(documentCreationDemandURI, authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, documentCreationDemandURI))
       .then((parsedN3) => parsedN3.store);
 
@@ -364,7 +364,7 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
 
 async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {
   return await getResource(demandContainerUris[0], authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandContainerUris[0]))
       .then((parsedN3) => parsedN3.store)
       .catch((err) => {
@@ -375,14 +375,14 @@ async function getCreditDemandContainerStore(demandContainerUris: Array<string>)
 
 async function getCreditDemandStore(demand: any) {
   return await getResource(demand.id, authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demand.id))
       .then((parsedN3) => parsedN3.store);
 }
 
 async function getOfferStore(demandOffers: Array<Quad["object"]>) {
   return await getResource(demandOffers[0].id, authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandOffers[0].id))
       .then((parsedN3) => parsedN3.store);
 }
@@ -424,7 +424,7 @@ async function getprofileCard(webId: string) {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, webId))
       .then((parsedN3) => parsedN3.store);
 }
@@ -465,7 +465,7 @@ async function fetchStoreOf(uri: string): Promise<Store> {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, uri))
       .then((parsedN3) => parsedN3.store);
 }
@@ -501,7 +501,7 @@ async function handleAuthorizationRequestRedirect(
 ) {
   // patch demand
   return getResource(demandUri, authFetch.value)
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandUri))
       .then((parsedN3) => {
         parsedN3.store.removeQuads(

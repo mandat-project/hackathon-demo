@@ -4,16 +4,13 @@
   <div v-if="isLoggedIn">
     <router-view />
   </div>
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;">
     <template #content>
       <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
     </template>
   </Card>
 
-  <Toast
-    position="bottom-right"
-    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
-  />
+  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
 </template>
 
 <script setup lang="ts">
@@ -24,14 +21,12 @@ import router from "./router";
 import { toRefs } from "vue";
 import Card from "primevue/card";
 
-// TODO bring user back to the current location // not sure how to do hat
-// onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
-// TODO make sure to delete code, state, and iss form URL after redirect from IDP
-// re-use Solid session
-useSolidSession().restoreSession();
-// check if logged in
-const { sessionInfo } = useSolidSession();
+const { sessionInfo, restoreSession } = useSolidSession();
 const { isLoggedIn } = toRefs(sessionInfo);
+
+// re-use Solid session
+router.isReady().then(restoreSession)
+
 </script>
 
 <style>
@@ -89,6 +84,7 @@ ol {
 .grid {
   margin: 5px !important;
 }
+
 .p-button {
   -webkit-tap-highlight-color: transparent;
 }

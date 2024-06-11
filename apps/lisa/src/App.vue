@@ -36,20 +36,17 @@ import { ref, toRefs, watch } from "vue";
 import { HeaderBar } from "@shared/components";
 import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
-import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import router from "./router";
 import Card from "primevue/card";
 
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => (isOpen.value = hasUpdatedAvailable.value));
-// bring user back to the current location
-onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
-// re-use Solid session
-useSolidSession().restoreSession();
-// check if logged in
-const { sessionInfo } = useSolidSession();
+const { sessionInfo, restoreSession } = useSolidSession();
 const { isLoggedIn } = toRefs(sessionInfo);
+
+// re-use Solid session
+router.isReady().then(restoreSession)
 </script>
 
 <style>
