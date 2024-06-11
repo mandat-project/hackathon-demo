@@ -23,7 +23,7 @@ const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
 const _getSolidWebPushDetails = async () => {
     const {store} = await getResource(solidWebPushProfile)
-        .then((resp) => resp.text())
+        .then((resp) => resp.data)
         .then((txt) => parseToN3(txt, solidWebPushProfile));
     const service = store.getSubjects(AS("Service"), null, null)[0];
     const inbox = store.getObjects(service, LDP("inbox"), null)[0].value;

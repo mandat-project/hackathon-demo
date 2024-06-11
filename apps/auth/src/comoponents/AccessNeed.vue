@@ -87,7 +87,7 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.resourceURI))
   .then((parsedN3) => (store.value = parsedN3.store));
 

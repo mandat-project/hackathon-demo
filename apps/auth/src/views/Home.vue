@@ -167,7 +167,7 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       });
       throw new Error(err);
     })
-    .then((resp) => resp.text())
+    .then((resp) => resp.data)
     .then((txt) => parseToN3(txt, uri))
     .then((parsedN3) => parsedN3.store);
 }

@@ -119,7 +119,7 @@ state.resourceStore = await getResource(props.resourceURI, authFetch.value)
         });
         throw new Error(err);
     })
-    .then((resp) => resp.text())
+    .then((resp) => resp.data)
     .then((txt) => parseToN3(txt, props.resourceURI))
     .then((parsedN3) => (state.resourceStore = parsedN3.store));
 
@@ -158,7 +158,7 @@ state.granteeStore = await getResource(grantees.value[0], authFetch.value)
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.resourceURI))
   .then((parsedN3) => (state.granteeStore = parsedN3.store));
 
@@ -275,7 +275,7 @@ async function updateAccessControlListToDelete(
             });
             throw new Error(err);
         })
-        .then((resp) => resp.text())
+        .then((resp) => resp.data)
         .then((txt) => parseToN3(txt, aclURI))
         .then((parsedN3) => parsedN3.store);
 

@@ -26,7 +26,7 @@ watch(
     let store = new Store();
     if (sessionInfo.webId !== undefined) {
       store = await getResource(webId, authFetch.value)
-        .then((resp) => resp.text())
+        .then((resp) => resp.data)
         .then((respText) => parseToN3(respText, webId))
         .then((parsedN3) => parsedN3.store);
     }

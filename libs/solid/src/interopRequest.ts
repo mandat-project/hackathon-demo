@@ -1,4 +1,5 @@
 import { createResource, getResource, INTEROP, parseToN3 } from "@shared/solid";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Store } from "n3";
 
 export type AccessNeed = {
@@ -31,28 +32,36 @@ export async function createResourceInAnyRegistrationOfShape(
   webId: string,
   shapeTreeUri: string,
   resourceBody: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ) {
   const offerContainerUris = (
-    await getDataRegistrationContainers(webId, shapeTreeUri, fetch)
+    await getDataRegistrationContainers(webId, shapeTreeUri, axiosFetch)
   )[0];
-  return await createResource(offerContainerUris, resourceBody, fetch);
+  return await createResource(offerContainerUris, resourceBody, axiosFetch);
 }
 
 export async function getDataRegistrationContainers(
   webId: string,
   shapeTreeUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ): Promise<string[]> {
-  const registrySetUris = await getRegistrySet(webId, fetch);
+  const registrySetUris = await getRegistrySet(webId, axiosFetch);
   const dataRegistryUris = [];
   for (const registrySetUri of registrySetUris) {
-    dataRegistryUris.push(...(await getDataRegistry(registrySetUri, fetch)));
+    dataRegistryUris.push(
+      ...(await getDataRegistry(registrySetUri, axiosFetch))
+    );
   }
   const dataRegistrationUris = [];
   for (const dataRegistryUri of dataRegistryUris) {
     dataRegistrationUris.push(
-      ...(await getDataRegistrations(dataRegistryUri, fetch))
+      ...(await getDataRegistrations(dataRegistryUri, axiosFetch))
     );
   }
   const dataRegistrationsOfShapeUris = [];
@@ -60,7 +69,7 @@ export async function getDataRegistrationContainers(
     const hasMatchingShape = await filterDataRegistrationUrisByShapeTreeUri(
       dataRegistrationUri,
       shapeTreeUri,
-      fetch
+      axiosFetch
     );
     if (hasMatchingShape) {
       dataRegistrationsOfShapeUris.push(dataRegistrationUri);
@@ -71,9 +80,12 @@ export async function getDataRegistrationContainers(
 
 function getRegistrySet(
   webId: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ): Promise<string[]> {
-  return getResourceAsStore(webId, fetch).then((store) =>
+  return getResourceAsStore(webId, axiosFetch).then((store) =>
     store
       .getObjects(null, INTEROP("hasRegistrySet"), null)
       .map((term) => term.value)
@@ -82,9 +94,12 @@ function getRegistrySet(
 
 function getDataRegistry(
   registrySetUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ): Promise<string[]> {
-  return getResourceAsStore(registrySetUri, fetch).then((store) =>
+  return getResourceAsStore(registrySetUri, axiosFetch).then((store) =>
     store
       .getObjects(null, INTEROP("hasDataRegistry"), null)
       .map((term) => term.value)
@@ -93,9 +108,12 @@ function getDataRegistry(
 
 async function getDataRegistrations(
   dataRegistryUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ): Promise<string[]> {
-  return getResourceAsStore(dataRegistryUri, fetch).then((store) =>
+  return getResourceAsStore(dataRegistryUri, axiosFetch).then((store) =>
     store
       .getObjects(null, INTEROP("hasDataRegistration"), null)
       .map((term) => term.value)
@@ -104,9 +122,12 @@ async function getDataRegistrations(
 
 function getRegisteredShapeTree(
   dataRegistrationUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ): Promise<string> {
-  return getResourceAsStore(dataRegistrationUri, fetch).then(
+  return getResourceAsStore(dataRegistrationUri, axiosFetch).then(
     (store) =>
       store.getObjects(null, INTEROP("registeredShapeTree"), null)[0].value
   );
@@ -115,21 +136,27 @@ function getRegisteredShapeTree(
 async function filterDataRegistrationUrisByShapeTreeUri(
   dataRegistrationUri: string,
   shapeTreeUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ) {
   const dataRegistrationShapeTree = await getRegisteredShapeTree(
     dataRegistrationUri,
-    fetch
+    axiosFetch
   );
   return dataRegistrationShapeTree === shapeTreeUri;
 }
 
 function getResourceAsStore(
   uri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  axiosFetch?: (
+    config: AxiosRequestConfig<any>,
+    dpopPayload?: any
+  ) => Promise<AxiosResponse<any, any>>
 ): Promise<Store> {
-  return getResource(uri, fetch)
-    .then((resp) => resp.text())
+  return getResource(uri, axiosFetch)
+    .then((resp) => resp.data)
     .then((txt) => parseToN3(txt, uri))
     .then((parsedN3) => parsedN3.store);
 }

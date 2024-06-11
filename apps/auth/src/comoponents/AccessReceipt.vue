@@ -139,7 +139,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.informationResourceURI))
   .then((parsedN3) => (state.informationResourceStore = parsedN3.store));
 
@@ -167,7 +167,7 @@ state.accessRequestStore = await getResource(accessRequests.value[0], authFetch.
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, accessRequests.value[0]))
   .then((parsedN3) => (state.accessRequestStore = parsedN3.store));
 

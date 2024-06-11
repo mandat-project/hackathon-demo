@@ -31,7 +31,7 @@
       <Button
           class="idp"
           @click="
-          idp = 'https://solid.aifb.kit.edu/';
+          idp = 'https://solid.aifb.kit.edu';
           login(idp);
           isDisplaingIDPs = !isDisplaingIDPs;
         "

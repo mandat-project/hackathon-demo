@@ -1,25 +1,20 @@
 import { computed, reactive } from "vue";
-import {
-  ISessionInfo,
-  getDefaultSession,
-} from "@inrupt/solid-client-authn-browser";
+import { Session } from "@shared/solid";
 
-const session = reactive(getDefaultSession());
+const session = reactive(new Session());
 const sessionInfo = reactive({
-  sessionId: session.info.sessionId,
-  isLoggedIn: false,
-  webId: undefined,
-} as ISessionInfo);
+  isLoggedIn: session.isActive,
+  webId: session.webid,
+});
 
 /**
  * Login :)
  */
 async function login(idp: string) {
-  if (!session.info.isLoggedIn) {
-    await session.login({
-      oidcIssuer: idp, // eg "https://inrupt.net"
-      redirectUrl: window.location.href,
-    });
+  if (!session.isActive) {
+    await session.login(idp, window.location.href);
+    sessionInfo.isLoggedIn = session.isActive;
+    sessionInfo.webId = session.webid;
   }
 }
 
@@ -36,38 +31,23 @@ async function login(idp: string) {
     useSolidSession().restoreSession();
    ```
  */
-function restoreSession() {
-  session
-    .handleIncomingRedirect({
-      url: window.location.href,
-      restorePreviousSession: true,
-    })
-    .then((info) => {
-      if (info) {
-        sessionInfo.sessionId = info.sessionId;
-        sessionInfo.isLoggedIn = info.isLoggedIn;
-        sessionInfo.webId = info.webId;
-      } else {
-        sessionInfo.sessionId = session.info.sessionId;
-        sessionInfo.isLoggedIn = false;
-        sessionInfo.webId = undefined;
-      }
-    });
+async function restoreSession() {
+  await session.handleRedirectFromLogin();
+  sessionInfo.isLoggedIn = session.isActive;
+  sessionInfo.webId = session.webid;
 }
 
 /**
  * Logout :()
  */
 async function logout() {
-  session.logout().then(() => {
-    sessionInfo.sessionId = session.info.sessionId;
-    sessionInfo.isLoggedIn = false;
-    sessionInfo.webId = undefined;
-  });
+  await session.logout();
+  sessionInfo.isLoggedIn = session.isActive;
+  sessionInfo.webId = session.webid;
 }
 
 const authFetch = computed(() => {
-  return sessionInfo.isLoggedIn ? session.fetch : undefined;
+  return session.isActive ? session.fetch : undefined;
 });
 
 export const useSolidSession = () => {

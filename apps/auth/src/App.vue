@@ -19,14 +19,14 @@
 <script setup lang="ts">
 import { HeaderBar } from "@shared/components";
 import Toast from "primevue/toast";
-import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
 import { useSolidSession } from "@shared/composables";
 import router from "./router";
 import { toRefs } from "vue";
 import Card from "primevue/card";
 
-// bring user back to the current location
-onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
+// TODO bring user back to the current location // not sure how to do hat
+// onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
+// TODO make sure to delete code, state, and iss form URL after redirect from IDP
 // re-use Solid session
 useSolidSession().restoreSession();
 // check if logged in
