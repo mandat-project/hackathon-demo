@@ -72,12 +72,12 @@ import {computed, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
 const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
-const {authFetch, sessionInfo} = useSolidSession();
+const { session } = useSolidSession();
 const toast = useToast();
 
 // get data
 const store = ref(new Store());
-store.value = await getResource(props.resourceURI, authFetch.value)
+store.value = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -153,9 +153,9 @@ watch(() => registeredShapeTrees.value, () => checkIfMatchingDataRegistrationExi
 
 async function checkIfMatchingDataRegistrationExists() {
   const dataRegistrations = await getDataRegistrationContainers(
-    `${sessionInfo.webId}`,
+    `${session.webId}`,
     registeredShapeTrees.value[0],
-    authFetch.value
+    session
   ).catch((err) => {
     toast.add({
       severity: "error",
@@ -178,9 +178,9 @@ async function grantDataAuthorization() {
   // find registries
   for (const shapeTree of registeredShapeTrees.value) {
     const dataRegistrations = await getDataRegistrationContainers(
-      `${sessionInfo.webId}`,
+      `${session.webId}`,
       shapeTree,
-      authFetch.value
+      session
     ).catch((err) => {
       toast.add({
         severity: "error",
@@ -255,7 +255,7 @@ async function createDataAuthorization(
   }
       interop:satisfiesAccessNeed <${props.resourceURI}> .`;
 
-  return createResource(props.dataAuthzContainer, payload, authFetch.value)
+  return createResource(props.dataAuthzContainer, payload, session)
     .then((loc) => {
         toast.add({
           severity: "success",
@@ -301,7 +301,7 @@ _:rename a solid:InsertDeletePatch;
     solid:inserts {
         <#owner> a acl:Authorization;
             acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-            acl:agent <${sessionInfo.webId}>;
+            acl:agent <${session.webId}>;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode acl:Read, acl:Write, acl:Control.
 
@@ -312,8 +312,8 @@ _:rename a solid:InsertDeletePatch;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
     } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
-  const aclURI = await getAclResourceUri(accessTo, authFetch.value);
-  await patchResource(aclURI, patchBody, authFetch.value).catch(
+  const aclURI = await getAclResourceUri(accessTo, session);
+  await patchResource(aclURI, patchBody, session).catch(
     (err) => {
       toast.add({
         severity: "error",

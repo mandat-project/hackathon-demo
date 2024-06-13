@@ -1,15 +1,17 @@
 <template>
   <h1 class="header col-12 flex align-items-center gap-2">
     Your Access Manager
-    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click=" reloadFlag = !reloadFlag"/>
+    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+      @click=" reloadFlag = !reloadFlag" />
   </h1>
   <div style="height: 100px" id="header-bar-spacer" />
   <div class="requestContainer">
     <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
       class="p-card" style="margin: 5px">
       <Suspense>
-        <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer" :redirect="redirect"
-          :accessAuthzArchiveContainer="accessAuthzArchiveContainer" @isReceiptForRequests="addRequestsToHandled" />
+        <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
+          :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+          @isReceiptForRequests="addRequestsToHandled" />
         <template #fallback>
           <span>
             Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
@@ -61,15 +63,15 @@
 <script lang="ts" setup>
 import AccessRequest from "../comoponents/AccessRequest.vue";
 import AccessReceipt from "../comoponents/AccessReceipt.vue";
-import {AUTH, createContainer, getContainerItems, getResource, parseToN3} from "@shared/solid";
+import { AUTH, createContainer, getContainerItems, getResource, parseToN3 } from "@shared/solid";
 import { useSolidProfile, useSolidSession } from "@shared/composables";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
-import {Store} from "n3";
+import { Store } from "n3";
 
 const toast = useToast();
 
-const { authFetch } = useSolidSession();
+const { session } = useSolidSession();
 const { accessInbox, storage } = useSolidProfile();
 
 const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
@@ -80,13 +82,84 @@ const accessRequestInformationResources = ref<Array<string>>([]);
 const handledAccessRequests = ref<Array<string>>([]);
 // only display not yet handled
 const displayAccessRequests = computed(() =>
-    accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
+  accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
 )
 
 /**
- * Retrieve access requests from an access inbox
- * @param accessInbox
+ * ! Dirty hack for archiving stuff
+ * TODO re-visit.
  */
+
+// create data authorization container if needed
+const dataAuthzContainerName = "data-authorizations"
+const dataAuthzContainer = computed(() => storage.value + dataAuthzContainerName + "/");
+// create access authorization container if needed
+const accessAuthzContainerName = "authorization-registry"
+const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
+// create access authorization container if needed
+const accessAuthzArchiveContainerName = "authorization-archive"
+const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzArchiveContainerName + "/");
+// create access receipt container if needed
+const accessReceiptContainerName = "authorization-receipts"
+const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
+
+
+
+watch(() => storage.value,
+  async () => {
+    if (!storage.value) { return }
+    getResource(dataAuthzContainer.value, session)
+      .catch(() => createContainer(storage.value, dataAuthzContainerName, session))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Data Authorization Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+    getResource(accessAuthzContainer.value, session)
+      .catch(() => createContainer(storage.value, accessAuthzContainerName, session))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Access Authorization Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+    getResource(accessAuthzArchiveContainer.value, session)
+      .catch(() => createContainer(storage.value, accessAuthzArchiveContainerName, session))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Access Receipt Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+    getResource(accessReceiptContainer.value, session)
+      .catch(() => createContainer(storage.value, accessReceiptContainerName, session))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: "Failed to create Access Receipt Container!",
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      })
+  }, {immediate:true})
+
+// setup done, now do stuff
+
+/**
+* Retrieve access requests from an access inbox
+* @param accessInbox
+*/
 async function getAccessRequestInformationResources(accessInbox: string) {
   if (!accessInbox) {
     return [];
@@ -94,8 +167,9 @@ async function getAccessRequestInformationResources(accessInbox: string) {
   if (props.inspectedAccessRequestURI) {
     return [props.inspectedAccessRequestURI.split('#')[0]]
   }
-  return await getContainerItems(accessInbox, authFetch.value)
+  return await getContainerItems(accessInbox, session)
 }
+
 
 // once an access inbox is available, get the access requests from there
 // except when we have a specific access request to focus on. then only focus on that one.
@@ -113,7 +187,7 @@ watch(
       getAccessReceiptInformationResourcesForAccessRequest(props.inspectedAccessRequestURI).then(accessReceipts =>
         accessReceiptInformationResources.value.push(...accessReceipts));
     }
-  }
+  }, {immediate:true}
 );
 
 
@@ -123,7 +197,7 @@ const accessReceiptInformationResources = ref<Array<string>>([]);
  * get the access receipts
  */
 async function getAccessReceiptInformationResources() {
-  return await getContainerItems(accessReceiptContainer.value, authFetch.value)
+  return await getContainerItems(accessReceiptContainer.value, session)
 }
 
 async function getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
@@ -157,7 +231,7 @@ async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
 }
 
 async function fetchStoreOf(uri: string): Promise<Store> {
-  return getResource(uri, authFetch.value)
+  return getResource(uri, session)
     .catch((err) => {
       toast.add({
         severity: "error",
@@ -193,70 +267,4 @@ async function refreshAccessReceiptInformationResources() {
   accessReceiptInformationResources.value.push(...newListOfAccessReceipts);
 }
 
-/**
- * ! Dirty hack for archiving stuff
- * TODO re-visit.
- */
-
-// create data authorization container if needed
-const dataAuthzContainerName = "data-authorizations"
-const dataAuthzContainer = computed(() => storage.value + dataAuthzContainerName + "/");
-// create access authorization container if needed
-const accessAuthzContainerName = "authorization-registry"
-const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
-// create access authorization container if needed
-const accessAuthzArchiveContainerName = "authorization-archive"
-const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzArchiveContainerName + "/");
-// create access receipt container if needed
-const accessReceiptContainerName = "authorization-receipts"
-const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
-watch(() => storage.value,
-  async () => {
-    if (!storage.value) { return }
-    getResource(dataAuthzContainer.value, authFetch.value)
-      .catch(() => createContainer(storage.value, dataAuthzContainerName, authFetch.value))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Data Authorization Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-    getResource(accessAuthzContainer.value, authFetch.value)
-      .catch(() => createContainer(storage.value, accessAuthzContainerName, authFetch.value))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Access Authorization Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-    getResource(accessAuthzArchiveContainer.value, authFetch.value)
-      .catch(() => createContainer(storage.value, accessAuthzArchiveContainerName, authFetch.value))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Access Receipt Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-    getResource(accessReceiptContainer.value, authFetch.value)
-      .catch(() => createContainer(storage.value, accessReceiptContainerName, authFetch.value))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Access Receipt Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-
-  })
 </script>

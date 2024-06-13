@@ -113,7 +113,7 @@ const props = defineProps([
     "accessAuthzArchiveContainer"
 ]);
 const emit = defineEmits(["updatedAccessAuthorization", "isEmptyAuthorization"])
-const { authFetch } = useSolidSession();
+const { session } = useSolidSession();
 const toast = useToast();
 
 const state = reactive({
@@ -122,7 +122,7 @@ const state = reactive({
 });
 
 // get data
-state.resourceStore = await getResource(props.resourceURI, authFetch.value)
+state.resourceStore = await getResource(props.resourceURI, session)
     .catch((err) => {
         toast.add({
             severity: "error",
@@ -144,7 +144,7 @@ const accessNeedGroups = computed(() => state.resourceStore.getObjects(props.res
 const dataAuthorizations = computed(() => state.resourceStore.getObjects(props.resourceURI, INTEROP('hasDataAuthorization'), null).map(t => t.value))
 
 //get grantee data
-state.granteeStore = await getResource(grantees.value[0], authFetch.value)
+state.granteeStore = await getResource(grantees.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -230,7 +230,7 @@ async function removeDataAuthorization(dataAuthorization: string) {
  */
 async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations: string[]) {
     // copy authorization to archive
-    const archivedLocation = await createResource(props.accessAuthzArchiveContainer, "", authFetch.value)
+    const archivedLocation = await createResource(props.accessAuthzArchiveContainer, "", session)
         .then((loc) => {
             toast.add({
                 severity: "info",
@@ -257,7 +257,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
         archiveStore.addQuad(new NamedNode(archivedLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph)
     }
     let copyBody = n3Writer.quadsToString(archiveStore.getQuads(null, null, null, null))
-    await putResource(archivedLocation, copyBody, authFetch.value)
+    await putResource(archivedLocation, copyBody, session)
         .then(() =>
             toast.add({
                 severity: "success",
@@ -275,7 +275,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
             throw new Error(err);
         })
     // create updated authorization
-    const newLocation = await createResource(props.accessAuthzContainer, "", authFetch.value)
+    const newLocation = await createResource(props.accessAuthzContainer, "", session)
         .then((loc) => {
             toast.add({
                 severity: "info",
@@ -325,7 +325,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     }
     // write to new authorization
     copyBody = n3Writer.quadsToString(state.resourceStore.getQuads(null, null, null, null))
-    await putResource(newLocation, copyBody, authFetch.value)
+    await putResource(newLocation, copyBody, session)
         .then(() =>
             toast.add({
                 severity: "success",
@@ -343,7 +343,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
             throw new Error(err);
         })
     // delete old one
-    await deleteResource(props.resourceURI, authFetch.value)
+    await deleteResource(props.resourceURI, session)
     // emit update
     emit("updatedAccessAuthorization", newLocation + "#" + accessAuthzLocale, props.resourceURI)
 

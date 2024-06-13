@@ -1,7 +1,7 @@
 <template>
-  <HeaderBar />
+  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
-  <div v-if="isLoggedIn">
+  <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
   </div>
   <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;">
@@ -16,13 +16,17 @@
 <script setup lang="ts">
 import { HeaderBar } from "@shared/components";
 import Toast from "primevue/toast";
-import { useSolidSession } from "@shared/composables";
+import { useSolidProfile, useSolidSession } from "@shared/composables";
 import router from "./router";
-import { toRefs } from "vue";
+import { computed } from "vue";
 import Card from "primevue/card";
 
-const { sessionInfo, restoreSession } = useSolidSession();
-const { isLoggedIn } = toRefs(sessionInfo);
+
+const { session, restoreSession } = useSolidSession();
+const { memberOf } = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+})
 
 // re-use Solid session
 router.isReady().then(restoreSession)

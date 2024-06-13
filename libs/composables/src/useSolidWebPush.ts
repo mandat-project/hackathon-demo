@@ -6,8 +6,7 @@ import {useSolidSession} from "./useSolidSession";
 const {unsubscribeFromPush, subscribeToPush} =
     useServiceWorkerNotifications();
 
-const {sessionInfo, authFetch} = useSolidSession();
-const {webId} = toRefs(sessionInfo);
+const {session} = useSolidSession();
 
 interface WebPushSubscription {
     endpoint: string;
@@ -44,7 +43,7 @@ const _createSubscriptionOnResource = (
 @prefix as: <${AS()}> .
 @prefix push: <${PUSH()}> .
 <#sub> a as:Follow;
-    as:actor <${webId?.value}>;
+    as:actor <${session.webId}>;
     as:object <${uri}>;
     push:endpoint "${details.endpoint}";
     # expirationTime: null # undefined
@@ -64,10 +63,10 @@ const _createUnsubscriptionFromResource = (
 @prefix as: <${AS()}> .
 @prefix push: <${PUSH()}> .
 <#unsub> a as:Undo;
-    as:actor <${webId?.value}>;
+    as:actor <${session.webId}>;
     as:object [
             a as:Follow;
-            as:actor <${webId?.value}>;
+            as:actor <${session.webId}>;
             as:object <${uri}>;
             push:endpoint "${details.endpoint}";
             # expirationTime: null # undefined
@@ -85,7 +84,7 @@ const subscribeForResource = async (uri: string) => {
     //@ts-ignore
     const solidWebPushSub = _createSubscriptionOnResource(uri, sub);
     console.log(solidWebPushSub)
-    return createResource(inbox, solidWebPushSub, authFetch.value);
+    return createResource(inbox, solidWebPushSub, session);
 };
 
 const unsubscribeFromResource = async (uri: string) => {
@@ -94,7 +93,7 @@ const unsubscribeFromResource = async (uri: string) => {
     //@ts-ignore
     const solidWebPushUnSub = _createUnsubscriptionFromResource(uri, sub_old);
     console.log(solidWebPushUnSub)
-    return createResource(inbox, solidWebPushUnSub, authFetch.value);
+    return createResource(inbox, solidWebPushUnSub, session);
 };
 
 export const useSolidWebPush = () => {

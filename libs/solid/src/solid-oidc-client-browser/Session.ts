@@ -10,14 +10,14 @@ import { renewTokens } from "./RefreshTokenGrant";
 export class Session {
   private tokenInformation: SessionTokenInformation | undefined;
   private isActive_ = false;
-  private webid_: string | undefined = undefined;
+  private webId_: string | undefined = undefined;
 
   login = redirectForLogin;
 
   logout() {
     this.tokenInformation = undefined;
     this.isActive_ = false;
-    this.webid_ = undefined;
+    this.webId_ = undefined;
     // clean session storage
     sessionStorage.removeItem("idp");
     sessionStorage.removeItem("client_id");
@@ -41,7 +41,7 @@ export class Session {
       // we got a sessionInfo
       this.tokenInformation = sessionInfo;
       this.isActive_ = true;
-      this.webid_ = decodeJwt(this.tokenInformation.access_token)[
+      this.webId_ = decodeJwt(this.tokenInformation.access_token)[
         "webid"
       ] as string;
     });
@@ -73,7 +73,7 @@ export class Session {
    * @param dpopPayload optional, the payload of the dpop token to use (overwrites the default behaviour of `htu=config.url` and `htm=config.method`)
    * @returns axios response
    */
-  fetch = async (config: AxiosRequestConfig<any>, dpopPayload?: any) => {
+  async authFetch(config: AxiosRequestConfig<any>, dpopPayload?: any) {
     // prepare authenticated call using a DPoP token (either provided payload, or default)
     const headers = config.headers ? config.headers : {};
     if (this.tokenInformation) {
@@ -90,13 +90,13 @@ export class Session {
     }
     config.headers = headers;
     return axios(config);
-  };
+  }
 
   get isActive() {
     return this.isActive_;
   }
 
-  get webid() {
-    return this.webid_;
+  get webId() {
+    return this.webId_;
   }
 }

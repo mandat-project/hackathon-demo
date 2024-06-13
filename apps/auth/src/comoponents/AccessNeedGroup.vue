@@ -69,12 +69,12 @@ import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "accessAuthzContainer", "dataAuthzContainer", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
-const {authFetch, sessionInfo} = useSolidSession();
+const { session } = useSolidSession();
 const toast = useToast();
 
 // get data
 const store = ref(new Store());
-store.value = await getResource(props.resourceURI, authFetch.value)
+store.value = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -104,7 +104,7 @@ const accessNeeds = computed(() =>
 const descriptionResources = store.value.getObjects(props.resourceURI, INTEROP('hasAccessDescriptionSet'), null).map(t => t.value)
 
 for (const descriptionResource of descriptionResources) {
-  await getResource(descriptionResource, authFetch.value)
+  await getResource(descriptionResource, session)
     .catch((err) => {
       toast.add({
         severity: "error",
@@ -225,7 +225,7 @@ async function createAccessAuthorization(
 
     <#${accessAuthzLocalName}>
       a interop:AccessAuthorization ;
-      interop:grantedBy <${sessionInfo.webId}> ;
+      interop:grantedBy <${session.webId}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${forSocialAgents
     .map((t) => "<" + t + ">")
@@ -235,7 +235,7 @@ async function createAccessAuthorization(
     .map((t) => "<" + t + ">")
     .join(", ")} .
 `;
-  return createResource(props.accessAuthzContainer, payload, authFetch.value)
+  return createResource(props.accessAuthzContainer, payload, session)
     .then((loc) => {
         toast.add({
           severity: "success",

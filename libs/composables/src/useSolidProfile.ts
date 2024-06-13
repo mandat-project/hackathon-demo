@@ -7,10 +7,12 @@ import {
   parseToN3,
   SPACE,
   VCARD,
+  ORG,
+  MANDAT,
 } from "@shared/solid";
 import { Store } from "n3";
 
-const { authFetch, sessionInfo } = useSolidSession();
+const { session } = useSolidSession();
 
 const name = ref("");
 const img = ref("");
@@ -18,14 +20,16 @@ const inbox = ref("");
 const storage = ref("");
 const authAgent = ref("");
 const accessInbox = ref("");
+const memberOf = ref("");
+const hasOrgRDP = ref("");
 
 watch(
-  () => sessionInfo.webId,
+  () => session.webId,
   async () => {
-    const webId = sessionInfo.webId as string;
+    const webId = session.webId as string;
     let store = new Store();
-    if (sessionInfo.webId !== undefined) {
-      store = await getResource(webId, authFetch.value)
+    if (session.webId !== undefined) {
+      store = await getResource(webId)
         .then((resp) => resp.data)
         .then((respText) => parseToN3(respText, webId))
         .then((parsedN3) => parsedN3.store);
@@ -42,17 +46,49 @@ watch(
     authAgent.value = query.length > 0 ? query[0].value : "";
     query = store.getObjects(webId, INTEROP("hasAccessInbox"), null);
     accessInbox.value = query.length > 0 ? query[0].value : "";
-  }
-);
 
-const wallet = computed(() =>
-  storage.value !== "" ? `${storage.value}wallet/` : ""
-);
-const credStatusDir = computed(() =>
-  storage.value !== "" ? `${storage.value}credentialStatus/` : ""
-);
-const authorizationRegistry = computed(() =>
-  storage.value !== "" ? `${storage.value}authorization-registry/` : ""
+    query = store.getObjects(webId, ORG("memberOf"), null);
+    const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
+    if (uncheckedMemberOf !== "") {
+      let storeOrg = new Store();
+      storeOrg = await getResource(uncheckedMemberOf)
+        .then((resp) => resp.data)
+        .then((respText) => parseToN3(respText, uncheckedMemberOf))
+        .then((parsedN3) => parsedN3.store);
+      const isMember =
+        storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null)
+          .length > 0;
+      if (isMember) {
+        memberOf.value = uncheckedMemberOf;
+        query = storeOrg.getObjects(
+          uncheckedMemberOf,
+          MANDAT("hasRightsDelegationProxy"),
+          null
+        );
+        hasOrgRDP.value = query.length > 0 ? query[0].value : "";
+        session.updateSessionWithRDP(hasOrgRDP.value);
+        // and also overwrite fields from org profile
+        query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
+        name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+        query = storeOrg.getObjects(memberOf.value, LDP("inbox"), null);
+        inbox.value = query.length > 0 ? query[0].value : "";
+        query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
+        storage.value = query.length > 0 ? query[0].value : "";
+        query = storeOrg.getObjects(
+          memberOf.value,
+          INTEROP("hasAuthorizationAgent"),
+          null
+        );
+        authAgent.value = query.length > 0 ? query[0].value : "";
+        query = storeOrg.getObjects(
+          memberOf.value,
+          INTEROP("hasAccessInbox"),
+          null
+        );
+        accessInbox.value = query.length > 0 ? query[0].value : "";
+      }
+    }
+  }
 );
 
 export const useSolidProfile = () => {
@@ -61,10 +97,9 @@ export const useSolidProfile = () => {
     img,
     inbox,
     storage,
-    wallet,
-    credStatusDir,
     authAgent,
     accessInbox,
-    authorizationRegistry,
+    memberOf,
+    hasOrgRDP,
   };
 };
