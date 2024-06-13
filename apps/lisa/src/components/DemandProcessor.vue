@@ -197,11 +197,10 @@ import {useToast} from 'primevue/usetoast';
 import {Ref, computed, reactive, ref, toRefs, watch} from 'vue';
 
 const props = defineProps<{ demandUri: string }>();
-const {accessInbox, authAgent} = useSolidProfile()
+const {accessInbox, authAgent, memberOf} = useSolidProfile()
 const toast = useToast();
 const appMemory = useCache();
-const {authFetch, sessionInfo} = useSolidSession();
-const {webId} = toRefs(sessionInfo);
+const {session} = useSolidSession();
 
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
@@ -241,7 +240,7 @@ const state = reactive({
 });
 
 async function fetchStoreOf(uri: string): Promise<Store> {
-  return getResource(uri, authFetch.value)
+  return getResource(uri, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -327,7 +326,7 @@ watch(() => offerAccessRequests.value,
 // meh. this imposes unnecessary requests and memory, should be application wide, but it works and I dont care at this point anymore.
 watch(() => offersForDemand.value,
     async () => {
-      const orderContainers = await getDataRegistrationContainers(webId!.value!, orderShapeTreeUri, authFetch.value);
+      const orderContainers = await getDataRegistrationContainers(memberOf.value, orderShapeTreeUri, session);
       const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
       await fillItemStoresIntoStore(orderItems, state.orderStore, orderStoreFilledFlag)
     }, {immediate: true})
@@ -364,12 +363,12 @@ function setActiveProcessStep(): number {
 }
 
 async function fetchProcessedData() {
-  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, authFetch.value);
+  const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
   window.open(businessAssessmentUri[0], '_tab');
 }
 
 async function patchBusinessResourceToHaveAccessRequest(businessResource: string, accessRequest: string) {
-  return getResource(businessResource, authFetch.value)
+  return getResource(businessResource, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -385,7 +384,7 @@ async function patchBusinessResourceToHaveAccessRequest(businessResource: string
         <> <${CREDIT('isAccessRequestGranted')}> false .
       `))
       .then(body => {
-        return putResource(businessResource, body, authFetch.value)
+        return putResource(businessResource, body, session)
             .catch((err) => {
               toast.add({
                 severity: "error",
@@ -447,13 +446,13 @@ async function requestAccessToData() {
     <#bwaAccessRequest>
       a interop:AccessRequest ;
       gdprp:purposeForProcessing gdprp:contractualObligations ;
-      interop:fromSocialAgent <${webId!.value}> ;
+      interop:fromSocialAgent <${memberOf.value}> ;
       interop:toSocialAgent  <${demanderUri.value}> ;
       interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
 
       rdfs:seeAlso <${props.demandUri}>.`;
 
-  const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, authFetch.value)
+  const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -480,13 +479,13 @@ async function requestCreationOfData() {
       @prefix credit: <${CREDIT()}> .
       @prefix interop: <${INTEROP()}> .
       <> a schema:Demand ;
-      interop:fromSocialAgent <${webId!.value}> ;
+      interop:fromSocialAgent <${memberOf.value}> ;
       credit:derivedFromDemand <${props.demandUri}> ;
       interop:registeredShapeTree <${selectedShapeTree.value.value}> .
-      <${webId!.value}> schema:seeks <> .
+      <${memberOf.value}> schema:seeks <> .
     `;
-  const documentCreationDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentCreationDemandShapeTreeUri, authFetch.value);
-  const documentCreationDemandURI = await createResource(documentCreationDemandContainerUris[0], documentCreationDemandBody, authFetch.value)
+  const documentCreationDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentCreationDemandShapeTreeUri, session);
+  const documentCreationDemandURI = await createResource(documentCreationDemandContainerUris[0], documentCreationDemandBody, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -507,7 +506,7 @@ async function requestCreationOfData() {
 
 async function patchDocumentCreationDemandInDemand(demandURI: string, documentCreationDemandURI: string): Promise<AxiosResponse<any, any>> {
   // GET the current data
-  return getResource(demandURI, authFetch.value)
+  return getResource(demandURI, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -522,7 +521,7 @@ async function patchDocumentCreationDemandInDemand(demandURI: string, documentCr
         <> <${CREDIT('hasDocumentCreationDemand')}> <${documentCreationDemandURI}> .
       `))
       .then(body => {
-        return putResource(demandURI, body, authFetch.value)
+        return putResource(demandURI, body, session)
             .catch((err) => {
               toast.add({
                 severity: "error",
@@ -537,7 +536,7 @@ async function patchDocumentCreationDemandInDemand(demandURI: string, documentCr
 
 async function SetTerminationFlagInOrder(offersForDemand: string[]) {
   const orderURIs = state.orderStore.getSubjects( SCHEMA("acceptedOffer"), offersForDemand[0], null).map(x => x.value);
-  return getResource(orderURIs[0], authFetch.value)
+  return getResource(orderURIs[0], session)
       .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, orderURIs[0]))
       .then((parsedN3) => {
@@ -556,7 +555,7 @@ async function SetTerminationFlagInOrder(offersForDemand: string[]) {
         return body;
       })
       .then((body) => {
-        return putResource(orderURIs[0], body, authFetch.value);
+        return putResource(orderURIs[0], body, session);
       })
       .then(_ => toast.add({
         severity: "success",
@@ -568,7 +567,7 @@ async function SetTerminationFlagInOrder(offersForDemand: string[]) {
 
 async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<AxiosResponse<any, any>> {
   // GET the current data
-  return getResource(demandURI, authFetch.value)
+  return getResource(demandURI, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -583,7 +582,7 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
         <${demandURI}> <${CREDIT('hasOffer')}> <${offerURI}> .
       `))
       .then(body => {
-        return putResource(demandURI, body, authFetch.value)
+        return putResource(demandURI, body, session)
             .catch((err) => {
               toast.add({
                 severity: "error",
@@ -597,7 +596,7 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
 }
 
 async function createOfferResource(demand: string, dataAccessRequest: string) {
-  const businessAssessmentRegistrations = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, authFetch.value);
+  const businessAssessmentRegistrations = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, session);
 
   const body = `
           @prefix : <#>.
@@ -609,7 +608,7 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
             credit:derivedFromDemand <${demand}> ;
             credit:derivedFromData ${businessAssessmentRegistrations.map(r => "<" + r + ">").join(", ")} ;
             credit:hasUnderlyingRequest <${dataAccessRequest}> .
-          <${webId?.value}> schema:offers <>  .
+          <${memberOf.value}> schema:offers <>  .
           <${demanderUri.value}> schema:seeks <>  .
           <#credit>
                   a schema:LoanOrCredit ;
@@ -621,7 +620,7 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
               a schema:QuantitativeValue;
               schema:value "${selectedLoanTerm.value.value} years".
             `
-  const offerLocation = await createResourceInAnyRegistrationOfShape(webId!.value!, offerShapeTreeUri, body, authFetch.value)
+  const offerLocation = await createResourceInAnyRegistrationOfShape(memberOf.value!, offerShapeTreeUri, body, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -658,8 +657,8 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
     <#accessRequest>
       a interop:AccessRequest ;
       gdprp:purposeForProcessing gdprp:contractualObligations ;
-      interop:fromSocialAgent <${webId!.value}> ;
-      interop:toSocialAgent  <${webId!.value}> ;
+      interop:fromSocialAgent <${memberOf.value}> ;
+      interop:toSocialAgent  <${memberOf.value}> ;
       interop:forSocialAgent <${forAgent}> ;
       interop:hasAccessNeedGroup <#accessNeedGroup> ;
       rdfs:seeAlso <${props.demandUri}>.
@@ -710,7 +709,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
       a interop:AccessDescriptionSet ;
       interop:usesLanguage "de"^^xsd:language .`;
 
-  return createResource(accessInbox.value, body, authFetch.value)
+  return createResource(accessInbox.value, body, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -740,7 +739,7 @@ async function handleAuthorizationRequestRedirect(
     accessRequestURI: string
 ) {
   // patch demand
-  return getResource(businessResourceURI, authFetch.value)
+  return getResource(businessResourceURI, session)
       .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, businessResourceURI))
       .then((parsedN3) => {
@@ -767,7 +766,7 @@ async function handleAuthorizationRequestRedirect(
         return body;
       })
       .then((body) => {
-        return putResource(businessResourceURI, body, authFetch.value);
+        return putResource(businessResourceURI, body, session);
       })
       .then(() => delete appMemory[accessRequestURI]);
 }

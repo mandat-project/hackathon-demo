@@ -83,7 +83,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import { useSolidSession } from "@shared/composables";
+import { useSolidProfile, useSolidSession } from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -101,6 +101,7 @@ import {computed, reactive, watch} from "vue";
 const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
 const emit = defineEmits(["revokedDataAuthorization"])
 const { session } = useSolidSession();
+const { memberOf } = useSolidProfile();
 const toast = useToast();
 
 const state = reactive({
@@ -182,7 +183,7 @@ watch(() => props.groupRevokationTrigger, () => {
 async function revokeRights() {
     for (const shapeTree of registeredShapeTrees.value) {
         const dataRegistrations = await getDataRegistrationContainers(
-            `${session.webId}`,
+            `${memberOf.value}`,
             shapeTree,
             session
         ).catch((err) => {

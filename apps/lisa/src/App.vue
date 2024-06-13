@@ -1,8 +1,8 @@
 <template>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-  <HeaderBar />
+  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
-  <div v-if="isLoggedIn" class="m-0">
+  <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
   </div>
   <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
@@ -32,9 +32,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { HeaderBar } from "@shared/components";
-import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
+import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
 import router from "./router";
 import Card from "primevue/card";
@@ -42,11 +42,15 @@ import Card from "primevue/card";
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => (isOpen.value = hasUpdatedAvailable.value));
-const { sessionInfo, restoreSession } = useSolidSession();
-const { isLoggedIn } = toRefs(sessionInfo);
+const { session, restoreSession } = useSolidSession();
+const { memberOf } = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+})
 
 // re-use Solid session
 router.isReady().then(restoreSession)
+
 </script>
 
 <style>
@@ -107,4 +111,4 @@ ol {
 .p-button {
   -webkit-tap-highlight-color: transparent;
 }
-</style>
+</style>computed, useSolidProfile, 

@@ -51,7 +51,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import {useSolidSession} from "@shared/composables";
+import {useSolidSession,useSolidProfile} from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -73,6 +73,7 @@ import {computed, ref, watch} from "vue";
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
 const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
 const { session } = useSolidSession();
+const { memberOf } = useSolidProfile();
 const toast = useToast();
 
 // get data
@@ -153,7 +154,7 @@ watch(() => registeredShapeTrees.value, () => checkIfMatchingDataRegistrationExi
 
 async function checkIfMatchingDataRegistrationExists() {
   const dataRegistrations = await getDataRegistrationContainers(
-    `${session.webId}`,
+    `${memberOf.value}`,
     registeredShapeTrees.value[0],
     session
   ).catch((err) => {
@@ -178,7 +179,7 @@ async function grantDataAuthorization() {
   // find registries
   for (const shapeTree of registeredShapeTrees.value) {
     const dataRegistrations = await getDataRegistrationContainers(
-      `${session.webId}`,
+      `${memberOf.value}`,
       shapeTree,
       session
     ).catch((err) => {
@@ -301,7 +302,7 @@ _:rename a solid:InsertDeletePatch;
     solid:inserts {
         <#owner> a acl:Authorization;
             acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-            acl:agent <${session.webId}>;
+            acl:agent <${memberOf.value}>;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode acl:Read, acl:Write, acl:Control.
 

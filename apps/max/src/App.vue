@@ -1,9 +1,9 @@
 <template>
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-  <HeaderBar />
+  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
-  <div class="m-0 lg:m-5">
+  <div v-if="isLoggedIn && session.rdp !== ''" class="m-0 lg:m-5">
     <router-view />
   </div>
 
@@ -21,9 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue/";
+// @ts-ignore not sure about this error
+import { computed, ref, watch } from "vue/";
 import Toast from "primevue/toast";
-import { useServiceWorkerUpdate, useSolidSession } from "@shared/composables";
+import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
 import { HeaderBar } from "@shared/components";
 import router from "./router";
 
@@ -32,9 +33,15 @@ const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => {
   isOpen.value = hasUpdatedAvailable.value;
 });
-const { restoreSession } = useSolidSession();
+const { session, restoreSession } = useSolidSession();
+const { memberOf } = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+})
+
 // re-use Solid session
 router.isReady().then(restoreSession)
+
 </script>
 
 <style>

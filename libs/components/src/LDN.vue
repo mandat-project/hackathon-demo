@@ -1,5 +1,6 @@
 <template>
-  <Card class="mt-2 mb-2" :class="{ highlight: isSelected }" @click="select">
+  <div></div>
+  <!-- <Card class="mt-2 mb-2" :class="{ highlight: isSelected }" @click="select">
     <template #content>
       <div class="
           flex
@@ -51,7 +52,7 @@
           @click="deleteResource(uri, authFetch)" />
       </div>
     </template>
-  </Card>
+  </Card> -->
 </template>
 
 <script lang="ts">
@@ -69,6 +70,7 @@ export default defineComponent({
   },
   emits: ["selected"],
   setup(props, context) {
+    /*
     const { authFetch } = useSolidSession();
     const { wallet } = useSolidProfile();
 
@@ -137,7 +139,7 @@ export default defineComponent({
       isSelected,
       select,
       displayShort,
-    };
+    }; */
   },
 });
 </script>

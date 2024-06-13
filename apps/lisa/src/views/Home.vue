@@ -1,8 +1,8 @@
 <template>
   <h1 class="header col-12 flex align-items-center gap-2">
     Credit Demands
-    <Button v-if="sessionInfo.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-      @click="fetchDemandUris(sessionInfo.webId)" />
+    <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+      @click="fetchDemandUris(memberOf)" />
   </h1>
   <div style="height: 100px" id="header-bar-spacer" />
   <div class="grid">
@@ -52,20 +52,24 @@
 
 <script setup lang="ts">
 import { useToast } from "primevue/usetoast";
-import { useSolidSession } from "@shared/composables";
+import { useSolidProfile, useSolidSession } from "@shared/composables";
 import { getResource, LDP, parseToN3, getDataRegistrationContainers } from "@shared/solid";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
 
 const toast = useToast();
-const { authFetch, sessionInfo } = useSolidSession();
+const { session } = useSolidSession();
 
 const shapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditDemandTree';
 const isLoading = ref(false);
 const demandUris = ref<string[]>([]);
 
+const { memberOf } = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf.value) || (session.webId && memberOf.value && session.rdp) ? true : false)
+})
 // refetch demandUris on login
-watch(() => sessionInfo.isLoggedIn, (isLoggedIn) => isLoggedIn ? fetchDemandUris(sessionInfo.webId!) : {}, { immediate: true });
+watch(() => isLoggedIn.value, (isLoggedIn) => isLoggedIn ? fetchDemandUris(((memberOf.value) ? memberOf.value : session.webId!)) : {}, { immediate: true });
 
 // discovers all containers including demands and add their contents (demands) to demandUris
 async function fetchDemandUris(webId: string): Promise<void> {
@@ -73,8 +77,8 @@ async function fetchDemandUris(webId: string): Promise<void> {
   demandUris.value = [];
   isLoading.value = true;
 
-  await getDataRegistrationContainers(webId, shapeTreeUri, authFetch.value)
-    .then(containerUris => containerUris.forEach(containerUri => getResource(containerUri, authFetch.value)
+  await getDataRegistrationContainers(webId, shapeTreeUri, session)
+    .then(containerUris => containerUris.forEach(containerUri => getResource(containerUri, session)
       .catch((err) => {
         toast.add({
           severity: "error",

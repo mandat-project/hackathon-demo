@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import AccessNeed from "../comoponents/AccessNeed.vue";
-import {useSolidSession} from "@shared/composables";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -70,6 +70,7 @@ import {computed, reactive, ref, watch} from "vue";
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "accessAuthzContainer", "dataAuthzContainer", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
 const { session } = useSolidSession();
+const { memberOf } = useSolidProfile()
 const toast = useToast();
 
 // get data
@@ -225,7 +226,7 @@ async function createAccessAuthorization(
 
     <#${accessAuthzLocalName}>
       a interop:AccessAuthorization ;
-      interop:grantedBy <${session.webId}> ;
+      interop:grantedBy <${memberOf.value}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${forSocialAgents
     .map((t) => "<" + t + ">")
