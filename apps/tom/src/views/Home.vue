@@ -97,7 +97,7 @@ import {
   VCARD,
   XSD,
 } from "@shared/solid";
-import {Ref, ref, toRefs, watch} from "vue";
+import {Ref, computed, ref, toRefs, watch} from "vue";
 import {Literal, NamedNode, Quad, Store, Writer} from "n3";
 
 interface Demand {
@@ -133,10 +133,12 @@ const orderShapeTreeUri = "https://solid.aifb.kit.edu/shapes/mandat/credit.tree#
 const orderContainer = "https://bank.solid.aifb.kit.edu/credits/orders/";
 
 const toast = useToast();
-const {authFetch, sessionInfo} = useSolidSession();
+const {session} = useSolidSession();
 
-const {webId} = toRefs(sessionInfo);
-const {isLoggedIn} = toRefs(sessionInfo);
+const { memberOf } = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+})
 const {storage, authAgent} = useSolidProfile();
 const appMemory = useCache();
 
@@ -152,10 +154,10 @@ const currencies = [
 
 let isLoading = ref(false);
 
-watch(storage, function () {
+watch(() => storage.value, function () {
   if (!storage.value) return;
   loadCreditDemands();
-});
+}, {immediate:true});
 
 async function loadCreditDemands() {
   isLoading.value = true;
@@ -164,7 +166,7 @@ async function loadCreditDemands() {
   const creditDemandContainerUris = await getDataRegistrationContainers(
       bank.value,
       creditDemandShapeTreeUri,
-      authFetch.value
+      session
   );
 
   const creditDemandContainerStore = await getCreditDemandContainerStore(
@@ -174,7 +176,7 @@ async function loadCreditDemands() {
   const orderContainerUris = await getDataRegistrationContainers(
       bank.value,
       orderShapeTreeUri,
-      authFetch.value
+      session
   );
 
   let orderItemsStore : Store = new Store();
@@ -304,7 +306,7 @@ const postCreditDemand = async () => {
             schema:currency "${selectedCurrency.value.value}"
         ] .
 
-      <${webId?.value}> schema:seeks <> .
+      <${memberOf.value}> schema:seeks <> .
     `;
 
     const demandContainerUris = await getContainerUris(
@@ -331,8 +333,8 @@ const postCreditDemand = async () => {
 };
 
 async function postDocumentCreationDemand(documentCreationDemandURI: string) {
-  const documentCreationDemandStore = await getResource(documentCreationDemandURI, authFetch.value)
-      .then((resp) => resp.text())
+  const documentCreationDemandStore = await getResource(documentCreationDemandURI, session)
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, documentCreationDemandURI))
       .then((parsedN3) => parsedN3.store);
 
@@ -346,9 +348,9 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
       @prefix schema: <${SCHEMA()}> .
       @prefix interop: <${INTEROP()}> .
       <> a schema:Demand ;
-      interop:fromSocialAgent <${webId?.value}> ;
+      interop:fromSocialAgent <${memberOf.value}> ;
       interop:registeredShapeTree <${requestedShapeTree}> .
-      <${webId?.value}> schema:seeks <> .
+      <${memberOf.value}> schema:seeks <> .
     `;
   const documentCreationDemandContainerUris = await getContainerUris(
       tax.value,
@@ -363,8 +365,8 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
 }
 
 async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {
-  return await getResource(demandContainerUris[0], authFetch.value)
-      .then((resp) => resp.text())
+  return await getResource(demandContainerUris[0], session)
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandContainerUris[0]))
       .then((parsedN3) => parsedN3.store)
       .catch((err) => {
@@ -374,15 +376,15 @@ async function getCreditDemandContainerStore(demandContainerUris: Array<string>)
 }
 
 async function getCreditDemandStore(demand: any) {
-  return await getResource(demand.id, authFetch.value)
-      .then((resp) => resp.text())
+  return await getResource(demand.id, session)
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demand.id))
       .then((parsedN3) => parsedN3.store);
 }
 
 async function getOfferStore(demandOffers: Array<Quad["object"]>) {
-  return await getResource(demandOffers[0].id, authFetch.value)
-      .then((resp) => resp.text())
+  return await getResource(demandOffers[0].id, session)
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandOffers[0].id))
       .then((parsedN3) => parsedN3.store);
 }
@@ -394,7 +396,7 @@ const createOrder = async (offerId: String) => {
       <> schema:acceptedOffer <${offerId}> .
     `;
 
-  await createResource(orderContainer, payload, authFetch.value)
+  await createResource(orderContainer, payload, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -414,7 +416,7 @@ const createOrder = async (offerId: String) => {
 };
 
 async function getprofileCard(webId: string) {
-  return await getResource(webId, authFetch.value)
+  return await getResource(webId, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -424,7 +426,7 @@ async function getprofileCard(webId: string) {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, webId))
       .then((parsedN3) => parsedN3.store);
 }
@@ -433,7 +435,7 @@ async function getContainerUris(webId: string, shapeTreeUri: string) {
   return await getDataRegistrationContainers(
       webId,
       shapeTreeUri,
-      authFetch.value
+      session
   ).catch((err) => {
     toast.add({
       severity: "error",
@@ -455,7 +457,7 @@ async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
 }
 
 async function fetchStoreOf(uri: string): Promise<Store> {
-  return getResource(uri, authFetch.value)
+  return getResource(uri, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -465,13 +467,13 @@ async function fetchStoreOf(uri: string): Promise<Store> {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, uri))
       .then((parsedN3) => parsedN3.store);
 }
 
 async function createDemand(demandContainerUris: Array<string>, payload: string) {
-  return await createResource(demandContainerUris[0], payload, authFetch.value)
+  return await createResource(demandContainerUris[0], payload, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -500,8 +502,8 @@ async function handleAuthorizationRequestRedirect(
     accessRequestURI: string
 ) {
   // patch demand
-  return getResource(demandUri, authFetch.value)
-      .then((resp) => resp.text())
+  return getResource(demandUri, session)
+      .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandUri))
       .then((parsedN3) => {
         parsedN3.store.removeQuads(
@@ -527,7 +529,7 @@ async function handleAuthorizationRequestRedirect(
         return body;
       })
       .then((body) => {
-        return putResource(demandUri, body, authFetch.value);
+        return putResource(demandUri, body, session);
       })
       .then(() => delete appMemory[accessRequestURI]);
 }

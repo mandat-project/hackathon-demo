@@ -120,7 +120,7 @@ import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
-const {authFetch} = useSolidSession();
+const {session} = useSolidSession();
 const toast = useToast();
 
 const state = reactive({
@@ -129,7 +129,7 @@ const state = reactive({
 });
 
 // get data
-state.informationResourceStore = await getResource(props.informationResourceURI, authFetch.value)
+state.informationResourceStore = await getResource(props.informationResourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -139,7 +139,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.informationResourceURI))
   .then((parsedN3) => (state.informationResourceStore = parsedN3.store));
 
@@ -157,7 +157,7 @@ const accessAuthorizations = computed(() => state.informationResourceStore.getOb
 
 // get access request data
 
-state.accessRequestStore = await getResource(accessRequests.value[0], authFetch.value)
+state.accessRequestStore = await getResource(accessRequests.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -167,7 +167,7 @@ state.accessRequestStore = await getResource(accessRequests.value[0], authFetch.
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, accessRequests.value[0]))
   .then((parsedN3) => (state.accessRequestStore = parsedN3.store));
 
@@ -283,7 +283,7 @@ _:rename a solid:InsertDeletePatch;
     solid:deletes {
         ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
     } .`
-    await patchResource(props.informationResourceURI, patchBody, authFetch.value)
+    await patchResource(props.informationResourceURI, patchBody, session)
       .then(() =>
         toast.add({
           severity: "success",

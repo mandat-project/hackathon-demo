@@ -1,37 +1,37 @@
 <template>
-  <HeaderBar />
+  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
-  <div v-if="isLoggedIn">
+  <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
   </div>
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;">
     <template #content>
       <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
     </template>
   </Card>
 
-  <Toast
-    position="bottom-right"
-    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
-  />
+  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
 </template>
 
 <script setup lang="ts">
+// @ts-ignore no idea what that error is. does not seem to hurt, though
 import { HeaderBar } from "@shared/components";
 import Toast from "primevue/toast";
-import { onSessionRestore } from "@inrupt/solid-client-authn-browser";
-import { useSolidSession } from "@shared/composables";
+import { useSolidProfile, useSolidSession } from "@shared/composables";
 import router from "./router";
-import { toRefs } from "vue";
+import { computed } from "vue";
 import Card from "primevue/card";
 
-// bring user back to the current location
-onSessionRestore((url) => router.push(`/${url.split("://")[1].split("/")[1]}`));
+
+const { session, restoreSession } = useSolidSession();
+const { memberOf } = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+})
+
 // re-use Solid session
-useSolidSession().restoreSession();
-// check if logged in
-const { sessionInfo } = useSolidSession();
-const { isLoggedIn } = toRefs(sessionInfo);
+router.isReady().then(restoreSession)
+
 </script>
 
 <style>
@@ -89,6 +89,7 @@ ol {
 .grid {
   margin: 5px !important;
 }
+
 .p-button {
   -webkit-tap-highlight-color: transparent;
 }
