@@ -134,7 +134,7 @@ export default defineComponent({
 </template>
 </Toolbar>
 </div>
-<div style="height: 100px" id="header-bar-spacer" />
+<div style="height: 75px" id="header-bar-spacer" />
 </template>
 
 <style scoped>

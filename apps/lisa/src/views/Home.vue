@@ -4,7 +4,7 @@
     <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
       @click="fetchDemandUris(memberOf)" />
   </h1>
-  <div style="height: 100px" id="header-bar-spacer" />
+  <div style="height: 75px" id="header-bar-spacer" />
   <div class="grid">
     <ul class="col-12 flex flex-column gap-4">
       <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />

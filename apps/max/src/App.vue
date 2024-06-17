@@ -7,6 +7,12 @@
     <router-view />
   </div>
 
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+    <template #content>
+      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+    </template>
+  </Card>
+
   <Dialog header="We updated the App!" v-model:visible="isOpen" position="bottomright">
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
@@ -27,6 +33,7 @@ import Toast from "primevue/toast";
 import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
 import { HeaderBar } from "@shared/components";
 import router from "./router";
+import Card from "primevue/card";
 
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
