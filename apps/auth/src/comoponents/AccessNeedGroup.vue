@@ -1,5 +1,5 @@
 <template>
-  <div class="accessNeedGroup">
+  <div class="p-card accessNeedGroup">
     <div>
       <strong>Short description of requested access: </strong>
       <div v-for="label in prefLabels" :key="label">
@@ -12,8 +12,8 @@
         {{ definition }}
       </div>
     </div>
-    <div class="p-card" style="margin: 5px">
-      <div v-for="accessNeed in accessNeeds" :key="accessNeed" class="p-card col-12 lg:col-8 lg:col-offset-2"
+    <div>
+      <div v-for="accessNeed in accessNeeds" :key="accessNeed" class="accessNeed"
            style="margin: 5px">
         <Suspense>
           <AccessNeed :resourceURI="accessNeed" :forSocialAgents="forSocialAgents"
@@ -37,6 +37,19 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+.accessNeedGroup {
+  margin: 0 0 1rem 1rem;
+  padding: 1rem;
+  border-radius: 7px;
+  background-color: var(--surface-b);
+}
+
+.accessNeed {
+  margin-left: 2rem;
+}
+</style>
 
 <script setup lang="ts">
 import AccessNeed from "../comoponents/AccessNeed.vue";

@@ -1,0 +1,40 @@
+/* Customizations to the designer theme should be defined here */
+
+h1, title {
+    font-family: var(--font-family-serif);
+    font-weight: 400;
+}
+
+.p-toolbar {
+    background: white;
+    font-size: 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+
+    border-radius: 8px;
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.p-button {
+    padding: 0.5rem;
+    font-weight: bold;
+
+    &:hover {
+      background-color: rgba(65, 132, 153, 0.2);
+    }
+}
+.p-card {
+    border-radius: 8px;
+}
+
+.p-button.p-button-text {
+    color: rgba(0, 0, 0, 0.9);
+    background-color: #fff;
+
+    &:hover {
+        background-color: rgba(65, 132, 153, 0.2);
+    }
+}
+
+.p-button-rounded {
+    border-radius: 7px;
+}
