@@ -236,7 +236,8 @@ const state = reactive({
   demandStore: new Store(),
   offerStore: new Store(),
   orderStore: new Store(),
-  demanderStore: new Store()
+  demanderStore: new Store(),
+  businessAssessmentStore : new Store()
 });
 
 async function fetchStoreOf(uri: string): Promise<Store> {
@@ -255,14 +256,17 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       .then((parsedN3) => parsedN3.store);
 }
 
-async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag:Ref<boolean> ) {
+async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag?:Ref<boolean> ) {
   const itemStores: Store[] = await Promise.all(
       itemUris.map((item) => fetchStoreOf(item))
   )
   itemStores
       .map(itemStore => itemStore.getQuads(null, null, null, null))
       .map((quads) => store.addQuads(quads))
-  flag.value = !flag.value
+  if(flag != undefined)
+  {
+    flag.value = !flag.value
+  }
 }
 
 function refreshState() {
@@ -364,7 +368,8 @@ function setActiveProcessStep(): number {
 
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
-  window.open(businessAssessmentUri[0], '_tab');
+  const items = await getContainerItems(businessAssessmentUri[0], session)
+  await fillItemStoresIntoStore(items, state.businessAssessmentStore)
 }
 
 async function patchBusinessResourceToHaveAccessRequest(businessResource: string, accessRequest: string) {
