@@ -45,7 +45,7 @@
                       v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
                       @click="fetchProcessedData()">Fetch Processed Data</Button>
             </div>
-            <BusinessData v-if="businessDataFetched"/>
+            <BusinessData v-if="businessDataFetched" :store="state.businessAssessmentStore" />
             <div class="flex p-2 gap-2">
               <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
               <Button class="button-next" label="Next" @click="nextCallback" />
