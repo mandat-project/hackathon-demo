@@ -45,6 +45,7 @@
                       v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
                       @click="fetchProcessedData()">Fetch Processed Data</Button>
             </div>
+            <BusinessData v-if="businessDataFetched"/>
             <div class="flex p-2 gap-2">
               <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
               <Button class="button-next" label="Next" @click="nextCallback" />
@@ -195,6 +196,7 @@ import { AxiosResponse } from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {Ref, computed, reactive, ref, toRefs, watch} from 'vue';
+import BusinessData from "/src/components/BusinessDataPanel.vue";
 
 const props = defineProps<{ demandUri: string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
@@ -202,6 +204,7 @@ const toast = useToast();
 const appMemory = useCache();
 const {session} = useSolidSession();
 
+let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
 const loanTerms = [
@@ -368,8 +371,9 @@ function setActiveProcessStep(): number {
 
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
-  const items = await getContainerItems(businessAssessmentUri[0], session)
-  await fillItemStoresIntoStore(items, state.businessAssessmentStore)
+  const items = await getContainerItems(businessAssessmentUri[0], session);
+  await fillItemStoresIntoStore(items, state.businessAssessmentStore);
+  businessDataFetched.value = true;
 }
 
 async function patchBusinessResourceToHaveAccessRequest(businessResource: string, accessRequest: string) {
