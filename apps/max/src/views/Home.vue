@@ -53,8 +53,7 @@ async function processDocumentCreationDemand(key: string) {
   const store = documentCreationDemands.value.get(key);
   if (store) {
     const requestedShapeTree = getObject(store, INTEROP('registeredShapeTree'));
-    const fromSocialAgent = getObject(store, INTEROP('fromSocialAgent'));
-    const targetUri = await getDataRegistrationContainers(fromSocialAgent, requestedShapeTree, session);
+    const targetUri = await getDataRegistrationContainers(memberOf.value, requestedShapeTree, session);
     const date = new Date().toISOString();
     const businessAssessmentPayload = `@prefix schema: <${SCHEMA()}> .
           @prefix xsd: <${XSD()}> .
