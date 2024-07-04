@@ -6,6 +6,12 @@
         {{ shapeTree.split("#").pop() }}
       </a>
     </div>
+    <div class="field">
+      <div class="fieldLabel">Access need for container:</div>
+      <a v-for="container in containers" :key="container" :href="container">
+        {{ container.split("/").reverse()[1] }}
+      </a>
+    </div>
     <div v-if="dataInstances.length > 0" class="field">
       <div class="fieldLabel">Access need for resources:</div>
       <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
@@ -103,6 +109,8 @@ const dataInstances = computed(() =>
   store.value.getObjects(props.resourceURI, INTEROP("hasDataInstance"), null).map(t => t.value)
 )
 
+let containers = ref([] as string[])
+
 /**
  * ! SPEC - data model problem:
  * The access need does not link to the access description set or similar.
@@ -169,6 +177,7 @@ async function checkIfMatchingDataRegistrationExists() {
   if (dataRegistrations.length <= 0) {
     emit("noDataRegistrationFound", registeredShapeTrees.value[0])
   }
+  containers.value = dataRegistrations
 }
 
 
