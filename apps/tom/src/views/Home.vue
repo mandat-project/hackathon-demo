@@ -1,15 +1,49 @@
 <template>
   <div v-if="isLoggedIn">
+    <!-- Get ads from market -->
+    <div class="grid">
+      <div class="col lg:col-6 lg:col-offset-3">
+        <h1>Get advertisements</h1>
+        <Button class="mt-2" @click="getAdsFromMarket"> Get service catalogue</Button><br/>
+        <Dropdown v-if="listedAdvertisements.length != 0" v-model="chosenAdvertisement" :options="listedAdvertisements"
+          placeholder="Select an advertisement shape" />
+        <br />
+        <Button class="mt-2" v-if="chosenAdvertisement !=''" @click="getSelectedAds"> Get selected ads</Button>
+        <br />
+        <ProgressBar v-if="isLoadingAds" mode="indeterminate" style="height: 2px" />
+        <ul v-if="advertisements" class="flex flex-column p-0">
+          <li v-for="(ad, index) in advertisements" :key="JSON.stringify(ad)"
+            class="flex flex-wrap align-items-center justify-content-between">
+            <hr v-if="index !== 0" class="w-full" />
+            <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'active font-bold': index == activeIndex }">
+              <span> Ad no. {{ ad.id
+                }}, valid until {{
+                ad.validUntil
+                }}</span>
+              <span> Contact advertiser at: {{ ad.inbox }}</span>
+              <span>
+                <Button @click="chosenAdvertiserDemandInbox = ad.inbox; activeIndex = index" label="Choose"
+                  icon="pi pi-check" /></span>
+            </div>
+          </li>
+        </ul>
+        <span v-if="(advertisements.length === 0) && (chosenAdvertisement != '')">No ads 4 u</span>
+      </div>
+    </div>
+
     <!-- Create Demand -->
     <div class="grid">
       <div class="col lg:col-6 lg:col-offset-3">
         <h1>Create Demand</h1>
+        <!-- We just display the chosen ad's demand container here - currently it is not used in the form below -->
+        <span v-if="chosenAdvertiserDemandInbox != ''">Create a demand at
+          <strong>{{chosenAdvertiserDemandInbox}}</strong></span>
 
         <form>
           <div class="grid">
             <span class="align-self-center font-bold">Amount</span>
             <div class="col">
-              <InputNumber id="amount" type="number" v-model="enteredAmount"/>
+              <InputNumber id="amount" type="number" v-model="enteredAmount" />
             </div>
           </div>
 
@@ -17,7 +51,7 @@
             <span class="align-self-center font-bold">Currency</span>
             <div class="col">
               <Dropdown v-model="selectedCurrency" :options="currencies" optionLabel="label"
-                        placeholder="Select a Currency"/>
+                placeholder="Select a Currency" />
             </div>
           </div>
 
@@ -31,20 +65,21 @@
         <h1>
           Demands
           <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-                  @click="loadCreditDemands()"/>
+            @click="loadCreditDemands()" />
         </h1>
 
         <ul v-if="demands" class="flex flex-column p-0">
           <li v-for="(demand, index) in demands" :key="JSON.stringify(demand)"
-              class="flex flex-wrap align-items-center justify-content-between">
-            <hr v-if="index !== 0" class="w-full"/>
+            class="flex flex-wrap align-items-center justify-content-between">
+            <hr v-if="index !== 0" class="w-full" />
             <div class="flex flex-column md:flex-row gap-2 p-3">
               <span> From </span>
               <span style="font-weight: bold">
                 <a :href="demand.providerWebID">{{ demand.providerName }} </a> :
               </span>
               <span>{{ demand.amount }} {{ demand.currency }}</span>
-              <span v-if="demand.offer && !demand.order?.isTerminated">(interest rate %: {{ demand.offer.interestRate }})</span>
+              <span v-if="demand.offer && !demand.order?.isTerminated">(interest rate %: {{ demand.offer.interestRate
+                }})</span>
               <span v-if="demand.offer && !demand.order?.isTerminated">(duration: {{ demand.offer.duration }})</span>
               <span v-if="demand.order?.isTerminated">(credit contract terminated)</span>
               <span v-if="!demand.offer">(currently no offer)</span>
@@ -52,28 +87,28 @@
             <Button v-if="demand.hasAccessRequest &&
               !(demand.isAccessRequestGranted == 'true')
               " type="submit" label="Handle Access Request" icon="pi pi-question" class="p-button-text"
-                    @click="handleAuthorizationRequest(demand.hasAccessRequest)"/>
-            <Button v-if="demand.offer && !demand.order" type="submit" label="Accept Offer" icon="pi pi-check" class="p-button-text"
-                    @click="createOrder(demand.offer.id)"/>
+              @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
+            <Button v-if="demand.offer && !demand.order" type="submit" label="Accept Offer" icon="pi pi-check"
+              class="p-button-text" @click="createOrder(demand.offer.id)" />
             <Button v-if="demand.documentCreationDemand && !demand.offer" type="submit" label="Request creation of data"
-                    icon="pi pi-question" class="p-button-text"
-                    @click="postDocumentCreationDemand(demand.documentCreationDemand)"/>
-            <Button v-if="demand.order?.isTerminated" type="submit" label="Revoke Rights"
-                    icon="pi pi-question" class="p-button-text"
-                    @click="handleAuthorizationRequest(demand.hasAccessRequest)"/>
+              icon="pi pi-question" class="p-button-text"
+              @click="postDocumentCreationDemand(demand.documentCreationDemand)" />
+            <Button v-if="demand.order?.isTerminated" type="submit" label="Revoke Rights" icon="pi pi-question"
+              class="p-button-text" @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
           </li>
         </ul>
 
         <p v-else>No released demands</p>
 
-        <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px"/>
+        <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
       </div>
     </div>
   </div>
   <span v-else>
     401 Unauthenticated : Login using the button in the top-right corner!
   </span>
-  <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase" data-ribbon="GitHub" title="GitHub">GitHub</a>
+  <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase"
+    data-ribbon="GitHub" title="GitHub">GitHub</a>
 </template>
 
 <script setup lang="ts">
@@ -91,6 +126,8 @@ import {
   getResource,
   INTEROP,
   LDP,
+  AD,
+  RDF,
   parseToN3,
   putResource,
   SCHEMA,
@@ -98,7 +135,9 @@ import {
   XSD,
 } from "@shared/solid";
 import {Ref, computed, ref, toRefs, watch} from "vue";
-import {Literal, NamedNode, Quad, Store, Writer} from "n3";
+import {Literal, NamedNode, Quad, Store, Writer, DefaultGraph} from "n3";
+import ConfirmationService from 'primevue/confirmationservice';
+import Button from 'primevue/button';
 
 interface Demand {
   providerName: string;
@@ -151,6 +190,24 @@ const currencies = [
   {label: "EUR", value: "EUR"},
   {label: "USD", value: "USD"},
 ];
+
+const listedAdvertisements = ref([]) as Ref<String[]>
+const chosenAdvertisement = ref("")
+let mapOfAdShapeTrees = new Map(); 
+
+const advertisements = ref([]) as Ref<Advertisement[]>;
+
+let isLoadingAds = ref(false)
+
+interface Advertisement {
+  id: string;
+  validUntil: string;
+  inbox: string;
+}
+
+let chosenAdvertiserDemandInbox = ref("")
+
+let activeIndex = ref();
 
 let isLoading = ref(false);
 
@@ -292,6 +349,161 @@ async function loadCreditDemands() {
   isLoading.value = false;
 }
 
+/**Get advertisements from a marketplace for any kind of ad shape */
+async function getAdsFromMarket() {
+  isLoadingAds.value = true;
+  try {
+    
+    const marketURI : string = "https://market.solid.aifb.kit.edu/profile/card"
+    
+    let marketStore : Store = new Store();
+    marketStore = await fetchStoreOf(marketURI); //get profile document
+
+    let registrySetMarket = marketStore.getObjects(null,INTEROP("hasRegistrySet"),null)[0].value;
+    marketStore = await fetchStoreOf(registrySetMarket);
+    
+    mapOfAdShapeTrees = new Map();
+
+    for(const registry of marketStore.getObjects(null,INTEROP("hasDataRegistry"),null)){
+      let regStore = new Store();
+      regStore = await fetchStoreOf(registry.value);
+    
+      for(const registration of regStore.getObjects(null,INTEROP("hasDataRegistration"),null)){
+        regStore.addQuads((await fetchStoreOf(registration.value)).getQuads(null,null,null,null));
+        for (const shapeTree of regStore.getObjects(registration,INTEROP("registeredShapeTree"),null)){
+          //add to our overview list (we assume that all shapeTree and their registrations are unique...)
+          mapOfAdShapeTrees.set(shapeTree.value, registration.value) 
+          console.log(shapeTree.value + "  "+  registration.value)
+        }
+      }  
+    }
+    //we have all ad shaoe --> display as list in dropdown s.t. user may select ad shape
+    listedAdvertisements.value = Array.from(mapOfAdShapeTrees.keys());
+    //@@@ we can add labels to shapes with '// rdfs:label "Credit Shape"' and then display the label as human readable text
+    // probably parse the shape (with shex.js?), transform to JSON-LD, then look for Annotations
+    /**
+     * Example for Shape with annotations:
+     * <CreditShape> {               # An Observation has:
+          :status ["preliminary" "final"]; 
+          :subject @<OtherShape>         
+          //rdfs:label "This is a Credit Shape" 
+        }
+     * 
+     * Example how it looks like in JSON-LD:
+     *  "annotations": [
+                {
+                  "type": "Annotation",
+                  "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+                  "object": {
+                    "value": "This is a Credit Shape"
+                  }
+                }
+              ]
+     */
+
+    
+    // Success Message \o/
+    toast.add({
+        severity: "success",
+        summary: "Received services",
+        life: 5000,
+      });
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "Error on contacting market",
+      detail: err,
+      life: 5000,
+    });
+  }
+  finally{
+    isLoadingAds.value = false;
+  }
+}
+
+/*After user has chosen an ad shape, get all ads from the market pod*/
+async function getSelectedAds() {
+  isLoadingAds.value = true;
+  
+  try{
+    //check that chosenAdvertisement is not empty
+    if (chosenAdvertisement.value == ""){
+      throw new Error("No ad type selected!");
+    }
+    const adContainerURI: string = mapOfAdShapeTrees.get(chosenAdvertisement.value);
+
+    let adStore: Store = new Store();
+    adStore = await fetchStoreOf(adContainerURI); //get ads from container on marketplace
+    advertisements.value = [];
+
+    let i = 0
+
+    /**MOCK - Remove After TESTING @@@@@@@@ */
+              // let testStore = new Store();
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no1'), new NamedNode(RDF("type")), new NamedNode(AD('CreditEnterpriseAd')), new DefaultGraph ));
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no1'), new NamedNode(AD("sendDemandTo")), new NamedNode("https://bank.solid.aifb.kit.edu/credits/demands/"), new DefaultGraph));
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no1'), new NamedNode(AD("ValidUntil")), new NamedNode(AD("EndOfYear")), new DefaultGraph ));
+            
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no2'), new NamedNode(RDF("type")), new NamedNode(AD('CreditEnterpriseAd')), new DefaultGraph));
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no2'), new NamedNode(AD("sendDemandTo")), new NamedNode("https://bank.solid.aifb.kit.edu/credits/demands/"), new DefaultGraph));
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no2'), new NamedNode(AD("ValidUntil")), new NamedNode(AD("Christmas")), new DefaultGraph));
+
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no3'), new NamedNode(RDF("type")), new NamedNode(AD('CreditEnterpriseAd')), new DefaultGraph));
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no3'), new NamedNode(AD("sendDemandTo")), new NamedNode("https://fintech.solid.aifb.kit.edu/credits/demands/"), new DefaultGraph));
+              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no3'), new NamedNode(AD("ValidUntil")), new NamedNode(AD("EndOfMonth")), new DefaultGraph));
+
+
+
+              // for(const q of testStore.getQuads(null, null, null, null)){
+              //   adStore.addQuad(q)
+              // }
+              
+              // for (const adResource of adStore.getSubjects(RDF("type"), AD('CreditEnterpriseAd'), null)) {
+
+    for (const q of adStore.getQuads(null, null, null, null)) {
+      console.log(q.subject.value + " " + q.predicate.value + " " +  q.object.value)
+    }
+
+    for (const adResource of adStore.getObjects(null, LDP('contains'), null)){
+      
+      //adStore.addQuads((await fetchStoreOf(adResource.value)).getQuads(null, null, null, null));
+      let resStore : Store = await fetchStoreOf(adResource.value);
+      for (const q of resStore.getQuads(null, null, null, null)) {
+        console.log(q.subject.value + " " + q.predicate.value + " " + q.object.value)
+      }
+    
+      console.log(">>>>>>>>" + resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value)
+      console.log(">>>>>>>>" + resStore.getObjects(adResource, AD('sendDemandTo'), null)[0].value)
+
+
+      const adObject = {
+        id: String(i),
+        validUntil: resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value , 
+        inbox: resStore.getObjects(adResource, AD('sendDemandTo'), null)[0].value
+      } 
+    
+      advertisements.value.push(adObject);
+      i++;
+    }
+
+    // Success Message \o/
+    toast.add({
+      severity: "success",
+      summary: "Received advertisements",
+      life: 5000,
+    });
+  } catch (err) {
+    toast.add({
+      severity: "error",
+      summary: "Error on getting ads",
+      detail: err,
+      life: 5000,
+    });
+  } finally{
+    isLoadingAds.value = false;
+  }
+}
+
 const postCreditDemand = async () => {
   try {
     // Create demand resource
@@ -309,10 +521,14 @@ const postCreditDemand = async () => {
       <${memberOf.value}> schema:seeks <> .
     `;
 
-    const demandContainerUris = await getContainerUris(
-        bank.value,
-        creditDemandShapeTreeUri
-    );
+
+    let demandContainerUris : string[] = []
+    //either inbox comes from fixed bank URI (as before), or a "new" inbox as received from advertisement
+    if (chosenAdvertiserDemandInbox.value == ""){
+      demandContainerUris = await getContainerUris(bank.value,creditDemandShapeTreeUri); //take inbox as pre-determined by code...
+    }else{
+      demandContainerUris = [chosenAdvertiserDemandInbox.value]; //take inbox as received from ad
+    }
 
     await createDemand(demandContainerUris, payload);
 
@@ -538,5 +754,9 @@ async function handleAuthorizationRequestRedirect(
 <style scoped>
 hr {
   border: 1px solid var(--surface-d);
+}
+
+.active {
+  background-color: lightgrey
 }
 </style>
