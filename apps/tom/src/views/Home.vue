@@ -373,7 +373,6 @@ async function getAdsFromMarket() {
         for (const shapeTree of regStore.getObjects(registration,INTEROP("registeredShapeTree"),null)){
           //add to our overview list (we assume that all shapeTree and their registrations are unique...)
           mapOfAdShapeTrees.set(shapeTree.value, registration.value) 
-          console.log(shapeTree.value + "  "+  registration.value)
         }
       }  
     }
@@ -438,44 +437,10 @@ async function getSelectedAds() {
 
     let i = 0
 
-    /**MOCK - Remove After TESTING @@@@@@@@ */
-              // let testStore = new Store();
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no1'), new NamedNode(RDF("type")), new NamedNode(AD('CreditEnterpriseAd')), new DefaultGraph ));
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no1'), new NamedNode(AD("sendDemandTo")), new NamedNode("https://bank.solid.aifb.kit.edu/credits/demands/"), new DefaultGraph));
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no1'), new NamedNode(AD("ValidUntil")), new NamedNode(AD("EndOfYear")), new DefaultGraph ));
-            
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no2'), new NamedNode(RDF("type")), new NamedNode(AD('CreditEnterpriseAd')), new DefaultGraph));
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no2'), new NamedNode(AD("sendDemandTo")), new NamedNode("https://bank.solid.aifb.kit.edu/credits/demands/"), new DefaultGraph));
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no2'), new NamedNode(AD("ValidUntil")), new NamedNode(AD("Christmas")), new DefaultGraph));
-
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no3'), new NamedNode(RDF("type")), new NamedNode(AD('CreditEnterpriseAd')), new DefaultGraph));
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no3'), new NamedNode(AD("sendDemandTo")), new NamedNode("https://fintech.solid.aifb.kit.edu/credits/demands/"), new DefaultGraph));
-              // testStore.addQuad(new Quad(new NamedNode('https://example.org/ads#no3'), new NamedNode(AD("ValidUntil")), new NamedNode(AD("EndOfMonth")), new DefaultGraph));
-
-
-
-              // for(const q of testStore.getQuads(null, null, null, null)){
-              //   adStore.addQuad(q)
-              // }
-              
-              // for (const adResource of adStore.getSubjects(RDF("type"), AD('CreditEnterpriseAd'), null)) {
-
-    for (const q of adStore.getQuads(null, null, null, null)) {
-      console.log(q.subject.value + " " + q.predicate.value + " " +  q.object.value)
-    }
-
     for (const adResource of adStore.getObjects(null, LDP('contains'), null)){
       
-      //adStore.addQuads((await fetchStoreOf(adResource.value)).getQuads(null, null, null, null));
       let resStore : Store = await fetchStoreOf(adResource.value);
-      for (const q of resStore.getQuads(null, null, null, null)) {
-        console.log(q.subject.value + " " + q.predicate.value + " " + q.object.value)
-      }
     
-      console.log(">>>>>>>>" + resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value)
-      console.log(">>>>>>>>" + resStore.getObjects(adResource, AD('sendDemandTo'), null)[0].value)
-
-
       const adObject = {
         id: String(i),
         validUntil: resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value , 
