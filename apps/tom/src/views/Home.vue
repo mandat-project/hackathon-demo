@@ -16,14 +16,20 @@
             class="flex flex-wrap align-items-center justify-content-between">
             <hr v-if="index !== 0" class="w-full" />
             <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'active font-bold': index == activeIndex }">
+              <span> {{ad.label}}</span>
               <span> Ad no. {{ ad.id
                 }}, valid until {{
-                ad.validUntil
+                ad.validUntil.split("/").pop()
                 }}</span>
-              <span> Contact advertiser at: {{ ad.inbox }}</span>
+              <span> Lowest interest rate: {{ad.lowestInterestRate}}</span>
+              <span> Credit periods from {{ad.minCreditPeriodMonths}} to {{ad.maxCreditPeriodMonths}} months</span>
+              <span> Contact advertiser at: {{ad.inbox}}</span>
+            </div>
+            <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'active font-bold': index == activeIndex }">
+              <span> {{ad.comment}}</span>
               <span>
                 <Button @click="chosenAdvertiserDemandInbox = ad.inbox; activeIndex = index" label="Choose"
-                  icon="pi pi-check" /></span>
+                        icon="pi pi-check" /></span>
             </div>
           </li>
         </ul>
@@ -127,16 +133,14 @@ import {
   INTEROP,
   LDP,
   AD,
-  RDF,
   parseToN3,
   putResource,
   SCHEMA,
   VCARD,
-  XSD,
+  XSD, RDFS,
 } from "@shared/solid";
-import {Ref, computed, ref, toRefs, watch} from "vue";
-import {Literal, NamedNode, Quad, Store, Writer, DefaultGraph} from "n3";
-import ConfirmationService from 'primevue/confirmationservice';
+import {Ref, computed, ref, watch} from "vue";
+import {Literal, NamedNode, Quad, Store, Writer} from "n3";
 import Button from 'primevue/button';
 
 interface Demand {
@@ -203,6 +207,11 @@ interface Advertisement {
   id: string;
   validUntil: string;
   inbox: string;
+  comment: string;
+  label: string;
+  lowestInterestRate: number;
+  minCreditPeriodMonths: number;
+  maxCreditPeriodMonths: number;
 }
 
 let chosenAdvertiserDemandInbox = ref("")
@@ -443,8 +452,13 @@ async function getSelectedAds() {
     
       const adObject = {
         id: String(i),
-        validUntil: resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value , 
-        inbox: resStore.getObjects(adResource, AD('sendDemandTo'), null)[0].value
+        validUntil: resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value,
+        inbox: resStore.getObjects(adResource, AD('sendDemandTo'), null)[0].value,
+        comment: resStore.getObjects(adResource, RDFS('comment'), null)[0].value,
+        label: resStore.getObjects(adResource, RDFS('label'), null)[0].value,
+        lowestInterestRate: resStore.getObjects(adResource, AD('lowestInterestRate'), null)[0].value,
+        minCreditPeriodMonths: resStore.getObjects(adResource, AD('minCreditPeriodMonths'), null)[0].value,
+        maxCreditPeriodMonths: resStore.getObjects(adResource, AD('maxCreditPeriodMonths'), null)[0].value,
       } 
     
       advertisements.value.push(adObject);
