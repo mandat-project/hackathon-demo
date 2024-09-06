@@ -23,7 +23,8 @@
                 }}</span>
               <span> Lowest interest rate: {{ad.lowestInterestRate}}</span>
               <span> Credit periods from {{ad.minCreditPeriodMonths}} to {{ad.maxCreditPeriodMonths}} months</span>
-              <span> Contact advertiser at: {{ad.inbox}}</span>
+              <span> Contact advertiser at: </span>
+              <a :href="ad.inbox"><img :src="ad.creatorIconURI" width="50" height="50"></a>
             </div>
             <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'active font-bold': index == activeIndex }">
               <span> {{ad.comment}}</span>
@@ -209,9 +210,11 @@ interface Advertisement {
   inbox: string;
   comment: string;
   label: string;
-  lowestInterestRate: number;
-  minCreditPeriodMonths: number;
-  maxCreditPeriodMonths: number;
+  lowestInterestRate: string;
+  minCreditPeriodMonths: string;
+  maxCreditPeriodMonths: string;
+  createdBy: string;
+  creatorIconURI: string;
 }
 
 let chosenAdvertiserDemandInbox = ref("")
@@ -449,7 +452,11 @@ async function getSelectedAds() {
     for (const adResource of adStore.getObjects(null, LDP('contains'), null)){
       
       let resStore : Store = await fetchStoreOf(adResource.value);
-    
+      let createdBy = resStore.getObjects(adResource, AD('createdBy'), null)[0].value;
+
+      let creatorStore : Store = await fetchStoreOf(createdBy);
+      let creatorIconURI = creatorStore.getObjects(null, VCARD("hasPhoto"), null)[0].value;
+
       const adObject = {
         id: String(i),
         validUntil: resStore.getObjects(adResource, AD('ValidUntil'), null)[0].value,
@@ -459,8 +466,10 @@ async function getSelectedAds() {
         lowestInterestRate: resStore.getObjects(adResource, AD('lowestInterestRate'), null)[0].value,
         minCreditPeriodMonths: resStore.getObjects(adResource, AD('minCreditPeriodMonths'), null)[0].value,
         maxCreditPeriodMonths: resStore.getObjects(adResource, AD('maxCreditPeriodMonths'), null)[0].value,
-      } 
-    
+        createdBy: createdBy,
+        creatorIconURI: creatorIconURI
+      }
+
       advertisements.value.push(adObject);
       i++;
     }
