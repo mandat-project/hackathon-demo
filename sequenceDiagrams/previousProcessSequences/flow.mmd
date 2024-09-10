@@ -1,0 +1,40 @@
+graph LR
+%% Anbahnung Partnerschaft
+%% (1) Anfrage Kreditvertrag
+%% (2) Nachfrage aktuelle Unternehmenssituation
+%% (3) Anfrage Nachweis über Unternehmenssituation
+%% (4) Lieferung Nachweis
+%% (5) Lieferung Kreditangebot
+
+Tom((Tom))
+subgraph KMU_Pod
+    kmu_inbox[\inbox/]
+end
+Tom-->|"GET"|kmu_inbox
+kmu_inbox-.->|"200 OK (with body)"|Tom
+    Tom-->|"(1a) POST request_for_contract"|bank_inbox
+    Tom-->|"(3a) POST forward_request_for_data"|stb_inbox
+    Tom-->|"(5b) POST accept_contract"|bank_inbox
+
+Max((Max))
+subgraph StB_Pod
+    stb_inbox[\inbox/]
+    stb_storage[(storage)]
+end 
+Max-->|"GET"|stb_inbox
+stb_inbox-.->|"200 OK (with body)"|Max
+    Max-->|"(3b) collect_data"|stb_storage
+    Max-->|"(3b) set_authorization"|stb_storage
+    Max-->|"(4a) POST notify_access"|bank_inbox
+
+Lisa((Lisa))
+subgraph Bank_Pod
+    bank_inbox[\inbox/]
+end
+Lisa-->|"GET"|bank_inbox
+bank_inbox-.->|"200 OK (with body)"|Lisa
+    Lisa-->|"(2a) POST request_for_data"|kmu_inbox
+    Lisa-->|"(5a) POST offer_contract"|kmu_inbox
+    Lisa-->|"(4b) GET access_data"|stb_storage
+    stb_storage-.->|"(4b) 200 OK (with body)"|Lisa
+
