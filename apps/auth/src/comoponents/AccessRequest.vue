@@ -47,7 +47,7 @@
             </div>
             <div v-if="noDataRegistrationFound" class="field">
               <div class="fieldLabel">No matching Data Registrations were found for: </div>
-              <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree" :href="shapeTree">
+              <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree.toString()" :href="shapeTree.toString()">
                 {{ shapeTree.split('#').pop() }}
               </a>
             </div>
@@ -61,7 +61,6 @@
                     :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
               Decline Request
             </Button>
-            <!-- TODO Decline -->
           </div>
         </div>
       </template>
@@ -158,7 +157,7 @@ import { computed, reactive, ref } from "vue";
 
 const props = defineProps(["informationResourceURI", "redirect", "dataAuthzContainer", "accessAuthzContainer", "accessReceiptContainer"]);
 const emit = defineEmits(["createdAccessReceipt"])
-const { authFetch } = useSolidSession();
+const { session } = useSolidSession();
 const toast = useToast();
 
 const state = reactive({
@@ -168,7 +167,7 @@ const state = reactive({
 });
 
 // get data
-state.informationResourceStore = await getResource(props.informationResourceURI, authFetch.value)
+state.informationResourceStore = await getResource(props.informationResourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -178,7 +177,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.informationResourceURI))
   .then((parsedN3) => (state.informationResourceStore = parsedN3.store));
 
@@ -203,7 +202,7 @@ const accessNeedGroups = computed(() => state.informationResourceStore.getObject
 
 // get access request address data
 
-state.senderStore = await getResource(fromSocialAgents.value[0], authFetch.value)
+state.senderStore = await getResource(fromSocialAgents.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -213,11 +212,11 @@ state.senderStore = await getResource(fromSocialAgents.value[0], authFetch.value
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, fromSocialAgents.value[0]))
   .then((parsedN3) => (state.senderStore = parsedN3.store));
 
-state.granteeStore = await getResource(forSocialAgents.value[0], authFetch.value)
+state.granteeStore = await getResource(forSocialAgents.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -227,7 +226,7 @@ state.granteeStore = await getResource(forSocialAgents.value[0], authFetch.value
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, forSocialAgents.value[0]))
   .then((parsedN3) => (state.granteeStore = parsedN3.store));
 
@@ -334,7 +333,7 @@ async function createAccessReceipt(
       .join(", ")}`;
   }
   payload += ' .'
-  return createResource(props.accessReceiptContainer, payload, authFetch.value)
+  return createResource(props.accessReceiptContainer, payload, session)
     .then((loc) => {
         toast.add({
           severity: "success",

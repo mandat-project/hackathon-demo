@@ -1,5 +1,5 @@
 <template>
-  <div class="login-button" @click="isDisplaingIDPs = !isDisplaingIDPs">
+  <div class="session.login-button" @click="isDisplaingIDPs = !isDisplaingIDPs">
     <slot>
       <Button  class=" p-button-text p-button-rounded">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
@@ -24,15 +24,15 @@
             placeholder="https://your.idp"
             type="text"
             v-model="idp"
-            @keyup.enter="login(idp)"
+            @keyup.enter="session.login(idp, redirect_uri)"
         />
-        <Button @click="login(idp)"> ></Button>
+        <Button @click="session.login(idp, redirect_uri)"> ></Button>
       </div>
       <Button
           class="idp"
           @click="
-          idp = 'https://solid.aifb.kit.edu/';
-          login(idp);
+          idp = 'https://solid.aifb.kit.edu';
+          session.login(idp, redirect_uri);
           isDisplaingIDPs = !isDisplaingIDPs;
         "
       >
@@ -42,7 +42,7 @@
           class="idp"
           @click="
           idp = 'https://solidcommunity.net';
-          login(idp);
+          session.login(idp, redirect_uri);
           isDisplaingIDPs = !isDisplaingIDPs;
         "
       >
@@ -52,7 +52,7 @@
           class="idp"
           @click="
           idp = 'https://solidweb.org';
-          login(idp);
+          session.login(idp, redirect_uri);
           isDisplaingIDPs = !isDisplaingIDPs;
         "
       >
@@ -62,7 +62,7 @@
           class="idp"
           @click="
           idp = 'https://solidweb.me';
-          login(idp);
+          session.login(idp, redirect_uri);
           isDisplaingIDPs = !isDisplaingIDPs;
         "
       >
@@ -72,7 +72,7 @@
           class="idp"
           @click="
           idp = 'https://inrupt.net';
-          login(idp);
+          session.login(idp, redirect_uri);
           isDisplaingIDPs = !isDisplaingIDPs;
         "
       >
@@ -103,18 +103,19 @@ import {defineComponent, ref} from "vue";
 import {useSolidSession} from "@shared/composables";
 
 export default defineComponent({
-  name: "LoginButton",
+  name: "session.loginButton",
   setup() {
-    const {login} = useSolidSession();
+    const {session} = useSolidSession();
     const isDisplaingIDPs = ref(false);
     const idp = ref("");
+    const redirect_uri = window.location.href;
     const GetAPod = () => {
       window
           .open("https://solidproject.org//users/get-a-pod", "_blank")
           ?.focus();
       // window.close();
     };
-    return {login, isDisplaingIDPs, idp, GetAPod};
+    return {session, isDisplaingIDPs, idp, redirect_uri, GetAPod};
   },
 });
 </script>

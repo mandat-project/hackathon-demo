@@ -1,3 +1,4 @@
+/*
 import {ref, watch} from "vue";
 import {useSolidSession} from "./useSolidSession";
 import {useSolidProfile} from "./useSolidProfile";
@@ -5,13 +6,13 @@ import {ACL, createContainer, FOAF, getContainerItems, getResource, putResource}
 
 let socket: WebSocket;
 
-const {authFetch, sessionInfo} = useSolidSession();
+const {session} = useSolidSession();
 
 const creds = ref([] as String[]);
 const {wallet, credStatusDir} = useSolidProfile();
 
 const update = async (_uri: string) => {
-    return getContainerItems(wallet.value, authFetch.value)
+    return getContainerItems(wallet.value,session)
         .then((items) => {
             for (const e of creds.value) {
                 const i = items.indexOf(e.toString());
@@ -26,7 +27,7 @@ const update = async (_uri: string) => {
                 return createContainer(
                     `${wallet.value.split("wallet/")[0]}`,
                     "wallet",
-                    authFetch.value
+                    session
                 );
             }
             return err;
@@ -63,7 +64,7 @@ watch(() => wallet.value, updateSubscription);
 // make sure that credential status directory exists
 watch(credStatusDir, () => {
     if (credStatusDir.value === "") return;
-    getResource(credStatusDir.value, authFetch.value)
+    getResource(credStatusDir.value, session)
         .catch((err) => {
             // make sure credStatus directory exists
             if (err.message.includes("`404`")) {
@@ -71,7 +72,7 @@ watch(credStatusDir, () => {
                 return createContainer(
                     `${credStatusDir.value.split("credentialStatus/")[0]}`,
                     "credentialStatus",
-                    authFetch.value
+                    session
                 ).then(() => {
                     const acl = `
   @prefix acl: <${ACL()}>.
@@ -80,7 +81,7 @@ watch(credStatusDir, () => {
   <#owner>
       a acl:Authorization;
       acl:agent
-          <${sessionInfo.webId}>;
+          <${session.webId}>;
   
       acl:accessTo <./>;
       acl:default <./>;
@@ -95,7 +96,7 @@ watch(credStatusDir, () => {
       acl:default <./>;
       acl:mode acl:Read.
   `
-                    return putResource(credStatusDir.value + ".acl", acl, authFetch.value)
+                    return putResource(credStatusDir.value + ".acl", acl, session)
                 }).catch(err => console.log(err))
             }
             return err;
@@ -107,3 +108,4 @@ watch(credStatusDir, () => {
 export const useSolidWallet = () => {
     return {creds};
 };
+*/

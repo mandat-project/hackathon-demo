@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useToast} from "primevue/usetoast";
-import {ref, toRefs, watch} from "vue";
+import {computed, ref, toRefs, watch} from "vue";
 import {Quad, Store} from 'n3';
 import {
   createResource,
@@ -14,23 +14,27 @@ import {
   SCHEMA,
   XSD
 } from "@shared/solid";
-import {useSolidInbox, useSolidSession} from "@shared/composables";
+import { useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
 
 const toast = useToast();
-const {authFetch, sessionInfo} = useSolidSession();
-const {isLoggedIn} = toRefs(sessionInfo);
+const {session} = useSolidSession();
+const {memberOf} = useSolidProfile()
+const isLoggedIn = computed(() => {
+  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+})
 const isLoading = ref(false);
-const {ldns} = useSolidInbox();
 
 const documentCreationDemands = ref(new Map<string, Store | null>());
 const documentDemandContainerUri = ref("https://tax.solid.aifb.kit.edu/documents/demands/");
+// ! this should be dynamic
 
 // auto refetch on ldn
 watch(
-    () => ldns.value,
-    () => isLoggedIn ? fetchDocumentCreationDemands() : {}
+    () => isLoggedIn.value,
+    () => isLoggedIn.value ? fetchDocumentCreationDemands() : {},
+    {immediate:true}
 );
 
 function fetchDocumentCreationDemands() {
@@ -49,8 +53,7 @@ async function processDocumentCreationDemand(key: string) {
   const store = documentCreationDemands.value.get(key);
   if (store) {
     const requestedShapeTree = getObject(store, INTEROP('registeredShapeTree'));
-    const fromSocialAgent = getObject(store, INTEROP('fromSocialAgent'));
-    const targetUri = await getDataRegistrationContainers(fromSocialAgent, requestedShapeTree, authFetch.value);
+    const targetUri = await getDataRegistrationContainers(memberOf.value, requestedShapeTree, session);
     const date = new Date().toISOString();
     const businessAssessmentPayload = `@prefix schema: <${SCHEMA()}> .
           @prefix xsd: <${XSD()}> .
@@ -66,7 +69,7 @@ async function processDocumentCreationDemand(key: string) {
             credit:referencedStartDate "2021-01-01T00:00:00.000Z"^^xsd:dateTime ;
             credit:referencedStartEnd "2021-12-31T23:59:59.000Z"^^xsd:dateTime .
     `;
-    await createResource(targetUri[0], businessAssessmentPayload, authFetch.value)
+    await createResource(targetUri[0], businessAssessmentPayload, session)
         .catch((err) => {
           toast.add({
             severity: "error",
@@ -87,7 +90,7 @@ async function processDocumentCreationDemand(key: string) {
 // HELPER-FUNCTIONS
 
 function getResourceAsStore(uri: string): Promise<any> {
-  return getResource(uri, authFetch.value)
+  return getResource(uri, session)
       .catch((err) => {
         toast.add({
           severity: "error",
@@ -97,7 +100,7 @@ function getResourceAsStore(uri: string): Promise<any> {
         });
         throw new Error(err);
       })
-      .then((resp) => resp.text())
+      .then((resp) => resp.data)
       .then(txt => parseToN3(txt, uri))
       .then(n3 => n3.store);
 }
@@ -125,11 +128,6 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
           </template>
         </Card>
       </ul>
-      <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
-        <template #content>
-          <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
-        </template>
-      </Card>
     </div>
   </div>
   <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase" data-ribbon="GitHub" title="GitHub">GitHub</a>

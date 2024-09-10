@@ -1,5 +1,6 @@
 <template>
-  <transition-group name="list" tag="md-list">
+  <div></div>
+  <!-- <transition-group name="list" tag="md-list">
     <LDN
         :uri="ldn"
         :updateFlag="updateFlag"
@@ -9,21 +10,22 @@
         @selected="select"
         :selectFlag="ldn === selectedLDN"
     />
-  </transition-group>
+  </transition-group> -->
 </template>
 
 <script lang="ts">
 import {defineComponent, ref, watch} from "vue";
 
 import LDN from "./LDN.vue";
-import {useSolidInbox} from "@shared/composables";
+// import {useSolidInbox} from "@shared/composables";
 
 export default defineComponent({
   name: "LDNs",
-  components: {
-    LDN,
-  },
+  // components: {
+  //   LDN,
+  // },
   setup(props) {
+    /*
     const {ldns} = useSolidInbox();
     const updateFlag = ref(false);
 
@@ -42,7 +44,7 @@ export default defineComponent({
       select,
       selectedLDN,
       updateFlag,
-    };
+    };*/
   },
 });
 </script>

@@ -83,7 +83,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import { useSolidSession } from "@shared/composables";
+import { useSolidProfile, useSolidSession } from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -100,7 +100,8 @@ import {computed, reactive, watch} from "vue";
 
 const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
 const emit = defineEmits(["revokedDataAuthorization"])
-const { authFetch, sessionInfo } = useSolidSession();
+const { session } = useSolidSession();
+const { memberOf } = useSolidProfile();
 const toast = useToast();
 
 const state = reactive({
@@ -109,7 +110,7 @@ const state = reactive({
 });
 
 // get data
-state.resourceStore = await getResource(props.resourceURI, authFetch.value)
+state.resourceStore = await getResource(props.resourceURI, session)
     .catch((err) => {
         toast.add({
             severity: "error",
@@ -119,7 +120,7 @@ state.resourceStore = await getResource(props.resourceURI, authFetch.value)
         });
         throw new Error(err);
     })
-    .then((resp) => resp.text())
+    .then((resp) => resp.data)
     .then((txt) => parseToN3(txt, props.resourceURI))
     .then((parsedN3) => (state.resourceStore = parsedN3.store));
 
@@ -148,7 +149,7 @@ const accessNeeds = computed(() =>
 )
 
 //get grantee data
-state.granteeStore = await getResource(grantees.value[0], authFetch.value)
+state.granteeStore = await getResource(grantees.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -158,7 +159,7 @@ state.granteeStore = await getResource(grantees.value[0], authFetch.value)
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.resourceURI))
   .then((parsedN3) => (state.granteeStore = parsedN3.store));
 
@@ -182,9 +183,9 @@ watch(() => props.groupRevokationTrigger, () => {
 async function revokeRights() {
     for (const shapeTree of registeredShapeTrees.value) {
         const dataRegistrations = await getDataRegistrationContainers(
-            `${sessionInfo.webId}`,
+            `${memberOf.value}`,
             shapeTree,
-            authFetch.value
+            session
         ).catch((err) => {
             toast.add({
                 severity: "error",
@@ -222,7 +223,7 @@ async function updateAccessControlListToDelete(
     modes: string[]
 ) {
 
-    const aclURI = await getAclResourceUri(accessTo, authFetch.value);
+    const aclURI = await getAclResourceUri(accessTo, session);
 
     /**
    * see problems below
@@ -244,7 +245,7 @@ async function updateAccessControlListToDelete(
     //     } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
 
 
-    // await patchResource(aclURI, patchBody, authFetch.value).catch(
+    // await patchResource(aclURI, patchBody, session).catch(
     //     (err) => {
     //         toast.add({
     //             severity: "error",
@@ -265,7 +266,7 @@ async function updateAccessControlListToDelete(
 
     //  therefore...
 
-    const aclStore = await getResource(aclURI, authFetch.value)
+    const aclStore = await getResource(aclURI, session)
         .catch((err) => {
             toast.add({
                 severity: "error",
@@ -275,7 +276,7 @@ async function updateAccessControlListToDelete(
             });
             throw new Error(err);
         })
-        .then((resp) => resp.text())
+        .then((resp) => resp.data)
         .then((txt) => parseToN3(txt, aclURI))
         .then((parsedN3) => parsedN3.store);
 
@@ -300,7 +301,7 @@ async function updateAccessControlListToDelete(
 
     const n3Writer = new Writer();
     let aclBody = n3Writer.quadsToString(aclStore.getQuads(null, null, null, null))
-    await putResource(aclURI, aclBody, authFetch.value)
+    await putResource(aclURI, aclBody, session)
         .then(() =>
             toast.add({
                 severity: "success",

@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import AccessNeed from "../comoponents/AccessNeed.vue";
-import {useSolidSession} from "@shared/composables";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -69,12 +69,13 @@ import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "accessAuthzContainer", "dataAuthzContainer", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
-const {authFetch, sessionInfo} = useSolidSession();
+const { session } = useSolidSession();
+const { memberOf } = useSolidProfile()
 const toast = useToast();
 
 // get data
 const store = ref(new Store());
-store.value = await getResource(props.resourceURI, authFetch.value)
+store.value = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -84,7 +85,7 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.resourceURI))
   .then((parsedN3) => (store.value = parsedN3.store));
 
@@ -104,7 +105,7 @@ const accessNeeds = computed(() =>
 const descriptionResources = store.value.getObjects(props.resourceURI, INTEROP('hasAccessDescriptionSet'), null).map(t => t.value)
 
 for (const descriptionResource of descriptionResources) {
-  await getResource(descriptionResource, authFetch.value)
+  await getResource(descriptionResource, session)
     .catch((err) => {
       toast.add({
         severity: "error",
@@ -114,7 +115,7 @@ for (const descriptionResource of descriptionResources) {
       });
       throw new Error(err);
     })
-    .then((resp) => resp.text())
+    .then((resp) => resp.data)
     .then((txt) => parseToN3(txt, props.resourceURI))
     .then((parsedN3) => (store.value.addQuads(parsedN3.store.getQuads(null, null, null, null))));
 }
@@ -225,7 +226,7 @@ async function createAccessAuthorization(
 
     <#${accessAuthzLocalName}>
       a interop:AccessAuthorization ;
-      interop:grantedBy <${sessionInfo.webId}> ;
+      interop:grantedBy <${memberOf.value}> ;
       interop:grantedAt "${date}"^^xsd:dateTime ;
       interop:grantee ${forSocialAgents
     .map((t) => "<" + t + ">")
@@ -235,7 +236,7 @@ async function createAccessAuthorization(
     .map((t) => "<" + t + ">")
     .join(", ")} .
 `;
-  return createResource(props.accessAuthzContainer, payload, authFetch.value)
+  return createResource(props.accessAuthzContainer, payload, session)
     .then((loc) => {
         toast.add({
           severity: "success",

@@ -6,6 +6,12 @@
         {{ shapeTree.split("#").pop() }}
       </a>
     </div>
+    <div class="field">
+      <div class="fieldLabel">Access need for container:</div>
+      <a v-for="container in containers" :key="container" :href="container">
+        {{ container.split("/").reverse()[1] }}
+      </a>
+    </div>
     <div v-if="dataInstances.length > 0" class="field">
       <div class="fieldLabel">Access need for resources:</div>
       <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
@@ -51,7 +57,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import {useSolidSession} from "@shared/composables";
+import {useSolidSession,useSolidProfile} from "@shared/composables";
 import {
   getResource,
   parseToN3,
@@ -72,12 +78,13 @@ import {computed, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
 const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
-const {authFetch, sessionInfo} = useSolidSession();
+const { session } = useSolidSession();
+const { memberOf } = useSolidProfile();
 const toast = useToast();
 
 // get data
 const store = ref(new Store());
-store.value = await getResource(props.resourceURI, authFetch.value)
+store.value = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -87,7 +94,7 @@ store.value = await getResource(props.resourceURI, authFetch.value)
     });
     throw new Error(err);
   })
-  .then((resp) => resp.text())
+  .then((resp) => resp.data)
   .then((txt) => parseToN3(txt, props.resourceURI))
   .then((parsedN3) => (store.value = parsedN3.store));
 
@@ -101,6 +108,8 @@ const registeredShapeTrees = computed(() =>
 const dataInstances = computed(() =>
   store.value.getObjects(props.resourceURI, INTEROP("hasDataInstance"), null).map(t => t.value)
 )
+
+let containers = ref([] as string[])
 
 /**
  * ! SPEC - data model problem:
@@ -153,9 +162,9 @@ watch(() => registeredShapeTrees.value, () => checkIfMatchingDataRegistrationExi
 
 async function checkIfMatchingDataRegistrationExists() {
   const dataRegistrations = await getDataRegistrationContainers(
-    `${sessionInfo.webId}`,
+    `${memberOf.value}`,
     registeredShapeTrees.value[0],
-    authFetch.value
+    session
   ).catch((err) => {
     toast.add({
       severity: "error",
@@ -168,6 +177,7 @@ async function checkIfMatchingDataRegistrationExists() {
   if (dataRegistrations.length <= 0) {
     emit("noDataRegistrationFound", registeredShapeTrees.value[0])
   }
+  containers.value = dataRegistrations
 }
 
 
@@ -178,9 +188,9 @@ async function grantDataAuthorization() {
   // find registries
   for (const shapeTree of registeredShapeTrees.value) {
     const dataRegistrations = await getDataRegistrationContainers(
-      `${sessionInfo.webId}`,
+      `${memberOf.value}`,
       shapeTree,
-      authFetch.value
+      session
     ).catch((err) => {
       toast.add({
         severity: "error",
@@ -255,7 +265,7 @@ async function createDataAuthorization(
   }
       interop:satisfiesAccessNeed <${props.resourceURI}> .`;
 
-  return createResource(props.dataAuthzContainer, payload, authFetch.value)
+  return createResource(props.dataAuthzContainer, payload, session)
     .then((loc) => {
         toast.add({
           severity: "success",
@@ -301,7 +311,7 @@ _:rename a solid:InsertDeletePatch;
     solid:inserts {
         <#owner> a acl:Authorization;
             acl:accessTo <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
-            acl:agent <${sessionInfo.webId}>;
+            acl:agent <${memberOf.value}>;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode acl:Read, acl:Write, acl:Control.
 
@@ -312,8 +322,8 @@ _:rename a solid:InsertDeletePatch;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
     } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
-  const aclURI = await getAclResourceUri(accessTo, authFetch.value);
-  await patchResource(aclURI, patchBody, authFetch.value).catch(
+  const aclURI = await getAclResourceUri(accessTo, session);
+  await patchResource(aclURI, patchBody, session).catch(
     (err) => {
       toast.add({
         severity: "error",

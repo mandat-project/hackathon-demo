@@ -41,5 +41,7 @@ export const SCHEMA = Namespace("http://schema.org/")
 export const INTEROP = Namespace("http://www.w3.org/ns/solid/interop#")
 
 export const SKOS = Namespace("http://www.w3.org/2004/02/skos/core#")
+export const ORG = Namespace("http://www.w3.org/ns/org#")
+export const MANDAT = Namespace("https://solid.aifb.kit.edu/vocab/mandat/")
 
 export const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#")

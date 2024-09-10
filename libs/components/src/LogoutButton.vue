@@ -1,5 +1,5 @@
 <template>
-  <div class="logout-button" @click="logout">
+  <div class="logout-button" @click="session.logout()">
     <slot>
       <Button class="p-button-text p-button-rounded ml-1">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
@@ -19,8 +19,8 @@ import {useSolidSession} from "@shared/composables";
 export default defineComponent({
   name: "LoginButton",
   setup() {
-    const {logout} = useSolidSession();
-    return {logout};
+    const {session} = useSolidSession();
+    return {session};
   },
 });
 </script>

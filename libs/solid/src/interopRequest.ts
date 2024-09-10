@@ -1,4 +1,4 @@
-import { createResource, getResource, INTEROP, parseToN3 } from "@shared/solid";
+import { createResource, getResource, INTEROP, parseToN3, Session } from "@shared/solid";
 import { Store } from "n3";
 
 export type AccessNeed = {
@@ -31,28 +31,32 @@ export async function createResourceInAnyRegistrationOfShape(
   webId: string,
   shapeTreeUri: string,
   resourceBody: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ) {
+  if (session === undefined) session = new Session();
   const offerContainerUris = (
-    await getDataRegistrationContainers(webId, shapeTreeUri, fetch)
+    await getDataRegistrationContainers(webId, shapeTreeUri, session)
   )[0];
-  return await createResource(offerContainerUris, resourceBody, fetch);
+  return await createResource(offerContainerUris, resourceBody, session);
 }
 
 export async function getDataRegistrationContainers(
   webId: string,
   shapeTreeUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ): Promise<string[]> {
-  const registrySetUris = await getRegistrySet(webId, fetch);
+  if (session === undefined) session = new Session();
+  const registrySetUris = await getRegistrySet(webId, session);
   const dataRegistryUris = [];
   for (const registrySetUri of registrySetUris) {
-    dataRegistryUris.push(...(await getDataRegistry(registrySetUri, fetch)));
+    dataRegistryUris.push(
+      ...(await getDataRegistry(registrySetUri, session))
+    );
   }
   const dataRegistrationUris = [];
   for (const dataRegistryUri of dataRegistryUris) {
     dataRegistrationUris.push(
-      ...(await getDataRegistrations(dataRegistryUri, fetch))
+      ...(await getDataRegistrations(dataRegistryUri, session))
     );
   }
   const dataRegistrationsOfShapeUris = [];
@@ -60,7 +64,7 @@ export async function getDataRegistrationContainers(
     const hasMatchingShape = await filterDataRegistrationUrisByShapeTreeUri(
       dataRegistrationUri,
       shapeTreeUri,
-      fetch
+      session
     );
     if (hasMatchingShape) {
       dataRegistrationsOfShapeUris.push(dataRegistrationUri);
@@ -71,9 +75,10 @@ export async function getDataRegistrationContainers(
 
 function getRegistrySet(
   webId: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ): Promise<string[]> {
-  return getResourceAsStore(webId, fetch).then((store) =>
+  if (session === undefined) session = new Session();
+  return getResourceAsStore(webId, session).then((store) =>
     store
       .getObjects(null, INTEROP("hasRegistrySet"), null)
       .map((term) => term.value)
@@ -82,9 +87,10 @@ function getRegistrySet(
 
 function getDataRegistry(
   registrySetUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ): Promise<string[]> {
-  return getResourceAsStore(registrySetUri, fetch).then((store) =>
+  if (session === undefined) session = new Session();
+  return getResourceAsStore(registrySetUri, session).then((store) =>
     store
       .getObjects(null, INTEROP("hasDataRegistry"), null)
       .map((term) => term.value)
@@ -93,9 +99,10 @@ function getDataRegistry(
 
 async function getDataRegistrations(
   dataRegistryUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ): Promise<string[]> {
-  return getResourceAsStore(dataRegistryUri, fetch).then((store) =>
+  if (session === undefined) session = new Session();
+  return getResourceAsStore(dataRegistryUri, session).then((store) =>
     store
       .getObjects(null, INTEROP("hasDataRegistration"), null)
       .map((term) => term.value)
@@ -104,9 +111,10 @@ async function getDataRegistrations(
 
 function getRegisteredShapeTree(
   dataRegistrationUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ): Promise<string> {
-  return getResourceAsStore(dataRegistrationUri, fetch).then(
+  if (session === undefined) session = new Session();
+  return getResourceAsStore(dataRegistrationUri, session).then(
     (store) =>
       store.getObjects(null, INTEROP("registeredShapeTree"), null)[0].value
   );
@@ -115,21 +123,23 @@ function getRegisteredShapeTree(
 async function filterDataRegistrationUrisByShapeTreeUri(
   dataRegistrationUri: string,
   shapeTreeUri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ) {
+  if (session === undefined) session = new Session();
   const dataRegistrationShapeTree = await getRegisteredShapeTree(
     dataRegistrationUri,
-    fetch
+    session
   );
   return dataRegistrationShapeTree === shapeTreeUri;
 }
 
 function getResourceAsStore(
   uri: string,
-  fetch?: (url: RequestInfo, init?: RequestInit) => Promise<Response>
+  session?:Session
 ): Promise<Store> {
-  return getResource(uri, fetch)
-    .then((resp) => resp.text())
+  if (session === undefined) session = new Session();
+  return getResource(uri, session)
+    .then((resp) => resp.data)
     .then((txt) => parseToN3(txt, uri))
     .then((parsedN3) => parsedN3.store);
 }
