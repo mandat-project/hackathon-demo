@@ -16,6 +16,7 @@ import Dialog from "primevue/dialog";
 import Dropdown from 'primevue/dropdown';
 import SpeedDial from "primevue/speeddial";
 import Toast from "primevue/toast";
+import Message from 'primevue/message';
 import ProgressBar from "primevue/progressbar";
 import Listbox from "primevue/listbox";
 import TabMenu from "primevue/tabmenu";
@@ -24,6 +25,8 @@ import Menu from 'primevue/menu';
 import Divider from "primevue/divider";
 import Stepper from 'primevue/stepper';
 import StepperPanel from 'primevue/stepperpanel';
+import Panel from 'primevue/panel';
+
 
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -63,6 +66,7 @@ app.component("Dialog", Dialog);
 app.component("Dropdown", Dropdown);
 app.component("SpeedDial", SpeedDial);
 app.component("Toast", Toast);
+app.component("Message", Message);
 app.component("ProgressBar", ProgressBar);
 app.component("Listbox", Listbox);
 app.component("TabMenu", TabMenu);
@@ -72,6 +76,9 @@ app.component("Menu", Menu);
 app.component("Divider", Divider);
 app.component("Stepper", Stepper);
 app.component("StepperPanel", StepperPanel);
+app.component("Panel", Panel);
+
+
 
 app.directive('badge', BadgeDirective);
 app.directive("tooltip", Tooltip);
