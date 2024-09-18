@@ -3,12 +3,12 @@
     <!-- Get ads from market -->
     <div class="grid">
       <div class="col lg:col-6 lg:col-offset-3">
-        <h1>Get advertisements</h1>
+        <h1>Find business partners</h1>
         <Button class="mt-2" @click="getAdsFromMarket"> Get service catalogue</Button><br/>
         <Dropdown v-if="listedAdvertisements.length != 0" v-model="chosenAdvertisement" :options="listedAdvertisements"
           placeholder="Select an advertisement shape" />
         <br />
-        <Button class="mt-2" v-if="chosenAdvertisement !=''" @click="getSelectedAds"> Get selected ads</Button>
+        <Button class="mt-2" v-if="chosenAdvertisement !=''" @click="getSelectedAds"> Get business partners</Button>
         <br />
         <ProgressBar v-if="isLoadingAds" mode="indeterminate" style="height: 2px" />
         <ul v-if="advertisements" class="flex flex-column p-0">
