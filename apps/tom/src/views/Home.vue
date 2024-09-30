@@ -180,7 +180,7 @@ async function loadCreditDemands() {
   );
 
   let orderItemsStore : Store = new Store();
-  const orderItems = (await Promise.all(orderContainerUris.map(orderContainer => getContainerItems(orderContainer)))).flat()
+  const orderItems = (await Promise.all(orderContainerUris.map(orderContainer => getContainerItems(orderContainer, session)))).flat()
   await fillItemStoresIntoStore(orderItems, orderItemsStore)
 
   const allDemands = creditDemandContainerStore.getObjects(

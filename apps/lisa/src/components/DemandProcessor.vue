@@ -334,7 +334,7 @@ watch(() => offerAccessRequests.value,
 watch(() => offersForDemand.value,
     async () => {
       const orderContainers = await getDataRegistrationContainers(memberOf.value, orderShapeTreeUri, session);
-      const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
+      const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer, session)))).flat()
       await fillItemStoresIntoStore(orderItems, state.orderStore, orderStoreFilledFlag)
     }, {immediate: true})
 const hasOrderForAnyOfferForThisDemand = computed(() => {
