@@ -119,30 +119,28 @@
 </template>
 
 <script setup lang="ts">
-import {useToast} from "primevue/usetoast";
+import {useCache, useSolidProfile, useSolidSession,} from "@shared/composables";
 import {
-  useCache,
-  useSolidProfile,
-  useSolidSession,
-} from "@shared/composables";
-import {
+  AD,
   createResource,
-  CREDIT, getContainerItems,
+  CREDIT,
+  getContainerItems,
   getDataRegistrationContainers,
   getLocationHeader,
   getResource,
   INTEROP,
   LDP,
-  AD,
   parseToN3,
   putResource,
+  RDFS,
   SCHEMA,
   VCARD,
-  XSD, RDFS,
+  XSD,
 } from "@shared/solid";
-import {Ref, computed, ref, watch} from "vue";
 import {Literal, NamedNode, Quad, Store, Writer} from "n3";
 import Button from 'primevue/button';
+import {useToast} from "primevue/usetoast";
+import {computed, Ref, ref, watch} from "vue";
 
 interface Demand {
   providerName: string;
@@ -568,7 +566,7 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
   });
 }
 
-async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {
+async function getCreditDemandContainerStore(demandContainerUris: string[]) {
   return await getResource(demandContainerUris[0], session)
       .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandContainerUris[0]))
@@ -676,7 +674,7 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       .then((parsedN3) => parsedN3.store);
 }
 
-async function createDemand(demandContainerUris: Array<string>, payload: string) {
+async function createDemand(demandContainerUris: string[], payload: string) {
   return await createResource(demandContainerUris[0], payload, session)
       .catch((err) => {
         toast.add({

@@ -1,106 +1,78 @@
 <template>
-    <div class="p-card accessAuthorization">
-        <a :href="resourceURI">
+    <div class="p-3 grid">
+        <a class="col-12" :href="resourceURI">
           {{ resourceURI.split("/").pop() }}
         </a>
-        <div class="field">
-            <div class="fieldLabel">Grant date: </div>
-            <div v-for="date in grantDates" :key="date">
-                {{ date }}
-            </div>
+        <div class="col-4">
+            <div class="text-black-alpha-60">Grant date: </div>
+            <DateFormatted :datetimeString="date" v-for="date in grantDates" :key="date"/>
         </div>
-        <div class="field">
-            <div class="fieldLabel">Grantees: </div>
+        <div class="col-4">
+            <div class="text-black-alpha-60">Grantees: </div>
             <a v-for="grantee in grantees" :key="grantee" :href="grantee">
                 {{ granteeName }}
             </a>
         </div>
-        <div class="field">
-            <div class="fieldLabel">Access Need Groups: </div>
+        <div class="col-4">
+            <div class="text-black-alpha-60">Access Need Groups: </div>
             <a v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup" :href="accessNeedGroup">
                 {{ accessNeedGroup.split("/").pop() }}
             </a>
         </div>
-        <div v-if="dataAuthorizations.length > 0">
-            <div class="dataAuthorizations">
-                <div class="fieldLabel">Data Authorizations</div>
-            </div>
-            <div>
-                <!-- TODO Freeze -->
-                <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
-                class="btn btn-primary p-button-warning">
-                Freeze
-            </Button> -->
-                <Button @click="revokeRights" type="button" style="margin: 1rem 0" class="btn btn-primary p-button-danger"
-                    :disabled="isWaitingForDataAuthorizations">
-                    Revoke all authorizations in this group
-                </Button>
-            </div>
-            <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization">
-                <Suspense>
+        <div class="col-12 grid" v-if="dataAuthorizations.length > 0">
+          <div class="col-12">
+              <!-- TODO Freeze -->
+              <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
+              class="p-button-warning">
+              Freeze
+          </Button> -->
+              <Button @click="revokeRights" type="button" class="my-3" severity="secondary"
+                  :disabled="isWaitingForDataAuthorizations">
+                  Revoke Authorizations in this group
+              </Button>
+          </div>
+          <div class="col-12">
+            <Accordion v-if="dataAuthorizations.length" class="border-1 border-round border-bluegray-100" value="0">
+              <AccordionTab header="Data Authorizations">
+                <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization">
+                  <Suspense>
                     <DataAuthorization :resourceURI="dataAuthorization"
-                        :groupRevokationTrigger="isWaitingForDataAuthorizations"
-                        @revokedDataAuthorization="removeDataAuthorization" />
+                                       :groupRevokationTrigger="isWaitingForDataAuthorizations"
+                                       @revokedDataAuthorization="removeDataAuthorization" />
                     <template #fallback>
                         <span>
-                            Loading {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
+                            Loading Data Authorization {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
                         </span>
                     </template>
-                </Suspense>
-            </div>
+                  </Suspense>
+                </div>
+              </AccordionTab>
+            </Accordion>
+          </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.accessAuthorization {
-  margin: 0 0 1rem 1rem;
-  padding: 1rem;
-  border-radius: 7px;
-  background-color: var(--surface-b);
-}
-
-.field {
-  display: flex;
-  margin-bottom: 0;
-}
-
-.fieldLabel {
-  min-width: 18rem;
-  font-weight: bold;
-  margin-right: 1rem;
-}
-
-a {
-  color: rgba(0, 108, 110, 1);
-  text-decoration: underline;
-  font-weight: bold;
-}
-
-.dataAuthorizations {
-  margin-top: 1rem;
-
-  .fieldLabel {
-    font-size: 1.1rem;
-  }
-}
 </style>
 
 <script setup lang="ts">
-import DataAuthorization from "../comoponents/DataAuthorization.vue";
-import { useSolidSession } from "@shared/composables";
+import DataAuthorization from "@/components/DataAuthorization.vue";
+import {DateFormatted} from "@shared/components";
+import {useSolidSession} from "@shared/composables";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
   createResource,
-  getLocationHeader,
-  putResource,
   deleteResource,
-  XSD, FOAF,
+  FOAF,
+  getLocationHeader,
+  getResource,
+  INTEROP,
+  parseToN3,
+  putResource,
+  XSD,
 } from "@shared/solid";
-import { DataFactory, NamedNode, Store, Writer } from "n3";
-import { useToast } from "primevue/usetoast";
+import {DataFactory, NamedNode, Store, Writer} from "n3";
+import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps([

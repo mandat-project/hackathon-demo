@@ -1,3 +1,4 @@
+export * from './src/useAuthorizations';
 export * from './src/useCache';
 export * from './src/useServiceWorkerNotifications';
 export * from './src/useServiceWorkerUpdate';

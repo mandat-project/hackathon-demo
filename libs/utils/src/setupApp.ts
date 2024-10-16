@@ -1,8 +1,11 @@
+import Accordion from 'primevue/accordion';
+import AccordionTab from "primevue/accordiontab";
 import Avatar from "primevue/avatar";
 import BadgeDirective from "primevue/badgedirective";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Checkbox from "primevue/checkbox";
+import Chip from "primevue/chip";
 import Chips from "primevue/chips";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
@@ -20,6 +23,7 @@ import Message from "primevue/message";
 import Panel from "primevue/panel";
 import ProgressBar from "primevue/progressbar";
 import RadioButton from "primevue/radiobutton";
+import Skeleton from "primevue/skeleton";
 import SpeedDial from "primevue/speeddial";
 import Stepper from "primevue/stepper";
 import StepperPanel from "primevue/stepperpanel";
@@ -45,6 +49,7 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("Card", Card);
     app.component("Checkbox", Checkbox);
     app.component("Chips", Chips);
+    app.component("Chip", Chip);
     app.component("InputSwitch", InputSwitch)
     app.component("InputText", InputText);
     app.component("InputNumber", InputNumber);
@@ -65,6 +70,9 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("Message", Message);
     app.component("StepperPanel", StepperPanel);
     app.component("Stepper", Stepper);
+    app.component("Skeleton", Skeleton);
+    app.component("Accordion", Accordion);
+    app.component("AccordionTab", AccordionTab);
 
     app.directive('badge', BadgeDirective);
     app.directive("tooltip", Tooltip);
