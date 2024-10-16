@@ -1,4 +1,9 @@
-# hackathon-template
+# SME / Tom / Loan App
+
+The purpose if this is app is to create demands for a loan and get a list of multiple providers. Furthermore, we can handle
+requests and see the status of all of our demands.
+
+Real world Example: Check24 or Verivox 
 
 ## Project setup
 

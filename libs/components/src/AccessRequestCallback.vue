@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({ uri: String, result: String, onResult: Function }); // access request URI and decision result
-if (props.onResult !== undefined) props.onResult(props.uri, props.result);
+const props = defineProps<{ uri: string, result: string, onResult: (uri: string, result: string) => void }>(); // access request URI and decision result
+if (typeof props.onResult === 'function') {
+  props.onResult(props.uri, props.result);
+}
 </script>

@@ -1304,14 +1304,14 @@ async function _useAccessRequestInformationResources(accessInbox: string) {
     if (inspectedAccessRequestURI.value) {
         return [_getRawURI(inspectedAccessRequestURI.value)]
     }
-    return await getContainerItems(accessInbox, session.value)
+    return await getContainerItems(accessInbox, session.value!)
 }
 
 /**
  * get the access receipts
  */
 async function _useAccessReceiptInformationResources() {
-    return await getContainerItems(accessReceiptContainer.value, session.value)
+    return await getContainerItems(accessReceiptContainer.value, session.value!)
 }
 
 /**

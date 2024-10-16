@@ -1,17 +1,18 @@
 <template>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
   <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
-  
 
-  <div v-if="isLoggedIn && session.rdp !== ''" class="m-0 lg:m-5">
+  <div class="px-4 pt-3 bg-gradient-blue">
+    <TabList class="mt-4" @item-change="tabListItemChange" :model="tabMenu" :active="routeName" />
+  </div>
+
+  <div v-if="isLoggedIn && session.rdp" class="m-0 lg:m-5">
     <router-view />
   </div>
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+  <Card v-else class="w-6 mt-5 block mx-auto">
     <template #content>
-      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+      <p class="text-center">401 Unauthenticated:<br/>Login using the button in the top-right corner!</p>
     </template>
   </Card>
-
 
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
   <div style="height: 75px" />
@@ -38,24 +39,39 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, toRefs, watch } from "vue";
-import { HeaderBar } from "@shared/components";
-import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
-import Toast from "primevue/toast";
-import router from "./router";
+import {TabItemType} from "@/components/tabs/TabItemType";
+import TabList from "@/components/tabs/TabList.vue";
+import {useIsLoggedIn} from "@/composables/useIsLoggedIn";
+import {HeaderBar} from "@shared/components";
+import {useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Toast from "primevue/toast";
+import {computed, ref, watch} from "vue";
+import {useRoute} from "vue-router";
+import router from "./router";
 
+const route = useRoute()
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
+const routeName = computed<string>(() => `${route.name}`);
+const { isLoggedIn } = useIsLoggedIn();
+const { session, restoreSession } = useSolidSession();
+const { memberOf } = useSolidProfile()
+
+const tabMenu = ref<TabItemType[]>([
+  { id: 'create-demand', label: 'Get new Offer' },
+  { id: 'demands', label: 'Demands' },
+  { id: 'services', label: 'Contracted Services' },
+]);
+
+function tabListItemChange(itemId: string) {
+  router.push({ name: itemId });
+}
+
 watch(hasUpdatedAvailable, () => {
   isOpen.value = hasUpdatedAvailable.value;
 });
-const { session, restoreSession } = useSolidSession();
-const { memberOf } = useSolidProfile()
-const isLoggedIn = computed(() => {
-  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
-})
 
 // re-use Solid session
 router.isReady().then(restoreSession)
@@ -81,19 +97,6 @@ body {
   color: var(--text-color);
 }
 
-#app {
-  height: 100%;
-  width: 100%;
-}
-
-.no-tap-highlight {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.p-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
 /* Track */
 ::-webkit-scrollbar-track {
   border: none;
@@ -107,10 +110,5 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: cadetblue;
-}
-
-/* PrimeFlex Overrides */
-.grid {
-  margin: 5px !important;
 }
 </style>

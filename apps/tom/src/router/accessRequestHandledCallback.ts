@@ -1,4 +1,4 @@
-import { useCache } from "@shared/composables";
+import {useCache} from "@shared/composables";
 import router from ".";
 
 export default async function onResult(

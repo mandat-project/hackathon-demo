@@ -79,7 +79,6 @@
             Revoke All
           </Button>
         </div>
-
       </template>
     </Card>
   </div>
@@ -89,20 +88,14 @@
 import AccessAuthorization from "@/components/receipts/AccessAuthorization";
 import {DateFormatted} from "@shared/components";
 import {useSolidSession} from "@shared/composables";
-import {
-  getResource,
-  parseToN3,
-  RDF,
-  INTEROP,
-  AUTH,
-  patchResource, GDPRP,
-} from "@shared/solid";
+import {AUTH, GDPRP, getResource, INTEROP, parseToN3, patchResource, RDF,} from "@shared/solid";
 import {NamedNode, Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
+
 const {session} = useSolidSession();
 const toast = useToast();
 
