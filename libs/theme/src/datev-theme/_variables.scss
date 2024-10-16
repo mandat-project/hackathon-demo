@@ -24,12 +24,12 @@ $colors: (
 @import './variables/form';
 @import './variables/button';
 @import './variables/panel';
-@import './variables/_data';
-@import './variables/_overlay';
-@import './variables/_message';
-@import './variables/_menu';
-@import './variables/_media';
-@import './variables/_misc';
+@import './variables/data';
+@import './variables/overlay';
+@import './variables/message';
+@import './variables/menu';
+@import './variables/media';
+@import './variables/misc';
 
 :root {
     font-family:"Noto Sans Display", Arial, sans-serif;
