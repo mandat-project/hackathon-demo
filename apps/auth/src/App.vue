@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore no idea what that error is. does not seem to hurt, though
 import { HeaderBar } from "@shared/components";
 import Toast from "primevue/toast";
 import { useSolidProfile, useSolidSession } from "@shared/composables";
