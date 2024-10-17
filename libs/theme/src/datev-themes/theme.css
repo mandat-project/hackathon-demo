@@ -51,125 +51,125 @@
 }
 
 :root {
-  --blue-50:#f4fafe;
-  --blue-100:#cae6fc;
-  --blue-200:#a0d2fa;
-  --blue-300:#75bef8;
-  --blue-400:#4baaf5;
+  --blue-50:rgb(243.9, 249.75, 254.4);
+  --blue-100:rgb(201.72, 229.8, 252.12);
+  --blue-200:rgb(159.54, 209.85, 249.84);
+  --blue-300:rgb(117.36, 189.9, 247.56);
+  --blue-400:rgb(75.18, 169.95, 245.28);
   --blue-500:#2196f3;
-  --blue-600:#1c80cf;
-  --blue-700:#1769aa;
-  --blue-800:#125386;
-  --blue-900:#0d3c61;
-  --green-50:#f6fbf6;
-  --green-100:#d4ecd5;
-  --green-200:#b2ddb4;
-  --green-300:#90cd93;
-  --green-400:#6ebe71;
+  --blue-600:rgb(28.05, 127.5, 206.55);
+  --blue-700:rgb(23.1, 105, 170.1);
+  --blue-800:rgb(18.15, 82.5, 133.65);
+  --blue-900:rgb(13.2, 60, 97.2);
+  --green-50:rgb(246.05, 251, 246.25);
+  --green-100:rgb(212.04, 235.8, 213);
+  --green-200:rgb(178.03, 220.6, 179.75);
+  --green-300:rgb(144.02, 205.4, 146.5);
+  --green-400:rgb(110.01, 190.2, 113.25);
   --green-500:#4caf50;
-  --green-600:#419544;
-  --green-700:#357b38;
-  --green-800:#2a602c;
-  --green-900:#1e4620;
-  --yellow-50:#fffcf5;
-  --yellow-100:#fef0cd;
-  --yellow-200:#fde4a5;
-  --yellow-300:#fdd87d;
-  --yellow-400:#fccc55;
+  --green-600:rgb(64.6, 148.75, 68);
+  --green-700:rgb(53.2, 122.5, 56);
+  --green-800:rgb(41.8, 96.25, 44);
+  --green-900:rgb(30.4, 70, 32);
+  --yellow-50:rgb(254.8, 251.85, 244.5);
+  --yellow-100:rgb(254.04, 239.88, 204.6);
+  --yellow-200:rgb(253.28, 227.91, 164.7);
+  --yellow-300:rgb(252.52, 215.94, 124.8);
+  --yellow-400:rgb(251.76, 203.97, 84.9);
   --yellow-500:#fbc02d;
-  --yellow-600:#d5a326;
-  --yellow-700:#b08620;
-  --yellow-800:#8a6a19;
-  --yellow-900:#644d12;
-  --cyan-50:#f2fcfd;
-  --cyan-100:#c2eff5;
-  --cyan-200:#91e2ed;
-  --cyan-300:#61d5e4;
-  --cyan-400:#30c9dc;
+  --yellow-600:rgb(213.35, 163.2, 38.25);
+  --yellow-700:rgb(175.7, 134.4, 31.5);
+  --yellow-800:rgb(138.05, 105.6, 24.75);
+  --yellow-900:rgb(100.4, 76.8, 18);
+  --cyan-50:rgb(242.25, 251.65, 252.85);
+  --cyan-100:rgb(193.8, 238.92, 244.68);
+  --cyan-200:rgb(145.35, 226.19, 236.51);
+  --cyan-300:rgb(96.9, 213.46, 228.34);
+  --cyan-400:rgb(48.45, 200.73, 220.17);
   --cyan-500:#00bcd4;
-  --cyan-600:#00a0b4;
-  --cyan-700:#008494;
-  --cyan-800:#006775;
-  --cyan-900:#004b55;
-  --pink-50:#fef4f7;
-  --pink-100:#fac9da;
-  --pink-200:#f69ebc;
-  --pink-300:#f1749e;
-  --pink-400:#ed4981;
+  --cyan-600:rgb(0, 159.8, 180.2);
+  --cyan-700:rgb(0, 131.6, 148.4);
+  --cyan-800:rgb(0, 103.4, 116.6);
+  --cyan-900:rgb(0, 75.2, 84.8);
+  --pink-50:rgb(253.9, 243.75, 247.2);
+  --pink-100:rgb(249.72, 201, 217.56);
+  --pink-200:rgb(245.54, 158.25, 187.92);
+  --pink-300:rgb(241.36, 115.5, 158.28);
+  --pink-400:rgb(237.18, 72.75, 128.64);
   --pink-500:#e91e63;
-  --pink-600:#c61a54;
-  --pink-700:#a31545;
-  --pink-800:#801136;
-  --pink-900:#5d0c28;
-  --indigo-50:#f5f6fb;
-  --indigo-100:#d1d5ed;
-  --indigo-200:#acb4df;
-  --indigo-300:#8893d1;
-  --indigo-400:#6372c3;
+  --pink-600:rgb(198.05, 25.5, 84.15);
+  --pink-700:rgb(163.1, 21, 69.3);
+  --pink-800:rgb(128.15, 16.5, 54.45);
+  --pink-900:rgb(93.2, 12, 39.6);
+  --indigo-50:rgb(245.4, 246.3, 251.3);
+  --indigo-100:rgb(208.92, 213.24, 237.24);
+  --indigo-200:rgb(172.44, 180.18, 223.18);
+  --indigo-300:rgb(135.96, 147.12, 209.12);
+  --indigo-400:rgb(99.48, 114.06, 195.06);
   --indigo-500:#3f51b5;
-  --indigo-600:#36459a;
-  --indigo-700:#2c397f;
-  --indigo-800:#232d64;
-  --indigo-900:#192048;
-  --teal-50:#f2faf9;
-  --teal-100:#c2e6e2;
-  --teal-200:#91d2cc;
-  --teal-300:#61beb5;
-  --teal-400:#30aa9f;
+  --indigo-600:rgb(53.55, 68.85, 153.85);
+  --indigo-700:rgb(44.1, 56.7, 126.7);
+  --indigo-800:rgb(34.65, 44.55, 99.55);
+  --indigo-900:rgb(25.2, 32.4, 72.4);
+  --teal-50:rgb(242.25, 249.75, 249.05);
+  --teal-100:rgb(193.8, 229.8, 226.44);
+  --teal-200:rgb(145.35, 209.85, 203.83);
+  --teal-300:rgb(96.9, 189.9, 181.22);
+  --teal-400:rgb(48.45, 169.95, 158.61);
   --teal-500:#009688;
-  --teal-600:#008074;
-  --teal-700:#00695f;
-  --teal-800:#00534b;
-  --teal-900:#003c36;
-  --orange-50:#fff8f2;
-  --orange-100:#fde0c2;
-  --orange-200:#fbc791;
-  --orange-300:#f9ae61;
-  --orange-400:#f79530;
+  --teal-600:rgb(0, 127.5, 115.6);
+  --teal-700:rgb(0, 105, 95.2);
+  --teal-800:rgb(0, 82.5, 74.8);
+  --teal-900:rgb(0, 60, 54.4);
+  --orange-50:rgb(254.5, 248.45, 242.25);
+  --orange-100:rgb(252.6, 223.56, 193.8);
+  --orange-200:rgb(250.7, 198.67, 145.35);
+  --orange-300:rgb(248.8, 173.78, 96.9);
+  --orange-400:rgb(246.9, 148.89, 48.45);
   --orange-500:#f57c00;
-  --orange-600:#d06900;
-  --orange-700:#ac5700;
-  --orange-800:#874400;
-  --orange-900:#623200;
-  --bluegray-50:#f7f9f9;
-  --bluegray-100:#d9e0e3;
-  --bluegray-200:#bbc7cd;
-  --bluegray-300:#9caeb7;
-  --bluegray-400:#7e96a1;
+  --orange-600:rgb(208.25, 105.4, 0);
+  --orange-700:rgb(171.5, 86.8, 0);
+  --orange-800:rgb(134.75, 68.2, 0);
+  --orange-900:rgb(98, 49.6, 0);
+  --bluegray-50:rgb(247.05, 248.5, 249.2);
+  --bluegray-100:rgb(216.84, 223.8, 227.16);
+  --bluegray-200:rgb(186.63, 199.1, 205.12);
+  --bluegray-300:rgb(156.42, 174.4, 183.08);
+  --bluegray-400:rgb(126.21, 149.7, 161.04);
   --bluegray-500:#607d8b;
-  --bluegray-600:#526a76;
-  --bluegray-700:#435861;
-  --bluegray-800:#35454c;
-  --bluegray-900:#263238;
-  --purple-50:#faf4fb;
-  --purple-100:#e7cbec;
-  --purple-200:#d4a2dd;
-  --purple-300:#c279ce;
-  --purple-400:#af50bf;
+  --bluegray-600:rgb(81.6, 106.25, 118.15);
+  --bluegray-700:rgb(67.2, 87.5, 97.3);
+  --bluegray-800:rgb(52.8, 68.75, 76.45);
+  --bluegray-900:rgb(38.4, 50, 55.6);
+  --purple-50:rgb(250.05, 244.2, 251.05);
+  --purple-100:rgb(231.24, 203.16, 236.04);
+  --purple-200:rgb(212.43, 162.12, 221.03);
+  --purple-300:rgb(193.62, 121.08, 206.02);
+  --purple-400:rgb(174.81, 80.04, 191.01);
   --purple-500:#9c27b0;
-  --purple-600:#852196;
-  --purple-700:#6d1b7b;
-  --purple-800:#561561;
-  --purple-900:#3e1046;
-  --red-50:#fff5f5;
-  --red-100:#ffd1ce;
-  --red-200:#ffada7;
-  --red-300:#ff8980;
-  --red-400:#ff6459;
+  --purple-600:rgb(132.6, 33.15, 149.6);
+  --purple-700:rgb(109.2, 27.3, 123.2);
+  --purple-800:rgb(85.8, 21.45, 96.8);
+  --purple-900:rgb(62.4, 15.6, 70.4);
+  --red-50:rgb(255, 245.45, 244.75);
+  --red-100:rgb(255, 209.16, 205.8);
+  --red-200:rgb(255, 172.87, 166.85);
+  --red-300:rgb(255, 136.58, 127.9);
+  --red-400:rgb(255, 100.29, 88.95);
   --red-500:#ff4032;
-  --red-600:#d9362b;
-  --red-700:#b32d23;
-  --red-800:#8c231c;
-  --red-900:#661a14;
+  --red-600:rgb(216.75, 54.4, 42.5);
+  --red-700:rgb(178.5, 44.8, 35);
+  --red-800:rgb(140.25, 35.2, 27.5);
+  --red-900:rgb(102, 25.6, 20);
   --primary-50:white;
   --primary-100:white;
   --primary-200:white;
   --primary-300:white;
   --primary-400:white;
   --primary-500:white;
-  --primary-600:#d9d9d9;
-  --primary-700:#b3b3b3;
-  --primary-800:#8c8c8c;
+  --primary-600:rgb(216.75, 216.75, 216.75);
+  --primary-700:rgb(178.5, 178.5, 178.5);
+  --primary-800:rgb(140.25, 140.25, 140.25);
   --primary-900:#666666;
 }
 
@@ -3083,7 +3083,7 @@
     border-color: #039BE5;
   }
   .p-button.p-button-info:not(:disabled):focus, .p-button-group.p-button-info > .p-button:not(:disabled):focus, .p-splitbutton.p-button-info > .p-button:not(:disabled):focus {
-    box-shadow: 0 0 0 0.2rem #ace4fe;
+    box-shadow: 0 0 0 0.2rem rgb(171.5263157895, 228.3157894737, 253.9736842105);
   }
   .p-button.p-button-info:not(:disabled):active, .p-button-group.p-button-info > .p-button:not(:disabled):active, .p-splitbutton.p-button-info > .p-button:not(:disabled):active {
     background: #0288D1;
@@ -3131,7 +3131,7 @@
     border-color: #43A047;
   }
   .p-button.p-button-success:not(:disabled):focus, .p-button-group.p-button-success > .p-button:not(:disabled):focus, .p-splitbutton.p-button-success > .p-button:not(:disabled):focus {
-    box-shadow: 0 0 0 0.2rem #c7e7c8;
+    box-shadow: 0 0 0 0.2rem rgb(198.874501992, 230.625498008, 200.1573705179);
   }
   .p-button.p-button-success:not(:disabled):active, .p-button-group.p-button-success > .p-button:not(:disabled):active, .p-splitbutton.p-button-success > .p-button:not(:disabled):active {
     background: #388E3C;
@@ -3179,7 +3179,7 @@
     border-color: #FFB300;
   }
   .p-button.p-button-warning:not(:disabled):focus, .p-button-group.p-button-warning > .p-button:not(:disabled):focus, .p-splitbutton.p-button-warning > .p-button:not(:disabled):focus {
-    box-shadow: 0 0 0 0.2rem #ffeeba;
+    box-shadow: 0 0 0 0.2rem rgb(255, 237.625, 185.5);
   }
   .p-button.p-button-warning:not(:disabled):active, .p-button-group.p-button-warning > .p-button:not(:disabled):active, .p-splitbutton.p-button-warning > .p-button:not(:disabled):active {
     background: #FFA000;
@@ -3275,7 +3275,7 @@
     border-color: #e53935;
   }
   .p-button.p-button-danger:not(:disabled):focus, .p-button-group.p-button-danger > .p-button:not(:disabled):focus, .p-splitbutton.p-button-danger > .p-button:not(:disabled):focus {
-    box-shadow: 0 0 0 0.2rem #fde1df;
+    box-shadow: 0 0 0 0.2rem rgb(253.2617924528, 225.2924528302, 223.2382075472);
   }
   .p-button.p-button-danger:not(:disabled):active, .p-button-group.p-button-danger > .p-button:not(:disabled):active, .p-splitbutton.p-button-danger > .p-button:not(:disabled):active {
     background: #d32f2f;
@@ -4381,7 +4381,7 @@
     color: rgba(0, 0, 0, 0.9);
   }
   .p-organizationchart .p-organizationchart-node-content.p-highlight .p-node-toggler i {
-    color: #bfbfbf;
+    color: rgb(191.25, 191.25, 191.25);
   }
   .p-organizationchart .p-organizationchart-line-down {
     background: #dee2e6;
@@ -6063,7 +6063,7 @@
   .p-confirm-popup:before {
     border-style: solid;
     border-color: rgba(255, 255, 255, 0);
-    border-bottom-color: #f2f2f2;
+    border-bottom-color: rgb(242.25, 242.25, 242.25);
   }
   .p-confirm-popup.p-confirm-popup-flipped:after {
     border-top-color: #ffffff;
@@ -6355,7 +6355,7 @@
   .p-overlaypanel:before {
     border-style: solid;
     border-color: rgba(255, 255, 255, 0);
-    border-bottom-color: #f2f2f2;
+    border-bottom-color: rgb(242.25, 242.25, 242.25);
   }
   .p-overlaypanel.p-overlaypanel-flipped:after {
     border-top-color: #ffffff;
