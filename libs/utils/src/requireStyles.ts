@@ -3,5 +3,4 @@ export const requireStyles = () => {
     require("@shared/theme"); // theme
     require("primevue/resources/primevue.min.css"); // core css
     require("primeicons/primeicons.css"); // icons
-
 }

@@ -11,13 +11,18 @@ import ContextMenu from "primevue/contextmenu";
 import Dialog from "primevue/dialog";
 import Divider from "primevue/divider";
 import Dropdown from "primevue/dropdown";
+import InputNumber from "primevue/inputnumber";
 import InputSwitch from "primevue/inputswitch";
 import InputText from "primevue/inputtext";
 import Listbox from "primevue/listbox";
 import Menu from "primevue/menu";
+import Message from "primevue/message";
+import Panel from "primevue/panel";
 import ProgressBar from "primevue/progressbar";
 import RadioButton from "primevue/radiobutton";
 import SpeedDial from "primevue/speeddial";
+import Stepper from "primevue/stepper";
+import StepperPanel from "primevue/stepperpanel";
 import TabMenu from "primevue/tabmenu";
 import Textarea from "primevue/textarea";
 import Toast from "primevue/toast";
@@ -42,6 +47,7 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("Chips", Chips);
     app.component("InputSwitch", InputSwitch)
     app.component("InputText", InputText);
+    app.component("InputNumber", InputNumber);
     app.component("RadioButton", RadioButton)
     app.component("Textarea", Textarea);
     app.component("Dialog", Dialog);
@@ -55,6 +61,10 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("ConfirmDialog", ConfirmDialog);
     app.component("Menu", Menu);
     app.component("Divider", Divider);
+    app.component("Panel", Panel);
+    app.component("Message", Message);
+    app.component("StepperPanel", StepperPanel);
+    app.component("Stepper", Stepper);
 
     app.directive('badge', BadgeDirective);
     app.directive("tooltip", Tooltip);
