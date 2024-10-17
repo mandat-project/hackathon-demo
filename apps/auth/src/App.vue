@@ -1,9 +1,10 @@
 <template>
-  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
+  <AuthAppHeaderBar :appLogo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
-  <div v-if="isLoggedIn && session.rdp !== ''">
+  <main v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
-  </div>
+  </main>
+
   <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;">
     <template #content>
       <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
@@ -14,18 +15,19 @@
 </template>
 
 <script setup lang="ts">
-import { HeaderBar } from "@shared/components";
-import Toast from "primevue/toast";
-import { useSolidProfile, useSolidSession } from "@shared/composables";
-import router from "./router";
-import { computed } from "vue";
+import {AuthAppHeaderBar} from "@shared/components";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
 import Card from "primevue/card";
+import Toast from "primevue/toast";
+import {computed} from "vue";
+import router from "./router";
 
+const appLogo = require('@/assets/logo.svg');
 
 const { session, restoreSession } = useSolidSession();
 const { memberOf } = useSolidProfile()
 const isLoggedIn = computed(() => {
-  return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
+  return (!!((session.webId && !memberOf) || (session.webId && memberOf && session.rdp)))
 })
 
 // re-use Solid session

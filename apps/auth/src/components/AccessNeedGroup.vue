@@ -52,7 +52,7 @@
 </style>
 
 <script setup lang="ts">
-import AccessNeed from "../comoponents/AccessNeed.vue";
+import AccessNeed from "@/components/AccessNeed.vue";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
   getResource,

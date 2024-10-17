@@ -1,13 +1,15 @@
 <template>
-  <h1 class="header col-12 flex align-items-center gap-2">
-    Your Access Manager
-    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-      @click=" reloadFlag = !reloadFlag" />
-  </h1>
-  <div style="height: 75px" id="header-bar-spacer" />
-  <div class="requestContainer">
+  <section>
+      <header class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto mt-7">
+        <h1>
+          {{ headingTitle }}
+        </h1>
+      </header>
+  </section>
+
+  <div class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto my-5">
     <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
-      class="p-card" style="margin: 5px">
+      class="p-card m-2">
       <Suspense>
         <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
           :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
@@ -35,39 +37,16 @@
 </template>
 
 <style scoped>
-.header {
-  background: linear-gradient(90deg, #195B78 0%, #287F8F 100%);
-  color: white;
-  position: fixed;
-  padding: 0.5rem 2.5rem 1rem 2.5rem;
-  box-shadow: 0 0 10px -5px black;
-  z-index: 1;
-
-  .p-button {
-    margin-left: 0.5rem;
-    color: white;
-    background-color: rgba(255, 255, 255, 0.05);
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-  }
-}
-
-.requestContainer {
-  width: 60rem;
-  margin: 2rem auto;
-}
 </style>
 
 <script lang="ts" setup>
-import AccessRequest from "../comoponents/AccessRequest.vue";
-import AccessReceipt from "../comoponents/AccessReceipt.vue";
-import { AUTH, createContainer, getContainerItems, getResource, parseToN3 } from "@shared/solid";
-import { useSolidProfile, useSolidSession } from "@shared/composables";
-import { computed, onMounted, ref, watch } from "vue";
-import { useToast } from "primevue/usetoast";
-import { Store } from "n3";
+import AccessReceipt from "@/components/AccessReceipt.vue";
+import AccessRequest from "@/components/AccessRequest.vue";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
+import {AUTH, createContainer, getContainerItems, getResource, parseToN3} from "@shared/solid";
+import {Store} from "n3";
+import {useToast} from "primevue/usetoast";
+import {computed, ref, watch} from "vue";
 
 const toast = useToast();
 
@@ -75,6 +54,8 @@ const { session } = useSolidSession();
 const { accessInbox, storage } = useSolidProfile();
 
 const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
+
+const headingTitle = ref('Access Manager')
 
 // keep track of access requests
 const accessRequestInformationResources = ref<Array<string>>([]);
@@ -102,6 +83,7 @@ const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzAr
 // create access receipt container if needed
 const accessReceiptContainerName = "authorization-receipts"
 const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
+
 
 
 

@@ -139,7 +139,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import AccessNeedGroup from "../comoponents/AccessNeedGroup.vue";
+import AccessNeedGroup from "@/components/AccessNeedGroup.vue";
 import { useSolidSession } from "@shared/composables";
 import {
   getResource,

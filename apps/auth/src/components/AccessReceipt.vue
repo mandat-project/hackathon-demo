@@ -104,7 +104,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import AccessAuthorization from "../comoponents/AccessAuthorization.vue";
+import AccessAuthorization from "@/components/AccessAuthorization.vue";
 import {useSolidSession} from "@shared/composables";
 import {
   getResource,

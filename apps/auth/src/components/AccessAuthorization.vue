@@ -87,7 +87,7 @@ a {
 </style>
 
 <script setup lang="ts">
-import DataAuthorization from "../comoponents/DataAuthorization.vue";
+import DataAuthorization from "@/components/DataAuthorization.vue";
 import { useSolidSession } from "@shared/composables";
 import {
   getResource,
