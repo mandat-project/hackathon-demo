@@ -5,9 +5,7 @@
         </a>
         <div class="field">
             <div class="fieldLabel">Grant date: </div>
-            <div v-for="date in grantDates" :key="date">
-                {{ date }}
-            </div>
+            <DateFormatted :datetimeString="date" v-for="date in grantDates" :key="date"/>
         </div>
         <div class="field">
             <div class="fieldLabel">Grantees: </div>
@@ -88,19 +86,21 @@ a {
 
 <script setup lang="ts">
 import DataAuthorization from "@/components/DataAuthorization.vue";
-import { useSolidSession } from "@shared/composables";
+import {DateFormatted} from "@shared/components";
+import {useSolidSession} from "@shared/composables";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
   createResource,
-  getLocationHeader,
-  putResource,
   deleteResource,
-  XSD, FOAF,
+  FOAF,
+  getLocationHeader,
+  getResource,
+  INTEROP,
+  parseToN3,
+  putResource,
+  XSD,
 } from "@shared/solid";
-import { DataFactory, NamedNode, Store, Writer } from "n3";
-import { useToast } from "primevue/usetoast";
+import {DataFactory, NamedNode, Store, Writer} from "n3";
+import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps([

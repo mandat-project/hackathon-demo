@@ -6,9 +6,7 @@
           <!-- <div class="accessRequest" v-for="request in requests" :key="request"> -->
           <div class="field">
             <div class="fieldLabel">Provided At: </div>
-            <span v-for="date in provisionDates" :key="date">
-                          {{ date }}
-                      </span>
+            <DateFormatted :datetimeString="date" v-for="date in provisionDates" :key="date" />
           </div>
           <div class="field">
             <div class="fieldLabel">For Access Request: </div>
@@ -29,16 +27,16 @@
             <div v-if="nonEmptyAuthorizations.length > 0" style="margin: 1rem 0">
               <!-- TODO Freeze -->
               <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
-      class="btn btn-primary p-button-warning">
+      class="p-button-warning">
       Freeze
   </Button> -->
-              <Button @click="revokeRights" type="button" class="btn btn-primary p-button-danger"
+              <Button @click="revokeRights" type="button" class="" severity="danger"
                       :disabled="isWaitingForAccessAuthorizations">
                 Revoke all shown Authorizations
               </Button>
             </div>
             <div v-else>
-              <Button disabled class="p-button-rounded p-button-danger" style="margin-bottom: 1rem;">
+              <Button disabled severity="danger" style="margin-bottom: 1rem;">
                 {{ accessAuthorizations.length > 0 ? 'Revoked' : 'Denied' }}
               </Button>
             </div>
@@ -105,21 +103,16 @@ a {
 
 <script setup lang="ts">
 import AccessAuthorization from "@/components/AccessAuthorization.vue";
+import {DateFormatted} from "@shared/components";
 import {useSolidSession} from "@shared/composables";
-import {
-  getResource,
-  parseToN3,
-  RDF,
-  INTEROP,
-  AUTH,
-  patchResource, GDPRP,
-} from "@shared/solid";
+import {AUTH, GDPRP, getResource, INTEROP, parseToN3, patchResource, RDF,} from "@shared/solid";
 import {NamedNode, Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
 
 const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
+
 const {session} = useSolidSession();
 const toast = useToast();
 
@@ -151,7 +144,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
 // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
 const accessReceipt = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)[0]
 
-const provisionDates = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("providedAt"), null).map(t => t.value))
+const provisionDates = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("providedAt"), null).map(t => t.value));
 const accessRequests = computed(() => state.informationResourceStore.getObjects(accessReceipt, AUTH("hasAccessRequest"), null).map(t => t.value))
 const accessAuthorizations = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("hasAccessAuthorization"), null).map(t => t.value))
 

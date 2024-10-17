@@ -1,35 +1,52 @@
 <template>
   <section>
-      <header class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto mt-7">
-        <h1>
-          {{ headingTitle }}
-        </h1>
-      </header>
+    <header class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto mt-7">
+      <h1>
+        {{ headingTitle }}
+      </h1>
+    </header>
   </section>
 
   <div class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto my-5">
     <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
-      class="p-card m-2">
+         class="p-card m-2">
       <Suspense>
         <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
-          :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
-          @isReceiptForRequests="addRequestsToHandled" />
+                       :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+                       @isReceiptForRequests="addRequestsToHandled"/>
         <template #fallback>
-          <span>
-            Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
-          </span>
+          <Card>
+            <template #content>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
+              <Skeleton width="5rem" class="mb-2"></Skeleton>
+              <Skeleton class="mb-2"></Skeleton>
+              <Skeleton width="2rem" class="mb-2"></Skeleton>
+              <span>
+                Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
+              </span>
+            </template>
+          </Card>
         </template>
       </Suspense>
     </div>
     <div v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
       <Suspense>
         <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
-          :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
-          :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceiptInformationResources" />
+                       :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
+                       :dataAuthzContainer="dataAuthzContainer"
+                       @createdAccessReceipt="refreshAccessReceiptInformationResources"/>
         <template #fallback>
-          <span>
-            Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
-          </span>
+          <Card class="h-15rem">
+            <template #content>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
+              <Skeleton width="5rem" class="mb-2"></Skeleton>
+              <Skeleton class="mb-2"></Skeleton>
+              <Skeleton width="2rem" class="mb-2"></Skeleton>
+              <span>
+                Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+              </span>
+            </template>
+          </Card>
         </template>
       </Suspense>
     </div>
@@ -50,8 +67,8 @@ import {computed, ref, watch} from "vue";
 
 const toast = useToast();
 
-const { session } = useSolidSession();
-const { accessInbox, storage } = useSolidProfile();
+const {session} = useSolidSession();
+const {accessInbox, storage} = useSolidProfile();
 
 const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
 
@@ -85,11 +102,11 @@ const accessReceiptContainerName = "authorization-receipts"
 const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
 
 
-
-
 watch(() => storage.value,
   async () => {
-    if (!storage.value) { return }
+    if (!storage.value) {
+      return
+    }
     getResource(dataAuthzContainer.value, session)
       .catch(() => createContainer(storage.value, dataAuthzContainerName, session))
       .catch((err) => {
@@ -134,14 +151,14 @@ watch(() => storage.value,
         });
         throw new Error(err);
       })
-  }, {immediate:true})
+  }, {immediate: true})
 
 // setup done, now do stuff
 
 /**
-* Retrieve access requests from an access inbox
-* @param accessInbox
-*/
+ * Retrieve access requests from an access inbox
+ * @param accessInbox
+ */
 async function getAccessRequestInformationResources(accessInbox: string) {
   if (!accessInbox) {
     return [];
@@ -169,12 +186,13 @@ watch(
       getAccessReceiptInformationResourcesForAccessRequest(props.inspectedAccessRequestURI).then(accessReceipts =>
         accessReceiptInformationResources.value.push(...accessReceipts));
     }
-  }, {immediate:true}
+  }, {immediate: true}
 );
 
 
 // keep track of access receipts
 const accessReceiptInformationResources = ref<Array<string>>([]);
+
 /**
  * get the access receipts
  */
@@ -234,15 +252,17 @@ async function fetchStoreOf(uri: string): Promise<Store> {
  */
 const reloadFlag = ref(false)
 watch(() => reloadFlag.value, () => {
-  refreshAccessRequestInformationResources()
-  refreshAccessReceiptInformationResources()
-}
+    refreshAccessRequestInformationResources()
+    refreshAccessReceiptInformationResources()
+  }
 )
+
 async function refreshAccessRequestInformationResources() {
   const newListOfAccessRequests = await getAccessRequestInformationResources(accessInbox.value);
   accessRequestInformationResources.value.length = 0;
   accessRequestInformationResources.value.push(...newListOfAccessRequests);
 }
+
 async function refreshAccessReceiptInformationResources() {
   const newListOfAccessReceipts = await getAccessReceiptInformationResources();
   accessReceiptInformationResources.value.length = 0;
