@@ -1,39 +1,37 @@
 <template>
-  <div class="">
-    <div>
-      <span>Short description of requested access: </span>
-      <div v-for="label in prefLabels" :key="label">
-        {{ label }}
-      </div>
+  <div>
+    <span>Short description of requested access: </span>
+    <div v-for="label in prefLabels" :key="label">
+      {{ label }}
     </div>
-    <div>
-      <span>Explanation: </span>
-      <div v-for="definition in definitions" :key="definition">
-        {{ definition }}
-      </div>
-    </div>
-
-    <div v-for="accessNeed in accessNeeds" :key="accessNeed">
-      <Suspense>
-        <AccessNeed :resourceURI="accessNeed" :forSocialAgents="forSocialAgents"
-                    :dataAuthzContainer="dataAuthzContainer"
-                    @createdDataAuthorization="addToDataAuthorizations"
-                    @noDataRegistrationFound="setNoDataRegistrationFound"
-                    :groupAuthorizationTrigger="dataAuthorizationTrigger"/>
-        <template #fallback>
-          <span>
-              Loading {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
-          </span>
-        </template>
-      </Suspense>
-    </div>
-    <!-- DO NOT REMOVE -->
-    <!--
-    <Button @click="grantAccessAuthorization" type="button" class="btn btn-primary mb-2"
-            :disabled="associatedAccessAuthorization !== '' || requestAuthorizationTrigger || noDataRegistrationFound">
-      Authorize Group
-    </Button> -->
   </div>
+  <div>
+    <span>Explanation: </span>
+    <div v-for="definition in definitions" :key="definition">
+      {{ definition }}
+    </div>
+  </div>
+
+  <div v-for="accessNeed in accessNeeds" :key="accessNeed">
+    <Suspense>
+      <AccessNeed :resourceURI="accessNeed" :forSocialAgents="forSocialAgents"
+                  :dataAuthzContainer="dataAuthzContainer"
+                  @createdDataAuthorization="addToDataAuthorizations"
+                  @noDataRegistrationFound="setNoDataRegistrationFound"
+                  :groupAuthorizationTrigger="dataAuthorizationTrigger"/>
+      <template #fallback>
+        <span>
+            Loading {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
+        </span>
+      </template>
+    </Suspense>
+  </div>
+  <!-- DO NOT REMOVE -->
+  <!--
+  <Button @click="grantAccessAuthorization" type="button" class="btn btn-primary mb-2"
+          :disabled="associatedAccessAuthorization !== '' || requestAuthorizationTrigger || noDataRegistrationFound">
+    Authorize Group
+  </Button> -->
 </template>
 
 <style scoped>

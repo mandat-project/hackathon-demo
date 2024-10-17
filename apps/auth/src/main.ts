@@ -4,7 +4,7 @@ import App from "./App.vue";
 import router from "./router";
 import {requireAuthAppStyles} from "./utils/requireAuthAppStyles";
 
-requireStyles();
+requireStyles('dackl-like');
 requireAuthAppStyles();
 
 const app = createApp(App);

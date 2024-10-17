@@ -1,5 +1,5 @@
 <template>
-  <Card class="shadow-6">
+  <Card>
     <template #title>Access Request</template>
     <template #content>
       <div class="grid">
