@@ -18,7 +18,7 @@ h1, title {
     padding: 0.5rem;
     font-weight: bold;
 
-    &:hover {
+    &:not(.p-button-danger):hover {
       background-color: rgba(65, 132, 153, 0.2);
     }
 }
