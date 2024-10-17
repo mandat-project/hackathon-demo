@@ -1,25 +1,25 @@
 <template>
-  <div class="accessNeed">
-    <div class="field">
-      <div class="fieldLabel">Access need for required data format:</div>
+  <div class="grid m-0 gap-0">
+    <div class="col-12 lg:col p-0">
+      <p class="mb-0">Access need for required data format:</p>
       <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
         {{ shapeTree.split("#").pop() }}
       </a>
     </div>
-    <div class="field">
-      <div class="fieldLabel">Access need for container:</div>
+    <div class="col-12 lg:col p-0">
+      <p class="mb-0">Access need for container:</p>
       <a v-for="container in containers" :key="container" :href="container">
         {{ container.split("/").reverse()[1] }}
       </a>
     </div>
-    <div v-if="dataInstances.length > 0" class="field">
-      <div class="fieldLabel">Access need for resources:</div>
+    <div v-if="dataInstances.length > 0" class="col-12 lg:col p-0">
+      <p class="mb-0">Access need for resources:</p>
       <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
         {{ dataInstance.split("/").pop() }}
       </a>
     </div>
-    <div class="field">
-      <div class="fieldLabel">Access Mode:</div>
+    <div class="col-12 lg:col p-0">
+      <p class="mb-0">Access Mode:</p>
       <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
         {{ accessMode.split("#")[1] }}
       </a>
@@ -34,43 +34,23 @@
 
 
 <style scoped>
-.accessNeed {
-  margin-top: 1rem;
-}
-
-.field {
-  display: flex;
-  margin-bottom: 0;
-}
-
-.fieldLabel {
-  min-width: 18rem;
-  font-weight: bold;
-  margin-right: 1rem;
-}
-
-a {
-  color: rgba(0, 108, 110, 1);
-  text-decoration: underline;
-  font-weight: bold;
-}
 </style>
 
 <script setup lang="ts">
-import {useSolidSession,useSolidProfile} from "@shared/composables";
+import {useSolidProfile, useSolidSession} from "@shared/composables";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
-  getDataRegistrationContainers,
-  LDP,
   ACL,
   AUTH,
-  XSD,
   createResource,
-  patchResource,
   getAclResourceUri,
+  getDataRegistrationContainers,
   getLocationHeader,
+  getResource,
+  INTEROP,
+  LDP,
+  parseToN3,
+  patchResource,
+  XSD,
 } from "@shared/solid";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";

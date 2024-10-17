@@ -5,31 +5,9 @@
         {{ headingTitle }}
       </h1>
     </header>
-  </section>
 
-  <div class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto my-5">
-    <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
-         class="p-card m-2">
-      <Suspense>
-        <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
-                       :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
-                       @isReceiptForRequests="addRequestsToHandled"/>
-        <template #fallback>
-          <Card>
-            <template #content>
-              <Skeleton width="10rem" class="mb-2"></Skeleton>
-              <Skeleton width="5rem" class="mb-2"></Skeleton>
-              <Skeleton class="mb-2"></Skeleton>
-              <Skeleton width="2rem" class="mb-2"></Skeleton>
-              <span>
-                Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
-              </span>
-            </template>
-          </Card>
-        </template>
-      </Suspense>
-    </div>
-    <div v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
+  <div class="flex flex-column gap-2 w-full md:w-10 lg:w-9 xl:w-7 mx-auto my-5">
+    <article v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
       <Suspense>
         <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
                        :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
@@ -43,14 +21,37 @@
               <Skeleton class="mb-2"></Skeleton>
               <Skeleton width="2rem" class="mb-2"></Skeleton>
               <span>
-                Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+                Loading Authorization {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
               </span>
             </template>
           </Card>
         </template>
       </Suspense>
-    </div>
+    </article>
+
+    <article v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag">
+      <Suspense>
+        <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
+                       :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+                       @isReceiptForRequests="addRequestsToHandled"/>
+        <template #fallback>
+          <Card>
+            <template #content>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
+              <Skeleton width="5rem" class="mb-2"></Skeleton>
+              <Skeleton class="mb-2"></Skeleton>
+              <Skeleton width="2rem" class="mb-2"></Skeleton>
+              <span>
+                Loading Access Receipt {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
+              </span>
+            </template>
+          </Card>
+        </template>
+      </Suspense>
+    </article>
+
   </div>
+  </section>
 </template>
 
 <style scoped>

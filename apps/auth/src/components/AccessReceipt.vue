@@ -1,6 +1,8 @@
 <template>
   <div class="accessReceipt">
     <Card>
+      <template #title>Authorization</template>
+
       <template #content>
         <div class="contentContainer">
           <!-- <div class="accessRequest" v-for="request in requests" :key="request"> -->
@@ -65,40 +67,6 @@
 </template>
 
 <style scoped>
-.accessReceipt {
-  margin-bottom: 1.5rem;
-}
-
-.contentContainer {
-  margin: -0.5rem 0;
-  padding: 0 0.5rem;
-}
-
-.field {
-  display: flex;
-  margin-bottom: 0;
-}
-
-.fieldLabel {
-  min-width: 18rem;
-  font-weight: bold;
-  margin-right: 1rem;
-}
-
-a {
-  color: rgba(0, 108, 110, 1);
-  text-decoration: underline;
-  font-weight: bold;
-}
-
-.accessAuthorizations {
-  margin-top: 1rem;
-
-  .fieldLabel {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-  }
-}
 </style>
 
 <script setup lang="ts">
