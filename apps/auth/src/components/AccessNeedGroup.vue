@@ -5,7 +5,7 @@
       {{ label }}
     </div>
   </div>
-  <div>
+  <div class="mt-3">
     <span class="text-black-alpha-60">Explanation: </span>
     <div v-for="definition in definitions" :key="definition">
       {{ definition }}

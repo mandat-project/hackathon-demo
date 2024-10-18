@@ -30,7 +30,10 @@ a:not(.p-accordion-header-link) {
 }
 
 .p-card {
+    --effect-color-shadow-coldgray-900-o9: #{rgba(map-get($coldgray, 900), .09)};
+    --effect-color-shadow-coldgray-900-o6: #{rgba(map-get($coldgray, 900), .06)};
     border-radius: 8px;
+    box-shadow: 0 1px 24px 0 var(--effect-color-shadow-coldgray-900-o9, rgba(44, 51, 53, 0.09)), 0 1px 6px 0 var(--effect-color-shadow-coldgray-900-o6, rgba(44, 51, 53, 0.06));
 }
 
 .p-button.p-button-text {

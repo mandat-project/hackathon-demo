@@ -28,7 +28,7 @@
           </a>
         </div>
 
-        <Accordion class="col-12" value="0">
+        <Accordion class="col-12 surface-50 border-round" value="0">
             <AccordionTab header="Access Need Groups">
               <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup">
                 <Suspense>
@@ -52,17 +52,18 @@
               </div>
             </AccordionTab>
         </Accordion>
-
-        <div class="col-12 flex justify-content-end gap-2">
-          <Button severity="primary" @click="confirmGrantWithAccessReceipt" type="button"
-                  :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
-            Authorize Request
-          </Button>
-          <Button @click="confirmDeclineWithAccessReceipt" type="button" severity="secondary"
-                  :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
-            Decline Request
-          </Button>
-        </div>
+      </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-content-end border-top-1 gap-2 pt-3 -mt-3 border-blue-100">
+        <Button severity="primary" @click="confirmGrantWithAccessReceipt" type="button"
+                :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
+          Authorize Request
+        </Button>
+        <Button @click="confirmDeclineWithAccessReceipt" type="button" severity="secondary"
+                :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
+          Decline Request
+        </Button>
       </div>
     </template>
   </Card>

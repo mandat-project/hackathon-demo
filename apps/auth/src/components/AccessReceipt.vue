@@ -2,7 +2,9 @@
   <div class="accessReceipt">
     <Card>
       <template #title>
-        <span v-if="isRevokedOrDenied">{{accessAuthorizations.length > 0 ? 'Revoked' : 'Denied'}}:</span>
+        <div class="mb-3" v-if="isRevokedOrDenied">
+          <Chip :label="accessAuthorizations.length > 0 ? 'Revoked' : 'Denied'" :class="{'bg-red-500': accessAuthorizations.length, 'text-xs': true, 'text-white': accessAuthorizations.length}" />
+        </div>
         Authorization
       </template>
 
@@ -24,10 +26,6 @@
             <a :href="purpose">
               {{ purpose.split("#").pop() }}
             </a>
-          </div>
-          <div v-if="isRevokedOrDenied" class="col-12 md:col">
-            <p class="m-0">Status:</p>
-            <Chip :label="accessAuthorizations.length > 0 ? 'Revoked' : 'Denied'" :class="{'bg-red-400': accessAuthorizations.length, 'text-xs': true, 'text-white': accessAuthorizations.length}" />
           </div>
           <div class="col-12">
             <Accordion v-if="accessAuthorizations.length" value="0" class="surface-50 border-round">
