@@ -5,6 +5,7 @@ import BadgeDirective from "primevue/badgedirective";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Checkbox from "primevue/checkbox";
+import Chip from "primevue/chip";
 import Chips from "primevue/chips";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
@@ -48,6 +49,7 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("Card", Card);
     app.component("Checkbox", Checkbox);
     app.component("Chips", Chips);
+    app.component("Chip", Chip);
     app.component("InputSwitch", InputSwitch)
     app.component("InputText", InputText);
     app.component("InputNumber", InputNumber);

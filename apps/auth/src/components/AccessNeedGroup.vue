@@ -28,7 +28,7 @@
   </div>
   <!-- DO NOT REMOVE -->
   <!--
-  <Button @click="grantAccessAuthorization" type="button" class="btn btn-primary mb-2"
+  <Button @click="grantAccessAuthorization" type="button" class="mb-2"
           :disabled="associatedAccessAuthorization !== '' || requestAuthorizationTrigger || noDataRegistrationFound">
     Authorize Group
   </Button> -->

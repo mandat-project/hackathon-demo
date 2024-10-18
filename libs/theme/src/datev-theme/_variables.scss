@@ -28,7 +28,6 @@ $coldgray: (
     800: #3C474B,
     900: #2C3335
 );
-
 $gray: (
     50: #F2F2F2,
     100: #E6E6E6,
@@ -133,35 +132,37 @@ $colors: (
     --primary-color: #2196F3;
     --primary-color-text: #ffffff;
     --surface-0: #ffffff;
-    --surface-50: #FAFAFA;
-    --surface-100: #F5F5F5;
-    --surface-200: #EEEEEE;
-    --surface-300: #E0E0E0;
-    --surface-400: #BDBDBD;
-    --surface-500: #9E9E9E;
-    --surface-600: #757575;
-    --surface-700: #616161;
-    --surface-800: #424242;
-    --surface-900: #212121;
-    --gray-50: #FAFAFA;
-    --gray-100: #F5F5F5;
-    --gray-200: #EEEEEE;
-    --gray-300: #E0E0E0;
-    --gray-400: #BDBDBD;
-    --gray-500: #9E9E9E;
-    --gray-600: #757575;
-    --gray-700: #616161;
-    --gray-800: #424242;
-    --gray-900: #212121;
-    --content-padding:#{$panelContentPadding};
-    --inline-spacing:#{$inlineSpacing};
-    --border-radius:#{$borderRadius};
-    --surface-ground:#f8f9fa;
-    --surface-section:#ffffff;
-    --surface-card:#ffffff;
-    --surface-overlay:#ffffff;
-    --surface-border:#dee2e6;
-    --surface-hover:#e9ecef;
+    --surface-50: #{map-get($coldgray, 50)};
+    --surface-100: #{map-get($coldgray, 100)};
+    --surface-200: #{map-get($coldgray, 200)};
+    --surface-300: #{map-get($coldgray, 300)};
+    --surface-400: #{map-get($coldgray, 400)};
+    --surface-500: #{map-get($coldgray, 500)};
+    --surface-600: #{map-get($coldgray, 600)};
+    --surface-700: #{map-get($coldgray, 700)};
+    --surface-800: #{map-get($coldgray, 800)};
+    --surface-900: #{map-get($coldgray, 900)};
+
+    --bluegray-50: #{map-get($coldgray, 50)};
+    --bluegray-100: #{map-get($coldgray, 100)};
+    --bluegray-200: #{map-get($coldgray, 200)};
+    --bluegray-300: #{map-get($coldgray, 300)};
+    --bluegray-400: #{map-get($coldgray, 400)};
+    --bluegray-500: #{map-get($coldgray, 500)};
+    --bluegray-600: #{map-get($coldgray, 600)};
+    --bluegray-700: #{map-get($coldgray, 700)};
+    --bluegray-800: #{map-get($coldgray, 800)};
+    --bluegray-900: #{map-get($coldgray, 900)};
+
+    --content-padding: #{$panelContentPadding};
+    --inline-spacing: #{$inlineSpacing};
+    --border-radius: #{$borderRadius};
+    --surface-ground: #f8f9fa;
+    --surface-section: #ffffff;
+    --surface-card: #ffffff;
+    --surface-overlay: #ffffff;
+    --surface-border: #dee2e6;
+    --surface-hover: #e9ecef;
     --focus-ring: #{$focusShadow};
     --maskbg: #{$maskBg};
     --highlight-bg: #{$highlightBg};
