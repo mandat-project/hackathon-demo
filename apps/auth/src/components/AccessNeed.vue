@@ -1,25 +1,25 @@
 <template>
   <div class="grid m-0 gap-0">
     <div class="col-12 lg:col p-0">
-      <p class="mb-0">Access need for required data format:</p>
+      <p class="mb-0 text-black-alpha-60">Access need for required data format:</p>
       <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
         {{ shapeTree.split("#").pop() }}
       </a>
     </div>
     <div class="col-12 lg:col p-0">
-      <p class="mb-0">Access need for container:</p>
+      <p class="mb-0 text-black-alpha-60">Access need for container:</p>
       <a v-for="container in containers" :key="container" :href="container">
         {{ container.split("/").reverse()[1] }}
       </a>
     </div>
     <div v-if="dataInstances.length > 0" class="col-12 lg:col p-0">
-      <p class="mb-0">Access need for resources:</p>
+      <p class="mb-0 text-black-alpha-60">Access need for resources:</p>
       <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
         {{ dataInstance.split("/").pop() }}
       </a>
     </div>
     <div class="col-12 lg:col p-0">
-      <p class="mb-0">Access Mode:</p>
+      <p class="mb-0 text-black-alpha-60">Access Mode:</p>
       <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
         {{ accessMode.split("#")[1] }}
       </a>

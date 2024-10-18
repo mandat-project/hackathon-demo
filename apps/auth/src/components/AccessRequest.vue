@@ -4,25 +4,25 @@
     <template #content>
       <div class="grid">
         <div class="col-12 md:col">
-          <div class="fieldLabel">Purpose: </div>
+          <div class="text-black-alpha-60">Purpose: </div>
           <a v-for="label in purposes" :key="label" :href="label">
             {{ label.split('#').pop() }}
           </a>
         </div>
         <div class="col-12 md:col">
-          <div class="fieldLabel">Data requester: </div>
+          <div class="text-black-alpha-60">Data requester: </div>
           <a v-for="sender in fromSocialAgents" :key="sender" :href="sender">
             {{ senderName }}
           </a>
         </div>
         <div class="col-12 md:col">
-          <div class="fieldLabel">Access will be granted to: </div>
+          <div class="text-black-alpha-60">Access will be granted to: </div>
           <a v-for="grantee in forSocialAgents" :key="grantee" :href="grantee">
             {{ granteeName }}
           </a>
         </div>
         <div v-if="seeAlso.length > 0" class="col-12 md:col">
-          <div class="fieldLabel">For additional information see also: </div>
+          <div class="text-black-alpha-60">For additional information see also: </div>
           <a v-for="reference in seeAlso" :key="reference" :href="reference">
             {{ reference.split("/").pop() }}
           </a>
@@ -45,7 +45,7 @@
                 </Suspense>
               </div>
               <div v-if="noDataRegistrationFound" class="col-12 md:col">
-                <div class="fieldLabel">No matching Data Registrations were found for: </div>
+                <div class="text-black-alpha-60">No matching Data Registrations were found for: </div>
                 <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree.toString()" :href="shapeTree.toString()">
                   {{ shapeTree.split('#').pop() }}
                 </a>

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <span>Short description of requested access: </span>
+    <span class="text-black-alpha-60">Short description of requested access: </span>
     <div v-for="label in prefLabels" :key="label">
       {{ label }}
     </div>
   </div>
   <div>
-    <span>Explanation: </span>
+    <span class="text-black-alpha-60">Explanation: </span>
     <div v-for="definition in definitions" :key="definition">
       {{ definition }}
     </div>
@@ -35,16 +35,6 @@
 </template>
 
 <style scoped>
-.accessNeedGroup {
-  margin: 0 0 1rem 1rem;
-  padding: 1rem;
-  border-radius: 7px;
-  background-color: var(--surface-b);
-}
-
-.accessNeed {
-  margin-left: 2rem;
-}
 </style>
 
 <script setup lang="ts">
