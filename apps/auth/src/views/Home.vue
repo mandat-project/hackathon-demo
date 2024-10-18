@@ -1,12 +1,12 @@
 <template>
   <section>
-    <header class="w-full md:w-10 lg:w-9 xl:w-7 mx-auto mt-7">
+    <header class="w-full md:w-11 lg:w-10 xl:w-9 mx-auto mt-7">
       <h1>
         {{ headingTitle }}
       </h1>
     </header>
 
-  <div class="flex flex-column gap-2 w-full md:w-10 lg:w-9 xl:w-7 mx-auto my-5">
+  <div class="flex flex-column gap-2 w-full md:w-11 xl:w-9 mx-auto my-5">
     <article v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
       <Suspense>
         <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
