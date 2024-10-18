@@ -171,32 +171,33 @@
 </template>
 
 <script setup lang="ts">
+import BusinessData from "/src/components/BusinessDataPanel.vue";
 import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
 import {
   ACL,
   createResource,
+  createResourceInAnyRegistrationOfShape,
   CREDIT,
+  FOAF,
+  GDPRP,
+  getContainerItems,
+  getDataRegistrationContainers,
   getLocationHeader,
   getResource,
+  INTEROP,
   LDP,
   parseToN3,
   putResource,
+  RDFS,
   SCHEMA,
-  getDataRegistrationContainers,
-  FOAF,
-  VCARD,
-  INTEROP,
-  XSD,
   SKOS,
-  createResourceInAnyRegistrationOfShape,
-  getContainerItems,
-  GDPRP, RDFS
+  VCARD,
+  XSD
 } from '@shared/solid';
-import { AxiosResponse } from 'axios';
+import {AxiosResponse} from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
-import {Ref, computed, reactive, ref, toRefs, watch} from 'vue';
-import BusinessData from "/src/components/BusinessDataPanel.vue";
+import {computed, reactive, Ref, ref, watch} from 'vue';
 
 const props = defineProps<{ demandUri: string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
@@ -859,10 +860,10 @@ async function handleAuthorizationRequestRedirect(
   min-width: 4rem;
   background: rgba(153, 232, 39, 1);
   border-radius: 4px;
-  border-width: 1px, 1px, 0px, 1px;
-  border-style: solid;
-  border-color: rgba(32, 151, 12, 0.5);
   box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
+  &:hover {
+    outline-color: rgba(32, 151, 12, 0.1);
+  }
 }
 
 .button-back {
@@ -871,10 +872,11 @@ async function handleAuthorizationRequestRedirect(
   min-width: 4rem;
   background: rgba(246, 247, 249, 1);
   border-radius: 4px;
-  border-width: 1px, 1px, 0px, 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.15);
   box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
+
+  &:hover {
+    outline-color: rgba(0, 0, 0, 0.15);
+  }
 }
 
 .refresh-container {

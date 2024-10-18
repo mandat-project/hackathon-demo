@@ -1,7 +1,7 @@
 <template>
   <div class="session.login-button" @click="isDisplaingIDPs = !isDisplaingIDPs">
     <slot>
-      <Button  class=" p-button-text p-button-rounded">
+      <Button class=" p-button-text p-button-rounded">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
           <path fill="#3B3B3B" fill-opacity=".9" d="M10 1a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9Z"/>
           <path fill="#fff" d="M10 2c4.411 0 8 3.589 8 8s-3.589 8-8 8-8-3.589-8-8 3.589-8 8-8Z"/>
@@ -26,10 +26,10 @@
             v-model="idp"
             @keyup.enter="session.login(idp, redirect_uri)"
         />
-        <Button @click="session.login(idp, redirect_uri)"> ></Button>
+        <Button severity="secondary" @click="session.login(idp, redirect_uri)"> ></Button>
       </div>
       <Button
-          class="idp"
+          class="idp" severity="primary"
           @click="
           idp = 'https://solid.aifb.kit.edu';
           session.login(idp, redirect_uri);
@@ -39,7 +39,7 @@
         https://solid.aifb.kit.edu
       </Button>
       <Button
-          class="idp"
+          class="idp" severity="secondary"
           @click="
           idp = 'https://solidcommunity.net';
           session.login(idp, redirect_uri);
@@ -49,7 +49,7 @@
         https://solidcommunity.net
       </Button>
       <Button
-          class="idp"
+          class="idp" severity="secondary"
           @click="
           idp = 'https://solidweb.org';
           session.login(idp, redirect_uri);
@@ -59,7 +59,7 @@
         https://solidweb.org
       </Button>
       <Button
-          class="idp"
+          class="idp" severity="secondary"
           @click="
           idp = 'https://solidweb.me';
           session.login(idp, redirect_uri);
@@ -69,7 +69,7 @@
         https://solidweb.me
       </Button>
       <Button
-          class="idp"
+          class="idp" severity="secondary"
           @click="
           idp = 'https://inrupt.net';
           session.login(idp, redirect_uri);
@@ -82,14 +82,14 @@
     <!-- <template #footer> -->
     <div class="flex justify-content-between mt-4">
       <Button
-          label="Get a Pod!"
+          label="Get a Pod!" severity="secondary"
           class="p-button-outlined p-button-rounded"
           @click="GetAPod"
       />
       <Button
           label="close"
           icon="pi pi-times"
-          iconPos="right"
+          iconPos="right" severity="secondary"
           class="p-button-outlined p-button-rounded"
           @click="isDisplaingIDPs = !isDisplaingIDPs"
       />
@@ -99,8 +99,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from "vue";
 import {useSolidSession} from "@shared/composables";
+import {defineComponent, ref} from "vue";
 
 export default defineComponent({
   name: "session.loginButton",

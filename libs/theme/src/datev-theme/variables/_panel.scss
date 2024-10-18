@@ -84,11 +84,11 @@ $accordionSpacing: 0;
 
 /// Border of an accordion panel header
 /// @group panel
-$accordionHeaderBorder: $panelHeaderBorder;
+$accordionHeaderBorder: transparent;
 
 /// Background of an accordion panel header
 /// @group panel
-$accordionHeaderBg: $panelHeaderBg;
+$accordionHeaderBg: transparent;
 
 /// Text color of an accordion panel header
 /// @group panel
@@ -104,11 +104,11 @@ $accordionHeaderPadding: $panelHeaderPadding;
 
 /// Background of an accordion panel header in hover state
 /// @group panel
-$accordionHeaderHoverBg: #e9ecef;
+$accordionHeaderHoverBg: transparent;
 
 /// Border of an accordion panel header in hover state
 /// @group panel
-$accordionHeaderHoverBorderColor: $panelHeaderBorder;
+$accordionHeaderHoverBorderColor: transparent;
 
 /// Text color of an accordion panel header in hover state
 /// @group panel
@@ -116,11 +116,11 @@ $accordionHeaderTextHoverColor: $textColor;
 
 /// Background of an accordion panel header in expanded state
 /// @group panel
-$accordionHeaderActiveBg: $panelHeaderBg;
+$accordionHeaderActiveBg: transparent;
 
 /// Border of an accordion panel header in expanded state
 /// @group panel
-$accordionHeaderActiveBorderColor: #dee2e6;
+$accordionHeaderActiveBorderColor: transparent;
 
 /// Text color of an accordion panel header in expanded state
 /// @group panel
@@ -128,11 +128,11 @@ $accordionHeaderTextActiveColor: $textColor;
 
 /// Hover background of an accordion panel header in expanded state
 /// @group panel
-$accordionHeaderActiveHoverBg: #e9ecef;
+$accordionHeaderActiveHoverBg: transparent;
 
 /// Hover border of an accordion panel header in expanded state
 /// @group panel
-$accordionHeaderActiveHoverBorderColor: #dee2e6;
+$accordionHeaderActiveHoverBorderColor: transparent;
 
 /// Text color of an accordion panel header in expanded state
 /// @group panel
@@ -140,11 +140,11 @@ $accordionHeaderTextActiveHoverColor: $textColor;
 
 /// Border for a content section of an accordion panel
 /// @group panel
-$accordionContentBorder: $panelContentBorder;
+$accordionContentBorder: transparent;
 
 /// Background for a content section of an accordion panel
 /// @group panel
-$accordionContentBg: $panelContentBg;
+$accordionContentBg: transparent;
 
 /// Text color for a content section of an accordion panel
 /// @group panel

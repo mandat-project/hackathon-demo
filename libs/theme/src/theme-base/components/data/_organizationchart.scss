@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // core
 .p-organizationchart-table {
     border-spacing: 0;
@@ -66,7 +68,7 @@
 
             .p-node-toggler {
                 i {
-                    color: darken($highlightBg, 25%);
+                    color: color.adjust($highlightBg, $lightness: -25%);
                 }
             }
         }

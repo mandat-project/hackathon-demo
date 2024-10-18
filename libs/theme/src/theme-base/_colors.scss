@@ -15,4 +15,11 @@
             }
         }
     }
+    @if variable-exists(dacklColors) {
+        @each $colorName, $colorMap in $dacklColors {
+            @each $shade, $value in $colorMap {
+                --#{$colorName}-#{$shade}: #{$value};
+            }
+        }
+    }
 }

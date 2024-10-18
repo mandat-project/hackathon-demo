@@ -1,8 +1,13 @@
 /* Customizations to the designer theme should be defined here */
 
-h1, title {
+html, body {
     font-family: var(--font-family-serif);
+    font-size: 1rem;
     font-weight: 400;
+}
+
+a:not(.p-accordion-header-link) {
+    color: map-get($petrol, 700);
 }
 
 .p-toolbar {
@@ -16,14 +21,19 @@ h1, title {
 
 .p-button {
     padding: 0.5rem;
-    font-weight: bold;
+    font-weight: 500;
 
-    &:hover {
-      background-color: rgba(65, 132, 153, 0.2);
+    &:not(.p-button-text){
+        $shadowColor: map-get($coldgray, 900);
+        box-shadow: 0 1px 1px rgba($shadowColor, 0.12),0 2px 3px -2px rgba($shadowColor, 0.06),0 1px 4px rgba($shadowColor, 0.07);
     }
 }
+
 .p-card {
+    --effect-color-shadow-coldgray-900-o9: #{rgba(map-get($coldgray, 900), .09)};
+    --effect-color-shadow-coldgray-900-o6: #{rgba(map-get($coldgray, 900), .06)};
     border-radius: 8px;
+    box-shadow: 0 1px 24px 0 var(--effect-color-shadow-coldgray-900-o9, rgba(44, 51, 53, 0.09)), 0 1px 6px 0 var(--effect-color-shadow-coldgray-900-o6, rgba(44, 51, 53, 0.06));
 }
 
 .p-button.p-button-text {
