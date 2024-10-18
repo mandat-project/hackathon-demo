@@ -3,7 +3,7 @@
     <Card>
       <template #title>
         <div class="mb-3" v-if="isRevokedOrDenied">
-          <Chip :label="accessAuthorizations.length > 0 ? 'Revoked' : 'Denied'" :class="{'bg-red-500': accessAuthorizations.length, 'text-xs': true, 'text-white': accessAuthorizations.length}" />
+          <Chip :label="accessAuthorizations.length > 0 ? 'Revoked' : 'Denied'" :class="{'bg-red-500': accessAuthorizations.length, 'text-sm': true, 'text-white': accessAuthorizations.length}" />
         </div>
         Authorization
       </template>

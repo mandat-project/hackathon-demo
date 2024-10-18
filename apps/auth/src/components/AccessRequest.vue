@@ -75,103 +75,31 @@
 
 <script setup lang="ts">
 import AccessNeedGroup from "@/components/AccessNeedGroup.vue";
-import {useSolidSession} from "@shared/composables";
-import {
-  AUTH,
-  createResource,
-  FOAF,
-  GDPRP,
-  getLocationHeader,
-  getResource,
-  INTEROP,
-  parseToN3,
-  RDF,
-  RDFS,
-  XSD
-} from "@shared/solid";
-import {Store} from "n3";
+import {useAuthorizations} from "@shared/composables";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref} from "vue";
 
 const props = defineProps(["informationResourceURI", "redirect", "dataAuthzContainer", "accessAuthzContainer", "accessReceiptContainer"]);
 const emit = defineEmits(["createdAccessReceipt"])
-const { session } = useSolidSession();
+
+const { getAccessRequest } = useAuthorizations();
+
+const {
+  grantWithAccessReceipt,
+  declineWithAccessReceipt,
+
+  purposes,
+  fromSocialAgents,
+  forSocialAgents,
+  seeAlso,
+  accessNeedGroups,
+  senderName,
+  granteeName,
+} = await getAccessRequest(props.informationResourceURI);
+
 const toast = useToast();
 const confirm = useConfirm();
-
-const state = reactive({
-  informationResourceStore: new Store(),
-  senderStore: new Store(),
-  granteeStore: new Store()
-});
-
-// get data
-state.informationResourceStore = await getResource(props.informationResourceURI, session)
-  .catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Could not get access request!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  })
-  .then((resp) => resp.data)
-  .then((txt) => parseToN3(txt, props.informationResourceURI))
-  .then((parsedN3) => (state.informationResourceStore = parsedN3.store));
-
-// compute properties to display
-
-// // because we get the information resource URI, we need to find the Access Request URI, in theory there could be many,
-// // but we only consider the first access request in an information resource. Not perfect, but makes it easier right now.
-// const requests = store.value.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)
-const accessRequest = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessRequest"), null).map(t => t.value)[0]
-
-const purposes = computed(() => state.informationResourceStore.getObjects(accessRequest, GDPRP('purposeForProcessing'), null).map(t => t.value))
-const fromSocialAgents = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("fromSocialAgent"), null).map(t => t.value))
-const forSocialAgents = computed(() => {
-  const forSocialAgentsDirect = state.informationResourceStore.getObjects(accessRequest, INTEROP("forSocialAgent"), null).map(t => t.value)
-  if (forSocialAgentsDirect.length > 0) {
-    return forSocialAgentsDirect
-  }
-  return fromSocialAgents.value
-})
-const seeAlso = computed(() => state.informationResourceStore.getObjects(accessRequest, RDFS("seeAlso"), null).map(t => t.value))
-const accessNeedGroups = computed(() => state.informationResourceStore.getObjects(accessRequest, INTEROP("hasAccessNeedGroup"), null).map(t => t.value))
-
-// get access request address data
-
-state.senderStore = await getResource(fromSocialAgents.value[0], session)
-  .catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Could not get sender!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  })
-  .then((resp) => resp.data)
-  .then((txt) => parseToN3(txt, fromSocialAgents.value[0]))
-  .then((parsedN3) => (state.senderStore = parsedN3.store));
-
-state.granteeStore = await getResource(forSocialAgents.value[0], session)
-  .catch((err) => {
-    toast.add({
-      severity: "error",
-      summary: "Could not get grantee!",
-      detail: err,
-      life: 5000,
-    });
-    throw new Error(err);
-  })
-  .then((resp) => resp.data)
-  .then((txt) => parseToN3(txt, forSocialAgents.value[0]))
-  .then((parsedN3) => (state.granteeStore = parsedN3.store));
-
-const senderName = computed(() => state.senderStore.getObjects(null, FOAF("name"), null)[0]?.value);
-const granteeName = computed(() => state.granteeStore.getObjects(null, FOAF("name"), null)[0]?.value);
 
 // set if no matching data registrations are found for any of the child elements registeredShapeTrees
 const noDataRegistrationFound = ref(false);
@@ -183,9 +111,6 @@ const shapeTreesOfMissingDataRegs = ref([] as String[]);
 
 // know which access receipt this component created
 const associatedAccessReceipt = ref("")
-
-// define a 'local name', i.e. the URI fragment, for the access receipt URI
-const accessReceiptLocalName = "accessReceipt"
 
 // keep track of which children access needs already created a access authorization
 const accessAuthorizations = reactive(new Map());
@@ -211,7 +136,6 @@ function setNoDataRegistrationFound(shapeTreeURI: string) {
  */
 const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
 
-
 function confirmGrantWithAccessReceipt(): void {
 
   confirm.require({
@@ -228,89 +152,6 @@ function confirmGrantWithAccessReceipt(): void {
   });
 }
 
-/**
- * Trigger children access need groups to create access authorization and trigger their children,
- * wait until all children have done so,
- * then create access receipt and emit finish event to parent,
- * if redirect present,
- * redirect
- */
-async function grantWithAccessReceipt() {
-  // trigger access grants
-  accessAuthorizationTrigger.value = true
-  // wait until all events fired
-  while (accessAuthorizations.size !== accessNeedGroups.value.length) {
-    console.log("Waiting for access receipt ...");
-    await new Promise(resolve => setTimeout(resolve, 500));
-  }
-  // create access receipt
-  const accessReceiptLocation = createAccessReceipt(
-    [...accessAuthorizations.values()]
-  )
-  // emit to overview
-  associatedAccessReceipt.value = (await accessReceiptLocation) + "#" + accessReceiptLocalName
-  emit("createdAccessReceipt", props.informationResourceURI, associatedAccessReceipt.value)
-  // redirect if wanted
-  if (props.redirect) {
-    window.open(
-      `${props.redirect}?uri=${encodeURIComponent(
-        accessRequest
-      )}&result=1`,
-      "_self"
-    );
-  }
-}
-
-/**
- *  Create a new access receipt.
- *
- * ? This could potentially be extracted to a library.
- *
- * @param accessAuthorizations
- */
-async function createAccessReceipt(
-  accessAuthorizations: string[]
-) {
-  const date = new Date().toISOString();
-  let payload = `
-    @prefix interop:<${INTEROP()}> .
-    @prefix xsd:<${XSD()}> .
-    @prefix auth:<${AUTH()}> .
-
-    <#${accessReceiptLocalName}>
-      a interop:AccessReceipt ;
-      interop:providedAt "${date}"^^xsd:dateTime ;
-      auth:hasAccessRequest <${accessRequest}>`;
-  if (accessAuthorizations.length > 0) {
-    payload += `
-    ;
-      interop:hasAccessAuthorization ${accessAuthorizations
-      .map((t) => "<" + t + ">")
-      .join(", ")}`;
-  }
-  payload += ' .'
-  return createResource(props.accessReceiptContainer, payload, session)
-    .then((loc) => {
-        toast.add({
-          severity: "success",
-          summary: "Access Receipt created.",
-          life: 5000,
-        })
-        return getLocationHeader(loc)
-      }
-    )
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Failed to create Access Receipt!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-
-}
-
 function confirmDeclineWithAccessReceipt(): void {
   confirm.require({
     message: 'Are you sure you want to proceed?',
@@ -325,27 +166,6 @@ function confirmDeclineWithAccessReceipt(): void {
       //
     },
   });
-}
-
-/**
- * Decline a request.
- * Create an access receipt that does not link to any access authorizations
- */
-async function declineWithAccessReceipt() {
-  // create receipt
-  const accessReceiptLocation = createAccessReceipt([])
-  // emit to overview
-  associatedAccessReceipt.value = (await accessReceiptLocation) + "#" + accessReceiptLocalName
-  emit("createdAccessReceipt", props.informationResourceURI, associatedAccessReceipt.value)
-  // redirect if wanted
-  if (props.redirect) {
-    window.open(
-      `${props.redirect}?uri=${encodeURIComponent(
-        accessRequest
-      )}&result=0`,
-      "_self"
-    );
-  }
 }
 
 </script>

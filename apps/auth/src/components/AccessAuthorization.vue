@@ -32,7 +32,7 @@
               </Button>
           </div>
           <div class="col-12">
-            <Accordion v-if="dataAuthorizations.length" class="border-1 border-round border-bluegray-200" value="0">
+            <Accordion v-if="dataAuthorizations.length" class="border-1 border-round border-bluegray-100" value="0">
               <AccordionTab header="Data Authorizations">
                 <div v-for="dataAuthorization in dataAuthorizations" :key="dataAuthorization">
                   <Suspense>
