@@ -1,9 +1,9 @@
 "use strict";
 
-import { Parser, Prefixes, Quad, Store } from "n3";
-import { LDP } from "./namespaces";
-import axios, { AxiosHeaders, AxiosResponse, AxiosRequestConfig } from "axios";
-import { Session } from "./solid-oidc-client-browser";
+import {AxiosHeaders, AxiosResponse} from "axios";
+import {Parser, Prefixes, Quad, Store} from "n3";
+import {LDP} from "./namespaces";
+import {Session} from "./solid-oidc-client-browser";
 
 export interface ParsedN3 {
   store: Store;
@@ -342,8 +342,8 @@ function _getParentUri(uri: string): string {
  * @param txt string of the Link Header#
  * @returns the object parsed
  */
-function _parseLinkHeader(txt: string): Record<string, Array<string> | string> {
-  const parsedObj: Record<string, Array<string> | string> = {};
+function _parseLinkHeader(txt: string): Record<string, string[] | string> {
+  const parsedObj: Record<string, string[] | string> = {};
   const propArray = txt.split(",").map((obj) => obj.split(";"));
   for (const prop of propArray) {
     if (parsedObj[prop[1].trim().split('"')[1]] === undefined) {
@@ -371,7 +371,7 @@ function _parseLinkHeader(txt: string): Record<string, Array<string> | string> {
 export async function getLinkHeader(
   uri: string,
   session?: Session
-): Promise<Record<string, Array<string> | string>> {
+): Promise<Record<string, string[] | string>> {
   console.log("### SoLiD\t| HEAD\n" + uri);
   if (session === undefined) session = new Session();
   return session

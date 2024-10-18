@@ -315,7 +315,6 @@ function confirmDeclineWithAccessReceipt(): void {
   confirm.require({
     message: 'Are you sure you want to proceed?',
     header: 'Decline Access Request',
-    icon: 'pi pi-info-circle',
     acceptClass: 'p-button-danger',
     rejectLabel: 'Cancel',
     acceptLabel: 'Decline Request',
