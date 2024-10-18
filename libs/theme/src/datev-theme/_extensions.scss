@@ -17,10 +17,6 @@ h1, title {
 .p-button {
     padding: 0.5rem;
     font-weight: bold;
-
-    &:not(.p-button-danger):hover {
-      background-color: rgba(65, 132, 153, 0.2);
-    }
 }
 .p-card {
     border-radius: 8px;

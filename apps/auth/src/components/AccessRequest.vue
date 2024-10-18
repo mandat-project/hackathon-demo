@@ -54,11 +54,11 @@
         </Accordion>
 
         <div class="col-12 flex justify-content-end gap-2">
-          <Button severity="success" @click="grantWithAccessReceipt" type="button"
+          <Button severity="primary" @click="confirmGrantWithAccessReceipt" type="button"
                   :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
             Authorize Request
           </Button>
-          <Button @click="declineWithAccessReceipt" type="button" severity="secondary"
+          <Button @click="confirmDeclineWithAccessReceipt" type="button" severity="secondary"
                   :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
             Decline Request
           </Button>
@@ -66,6 +66,7 @@
       </div>
     </template>
   </Card>
+  <ConfirmDialog />
 </template>
 
 <style scoped>
@@ -88,6 +89,7 @@ import {
   XSD
 } from "@shared/solid";
 import {Store} from "n3";
+import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref} from "vue";
 
@@ -95,6 +97,7 @@ const props = defineProps(["informationResourceURI", "redirect", "dataAuthzConta
 const emit = defineEmits(["createdAccessReceipt"])
 const { session } = useSolidSession();
 const toast = useToast();
+const confirm = useConfirm();
 
 const state = reactive({
   informationResourceStore: new Store(),
@@ -208,6 +211,22 @@ function setNoDataRegistrationFound(shapeTreeURI: string) {
 const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
 
 
+function confirmGrantWithAccessReceipt(): void {
+
+  confirm.require({
+    message: 'Are you sure you want to proceed?',
+    header: 'Authorize Access Request',
+    rejectLabel: 'Cancel',
+    acceptLabel: 'Authorize Request',
+    accept: () => {
+      grantWithAccessReceipt();
+    },
+    reject: () => {
+      //
+    },
+  });
+}
+
 /**
  * Trigger children access need groups to create access authorization and trigger their children,
  * wait until all children have done so,
@@ -289,6 +308,23 @@ async function createAccessReceipt(
       throw new Error(err);
     })
 
+}
+
+function confirmDeclineWithAccessReceipt(): void {
+  confirm.require({
+    message: 'Are you sure you want to proceed?',
+    header: 'Decline Access Request',
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-danger',
+    rejectLabel: 'Cancel',
+    acceptLabel: 'Decline Request',
+    accept: () => {
+      declineWithAccessReceipt();
+    },
+    reject: () => {
+      //
+    },
+  });
 }
 
 /**

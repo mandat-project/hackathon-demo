@@ -135,7 +135,7 @@
     border: $overlayContentBorder;
 
     .p-dialog-header {
-        border-bottom: $dialogHeaderBorder;
+        //border-bottom: $dialogHeaderBorder;
         background: $dialogHeaderBg;
         color: $dialogHeaderTextColor;
         padding: $dialogHeaderPadding;
@@ -169,7 +169,7 @@
     }
 
     .p-dialog-footer {
-        border-top: $dialogFooterBorder;
+        // border-top: $dialogFooterBorder;
         background: $overlayContentBg;
         color: $panelFooterTextColor;
         padding: $dialogFooterPadding;
