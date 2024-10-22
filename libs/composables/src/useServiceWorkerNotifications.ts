@@ -1,4 +1,5 @@
 import {ref} from "vue";
+import {WebPushSubscription} from "./webPushSubscription";
 
 const hasActivePush = ref(false);
 
@@ -38,7 +39,7 @@ _hasActivePush().then(hasPush => hasActivePush.value = hasPush)
  * in response to a user action signalling they would like to
  * subscribe to push messages from our app.
  */
-const subscribeToPush = async (pubKey: string) => {
+const subscribeToPush = async (pubKey: string): Promise<WebPushSubscription> => {
     if (Notification.permission != "granted") {
         throw new Error("Notification permission not granted");
     }
@@ -66,15 +67,15 @@ const subscribeToPush = async (pubKey: string) => {
     }
     console.log("### PWA  \t| Subscription created!");
     hasActivePush.value = true;
-    return sub.toJSON()
+    return sub.toJSON() as WebPushSubscription;
 };
 
-const unsubscribeFromPush = async () => {
+const unsubscribeFromPush = async (): Promise<WebPushSubscription> => {
     const sub = await _checkSubscription();
     const isUnsubbed = await sub.unsubscribe();
     console.log("### PWA  \t| Subscription cancelled:", isUnsubbed);
     hasActivePush.value = false;
-    return sub.toJSON();
+    return sub.toJSON() as WebPushSubscription;
 };
 
 

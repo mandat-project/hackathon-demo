@@ -27,8 +27,7 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore not sure about this error
-import { computed, ref, watch } from "vue/";
+import { computed, ref, watch } from "vue";
 import Toast from "primevue/toast";
 import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
 import { HeaderBar } from "@shared/components";

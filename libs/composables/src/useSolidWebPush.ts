@@ -1,20 +1,12 @@
 import {AS, createResource, getResource, LDP, parseToN3, PUSH, RDF} from "@shared/solid";
-import {toRefs} from "vue";
 import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
 import {useSolidSession} from "./useSolidSession";
+import {WebPushSubscription} from "./webPushSubscription";
 
 const {unsubscribeFromPush, subscribeToPush} =
     useServiceWorkerNotifications();
 
 const {session} = useSolidSession();
-
-interface WebPushSubscription {
-    endpoint: string;
-    keys: {
-        auth: string;
-        p256dh: string;
-    };
-}
 
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
@@ -80,8 +72,7 @@ const _createUnsubscriptionFromResource = (
 
 const subscribeForResource = async (uri: string) => {
     const {inbox, vapidPublicKey} = await _getSolidWebPushDetails();
-    const sub = await subscribeToPush(vapidPublicKey);
-    //@ts-ignore
+    const sub: WebPushSubscription = await subscribeToPush(vapidPublicKey);
     const solidWebPushSub = _createSubscriptionOnResource(uri, sub);
     console.log(solidWebPushSub)
     return createResource(inbox, solidWebPushSub, session);
@@ -90,7 +81,6 @@ const subscribeForResource = async (uri: string) => {
 const unsubscribeFromResource = async (uri: string) => {
     const {inbox} = await _getSolidWebPushDetails();
     const sub_old = await unsubscribeFromPush();
-    //@ts-ignore
     const solidWebPushUnSub = _createUnsubscriptionFromResource(uri, sub_old);
     console.log(solidWebPushUnSub)
     return createResource(inbox, solidWebPushUnSub, session);

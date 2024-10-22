@@ -1,11 +1,18 @@
-import {createApp} from "vue";
+# `@shared/utils`
+
+> TODO: description
+
+## Usage
+
+```
 import {requireStyles, setupApp} from "@shared/utils";
-import App from "./App.vue";
 import router from "./router";
 
-import "./registerServiceWorker"; // service-worker
-
 requireStyles();
+
 const app = createApp(App);
 setupApp(app, router);
 app.mount("#app");
+
+setupApp(app, router);
+```
