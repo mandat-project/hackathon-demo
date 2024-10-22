@@ -196,6 +196,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                 );
             }
 
+            // TODO how to pass to its groups and their data-authorizations
             return associatedAccessReceipt;
         }
 
@@ -323,6 +324,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                 // [...dataAuthorizations.values()]
                 [],
             )
+            // TODO: emit to parent authorization
             return `${accessAuthzLocation}#${accessAuthzLocalName}`;
         }
 
@@ -460,20 +462,22 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                     });
                     throw new Error(err);
                 });
-                const dataInstancesForNeed = [] as string[];
-                dataInstancesForNeed.push(...dataInstances); // potentially manually edited (added/removed) in auth agent
-                const dataAuthzLocation = await createDataAuthorization(forSocialAgents, registeredShapeTrees, accessModes, dataRegistrations, dataInstancesForNeed);
+                const dataInstancesForNeed: string[] = [...dataInstances];
+                const dataAuthzLocation = await _createDataAuthorization(forSocialAgents, registeredShapeTrees, accessModes, dataRegistrations, dataInstancesForNeed);
                 // if selected data instances given, then only give access to those, else, give to registration
                 const accessToResources = dataInstancesForNeed.length > 0 ? dataInstancesForNeed : dataRegistrations;
                 // only grant specific resource access
                 for (const resource of accessToResources) {
-                    await updateAccessControlList(resource, forSocialAgents, accessModes);
+                    await _updateAccessControlList(resource, forSocialAgents, accessModes);
                 }
                 // associatedDataAuthorization.value = (await dataAuthzLocation) + "#" + dataAuthzLocalName
                 // emit("createdDataAuthorization", uri, associatedDataAuthorization.value)
 
+                // TODO: emit to parent group
                 return `${dataAuthzLocation}#${dataAuthzLocalName}`;
             }
+
+            return undefined;
         }
 
         /**
@@ -487,7 +491,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
          * @param registrations
          * @param instances
          */
-        async function createDataAuthorization(
+        async function _createDataAuthorization(
             forSocialAgents: string[],
             registeredShapeTrees: string[],
             accessModes: string[],
@@ -559,7 +563,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
          * @param agent
          * @param mode
          */
-        async function updateAccessControlList(
+        async function _updateAccessControlList(
             accessTo: string,
             agent: string[],
             mode: string[]

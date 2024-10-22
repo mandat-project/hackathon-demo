@@ -46,7 +46,6 @@
         </template>
       </Suspense>
     </article>
-
   </div>
   </section>
 </template>

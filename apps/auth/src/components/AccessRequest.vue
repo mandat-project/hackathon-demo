@@ -145,6 +145,7 @@ function confirmGrantWithAccessReceipt(): void {
     rejectLabel: 'Cancel',
     acceptLabel: 'Authorize Request',
     accept: () => {
+      // TODO add authorizations from groups and data-authorizations
       grantWithAccessReceipt();
     },
     reject: () => {
