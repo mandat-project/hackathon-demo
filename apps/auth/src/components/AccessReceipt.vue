@@ -2,8 +2,8 @@
   <div class="accessReceipt">
     <Card>
       <template #title>
-        <div class="mb-3" v-if="isRevokedOrDenied">
-          <Chip :label="accessAuthorizations.length > 0 ? 'Revoked' : 'Denied'" :class="{'bg-red-500': accessAuthorizations.length, 'text-sm': true, 'text-white': accessAuthorizations.length}" />
+        <div class="mb-3">
+          <Chip :label="status" :class="{'bg-green-300': status === 'Active', 'bg-red-500': status === 'Revoked', 'text-white': status === 'Revoked', 'text-sm': true}" />
         </div>
         Authorization
       </template>
@@ -114,7 +114,6 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
 // // but we only consider the first access receipt in an information resource. Not perfect, but makes it easier right now.
 // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
 const accessReceipt = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)[0]
-
 const provisionDates = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("providedAt"), null).map(t => t.value));
 const accessRequests = computed(() => state.informationResourceStore.getObjects(accessReceipt, AUTH("hasAccessRequest"), null).map(t => t.value))
 const accessAuthorizations = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("hasAccessAuthorization"), null).map(t => t.value).map(accessAuthorization => {
@@ -164,8 +163,13 @@ function addToEmpty(emptyAuth: string) {
 // keep track of which children access authorizations did not yet revoked rights
 // to keep track if this access receipt is revoked yet
 const nonEmptyAuthorizations = computed(() => accessAuthorizations.value.filter(auth => !emptyAuthorizations.value.includes(auth)))
-
 const isRevokedOrDenied = computed(() => !nonEmptyAuthorizations.value.length);
+const status = computed<'Active' | 'Revoked' | 'Denied'>(() => {
+  if (isRevokedOrDenied.value) {
+    return accessAuthorizations.value.length > 0 ? 'Revoked' : 'Denied';
+  }
+  return 'Active';
+});
 
 
 // a quick and dirty wrapper for type-saftey

@@ -93,7 +93,7 @@
             </div>
             <Button v-if="demand.hasAccessRequest &&
               !(demand.isAccessRequestGranted == 'true')
-              " type="submit" label="Handle Access Request" icon="pi pi-question" class="p-button-text"
+              " type="submit" :label="'Handle Access Request: ' + demand.hasAccessRequest" icon="pi pi-question" class="p-button-text"
               @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
             <Button v-if="demand.offer && !demand.order" type="submit" label="Accept Offer" icon="pi pi-check"
               class="p-button-text" @click="createOrder(demand.offer.id)" />

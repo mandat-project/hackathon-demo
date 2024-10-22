@@ -1,6 +1,6 @@
 <template>
   <Card>
-    <template #title>Access Request</template>
+    <template #title>Access Request {{ props.informationResourceURI }}</template>
     <template #content>
       <div class="grid">
         <div class="col-12 md:col">

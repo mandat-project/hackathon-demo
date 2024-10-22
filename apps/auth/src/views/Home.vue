@@ -63,20 +63,20 @@ import {computed, ref, watch} from "vue";
 
 const toast = useToast();
 
+const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
+const headingTitle = ref('Access Manager')
+
 const {
   reload,
-  refreshAccessReceiptInformationResources,
 
   accessRequestInformationResources,
   accessReceiptInformationResources,
-  dataAuthzContainer,
+
+  // Deprecated
   accessAuthzContainer,
   accessAuthzArchiveContainer,
-  accessReceiptContainer,
-} = useAuthorizations();
+} = useAuthorizations(props.inspectedAccessRequestURI);
 
-const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
-const headingTitle = ref('Access Manager')
 
 // only display not yet handled
 const displayAccessRequests = computed(() =>

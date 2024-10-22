@@ -24,7 +24,7 @@ import {
 import {Store} from "n3";
 import {computed, ref, watch} from "vue";
 
-export const useAuthorizations = () => {
+export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     const { session } = useSolidSession();
     const { memberOf } = useSolidProfile()
 
@@ -35,9 +35,6 @@ export const useAuthorizations = () => {
 
     // keep track of access receipts
     const accessReceiptInformationResources = ref<string[]>([]);
-
-    // concrete access request URI (optional)
-    const inspectedAccessRequestURI = ref<string | null>(null);
 
     // create data authorization container if needed
     const dataAuthzContainerName = "data-authorizations"
@@ -120,8 +117,8 @@ export const useAuthorizations = () => {
         if (!accessInbox) {
             return [];
         }
-        if (inspectedAccessRequestURI.value) {
-            return [inspectedAccessRequestURI.value.split('#')[0]]
+        if (inspectedAccessRequestURI) {
+            return [inspectedAccessRequestURI.split('#')[0]]
         }
         return await getContainerItems(accessInbox, session)
     }
@@ -616,7 +613,7 @@ _:rename a solid:InsertDeletePatch;
     }
 
     async function refreshAccessReceiptInformationResources() {
-        const newListOfAccessReceipts: string[] = inspectedAccessRequestURI.value ? await getAccessReceiptInformationResourcesForAccessRequest(inspectedAccessRequestURI.value) : await getAccessReceiptInformationResources();
+        const newListOfAccessReceipts: string[] = inspectedAccessRequestURI ? await getAccessReceiptInformationResourcesForAccessRequest(inspectedAccessRequestURI) : await getAccessReceiptInformationResources();
         accessReceiptInformationResources.value = [...newListOfAccessReceipts];
     }
 
@@ -657,5 +654,9 @@ _:rename a solid:InsertDeletePatch;
 
         accessRequestInformationResources,
         accessReceiptInformationResources,
+
+        // Deprecated
+        accessAuthzContainer,
+        accessAuthzArchiveContainer,
     }
 }
