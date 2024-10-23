@@ -112,14 +112,14 @@
 
 <script setup lang="ts">
 import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
-import {useAuthorizations} from "@shared/composables";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
-import {computed, reactive, ref} from "vue";
+import {computed, inject, reactive, ref} from "vue";
 
 const props = defineProps(["informationResourceURI", "redirect", "parentURI"]);
 
-const { getAccessRequest } = useAuthorizations(props.parentURI);
+// const { getAccessRequest } = useAuthorizations(props.parentURI);
+const getAccessRequest = inject('useAuthorizations:getAccessRequest');
 
 const {
   grantWithAccessReceipt,

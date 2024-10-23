@@ -61,13 +61,14 @@
 
 
 <script setup lang="ts">
-import {useAuthorizations} from "@shared/composables";
+// import {useAuthorizations} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {ref, watch} from "vue";
+import {inject, ref, watch} from "vue";
 
 const props = defineProps(["parentURI", "resourceURI", "redirect", "forSocialAgents", "groupAuthorizationTrigger"]);
 
-const { getAccessNeed } = useAuthorizations(props.parentURI);
+// const { getAccessNeed } = useAuthorizations(props.parentURI);
+const getAccessNeed = inject('useAuthorizations:getAccessNeed');
 
 const {
   grantDataAuthorization,

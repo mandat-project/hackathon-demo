@@ -58,7 +58,7 @@ import AccessReceipt from "@/components/receipts/AccessReceipt";
 import AccessRequest from "@/components/requests/AccessRequest";
 import {useAuthorizations} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {computed, ref, watch} from "vue";
+import {computed, provide, ref, watch} from "vue";
 
 const toast = useToast();
 
@@ -75,7 +75,6 @@ const {
   accessAuthzContainer,
   accessAuthzArchiveContainer,
 } = useAuthorizations(props.inspectedAccessRequestURI);
-
 
 // only display not yet handled
 const displayAccessRequests = computed(() =>

@@ -22,7 +22,7 @@ import {
     XSD
 } from "@shared/solid";
 import {Store} from "n3";
-import {computed, reactive, ref, watch} from "vue";
+import {computed, provide, reactive, ref, watch} from "vue";
 
 // keep track of access requests
 const accessRequestInformationResources = ref<string[]>([]);
@@ -54,6 +54,22 @@ async function _wait(millis = 500) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 
+/**
+ * Composable to work with Access Requests. You can grant and decline incoming access requests.
+ *
+ * Also note, that for sub-resources like data-authorizations, you can use injections like:
+ *
+ * ```typescript
+ * const getAccessRequest = inject('useAuthorizations:getAccessRequest');
+ * const getAccessNeedGroup = inject('useAuthorizations:getAccessNeedGroup');
+ * const getAccessNeed = inject('useAuthorizations:getAccessNeed');
+ * ```
+ * @see getAccessRequest
+ * @see getAccessNeedGroup
+ * @see getAccessNeed
+ *
+ * @param inspectedAccessRequestURI
+ */
 export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     const { session } = useSolidSession();
     const { memberOf } = useSolidProfile()
@@ -69,6 +85,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         refreshAccessReceiptInformationResources();
     };
 
+    // Watch storage and create containers if they don't exist already
     watch(storage, async () => {
         if (!storage.value) {
             return
@@ -120,37 +137,19 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     }, {immediate: true});
 
     /**
-     * Retrieve access requests from an access inbox
-     * @param accessInbox
+     * Sub-Composable to retrieve Access Request by an URI
+     *
+     * You can inject this function after "useAuthorizations" was called like:
+     *
+     * ```typescript
+     * const getAccessRequest = inject('useAuthorizations:getAccessRequest');
+     * ```
+     *
+     * @see getAccessNeedGroup
+     *
+     * @param uri
+     * @param redirect
      */
-    async function _getAccessRequestInformationResources(accessInbox: string) {
-        if (!accessInbox) {
-            return [];
-        }
-        if (inspectedAccessRequestURI) {
-            return [_getRawURI(inspectedAccessRequestURI)]
-        }
-        return await getContainerItems(accessInbox, session)
-    }
-
-    /**
-     * get the access receipts
-     */
-    async function _getAccessReceiptInformationResources() {
-        return await getContainerItems(accessReceiptContainer.value, session)
-    }
-
-    /**
-     * get the access receipt(s) of accessRequestURI
-     */
-    async function _getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
-        const accessReceiptStore = new Store();
-        const accessReceiptContainerItems = await _getAccessReceiptInformationResources();
-        await _fillItemStoresIntoStore(accessReceiptContainerItems, accessReceiptStore)
-
-        return accessReceiptStore.getSubjects(AUTH("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
-    }
-
     async function getAccessRequest(uri: string, redirect?: string) {
         const store: Store = await _fetchStoreOf(uri);
         const grantTrigger = ref(false);
@@ -307,6 +306,20 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         }
     }
 
+    /**
+     * Sub-Composable to retrieve Access Need Group (Access Authorization) by an URI
+     *
+     * You can inject this function after "useAuthorizations" was called like:
+     *
+     * ```typescript
+     * const getAccessNeedGroup = inject('useAuthorizations:getAccessNeedGroup');
+     * ```
+     *
+     * @see getAccessNeed
+     *
+     * @param uri
+     * @param forSocialAgents
+     */
     async function getAccessNeedGroup(uri: string, forSocialAgents: string[]) {
         const store = await _fetchStoreOf(uri);
         const grantTrigger = ref(false);
@@ -444,6 +457,18 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         }
     }
 
+    /**
+     * Sub-Composable to retrieve Access Need (Data Authorization) by an URI
+     *
+     * You can inject this function after "useAuthorizations" was called like:
+     *
+     * ```typescript
+     * const getAccessNeed = inject('useAuthorizations:getAccessNeed');
+     * ```
+     *
+     * @param uri
+     * @param forSocialAgents
+     */
     async function getAccessNeed(uri: string, forSocialAgents: string[]) {
         const store = await _fetchStoreOf(uri);
         // define a 'local name', i.e. the URI fragment, for the data authorization URI
@@ -719,6 +744,38 @@ _:rename a solid:InsertDeletePatch;
     }
 
     /**
+     * Retrieve access requests from an access inbox
+     * @param accessInbox
+     */
+    async function _getAccessRequestInformationResources(accessInbox: string) {
+        if (!accessInbox) {
+            return [];
+        }
+        if (inspectedAccessRequestURI) {
+            return [_getRawURI(inspectedAccessRequestURI)]
+        }
+        return await getContainerItems(accessInbox, session)
+    }
+
+    /**
+     * get the access receipts
+     */
+    async function _getAccessReceiptInformationResources() {
+        return await getContainerItems(accessReceiptContainer.value, session)
+    }
+
+    /**
+     * get the access receipt(s) of accessRequestURI
+     */
+    async function _getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
+        const accessReceiptStore = new Store();
+        const accessReceiptContainerItems = await _getAccessReceiptInformationResources();
+        await _fillItemStoresIntoStore(accessReceiptContainerItems, accessReceiptStore)
+
+        return accessReceiptStore.getSubjects(AUTH("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
+    }
+
+    /**
      * @param uri
      */
     function _getCreatedAccessReceipts(uri: string) {
@@ -742,12 +799,16 @@ _:rename a solid:InsertDeletePatch;
 
     function _getRawURI(uri: string): string { return uri.split('#')[0]; }
 
+    // Providers that can be used to retrieve sub-resources from the composable
+    // Using provide/inject also prevents duplicate requests and the need to
+    // pass the parent URI everytime
+
+    provide('useAuthorizations:getAccessRequest', getAccessRequest);
+    provide('useAuthorizations:getAccessNeedGroup', getAccessNeedGroup);
+    provide('useAuthorizations:getAccessNeed', getAccessNeed);
+
     return {
         reload,
-
-        getAccessRequest,
-        getAccessNeedGroup,
-        getAccessNeed,
 
         accessRequestInformationResources,
         accessReceiptInformationResources,
