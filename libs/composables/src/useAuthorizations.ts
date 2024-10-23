@@ -198,7 +198,6 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
          */
         async function grantWithAccessReceipt(overrideAccessAuthorizationsParam?: string[]) {
             grantTrigger.value = true;
-            await _wait();
 
             if (!overrideAccessAuthorizationsParam) {
                 // wait until all events fired

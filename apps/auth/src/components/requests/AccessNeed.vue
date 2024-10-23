@@ -65,13 +65,14 @@
 import {useToast} from "primevue/usetoast";
 import {inject, ref, watch} from "vue";
 
-const props = defineProps(["parentURI", "resourceURI", "redirect", "forSocialAgents", "groupAuthorizationTrigger"]);
+const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "groupAuthorizationTrigger"]);
 
 // const { getAccessNeed } = useAuthorizations(props.parentURI);
 const getAccessNeed = inject('useAuthorizations:getAccessNeed');
 
 const {
   grantDataAuthorization,
+
   accessModes,
   registeredShapeTrees,
   dataInstances,

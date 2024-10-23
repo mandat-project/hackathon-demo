@@ -23,8 +23,7 @@
     :key="accessNeed"
   >
     <Suspense>
-      <AccessNeed :parentURI="parentURI"
-                  :resourceURI="accessNeed"
+      <AccessNeed :resourceURI="accessNeed"
                   :forSocialAgents="forSocialAgents"
                   :groupAuthorizationTrigger="grantTrigger"
                   @createdDataAuthorization="addToDataAuthorizations"
@@ -48,7 +47,7 @@
 import AccessNeed from "@/components/requests/AccessNeed";
 import {inject, reactive, ref, watch} from "vue";
 
-const props = defineProps(["parentURI", "resourceURI", "redirect", "forSocialAgents", "requestAuthorizationTrigger"]);
+const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
 
 // const { getAccessNeedGroup } = useAuthorizations(props.parentURI);

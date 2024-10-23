@@ -61,8 +61,7 @@
             <AccordionTab header="Access Need Groups">
               <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup">
                 <Suspense>
-                  <AccessNeedGroup :parentURI="parentURI"
-                                   :resourceURI="accessNeedGroup"
+                  <AccessNeedGroup :resourceURI="accessNeedGroup"
                                    :redirect="redirect"
                                    :forSocialAgents="forSocialAgents"
                                    :requestAuthorizationTrigger="grantTrigger"
@@ -117,7 +116,7 @@ import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
 import {computed, inject, reactive, ref} from "vue";
 
-const props = defineProps(["informationResourceURI", "redirect", "parentURI"]);
+const props = defineProps(["informationResourceURI", "redirect"]);
 
 // const { getAccessRequest } = useAuthorizations(props.parentURI);
 const getAccessRequest = inject('useAuthorizations:getAccessRequest');
