@@ -194,7 +194,7 @@ const currencies = [
   {label: "USD", value: "USD"},
 ];
 
-const listedAdvertisements = ref([]) as Ref<String[]>
+const listedAdvertisements = ref([]) as Ref<string[]>
 const chosenAdvertisement = ref("")
 let mapOfAdShapeTrees = new Map(); 
 
@@ -364,10 +364,9 @@ async function getAdsFromMarket() {
   isLoadingAds.value = true;
   try {
     
-    const marketURI : string = "https://market.solid.aifb.kit.edu/profile/card"
+    const marketURI = "https://market.solid.aifb.kit.edu/profile/card"
     
-    let marketStore : Store = new Store();
-    marketStore = await fetchStoreOf(marketURI); //get profile document
+    let marketStore = await fetchStoreOf(marketURI); //get profile document
 
     let registrySetMarket = marketStore.getObjects(null,INTEROP("hasRegistrySet"),null)[0].value;
     marketStore = await fetchStoreOf(registrySetMarket);
@@ -591,7 +590,7 @@ async function getOfferStore(demandOffers: Array<Quad["object"]>) {
       .then((parsedN3) => parsedN3.store);
 }
 
-const createOrder = async (offerId: String) => {
+const createOrder = async (offerId: string) => {
   const payload = `\
       @prefix schema: <${SCHEMA()}> .
 

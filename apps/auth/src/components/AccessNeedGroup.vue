@@ -1,27 +1,37 @@
 <template>
   <div>
     <span class="text-black-alpha-60">Short description of requested access: </span>
-    <div v-for="label in prefLabels" :key="label">
+    <div
+      v-for="label in prefLabels"
+      :key="label"
+    >
       {{ label }}
     </div>
   </div>
   <div class="mt-3">
     <span class="text-black-alpha-60">Explanation: </span>
-    <div v-for="definition in definitions" :key="definition">
+    <div
+      v-for="definition in definitions"
+      :key="definition"
+    >
       {{ definition }}
     </div>
   </div>
 
-  <div v-for="accessNeed in accessNeeds" :key="accessNeed">
+  <div
+    v-for="accessNeed in accessNeeds"
+    :key="accessNeed"
+  >
     <Suspense>
-      <AccessNeed :resourceURI="accessNeed"
+      <AccessNeed :parentURI="parentURI"
+                  :resourceURI="accessNeed"
                   :forSocialAgents="forSocialAgents"
-                  :groupAuthorizationTrigger="dataAuthorizationTrigger"
+                  :groupAuthorizationTrigger="grantTrigger"
                   @createdDataAuthorization="addToDataAuthorizations"
                   @noDataRegistrationFound="setNoDataRegistrationFound"/>
       <template #fallback>
         <p>
-            Loading Access Need {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
+          Loading Access Need {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
         </p>
       </template>
     </Suspense>
@@ -34,21 +44,20 @@
   </Button> -->
 </template>
 
-<style scoped>
-</style>
-
 <script setup lang="ts">
 import AccessNeed from "@/components/AccessNeed.vue";
 import {useAuthorizations} from "@shared/composables";
 import {reactive, ref, watch} from "vue";
 
-const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "requestAuthorizationTrigger"]);
+const props = defineProps(["parentURI", "resourceURI", "redirect", "forSocialAgents", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
 
-const { getAccessNeedGroup } = useAuthorizations();
+const { getAccessNeedGroup } = useAuthorizations(props.parentURI);
 
 const {
   grantAccessAuthorization,
+
+  grantTrigger,
 
   accessNeeds,
   prefLabels,
@@ -74,8 +83,6 @@ watch(() => props.requestAuthorizationTrigger, () => {
 
 // keep track of which children access needs already created a data authorization
 const dataAuthorizations = reactive(new Map());
-// be able to trigger children to authoirze access needs (create data authorizations and set acls)
-const dataAuthorizationTrigger = ref(false)
 
 // when a child access need emits their authoirzed event, add the data authorization to the map to keep record
 function addToDataAuthorizations(accessNeed: string, dataAuthorization: string) {
@@ -87,3 +94,6 @@ function setNoDataRegistrationFound(shapeTreeUri: string) {
 }
 
 </script>
+
+<style scoped>
+</style>

@@ -1,50 +1,95 @@
 <template>
-    <div class="grid">
-        <div class="col-4">
-            <div class="text-black-alpha-60">Access Needs: </div>
-            <a v-for="accessNeed in accessNeeds" :key="accessNeed" :href="accessNeed">
-                {{ accessNeed.split("/").pop() }}
-            </a>
-        </div>
-        <div class="col-4">
-            <div class="text-black-alpha-60">Grantees: </div>
-            <a v-for="grantee in grantees" :key="grantee" :href="grantee">
-                {{ granteeName }}
-            </a>
-        </div>
-        <div class="col-4">
-            <div class="text-black-alpha-60">Authorized Data: </div>
-            <a v-for="shapeTree in registeredShapeTrees" :key="shapeTree" :href="shapeTree">
-                {{ shapeTree.split("#").pop() }}
-            </a>
-        </div>
-        <div class="col-4">
-            <div class="text-black-alpha-60">Scope: </div>
-            <a v-for="scope in scopes" :key="scope" :href="scope">
-                {{ scope.split("#")[1] }}
-            </a>
-        </div>
-        <div class="col-4">
-            <div class="text-black-alpha-60">Data Registrations: </div>
-            <a v-for="dataRegistration in dataRegistrations" :key="dataRegistration" :href="dataRegistration">
-                {{ dataRegistration.split("/").reverse()[1] }}
-            </a>
-        </div>
-        <div v-if="dataInstances.length > 0" class="col-4">
-            <div class="text-black-alpha-60">Authorized Instances: </div>
-            <a v-for="dataInstance in dataInstances" :key="dataInstance" :href="dataInstance">
-                {{ dataInstance.split("/").pop() }}
-            </a>
-        </div>
-        <div class="col-4">
-            <div class="text-black-alpha-60">Access Mode: </div>
-            <a v-for="accessMode in accessModes" :key="accessMode" :href="accessMode">
-                {{ accessMode.split("#")[1] }}
-            </a>
-        </div>
-        <div class="col-12">
-            <!-- TODO Freeze -->
-            <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
+  <div class="grid">
+    <div class="col-4">
+      <div class="text-black-alpha-60">
+        Access Needs:
+      </div>
+      <a
+        v-for="accessNeed in accessNeeds"
+        :key="accessNeed"
+        :href="accessNeed"
+      >
+        {{ accessNeed.split("/").pop() }}
+      </a>
+    </div>
+    <div class="col-4">
+      <div class="text-black-alpha-60">
+        Grantees:
+      </div>
+      <a
+        v-for="grantee in grantees"
+        :key="grantee"
+        :href="grantee"
+      >
+        {{ granteeName }}
+      </a>
+    </div>
+    <div class="col-4">
+      <div class="text-black-alpha-60">
+        Authorized Data:
+      </div>
+      <a
+        v-for="shapeTree in registeredShapeTrees"
+        :key="shapeTree"
+        :href="shapeTree"
+      >
+        {{ shapeTree.split("#").pop() }}
+      </a>
+    </div>
+    <div class="col-4">
+      <div class="text-black-alpha-60">
+        Scope:
+      </div>
+      <a
+        v-for="scope in scopes"
+        :key="scope"
+        :href="scope"
+      >
+        {{ scope.split("#")[1] }}
+      </a>
+    </div>
+    <div class="col-4">
+      <div class="text-black-alpha-60">
+        Data Registrations:
+      </div>
+      <a
+        v-for="dataRegistration in dataRegistrations"
+        :key="dataRegistration"
+        :href="dataRegistration"
+      >
+        {{ dataRegistration.split("/").reverse()[1] }}
+      </a>
+    </div>
+    <div
+      v-if="dataInstances.length > 0"
+      class="col-4"
+    >
+      <div class="text-black-alpha-60">
+        Authorized Instances:
+      </div>
+      <a
+        v-for="dataInstance in dataInstances"
+        :key="dataInstance"
+        :href="dataInstance"
+      >
+        {{ dataInstance.split("/").pop() }}
+      </a>
+    </div>
+    <div class="col-4">
+      <div class="text-black-alpha-60">
+        Access Mode:
+      </div>
+      <a
+        v-for="accessMode in accessModes"
+        :key="accessMode"
+        :href="accessMode"
+      >
+        {{ accessMode.split("#")[1] }}
+      </a>
+    </div>
+    <div class="col-12">
+      <!-- TODO Freeze -->
+      <!-- <Button @click="freezeAuthorizations()" type="button" style="margin: 20px"
                 class="p-button-warning">
                 Freeze
             </Button> -->
@@ -55,9 +100,6 @@
         </div>
     </div>
 </template>
-
-<style scoped>
-</style>
 
 <script setup lang="ts">
 import {useSolidProfile, useSolidSession} from "@shared/composables";
@@ -300,3 +342,6 @@ async function updateAccessControlListToDelete(
 
 }
 </script>
+
+<style scoped>
+</style>

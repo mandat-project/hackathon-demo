@@ -1,29 +1,58 @@
 <template>
   <Card>
-    <template #title>Access Request {{ props.informationResourceURI }}</template>
+    <template #title>
+      Access Request {{ props.informationResourceURI }}
+    </template>
     <template #content>
       <div class="grid">
         <div class="col-12 md:col">
-          <div class="text-black-alpha-60">Purpose: </div>
-          <a v-for="label in purposes" :key="label" :href="label">
+          <div class="text-black-alpha-60">
+            Purpose:
+          </div>
+          <a
+            v-for="label in purposes"
+            :key="label"
+            :href="label"
+          >
             {{ label.split('#').pop() }}
           </a>
         </div>
         <div class="col-12 md:col">
-          <div class="text-black-alpha-60">Data requester: </div>
-          <a v-for="sender in fromSocialAgents" :key="sender" :href="sender">
+          <div class="text-black-alpha-60">
+            Data requester:
+          </div>
+          <a
+            v-for="sender in fromSocialAgents"
+            :key="sender"
+            :href="sender"
+          >
             {{ senderName }}
           </a>
         </div>
         <div class="col-12 md:col">
-          <div class="text-black-alpha-60">Access will be granted to: </div>
-          <a v-for="grantee in forSocialAgents" :key="grantee" :href="grantee">
+          <div class="text-black-alpha-60">
+            Access will be granted to:
+          </div>
+          <a
+            v-for="grantee in forSocialAgents"
+            :key="grantee"
+            :href="grantee"
+          >
             {{ granteeName }}
           </a>
         </div>
-        <div v-if="seeAlso.length > 0" class="col-12 md:col">
-          <div class="text-black-alpha-60">For additional information see also: </div>
-          <a v-for="reference in seeAlso" :key="reference" :href="reference">
+        <div
+          v-if="seeAlso.length > 0"
+          class="col-12 md:col"
+        >
+          <div class="text-black-alpha-60">
+            For additional information see also:
+          </div>
+          <a
+            v-for="reference in seeAlso"
+            :key="reference"
+            :href="reference"
+          >
             {{ reference.split("/").pop() }}
           </a>
         </div>
@@ -32,10 +61,11 @@
             <AccordionTab header="Access Need Groups">
               <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup">
                 <Suspense>
-                  <AccessNeedGroup :resourceURI="accessNeedGroup"
+                  <AccessNeedGroup :parentURI="parentURI"
+                                   :resourceURI="accessNeedGroup"
                                    :redirect="redirect"
                                    :forSocialAgents="forSocialAgents"
-                                   :requestAuthorizationTrigger="accessAuthorizationTrigger"
+                                   :requestAuthorizationTrigger="grantTrigger"
 
                                    @createdAccessAuthorization="addToAccessAuthorizations"
                                    @noDataRegistrationFound="setNoDataRegistrationFound"/>
@@ -58,12 +88,20 @@
     </template>
     <template #footer>
       <div class="flex justify-content-end border-top-1 gap-2 pt-3 -mt-3 border-blue-100">
-        <Button severity="primary" @click="confirmGrantWithAccessReceipt" type="button"
-                :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound">
+        <Button
+          severity="primary"
+          type="button"
+          :disabled="associatedAccessReceipt !== '' || grantTrigger || noDataRegistrationFound"
+          @click="confirmGrantWithAccessReceipt"
+        >
           Authorize Request
         </Button>
-        <Button @click="confirmDeclineWithAccessReceipt" type="button" severity="secondary"
-                :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound">
+        <Button
+          type="button"
+          severity="secondary"
+          :disabled="associatedAccessReceipt !== '' || grantTrigger || isPartiallyAuthorized || noDataRegistrationFound"
+          @click="confirmDeclineWithAccessReceipt"
+        >
           Decline Request
         </Button>
       </div>
@@ -72,9 +110,6 @@
   <ConfirmDialog />
 </template>
 
-<style scoped>
-</style>
-
 <script setup lang="ts">
 import AccessNeedGroup from "@/components/AccessNeedGroup.vue";
 import {useAuthorizations} from "@shared/composables";
@@ -82,13 +117,15 @@ import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref} from "vue";
 
-const props = defineProps(["informationResourceURI", "redirect"]);
+const props = defineProps(["informationResourceURI", "redirect", "parentURI"]);
 
-const { getAccessRequest } = useAuthorizations();
+const { getAccessRequest } = useAuthorizations(props.parentURI);
 
 const {
   grantWithAccessReceipt,
   declineWithAccessReceipt,
+
+  grantTrigger,
 
   purposes,
   fromSocialAgents,
@@ -104,7 +141,7 @@ const confirm = useConfirm();
 
 // set if no matching data registrations are found for any of the child elements registeredShapeTrees
 const noDataRegistrationFound = ref(false);
-const shapeTreesOfMissingDataRegs = ref([] as String[]);
+const shapeTreesOfMissingDataRegs = ref([] as string[]);
 
 //
 // authorize access request
@@ -115,8 +152,7 @@ const associatedAccessReceipt = ref("")
 
 // keep track of which children access needs already created a access authorization
 const accessAuthorizations = reactive(new Map());
-// be able to trigger children to authoirze access need groups (create access authorizations and trigger their children)
-const accessAuthorizationTrigger = ref(false)
+
 // when a child access need emits their authoirzed event, add the access authorization to the map to keep record
 function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization: string) {
   accessAuthorizations.set(accessNeedGroup, accessAuthorization)
@@ -171,3 +207,6 @@ function confirmDeclineWithAccessReceipt(): void {
 }
 
 </script>
+
+<style scoped>
+</style>

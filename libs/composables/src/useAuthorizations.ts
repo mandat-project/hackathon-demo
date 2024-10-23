@@ -22,37 +22,47 @@ import {
     XSD
 } from "@shared/solid";
 import {Store} from "n3";
-import {computed, ref, watch} from "vue";
+import {computed, reactive, ref, watch} from "vue";
+
+// keep track of access requests
+const accessRequestInformationResources = ref<string[]>([]);
+
+// keep track of access receipts
+const accessReceiptInformationResources = ref<string[]>([]);
+
+// create data authorization container if needed
+const dataAuthzContainerName = "data-authorizations"
+
+// create access authorization container if needed
+const accessAuthzContainerName = "authorization-registry"
+
+// create access authorization container if needed
+const accessAuthzArchiveContainerName = "authorization-archive"
+
+// create access receipt container if needed
+const accessReceiptContainerName = "authorization-receipts"
+const _accessReceiptLocalName = "accessReceipt";
+
+// Access Requests Maps
+const createdAccessReceipts = reactive(new Map<string, string[]>());
+// Access Groups Maps
+const createdAccessAuthorization = reactive(new Map<string, string[]>());
+// Data Authorization Maps
+const createdDataAuthorization = reactive(new Map<string, string[]>());
+
+async function _wait(millis = 500) {
+    return new Promise(resolve => setTimeout(resolve, millis));
+}
 
 export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     const { session } = useSolidSession();
     const { memberOf } = useSolidProfile()
+    const { accessInbox, storage } = useSolidProfile();
 
-    const {accessInbox, storage} = useSolidProfile();
-
-    // keep track of access requests
-    const accessRequestInformationResources = ref<string[]>([]);
-
-    // keep track of access receipts
-    const accessReceiptInformationResources = ref<string[]>([]);
-
-    // create data authorization container if needed
-    const dataAuthzContainerName = "data-authorizations"
     const dataAuthzContainer = computed(() => storage.value + dataAuthzContainerName + "/");
-
-    // create access authorization container if needed
-    const accessAuthzContainerName = "authorization-registry"
     const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
-
-    // create access authorization container if needed
-    const accessAuthzArchiveContainerName = "authorization-archive"
     const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzArchiveContainerName + "/");
-
-    // create access receipt container if needed
-    const accessReceiptContainerName = "authorization-receipts"
     const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
-
-    const _accessReceiptLocalName = "accessReceipt";
 
     const reload = () => {
         refreshAccessRequestInformationResources()
@@ -66,7 +76,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         getResource(dataAuthzContainer.value, session)
             .catch(() => createContainer(storage.value, dataAuthzContainerName, session))
             .catch((err) => {
-                console.info({
+                console.error({
                     severity: "error",
                     summary: "Failed to create Data Authorization Container!",
                     detail: err,
@@ -77,7 +87,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         getResource(accessAuthzContainer.value, session)
             .catch(() => createContainer(storage.value, accessAuthzContainerName, session))
             .catch((err) => {
-                console.info({
+                console.error({
                     severity: "error",
                     summary: "Failed to create Access Authorization Container!",
                     detail: err,
@@ -88,7 +98,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         getResource(accessAuthzArchiveContainer.value, session)
             .catch(() => createContainer(storage.value, accessAuthzArchiveContainerName, session))
             .catch((err) => {
-                console.info({
+                console.error({
                     severity: "error", summary: "Failed to create Access Receipt Container!", detail: err, life: 5000,
                 });
                 throw new Error(err);
@@ -96,7 +106,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         getResource(accessReceiptContainer.value, session)
             .catch(() => createContainer(storage.value, accessReceiptContainerName, session))
             .catch((err) => {
-                console.info({
+                console.error({
                     severity: "error", summary: "Failed to create Access Receipt Container!", detail: err, life: 5000,
                 });
                 throw new Error(err);
@@ -113,12 +123,12 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
      * Retrieve access requests from an access inbox
      * @param accessInbox
      */
-    async function getAccessRequestInformationResources(accessInbox: string) {
+    async function _getAccessRequestInformationResources(accessInbox: string) {
         if (!accessInbox) {
             return [];
         }
         if (inspectedAccessRequestURI) {
-            return [inspectedAccessRequestURI.split('#')[0]]
+            return [_getRawURI(inspectedAccessRequestURI)]
         }
         return await getContainerItems(accessInbox, session)
     }
@@ -126,16 +136,16 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     /**
      * get the access receipts
      */
-    async function getAccessReceiptInformationResources() {
+    async function _getAccessReceiptInformationResources() {
         return await getContainerItems(accessReceiptContainer.value, session)
     }
 
     /**
      * get the access receipt(s) of accessRequestURI
      */
-    async function getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
+    async function _getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
         const accessReceiptStore = new Store();
-        const accessReceiptContainerItems = await getAccessReceiptInformationResources();
+        const accessReceiptContainerItems = await _getAccessReceiptInformationResources();
         await _fillItemStoresIntoStore(accessReceiptContainerItems, accessReceiptStore)
 
         return accessReceiptStore.getSubjects(AUTH("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
@@ -143,6 +153,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
 
     async function getAccessRequest(uri: string, redirect?: string) {
         const store: Store = await _fetchStoreOf(uri);
+        const grantTrigger = ref(false);
 
         //
 
@@ -169,13 +180,37 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         //
 
         /**
+         * @param associatedAccessReceipt
+         */
+        function _updateCreatedAccessReceipts(associatedAccessReceipt: string) {
+            const list = _getCreatedAccessReceipts(uri);
+            createdAccessReceipts.set(_getRawURI(uri), [...list, associatedAccessReceipt]);
+        }
+
+        /**
          * Trigger children access need groups to create access authorization and trigger their children,
          * wait until all children have done so,
          * then create access receipt and emit finish event to parent,
          * if redirect present,
          * redirect
+         *
+         * @see grantAccessAuthorization
+         * @see grantDataAuthorization
          */
-        async function grantWithAccessReceipt(accessAuthorizations: string[]) {
+        async function grantWithAccessReceipt(overrideAccessAuthorizationsParam?: string[]) {
+            grantTrigger.value = true;
+            await _wait();
+
+            if (!overrideAccessAuthorizationsParam) {
+                // wait until all events fired
+                while (_getCreatedAccessAuthorization(uri).length !== accessNeedGroups.length) {
+                    console.debug("Waiting for access receipt ...", _getRawURI(uri), _getCreatedAccessAuthorization(uri).length, accessNeedGroups.length);
+                    await _wait();
+                }
+            }
+
+            const accessAuthorizations = overrideAccessAuthorizationsParam ?? _getCreatedAccessAuthorization(uri);
+
             // create access receipt
             const accessReceiptLocation = await _createAccessReceipt(
                 [...accessAuthorizations]
@@ -183,8 +218,9 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
 
             // emit to overview
             const associatedAccessReceipt = `${accessReceiptLocation}#${_accessReceiptLocalName}`
+            _updateCreatedAccessReceipts(associatedAccessReceipt);
 
-            refreshAccessReceiptInformationResources();
+            reload();
 
             // redirect if wanted
             if (redirect) {
@@ -196,7 +232,6 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                 );
             }
 
-            // TODO how to pass to its groups and their data-authorizations
             return associatedAccessReceipt;
         }
 
@@ -247,7 +282,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                     }
                 )
                 .catch((err) => {
-                    console.info({
+                    console.error({
                         severity: "error",
                         summary: "Failed to create Access Receipt!",
                         detail: err,
@@ -260,6 +295,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         return {
             grantWithAccessReceipt,
             declineWithAccessReceipt,
+            grantTrigger,
 
             purposes,
             fromSocialAgents,
@@ -273,6 +309,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
 
     async function getAccessNeedGroup(uri: string, forSocialAgents: string[]) {
         const store = await _fetchStoreOf(uri);
+        const grantTrigger = ref(false);
 
         const accessNeeds = store.getObjects(uri, INTEROP("hasAccessNeed"), null).map(t => t.value)
 
@@ -311,21 +348,37 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         // define a 'local name', i.e. the URI fragment, for the access authorization URI
         const accessAuthzLocalName = "accessAuthorization";
 
+        function _updateCreatedAccessAuthorization(associatedAccessAuthorization: string): void {
+            const list = _getCreatedAccessAuthorization(uri);
+            createdAccessAuthorization.set(_getRawURI(uri), [...list, associatedAccessAuthorization])
+        }
+
         /**
          * Trigger children access needs to create data authorization and set acls,
          * wait until all children have done so,
          * then create access authorization and emit finish event to parent
+         *
+         * @see grantDataAuthorization
          */
         async function grantAccessAuthorization(): Promise<string> {
+            grantTrigger.value = true;
+
+            // wait until all events fired
+            while (_getCreatedDataAuthorization(uri).length === accessNeeds.length) {
+                console.debug("Waiting for data authorizations ...", _getRawURI(uri), _getCreatedDataAuthorization(uri).length, accessNeeds.length);
+                await _wait();
+            }
+
             // trigger access authorization
             const accessAuthzLocation = await _createAccessAuthorization(
                 forSocialAgents,
-                // TODO where dataAuthorizations?
-                // [...dataAuthorizations.values()]
-                [],
-            )
-            // TODO: emit to parent authorization
-            return `${accessAuthzLocation}#${accessAuthzLocalName}`;
+                [..._getCreatedDataAuthorization(uri)],
+            );
+
+            const associatedAccessAuthorization = `${accessAuthzLocation}#${accessAuthzLocalName}`;
+            _updateCreatedAccessAuthorization(associatedAccessAuthorization);
+
+            return associatedAccessAuthorization;
         }
 
         /**
@@ -368,7 +421,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                     }
                 )
                 .catch((err) => {
-                    console.info({
+                    console.error({
                         severity: "error",
                         summary: "Failed to create Access Authorization!",
                         detail: err,
@@ -380,6 +433,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
 
         return {
             grantAccessAuthorization,
+            grantTrigger,
 
             accessNeeds,
             prefLabels,
@@ -421,7 +475,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
          * Isnt that the preferred label of the access need group? Why the level of indirection?
          */
 
-        await _checkIfMatchingDataRegistrationExists();
+        containers.value = await _checkIfMatchingDataRegistrationExists();
 
         async function _checkIfMatchingDataRegistrationExists() {
             const dataRegistrations = await getDataRegistrationContainers(
@@ -429,7 +483,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                 registeredShapeTrees[0],
                 session
             ).catch((err) => {
-                console.info({
+                console.error({
                     severity: "error",
                     summary: "Error on getDataRegistrationContainers!",
                     detail: err,
@@ -438,9 +492,19 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                 throw new Error(err);
             });
             if (dataRegistrations.length <= 0) {
+                // TODO emit no dataregistration?
                 // emit("noDataRegistrationFound", registeredShapeTrees[0])
             }
-            containers.value = dataRegistrations
+            return dataRegistrations;
+        }
+
+        /**
+         * remember created data authorizations
+         * @param associatedDataAuthorization
+         */
+        function _updateCreatedDataAuthorization(associatedDataAuthorization: string): void {
+            const list = _getCreatedDataAuthorization(uri);
+            createdDataAuthorization.set(_getRawURI(uri), [...list, associatedDataAuthorization]);
         }
 
         /**
@@ -454,7 +518,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                     shapeTree,
                     session
                 ).catch((err) => {
-                    console.info({
+                    console.error({
                         severity: "error",
                         summary: "Error on getDataRegistrationContainers!",
                         detail: err,
@@ -462,6 +526,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                     });
                     throw new Error(err);
                 });
+
                 const dataInstancesForNeed: string[] = [...dataInstances];
                 const dataAuthzLocation = await _createDataAuthorization(forSocialAgents, registeredShapeTrees, accessModes, dataRegistrations, dataInstancesForNeed);
                 // if selected data instances given, then only give access to those, else, give to registration
@@ -470,11 +535,11 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                 for (const resource of accessToResources) {
                     await _updateAccessControlList(resource, forSocialAgents, accessModes);
                 }
-                // associatedDataAuthorization.value = (await dataAuthzLocation) + "#" + dataAuthzLocalName
-                // emit("createdDataAuthorization", uri, associatedDataAuthorization.value)
 
-                // TODO: emit to parent group
-                return `${dataAuthzLocation}#${dataAuthzLocalName}`;
+                const associatedDataAuthorization = `${dataAuthzLocation}#${dataAuthzLocalName}`;
+                _updateCreatedDataAuthorization(associatedDataAuthorization);
+
+                return associatedDataAuthorization;
             }
 
             return undefined;
@@ -542,7 +607,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
                     }
                 )
                 .catch((err) => {
-                    console.info({
+                    console.error({
                         severity: "error",
                         summary: "Failed to create Data Authorization!",
                         detail: err,
@@ -591,7 +656,7 @@ _:rename a solid:InsertDeletePatch;
             const aclURI = await getAclResourceUri(accessTo, session);
             await patchResource(aclURI, patchBody, session).catch(
                 (err) => {
-                    console.info({
+                    console.error({
                         severity: "error",
                         summary: "Error on patch ACL!",
                         detail: err,
@@ -612,12 +677,12 @@ _:rename a solid:InsertDeletePatch;
     }
 
     async function refreshAccessRequestInformationResources() {
-        const newListOfAccessRequests: string[] = await getAccessRequestInformationResources(accessInbox.value);
+        const newListOfAccessRequests: string[] = await _getAccessRequestInformationResources(accessInbox.value);
         accessRequestInformationResources.value = [...newListOfAccessRequests]
     }
 
     async function refreshAccessReceiptInformationResources() {
-        const newListOfAccessReceipts: string[] = inspectedAccessRequestURI ? await getAccessReceiptInformationResourcesForAccessRequest(inspectedAccessRequestURI) : await getAccessReceiptInformationResources();
+        const newListOfAccessReceipts: string[] = inspectedAccessRequestURI ? await _getAccessReceiptInformationResourcesForAccessRequest(inspectedAccessRequestURI) : await _getAccessReceiptInformationResources();
         accessReceiptInformationResources.value = [...newListOfAccessReceipts];
     }
 
@@ -637,10 +702,11 @@ _:rename a solid:InsertDeletePatch;
     async function _fetchStoreOf(uri: string): Promise<Store> {
         return _fetchN3(uri).then((parsedN3) => parsedN3.store);
     }
+
     async function _fetchN3(uri: string): Promise<ParsedN3> {
         return getResource(uri, session)
             .catch((err) => {
-                console.info({
+                console.error({
                     severity: "error", summary: `Error on fetching: ${uri}`, detail: err, life: 5000,
                 });
                 throw new Error(err);
@@ -649,9 +715,33 @@ _:rename a solid:InsertDeletePatch;
             .then((txt) => parseToN3(txt, uri))
     }
 
+    /**
+     * @param uri
+     */
+    function _getCreatedAccessReceipts(uri: string) {
+        return createdAccessReceipts.get(_getRawURI(uri)) ?? [];
+    }
+
+    /**
+     * @param uri
+     */
+    function _getCreatedAccessAuthorization(uri: string){
+        return createdAccessAuthorization.get(_getRawURI(uri)) ?? [];
+    }
+
+    /**
+     * @param uri
+     */
+    function _getCreatedDataAuthorization(uri: string) {
+        return createdDataAuthorization.get(_getRawURI(uri)) ?? [];
+    }
+
+
+    function _getRawURI(uri: string): string { return uri.split('#')[0]; }
+
     return {
         reload,
-        refreshAccessReceiptInformationResources,
+
         getAccessRequest,
         getAccessNeedGroup,
         getAccessNeed,

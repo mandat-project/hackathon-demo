@@ -9,7 +9,7 @@
   <div class="flex flex-column gap-5 w-full md:w-11 xl:w-9 mx-auto my-5">
     <article v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
       <Suspense>
-        <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect" />
+        <AccessRequest :parentURI="inspectedAccessRequestURI" :informationResourceURI="accessRequestResource" :redirect="redirect" />
         <template #fallback>
           <Card class="h-15rem">
             <template #content>
