@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import AccessNeed from "@/components/AccessNeed.vue";
+import AccessNeed from "@/components/requests/AccessNeed";
 import {useAuthorizations} from "@shared/composables";
 import {reactive, ref, watch} from "vue";
 

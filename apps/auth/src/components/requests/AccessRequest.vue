@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import AccessNeedGroup from "@/components/AccessNeedGroup.vue";
+import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
 import {useAuthorizations} from "@shared/composables";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";

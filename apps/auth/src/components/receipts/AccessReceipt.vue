@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import AccessAuthorization from "@/components/AccessAuthorization.vue";
+import AccessAuthorization from "@/components/receipts/AccessAuthorization";
 import {DateFormatted} from "@shared/components";
 import {useSolidSession} from "@shared/composables";
 import {AUTH, GDPRP, getResource, INTEROP, parseToN3, patchResource, RDF,} from "@shared/solid";

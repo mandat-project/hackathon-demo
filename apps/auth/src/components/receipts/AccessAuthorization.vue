@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import DataAuthorization from "@/components/DataAuthorization.vue";
+import DataAuthorization from "@/components/receipts/DataAuthorization";
 import {DateFormatted} from "@shared/components";
 import {useSolidSession} from "@shared/composables";
 import {

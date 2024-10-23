@@ -364,7 +364,7 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
             grantTrigger.value = true;
 
             // wait until all events fired
-            while (_getCreatedDataAuthorization(uri).length === accessNeeds.length) {
+            while (_getCreatedDataAuthorization(uri).length !== accessNeeds.length) {
                 console.debug("Waiting for data authorizations ...", _getRawURI(uri), _getCreatedDataAuthorization(uri).length, accessNeeds.length);
                 await _wait();
             }
@@ -393,6 +393,9 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
             forSocialAgents: string[],
             dataAuthorizations: string[]
         ): Promise<string> {
+            if (!forSocialAgents.length) { throw new Error('Unexpected Empty List: forSocialAgents'); }
+            if (!dataAuthorizations.length) { throw new Error('Unexpected Empty List: dataAuthorizations'); }
+
             const date = new Date().toISOString();
             const payload = `
     @prefix interop:<${INTEROP()}> .

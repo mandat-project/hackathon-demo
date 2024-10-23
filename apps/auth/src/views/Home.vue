@@ -54,8 +54,8 @@
 </style>
 
 <script lang="ts" setup>
-import AccessReceipt from "@/components/AccessReceipt.vue";
-import AccessRequest from "@/components/AccessRequest.vue";
+import AccessReceipt from "@/components/receipts/AccessReceipt";
+import AccessRequest from "@/components/requests/AccessRequest";
 import {useAuthorizations} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, watch} from "vue";
