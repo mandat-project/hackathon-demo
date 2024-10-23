@@ -1,213 +1,88 @@
 <template>
-  <h1 class="header col-12 flex align-items-center gap-2">
-    Your Access Manager
-    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-      @click=" reloadFlag = !reloadFlag" />
-  </h1>
-  <div style="height: 75px" id="header-bar-spacer" />
-  <div class="requestContainer">
-    <div v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag"
-      class="p-card" style="margin: 5px">
+  <section>
+    <header class="w-full md:w-11 lg:w-10 xl:w-9 mx-auto mt-7">
+      <h1 class="flex align-items-center gap-2">
+        {{ headingTitle }}
+        <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+                @click="reloadFlag = !reloadFlag" />
+      </h1>
+    </header>
+
+  <div class="flex flex-column gap-5 w-full md:w-11 xl:w-9 mx-auto my-5">
+    <article v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
+      <Suspense>
+        <AccessRequest :parentURI="inspectedAccessRequestURI" :informationResourceURI="accessRequestResource" :redirect="redirect" />
+        <template #fallback>
+          <Card class="h-15rem">
+            <template #content>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
+              <Skeleton width="5rem" class="mb-2"></Skeleton>
+              <Skeleton class="mb-2"></Skeleton>
+              <Skeleton width="2rem" class="mb-2"></Skeleton>
+              <span>
+                Loading Authorization {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+              </span>
+            </template>
+          </Card>
+        </template>
+      </Suspense>
+    </article>
+
+    <article v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag">
       <Suspense>
         <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
-          :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
-          @isReceiptForRequests="addRequestsToHandled" />
+                       :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+                       @isReceiptForRequests="addRequestsToHandled"/>
         <template #fallback>
-          <span>
-            Loading {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
-          </span>
+          <Card>
+            <template #content>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
+              <Skeleton width="5rem" class="mb-2"></Skeleton>
+              <Skeleton class="mb-2"></Skeleton>
+              <Skeleton width="2rem" class="mb-2"></Skeleton>
+              <span>
+                Loading Access Receipt {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
+              </span>
+            </template>
+          </Card>
         </template>
       </Suspense>
-    </div>
-    <div v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
-      <Suspense>
-        <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect"
-          :accessReceiptContainer="accessReceiptContainer" :accessAuthzContainer="accessAuthzContainer"
-          :dataAuthzContainer="dataAuthzContainer" @createdAccessReceipt="refreshAccessReceiptInformationResources" />
-        <template #fallback>
-          <span>
-            Loading {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
-          </span>
-        </template>
-      </Suspense>
-    </div>
+    </article>
   </div>
+  </section>
 </template>
 
 <style scoped>
-.header {
-  background: linear-gradient(90deg, #195B78 0%, #287F8F 100%);
-  color: white;
-  position: fixed;
-  padding: 0.5rem 2.5rem 1rem 2.5rem;
-  box-shadow: 0 0 10px -5px black;
-  z-index: 1;
-
-  .p-button {
-    margin-left: 0.5rem;
-    color: white;
-    background-color: rgba(255, 255, 255, 0.05);
-
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-  }
-}
-
-.requestContainer {
-  width: 60rem;
-  margin: 2rem auto;
-}
 </style>
 
 <script lang="ts" setup>
-import AccessRequest from "../comoponents/AccessRequest.vue";
-import AccessReceipt from "../comoponents/AccessReceipt.vue";
-import { AUTH, createContainer, getContainerItems, getResource, parseToN3 } from "@shared/solid";
-import { useSolidProfile, useSolidSession } from "@shared/composables";
-import { computed, onMounted, ref, watch } from "vue";
-import { useToast } from "primevue/usetoast";
-import { Store } from "n3";
+import AccessReceipt from "@/components/receipts/AccessReceipt";
+import AccessRequest from "@/components/requests/AccessRequest";
+import {useAuthorizations} from "@shared/composables";
+import {useToast} from "primevue/usetoast";
+import {computed, provide, ref, watch} from "vue";
 
 const toast = useToast();
 
-const { session } = useSolidSession();
-const { accessInbox, storage } = useSolidProfile();
-
 const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
+const headingTitle = ref('Access Manager')
 
-// keep track of access requests
-const accessRequestInformationResources = ref<Array<string>>([]);
-// handled access requests (not to display)
-const handledAccessRequests = ref<Array<string>>([]);
+const {
+  reload,
+
+  accessRequestInformationResources,
+  accessReceiptInformationResources,
+
+  // Deprecated
+  accessAuthzContainer,
+  accessAuthzArchiveContainer,
+} = useAuthorizations(props.inspectedAccessRequestURI);
+
 // only display not yet handled
 const displayAccessRequests = computed(() =>
   accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
-)
-
-/**
- * ! Dirty hack for archiving stuff
- * TODO re-visit.
- */
-
-// create data authorization container if needed
-const dataAuthzContainerName = "data-authorizations"
-const dataAuthzContainer = computed(() => storage.value + dataAuthzContainerName + "/");
-// create access authorization container if needed
-const accessAuthzContainerName = "authorization-registry"
-const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
-// create access authorization container if needed
-const accessAuthzArchiveContainerName = "authorization-archive"
-const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzArchiveContainerName + "/");
-// create access receipt container if needed
-const accessReceiptContainerName = "authorization-receipts"
-const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
-
-
-
-watch(() => storage.value,
-  async () => {
-    if (!storage.value) { return }
-    getResource(dataAuthzContainer.value, session)
-      .catch(() => createContainer(storage.value, dataAuthzContainerName, session))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Data Authorization Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-    getResource(accessAuthzContainer.value, session)
-      .catch(() => createContainer(storage.value, accessAuthzContainerName, session))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Access Authorization Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-    getResource(accessAuthzArchiveContainer.value, session)
-      .catch(() => createContainer(storage.value, accessAuthzArchiveContainerName, session))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Access Receipt Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-    getResource(accessReceiptContainer.value, session)
-      .catch(() => createContainer(storage.value, accessReceiptContainerName, session))
-      .catch((err) => {
-        toast.add({
-          severity: "error",
-          summary: "Failed to create Access Receipt Container!",
-          detail: err,
-          life: 5000,
-        });
-        throw new Error(err);
-      })
-  }, {immediate:true})
-
-// setup done, now do stuff
-
-/**
-* Retrieve access requests from an access inbox
-* @param accessInbox
-*/
-async function getAccessRequestInformationResources(accessInbox: string) {
-  if (!accessInbox) {
-    return [];
-  }
-  if (props.inspectedAccessRequestURI) {
-    return [props.inspectedAccessRequestURI.split('#')[0]]
-  }
-  return await getContainerItems(accessInbox, session)
-}
-
-
-// once an access inbox is available, get the access requests from there
-// except when we have a specific access request to focus on. then only focus on that one.
-watch(
-  () => accessInbox.value,
-  () => {
-    getAccessRequestInformationResources(accessInbox.value).then((newAccessRequestResources) =>
-      accessRequestInformationResources.value.push(...newAccessRequestResources)
-    )
-    if (!props.inspectedAccessRequestURI) {
-      // TODO Anzeige schön machen: Focus item (und vllt trotzdem im Hintergrund Dinge laden? Oder eigene Komponente für Focus/Übersicht)
-      getAccessReceiptInformationResources().then(newAccessReceipts =>
-        accessReceiptInformationResources.value.push(...newAccessReceipts))
-    } else {
-      getAccessReceiptInformationResourcesForAccessRequest(props.inspectedAccessRequestURI).then(accessReceipts =>
-        accessReceiptInformationResources.value.push(...accessReceipts));
-    }
-  }, {immediate:true}
 );
-
-
-// keep track of access receipts
-const accessReceiptInformationResources = ref<Array<string>>([]);
-/**
- * get the access receipts
- */
-async function getAccessReceiptInformationResources() {
-  return await getContainerItems(accessReceiptContainer.value, session)
-}
-
-async function getAccessReceiptInformationResourcesForAccessRequest(accessRequestURI: string) {
-  const accessReceiptStore = new Store();
-  const accessReceiptContainerItems = await getAccessReceiptInformationResources();
-
-  await fillItemStoresIntoStore(accessReceiptContainerItems, accessReceiptStore)
-
-  return accessReceiptStore.getSubjects(AUTH("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
-}
+const handledAccessRequests = ref<string[]>([]);
 
 
 /**
@@ -215,56 +90,13 @@ async function getAccessReceiptInformationResourcesForAccessRequest(accessReques
  * @param requests
  */
 function addRequestsToHandled(requests: string[]) {
-  handledAccessRequests.value.push(...requests)
+  handledAccessRequests.value = [...handledAccessRequests.value, ...requests];
 }
-
-/**
- * Util Functions
- */
-async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
-  const itemStores: Store[] = await Promise.all(
-    itemUris.map((item) => fetchStoreOf(item))
-  )
-  itemStores
-    .map(itemStore => itemStore.getQuads(null, null, null, null))
-    .map((quads) => store.addQuads(quads))
-}
-
-async function fetchStoreOf(uri: string): Promise<Store> {
-  return getResource(uri, session)
-    .catch((err) => {
-      toast.add({
-        severity: "error",
-        summary: "Error on fetchDemand!",
-        detail: err,
-        life: 5000,
-      });
-      throw new Error(err);
-    })
-    .then((resp) => resp.data)
-    .then((txt) => parseToN3(txt, uri))
-    .then((parsedN3) => parsedN3.store);
-}
-
 
 /**
  * refresh view
  */
-const reloadFlag = ref(false)
-watch(() => reloadFlag.value, () => {
-  refreshAccessRequestInformationResources()
-  refreshAccessReceiptInformationResources()
-}
-)
-async function refreshAccessRequestInformationResources() {
-  const newListOfAccessRequests = await getAccessRequestInformationResources(accessInbox.value);
-  accessRequestInformationResources.value.length = 0;
-  accessRequestInformationResources.value.push(...newListOfAccessRequests);
-}
-async function refreshAccessReceiptInformationResources() {
-  const newListOfAccessReceipts = await getAccessReceiptInformationResources();
-  accessReceiptInformationResources.value.length = 0;
-  accessReceiptInformationResources.value.push(...newListOfAccessReceipts);
-}
+const reloadFlag = ref(false);
+watch(reloadFlag, () => reload());
 
 </script>

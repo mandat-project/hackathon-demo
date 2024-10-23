@@ -1,12 +1,101 @@
+// DATEV Colors
+$blue: (
+    50: #E6F8FC,
+    100: #D7EEF5,
+    150: #BEDFE8,
+    200: #A5CDD9,
+    300: #89B6C4,
+    350: #78AAB9,
+    400: #6199AB,
+    500: #418499,
+    600: #327185,
+    700: #255F71,
+    800: #194D5C,
+    900: #033B4A
+);
+
+$coldgray: (
+    50: #F6F7F9,
+    80: #EDF0F3,
+    100: #E8ECEF,
+    150: #D0DEE3,
+    200: #B6CAD1,
+    300: #9BB2BA,
+    400: #7F98A1,
+    500: #69838C,
+    600: #546E75,
+    700: #475A60,
+    800: #3C474B,
+    900: #2C3335
+);
+$gray: (
+    50: #F2F2F2,
+    100: #E6E6E6,
+    150: #D9D9D9,
+    200: #CCCCCC,
+    250: #BFBFBF,
+    300: #B3B3B3,
+    400: #999999,
+    500: #808080,
+    600: #666666,
+    700: #595959,
+    800: #4D4D4D,
+    900: #3B3B3B
+);
+
+$green: (
+    50: #F3FCE5,
+    100: #E6FCC5,
+    150: #CEF797,
+    200: #B4F260,
+    300: #99E827,
+    350: #8BE10F,
+    400: #7AD200,
+    500: #52B812,
+    550: #3CA80D,
+    600: #20970C,
+    700: #068010,
+    800: #00611B,
+    900: #1A5733
+);
+
+$petrol: (
+    50: #E9F7F7,
+    100: #D8F0F0,
+    150: #BDE2E4,
+    200: #A0D6D9,
+    300: #72C9CB,
+    400: #36B2B2,
+    500: #039A9A,
+    600: #008285,
+    650: #007577,
+    700: #006C6E,
+    800: #00595C,
+    900: #044246
+);
+
 // Theme Specific Variables
-$primaryColor: #fff;
-$primaryDarkColor: #00595c;
-$primaryDarkerColor: #044246;
+$primaryColor: map-get($green, 300);
+$primaryDarkColor: map-get($green, 350);
+$primaryDarkerColor: map-get($green, 400);
 $primaryTextColor: rgba(0, 0, 0, 0.9);
 
+$secondaryColor: map-get($coldgray, 50);
+$secondaryDarkColor: map-get($coldgray, 100);
+$secondaryDarkerColor: map-get($coldgray, 150);
+$secondaryTextColor: rgba(0, 0, 0, 0.9);
+
+$dacklColors: (
+    "blue": $blue,
+    "coldgray": $coldgray,
+    "gray": $gray,
+    "green": $green,
+    "petrol": $petrol,
+);
+
 $colors: (
-    "blue": #2196F3,
-    "green": #4caf50,
+    //"blue": #2196F3,
+    //"green": #4caf50,
     "yellow": #FBC02D,
     "cyan": #00BCD4,
     "pink": #E91E63,
@@ -15,8 +104,8 @@ $colors: (
     "orange": #F57C00,
     "bluegray": #607D8B,
     "purple": #9C27B0,
-    "red": #FF4032,
-    "primary": $primaryColor
+    "red": #de1a06,
+    "primary": $primaryColor,
 );
 
 // Mandatory Designer Variables
@@ -32,49 +121,48 @@ $colors: (
 @import './variables/misc';
 
 :root {
+
     font-family:"Noto Sans Display", Arial, sans-serif;
+
     --font-family:"Noto Sans Display", Arial, sans-serif;
     --font-family-serif:"Compatil DATEV W01 Regular", "Noto Serif", Palatino Linotype, serif;
-    --surface-a:#ffffff;
-    --surface-b:#f8f9fa;
-    --surface-c:#e9ecef;
-    --surface-d:#dee2e6;
-    --surface-e:#ffffff;
-    --surface-f:#ffffff;
-    --text-color:#495057;
-    --text-color-secondary:#6c757d;
-    --primary-color:#2196F3;
-    --primary-color-text:#ffffff;
+
+    --text-color: #{$primaryTextColor};
+    --text-color-secondary: #6c757d;
+    --primary-color: #2196F3;
+    --primary-color-text: #ffffff;
     --surface-0: #ffffff;
-    --surface-50: #FAFAFA;
-    --surface-100: #F5F5F5;
-    --surface-200: #EEEEEE;
-    --surface-300: #E0E0E0;
-    --surface-400: #BDBDBD;
-    --surface-500: #9E9E9E;
-    --surface-600: #757575;
-    --surface-700: #616161;
-    --surface-800: #424242;
-    --surface-900: #212121;
-    --gray-50: #FAFAFA;
-    --gray-100: #F5F5F5;
-    --gray-200: #EEEEEE;
-    --gray-300: #E0E0E0;
-    --gray-400: #BDBDBD;
-    --gray-500: #9E9E9E;
-    --gray-600: #757575;
-    --gray-700: #616161;
-    --gray-800: #424242;
-    --gray-900: #212121;
-    --content-padding:#{$panelContentPadding};
-    --inline-spacing:#{$inlineSpacing};
-    --border-radius:#{$borderRadius};
-    --surface-ground:#f8f9fa;
-    --surface-section:#ffffff;
-    --surface-card:#ffffff;
-    --surface-overlay:#ffffff;
-    --surface-border:#dee2e6;
-    --surface-hover:#e9ecef;
+    --surface-50: #{map-get($coldgray, 50)};
+    --surface-100: #{map-get($coldgray, 100)};
+    --surface-200: #{map-get($coldgray, 200)};
+    --surface-300: #{map-get($coldgray, 300)};
+    --surface-400: #{map-get($coldgray, 400)};
+    --surface-500: #{map-get($coldgray, 500)};
+    --surface-600: #{map-get($coldgray, 600)};
+    --surface-700: #{map-get($coldgray, 700)};
+    --surface-800: #{map-get($coldgray, 800)};
+    --surface-900: #{map-get($coldgray, 900)};
+
+    --bluegray-50: #{map-get($coldgray, 50)};
+    --bluegray-100: #{map-get($coldgray, 100)};
+    --bluegray-200: #{map-get($coldgray, 200)};
+    --bluegray-300: #{map-get($coldgray, 300)};
+    --bluegray-400: #{map-get($coldgray, 400)};
+    --bluegray-500: #{map-get($coldgray, 500)};
+    --bluegray-600: #{map-get($coldgray, 600)};
+    --bluegray-700: #{map-get($coldgray, 700)};
+    --bluegray-800: #{map-get($coldgray, 800)};
+    --bluegray-900: #{map-get($coldgray, 900)};
+
+    --content-padding: #{$panelContentPadding};
+    --inline-spacing: #{$inlineSpacing};
+    --border-radius: #{$borderRadius};
+    --surface-ground: #f8f9fa;
+    --surface-section: #ffffff;
+    --surface-card: #ffffff;
+    --surface-overlay: #ffffff;
+    --surface-border: #dee2e6;
+    --surface-hover: #e9ecef;
     --focus-ring: #{$focusShadow};
     --maskbg: #{$maskBg};
     --highlight-bg: #{$highlightBg};

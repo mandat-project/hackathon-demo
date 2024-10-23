@@ -1,0 +1,12 @@
+/**
+ * Define your auth app style overwrites for the default theme. E. g. change to bg-color, font or sizes.
+ */
+
+body {
+  background-color: #fff;
+}
+
+h1 {
+  font-size: var(--font-size-h1, 3rem);
+  line-height: var(--font-line-height-h1, 3.625rem); /* 120.833% */
+}

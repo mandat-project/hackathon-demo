@@ -93,7 +93,7 @@
             </div>
             <Button v-if="demand.hasAccessRequest &&
               !(demand.isAccessRequestGranted == 'true')
-              " type="submit" label="Handle Access Request" icon="pi pi-question" class="p-button-text"
+              " type="submit" :label="'Handle Access Request'" icon="pi pi-question" class="p-button-text"
               @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
             <Button v-if="demand.offer && !demand.order" type="submit" label="Accept Offer" icon="pi pi-check"
               class="p-button-text" @click="createOrder(demand.offer.id)" />
@@ -119,30 +119,28 @@
 </template>
 
 <script setup lang="ts">
-import {useToast} from "primevue/usetoast";
+import {useCache, useSolidProfile, useSolidSession,} from "@shared/composables";
 import {
-  useCache,
-  useSolidProfile,
-  useSolidSession,
-} from "@shared/composables";
-import {
+  AD,
   createResource,
-  CREDIT, getContainerItems,
+  CREDIT,
+  getContainerItems,
   getDataRegistrationContainers,
   getLocationHeader,
   getResource,
   INTEROP,
   LDP,
-  AD,
   parseToN3,
   putResource,
+  RDFS,
   SCHEMA,
   VCARD,
-  XSD, RDFS,
+  XSD,
 } from "@shared/solid";
-import {Ref, computed, ref, watch} from "vue";
 import {Literal, NamedNode, Quad, Store, Writer} from "n3";
 import Button from 'primevue/button';
+import {useToast} from "primevue/usetoast";
+import {computed, Ref, ref, watch} from "vue";
 
 interface Demand {
   providerName: string;
@@ -196,7 +194,7 @@ const currencies = [
   {label: "USD", value: "USD"},
 ];
 
-const listedAdvertisements = ref([]) as Ref<String[]>
+const listedAdvertisements = ref([]) as Ref<string[]>
 const chosenAdvertisement = ref("")
 let mapOfAdShapeTrees = new Map(); 
 
@@ -366,10 +364,9 @@ async function getAdsFromMarket() {
   isLoadingAds.value = true;
   try {
     
-    const marketURI : string = "https://market.solid.aifb.kit.edu/profile/card"
+    const marketURI = "https://market.solid.aifb.kit.edu/profile/card"
     
-    let marketStore : Store = new Store();
-    marketStore = await fetchStoreOf(marketURI); //get profile document
+    let marketStore = await fetchStoreOf(marketURI); //get profile document
 
     let registrySetMarket = marketStore.getObjects(null,INTEROP("hasRegistrySet"),null)[0].value;
     marketStore = await fetchStoreOf(registrySetMarket);
@@ -568,7 +565,7 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
   });
 }
 
-async function getCreditDemandContainerStore(demandContainerUris: Array<string>) {
+async function getCreditDemandContainerStore(demandContainerUris: string[]) {
   return await getResource(demandContainerUris[0], session)
       .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandContainerUris[0]))
@@ -593,7 +590,7 @@ async function getOfferStore(demandOffers: Array<Quad["object"]>) {
       .then((parsedN3) => parsedN3.store);
 }
 
-const createOrder = async (offerId: String) => {
+const createOrder = async (offerId: string) => {
   const payload = `\
       @prefix schema: <${SCHEMA()}> .
 
@@ -676,7 +673,7 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       .then((parsedN3) => parsedN3.store);
 }
 
-async function createDemand(demandContainerUris: Array<string>, payload: string) {
+async function createDemand(demandContainerUris: string[], payload: string) {
   return await createResource(demandContainerUris[0], payload, session)
       .catch((err) => {
         toast.add({
