@@ -1,7 +1,7 @@
 <template>
   <Card>
     <template #title>
-      Access Request {{ props.informationResourceURI }}
+      Access Request
     </template>
     <template #content>
       <div class="grid">
@@ -107,7 +107,8 @@
       </div>
     </template>
   </Card>
-  <ConfirmDialog />
+
+  <ConfirmDialog :group="'accessRequest-' + informationResourceURI" />
 </template>
 
 <script setup lang="ts">
@@ -176,6 +177,7 @@ const isPartiallyAuthorized = computed(() => accessAuthorizations.size > 0)
 function confirmGrantWithAccessReceipt(): void {
 
   confirm.require({
+    group: `accessRequest-${props.informationResourceURI}`,
     message: 'Are you sure you want to proceed?',
     header: 'Authorize Access Request',
     rejectLabel: 'Cancel',
@@ -192,6 +194,7 @@ function confirmGrantWithAccessReceipt(): void {
 
 function confirmDeclineWithAccessReceipt(): void {
   confirm.require({
+    group: `accessRequest-${props.informationResourceURI}`,
     message: 'Are you sure you want to proceed?',
     header: 'Decline Access Request',
     acceptClass: 'p-button-danger',

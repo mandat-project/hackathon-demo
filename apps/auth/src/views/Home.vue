@@ -1,8 +1,10 @@
 <template>
   <section>
     <header class="w-full md:w-11 lg:w-10 xl:w-9 mx-auto mt-7">
-      <h1>
+      <h1 class="flex align-items-center gap-2">
         {{ headingTitle }}
+        <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+                @click="reloadFlag = !reloadFlag" />
       </h1>
     </header>
 
