@@ -20,7 +20,7 @@
               <Skeleton class="mb-2"></Skeleton>
               <Skeleton width="2rem" class="mb-2"></Skeleton>
               <span>
-                Loading Authorization {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+                {{ $t("loadingAuthorization") }} {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
               </span>
             </template>
           </Card>

@@ -7,7 +7,7 @@
 
   <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;">
     <template #content>
-      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+      <p style="text-align: center;">{{ $t("error.401-unauthenticated") }}</p>
     </template>
   </Card>
 

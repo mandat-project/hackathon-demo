@@ -1,4 +1,5 @@
 {
+  "loadingAuthorization": "Loading Authorization",
   "accessRequest": {
     "title": "Access Request",
     "purpose": "Purpose:",
@@ -58,5 +59,8 @@
     "instances": "Authorized Instances:",
     "accessMode": "Access Mode:",
     "revoke": "Revoke this authorization"
+  },
+  "error": {
+    "401-unauthenticated": "401 Unauthenticated : Login using the button in the top-right corner!"
   }
 }
