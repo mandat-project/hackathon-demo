@@ -2,7 +2,7 @@
   <div class="grid m-0 gap-0">
     <div class="col-12 lg:col p-0">
       <p class="mb-0 text-black-alpha-60">
-        Access need for required data format:
+        {{ $t("accessNeed.requiredDataFormat") }}
       </p>
       <a
         v-for="shapeTree in registeredShapeTrees"
@@ -14,7 +14,7 @@
     </div>
     <div class="col-12 lg:col p-0">
       <p class="mb-0 text-black-alpha-60">
-        Access need for container:
+        {{ $t("accessNeed.container") }}
       </p>
       <a
         v-for="container in containers"
@@ -29,7 +29,7 @@
       class="col-12 lg:col p-0"
     >
       <p class="mb-0 text-black-alpha-60">
-        Access need for resources:
+        {{ $t("accessNeed.resources") }}
       </p>
       <a
         v-for="dataInstance in dataInstances"
@@ -41,7 +41,7 @@
     </div>
     <div class="col-12 lg:col p-0">
       <p class="mb-0 text-black-alpha-60">
-        Access Mode:
+        {{ $t("accessNeed.mode") }}
       </p>
       <a
         v-for="accessMode in accessModes"

@@ -21,5 +21,11 @@
       "authorize": "Authorize Request",
       "cancel": "Cancel"
     }
+  },
+  "accessNeed": {
+    "requiredDataFormat": "Access need for required data format:",
+    "container": "Access need for container:",
+    "resources": "Access need for resources:",
+    "mode": "Access Mode"
   }
 }
