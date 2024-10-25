@@ -6,7 +6,8 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "include": [
     "**/*.ts",

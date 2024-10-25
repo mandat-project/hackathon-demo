@@ -1,13 +1,13 @@
 <template>
   <Card>
     <template #title>
-      Access Request
+      {{ $t("accessRequest.title") }}
     </template>
     <template #content>
       <div class="grid">
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
-            Purpose:
+            {{ $t("accessRequest.purpose") }}
           </div>
           <a
             v-for="label in purposes"
@@ -19,7 +19,7 @@
         </div>
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
-            Data requester:
+            {{ $t("accessRequest.dataRequester") }}
           </div>
           <a
             v-for="sender in fromSocialAgents"
@@ -31,7 +31,7 @@
         </div>
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
-            Access will be granted to:
+            {{ $t("accessRequest.granted") }}
           </div>
           <a
             v-for="grantee in forSocialAgents"
@@ -46,7 +46,7 @@
           class="col-12 md:col"
         >
           <div class="text-black-alpha-60">
-            For additional information see also:
+            {{ $t("accessRequest.additionalInformation") }}
           </div>
           <a
             v-for="reference in seeAlso"
@@ -70,13 +70,13 @@
                                    @noDataRegistrationFound="setNoDataRegistrationFound"/>
                   <template #fallback>
                     <span>
-                      Loading Access Need Group {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
+                      {{ $t("accessRequest.loadingNeedGroup") }} {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
                     </span>
                   </template>
                 </Suspense>
               </div>
               <div v-if="noDataRegistrationFound" class="col-12 md:col">
-                <div class="text-black-alpha-60">No matching Data Registrations were found for: </div>
+                <div class="text-black-alpha-60">{{ $t("accessRequest.noDataRegistrationFound") }}: </div>
                 <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree.toString()" :href="shapeTree.toString()">
                   {{ shapeTree.split('#').pop() }}
                 </a>
@@ -93,7 +93,7 @@
           :disabled="associatedAccessReceipt !== '' || grantTrigger || noDataRegistrationFound"
           @click="confirmGrantWithAccessReceipt"
         >
-          Authorize Request
+          {{ $t("accessRequest.authorizeRequest") }}
         </Button>
         <Button
           type="button"
@@ -101,7 +101,7 @@
           :disabled="associatedAccessReceipt !== '' || grantTrigger || isPartiallyAuthorized || noDataRegistrationFound"
           @click="confirmDeclineWithAccessReceipt"
         >
-          Decline Request
+          {{ $t("accessRequest.declineRequest") }}
         </Button>
       </div>
     </template>
@@ -115,6 +115,7 @@ import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
 import {computed, inject, reactive, ref} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["informationResourceURI", "redirect"]);
 
@@ -140,6 +141,8 @@ const {
 
 const toast = useToast();
 const confirm = useConfirm();
+
+const { t } = useI18n();
 
 // set if no matching data registrations are found for any of the child elements registeredShapeTrees
 const noDataRegistrationFound = ref(false);
@@ -179,10 +182,10 @@ function confirmGrantWithAccessReceipt(): void {
 
   confirm.require({
     group: `accessRequest-${props.informationResourceURI}`,
-    message: 'Are you sure you want to proceed?',
-    header: 'Authorize Access Request',
-    rejectLabel: 'Cancel',
-    acceptLabel: 'Authorize Request',
+    message: t('accessRequest.confirmDialog.message'),
+    header: t('accessRequest.confirmDialog.header'),
+    rejectLabel: t('accessRequest.confirmDialog.cancel'),
+    acceptLabel: t('accessRequest.confirmDialog.authorize'),
     accept: () => {
       // TODO add authorizations from groups and data-authorizations
       grantWithAccessReceipt();
@@ -196,11 +199,11 @@ function confirmGrantWithAccessReceipt(): void {
 function confirmDeclineWithAccessReceipt(): void {
   confirm.require({
     group: `accessRequest-${props.informationResourceURI}`,
-    message: 'Are you sure you want to proceed?',
-    header: 'Decline Access Request',
+    message: t('accessRequest.declineDialog.message'),
+    header: t('accessRequest.declineDialog.header'),
     acceptClass: 'p-button-danger',
-    rejectLabel: 'Cancel',
-    acceptLabel: 'Decline Request',
+    rejectLabel: t('accessRequest.declineDialog.cancel'),
+    acceptLabel: t('accessRequest.declineDialog.decline'),
     accept: () => {
       declineWithAccessReceipt();
     },

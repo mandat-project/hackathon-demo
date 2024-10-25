@@ -1,0 +1,25 @@
+{
+  "accessRequest": {
+    "title": "Access Request",
+    "purpose": "Purpose:",
+    "dataRequester" : "Data Requester:",
+    "granted": "Access will be granted to:",
+    "additionalInformation": "For additional information see also:",
+    "loadingNeedGroup": "Loading Access Need Group",
+    "noDataRegistrationFound": "No matching Data Registrations were found for",
+    "authorizeRequest": "Authorize Request",
+    "declineRequest": "Decline Request",
+    "declineDialog": {
+      "header": "Decline Access Request",
+      "message": "Are you sure you want to proceed?",
+      "decline": "Decline Request",
+      "cancel": "Cancel"
+    },
+    "confirmDialog": {
+      "header": "Authorize Access Request",
+      "message": "Are you sure you want to proceed?",
+      "authorize": "Authorize Request",
+      "cancel": "Cancel"
+    }
+  }
+}
