@@ -119,7 +119,9 @@ import {computed, inject, reactive, ref} from "vue";
 const props = defineProps(["informationResourceURI", "redirect"]);
 
 // const { getAccessRequest } = useAuthorizations(props.parentURI);
-const getAccessRequest = inject('useAuthorizations:getAccessRequest');
+const getAccessRequest = inject<Function>('useAuthorizations:getAccessRequest', () => {
+  throw new Error('Injection not provided');
+}, true);
 
 const {
   grantWithAccessReceipt,

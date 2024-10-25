@@ -87,13 +87,14 @@ import {inject, watch} from "vue";
 const props = defineProps([
     "resourceURI",
     "redirect",
-    "forSocialAgents",
     "receipRevokationTrigger",
 ]);
 const emit = defineEmits(["updatedAccessAuthorization", "isEmptyAuthorization"])
 const toast = useToast();
 
-const getAccessAuthorization = inject('useAuthorizations:getAccessAuthorization');
+const getAccessAuthorization = inject<Function>('useAuthorizations:getAccessAuthorization', () => {
+  throw new Error('Injection not provided');
+}, true);
 
 const {
   revokeAccessAuthorizationRights,
@@ -106,7 +107,7 @@ const {
   granteeName,
   isWaitingForDataAuthorizations,
   revokedDataAuthorizations,
-} = await getAccessAuthorization(props.resourceURI, props.forSocialAgents);
+} = await getAccessAuthorization(props.resourceURI);
 
 watch(props.receipRevokationTrigger, () => revokeAccessAuthorizationRights());
 </script>

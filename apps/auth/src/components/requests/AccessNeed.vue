@@ -68,7 +68,9 @@ import {inject, ref, watch} from "vue";
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "groupAuthorizationTrigger"]);
 
 // const { getAccessNeed } = useAuthorizations(props.parentURI);
-const getAccessNeed = inject('useAuthorizations:getAccessNeed');
+const getAccessNeed = inject<Function>('useAuthorizations:getAccessNeed', () => {
+  throw new Error('Injection not provided');
+}, true);
 
 const {
   grantDataAuthorization,

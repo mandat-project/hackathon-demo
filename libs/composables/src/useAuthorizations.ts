@@ -4,6 +4,7 @@ import {
     AUTH,
     createContainer,
     createResource,
+    deleteResource,
     FOAF,
     GDPRP,
     getAclResourceUri,
@@ -15,15 +16,15 @@ import {
     LDP,
     ParsedN3,
     parseToN3,
-    patchResource, putResource,
+    patchResource,
+    putResource,
     RDF,
     RDFS,
     SKOS,
     XSD
 } from "@shared/solid";
-import {NamedNode, Store, Writer} from "n3";
+import {DataFactory, NamedNode, Store, Writer} from "n3";
 import {computed, provide, reactive, ref, watch} from "vue";
-import {getUri} from "axios";
 
 // keep track of access requests
 const accessRequestInformationResources = ref<string[]>([]);
@@ -647,9 +648,8 @@ _:rename a solid:InsertDeletePatch;
      * ```
      *
      * @param uri
-     * @param forSocialAgents
      */
-    async function getAccessAuthorization(uri: string, forSocialAgents: string[]) {
+    async function getAccessAuthorization(uri: string) {
         const resourceStore = await _fetchStoreOf(uri);
 
         const grantDates = resourceStore.getObjects(uri, INTEROP('grantedAt'), null).map(t => t.value);
@@ -768,7 +768,7 @@ _:rename a solid:InsertDeletePatch;
                     throw new Error(err);
                 })
             // create updated authorization
-            const newLocation = await createResource(props.accessAuthzContainer, "", session)
+            const newLocation = await createResource(accessAuthzContainer.value, "", session)
                 .then((loc) => {
                         console.info({
                             severity: "info",
@@ -1158,7 +1158,7 @@ _:rename a solid:InsertDeletePatch;
                     await _updateAccessControlListToDelete(resource, grantees, accessModes)
                 }
 
-                // TODO emit("revokedDataAuthorization", props.resourceURI)
+                // TODO emit("revokedDataAuthorization", uri)
             }
         }
 

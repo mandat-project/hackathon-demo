@@ -110,7 +110,9 @@ const emit = defineEmits(["revokedDataAuthorization"])
 
 const toast = useToast();
 
-const getDataAuthorization = inject('useAuthorizations:getDataAuthorization');
+const getDataAuthorization = inject<Function>('useAuthorizations:getDataAuthorization', () => {
+  throw new Error('Injection not provided');
+}, true);
 
 const {
   revokeDataAuthorizationRights,

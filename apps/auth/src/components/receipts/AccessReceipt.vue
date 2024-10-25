@@ -93,7 +93,9 @@ const emit = defineEmits(["isReceiptForRequests"])
 
 const toast = useToast();
 
-const getAccessReceipt = inject('useAuthorization:getAccessReceipt')!;
+const getAccessReceipt = inject<Function>('useAuthorizations:getAccessReceipt', () => {
+  throw new Error('Injection not provided');
+}, true);
 
 const {
   revokeAccessReceiptRights,

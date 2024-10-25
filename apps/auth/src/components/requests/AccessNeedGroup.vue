@@ -51,7 +51,9 @@ const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "reques
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
 
 // const { getAccessNeedGroup } = useAuthorizations(props.parentURI);
-const getAccessNeedGroup = inject('useAuthorizations:getAccessNeedGroup');
+const getAccessNeedGroup = inject<Function>('useAuthorizations:getAccessNeedGroup', () => {
+  throw new Error('Injection not provided');
+}, true);
 
 const {
   grantAccessAuthorization,
