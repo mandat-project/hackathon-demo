@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="text-black-alpha-60">Short description of requested access: </span>
+    <span class="text-black-alpha-60"> {{ $t("accessNeedGroup.description") }} </span>
     <div
       v-for="label in prefLabels"
       :key="label"
@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="mt-3">
-    <span class="text-black-alpha-60">Explanation: </span>
+    <span class="text-black-alpha-60"> {{ $t("accessNeedGroup.explanation") }} </span>
     <div
       v-for="definition in definitions"
       :key="definition"
@@ -30,7 +30,7 @@
                   @noDataRegistrationFound="setNoDataRegistrationFound"/>
       <template #fallback>
         <p>
-          Loading Access Need {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
+          {{ $t("accessNeedGroup.explanation") }} {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
         </p>
       </template>
     </Suspense>

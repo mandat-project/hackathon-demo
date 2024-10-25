@@ -26,6 +26,11 @@
     "requiredDataFormat": "Access need for required data format:",
     "container": "Access need for container:",
     "resources": "Access need for resources:",
-    "mode": "Access Mode"
+    "mode": "Access Mode:"
+  },
+  "accessNeedGroup": {
+    "description": "Short description of requested access:",
+    "explanation": "Explanation:",
+    "loading": "Loading Access Need"
   }
 }
