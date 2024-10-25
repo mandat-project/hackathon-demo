@@ -15,14 +15,15 @@ import {
     LDP,
     ParsedN3,
     parseToN3,
-    patchResource,
+    patchResource, putResource,
     RDF,
     RDFS,
     SKOS,
     XSD
 } from "@shared/solid";
-import {Store} from "n3";
+import {NamedNode, Store, Writer} from "n3";
 import {computed, provide, reactive, ref, watch} from "vue";
+import {getUri} from "axios";
 
 // keep track of access requests
 const accessRequestInformationResources = ref<string[]>([]);
@@ -306,6 +307,186 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     }
 
     /**
+     * Sub-Composable to retrieve Access Receipts by an URI
+     *
+     * You can inject this function after "useAuthorizations" was called like:
+     *
+     * ```typescript
+     * const getAccessReceipt = inject('useAuthorizations:getAccessReceipt');
+     * ```
+     *
+     * @param uri
+     * @param redirect
+     */
+    async function getAccessReceipt(uri: string, redirect?: string) {
+        const informationResourceStore = await _fetchStoreOf(uri);
+
+        // because we get the information resource URI, we need to find the Access Receipt URI, in theory there could be many,
+        // but we only consider the first access receipt in an information resource. Not perfect, but makes it easier right now.
+        // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
+
+        const accessReceipt = informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)[0]
+
+        const provisionDates = informationResourceStore.getObjects(accessReceipt, INTEROP("providedAt"), null).map(t => t.value);
+        const accessRequests = informationResourceStore.getObjects(accessReceipt, AUTH("hasAccessRequest"), null).map(t => t.value);
+        const accessAuthorizations = informationResourceStore.getObjects(accessReceipt, INTEROP("hasAccessAuthorization"), null).map(t => t.value);
+
+        // get access request data
+
+        const accessRequestStore = await _fetchStoreOf(accessRequests[0]);
+
+        const purpose = accessRequestStore.getObjects(null, GDPRP("purposeForProcessing"), null)[0]?.value;
+
+        // logic
+
+        if (accessRequests.length > 0) {
+            // TODO !!!
+            // TODO: emit("isReceiptForRequests", accessRequests.value)
+            // TODO !!!
+        }
+
+        // keep track of which children access authorizations are alreay revoked
+        const emptyAuthorizations = ref<string[]>([])
+
+        // keep track of which children access authorizations did not yet revoked rights
+        // to keep track if this access receipt is revoked yet
+        const nonEmptyAuthorizations = accessAuthorizations.filter(auth => !emptyAuthorizations.value.includes(auth));
+        const isRevokedOrDenied = !nonEmptyAuthorizations.length;
+        const status: 'Active' | 'Revoked' | 'Denied' = isRevokedOrDenied ? accessAuthorizations.length > 0 ? 'Revoked' : 'Denied' : 'Active';
+
+        // a quick and dirty wrapper for type-saftey
+        type ReplacedAuthorizationWrapperType = { newAuthorization: string, oldAuthorization: string }
+        /**
+         * ensure synchronous operations
+         * idea: disable children while running
+         */
+        const isWaitingForAccessAuthorizations = ref(false)
+        // keep track of which children access authorizations already revoked rights
+        const replacedAccessAuthorizations = ref<ReplacedAuthorizationWrapperType[]>([])
+
+        // Functions
+
+        // when a child access authorization emits event that it is empty, i.e. revoked
+        function addToEmpty(emptyAuth: string) {
+            emptyAuthorizations.value.push(emptyAuth)
+        }
+
+
+        /**
+         * Trigger children access authorizations to revoke rights,
+         * wait until all children have done so,
+         * then upate this access receipt
+         */
+        async function revokeAccessReceiptRights() {
+            // trigger access authorizations to revoke rights
+            isWaitingForAccessAuthorizations.value = true // use this as trigger
+            // wait on all the not yet empty (i.e. revoked) access authorizations
+            while (replacedAccessAuthorizations.value.length !== nonEmptyAuthorizations.length) {
+                console.log("Waiting for access authorizations to be revoked ...");
+                await _wait();
+            }
+            // then removeAccessAuthroizations
+            await _updateAccessReceipt(replacedAccessAuthorizations.value)
+            isWaitingForAccessAuthorizations.value = false
+
+            if (redirect) {
+                window.open(
+                    `${redirect}?uri=${encodeURIComponent(
+                        uri
+                    )}`,
+                    "_self"
+                );
+            }
+        }
+
+        /**
+         *
+         * When a children access authorization is updated, we add it to the replace list
+         * and update access receipt accordingly
+         * @param newAuthorization
+         * @param oldAuthorization
+         */
+        async function updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
+            replacedAccessAuthorizations.value.push({newAuthorization, oldAuthorization})
+            // if this component is waiting, do nothing, we will handle this in batch
+            if (isWaitingForAccessAuthorizations.value) {
+                return
+            }
+            // else, just remove this one data authorization from the event
+            await _updateAccessReceipt([{newAuthorization, oldAuthorization}])
+                .then(() => replacedAccessAuthorizations.value.length = 0) // reset replaced, because otherwise old URIs are in cache
+
+            if (redirect) {
+                window.open(
+                    `${redirect}?uri=${encodeURIComponent(
+                        uri
+                    )}`,
+                    "_self"
+                );
+            }
+        }
+
+        /**
+         * Update the access receipt, replace the access authorizations as queued up in the list
+         * @param replacedAuthorization
+         */
+        async function _updateAccessReceipt(replacedAuthorization: ReplacedAuthorizationWrapperType[]) {
+            for (const pairAuthorization of replacedAuthorization) {
+                const patchBody = `
+@prefix solid: <http://www.w3.org/ns/solid/terms#>.
+@prefix interop: <${INTEROP()}>.
+
+_:rename a solid:InsertDeletePatch;
+    solid:where {
+        ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
+    } ;
+    solid:inserts {
+        ?receipt interop:hasAccessAuthorization <${pairAuthorization.newAuthorization}> .
+    } ;
+    solid:deletes {
+        ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
+    } .`
+                await patchResource(uri, patchBody, session)
+                    .then(() =>
+                        console.info({
+                            severity: "success",
+                            summary: "Access Receipt updated.",
+                            life: 5000,
+                        })
+                    )
+                    .catch(
+                        (err) => {
+                            console.error({
+                                severity: "error",
+                                summary: "Error on patch Receipt!",
+                                detail: err,
+                                life: 5000,
+                            });
+                            throw new Error(err);
+                        }
+                    );
+                informationResourceStore.removeQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.oldAuthorization))
+                informationResourceStore.addQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.newAuthorization))
+            }
+            // TODO: informationResourceStore = new Store(informationResourceStore.getQuads(null, null, null, null))
+        }
+
+        return {
+            revokeAccessReceiptRights,
+            updateAccessAuthorization,
+            addToEmpty,
+
+            provisionDates,
+            accessRequests,
+            accessAuthorizations,
+            purpose,
+            isRevokedOrDenied,
+            status,
+            isWaitingForAccessAuthorizations,
+        };
+    }
+
+    /**
      * Sub-Composable to retrieve Access Need Group (Access Authorization) by an URI
      *
      * You can inject this function after "useAuthorizations" was called like:
@@ -454,6 +635,225 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
             prefLabels,
             definitions,
         }
+    }
+
+    /**
+     * Sub-Composable to retrieve Access Authorization by an URI
+     *
+     * You can inject this function after "useAuthorizations" was called like:
+     *
+     * ```typescript
+     *   const getAccessAuthorization = inject('useAuthorizations:getAccessAuthorization');
+     * ```
+     *
+     * @param uri
+     * @param forSocialAgents
+     */
+    async function getAccessAuthorization(uri: string, forSocialAgents: string[]) {
+        const resourceStore = await _fetchStoreOf(uri);
+
+        const grantDates = resourceStore.getObjects(uri, INTEROP('grantedAt'), null).map(t => t.value);
+        const grantees = resourceStore.getObjects(uri, INTEROP('grantee'), null).map(t => t.value);
+        const accessNeedGroups = resourceStore.getObjects(uri, INTEROP('hasAccessNeedGroup'), null).map(t => t.value);
+        const dataAuthorizations = resourceStore.getObjects(uri, INTEROP('hasDataAuthorization'), null).map(t => t.value);
+
+        const granteeStore = await _fetchStoreOf(grantees[0]);
+
+        const granteeName = granteeStore.getObjects(null, FOAF("name"), null)[0]?.value;
+
+        // WATCHER
+        if (dataAuthorizations.length == 0) {
+            // TODO: emit("isEmptyAuthorization", uri)
+        }
+
+        // TODO:
+        // if (props.receipRevokationTrigger) {
+        //     revokeAccessAuthorizationRights()
+        // }
+
+        /**
+         * ensure synchronous operations
+         * idea: disable children while running
+         */
+        const isWaitingForDataAuthorizations = ref(false)
+        // keep track of which children data authorizations already revoked rights
+        const revokedDataAuthorizations = ref<string[]>([])
+
+        /**
+         * Trigger children data authorizations to revoke rights,
+         * wait until all children have done so,
+         * then create new access authorization to replace this current one and emit finish event to parent
+         */
+        async function revokeAccessAuthorizationRights() {
+            // trigger data authorizations to revoke acls
+            isWaitingForDataAuthorizations.value = true // use this as trigger
+            // wait on all the data authorizations
+            while (revokedDataAuthorizations.value.length !== dataAuthorizations.length) {
+                console.log("Waiting for data authorizations to be revoked ...");
+                await _wait();
+            }
+
+            // then removeDataAuthroizations
+            await _removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations)
+            isWaitingForDataAuthorizations.value = false
+        }
+
+        /**
+         * When a children data authorization is revoked, we add it to the revoked list
+         * and create a new and updated access authorization to replace this current one.
+         * @param dataAuthorization to remove from the current access authorization
+         */
+        async function removeDataAuthorization(dataAuthorization: string) {
+            revokedDataAuthorizations.value.push(dataAuthorization)
+            // if this component is waiting, do nothing, we will handle this in batch
+            if (isWaitingForDataAuthorizations.value) { return }
+            // else, just remove this one data authorization from the event
+            return _removeDataAuthorizationsAndCreateNewAccessAuthorization([dataAuthorization])
+        }
+
+        /**
+         * create a new and updated access authorization to replace this current one,
+         * given the data authorizations to remove from the current access authorization
+         *
+         * emit to the parent component, i.e. an Access Receipt, that there is a new access authorization to link to
+         *
+         * ? this could be refractored, indeed, to make it nicer but it works.
+         *
+         * @param dataAuthorizations to remove from the current access authorization
+         */
+        async function _removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations: string[]) {
+            // copy authorization to archive
+            const archivedLocation = await createResource(accessAuthzArchiveContainer.value, "", session)
+                .then((loc) => {
+                        console.info({
+                            severity: "info",
+                            summary: "Archived Access Authorization created.",
+                            life: 5000,
+                        })
+                        return getLocationHeader(loc)
+                    }
+                )
+                .catch((err) => {
+                    console.error({
+                        severity: "error",
+                        summary: "Failed to create Archived Access Receipt!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+            const n3Writer = new Writer();
+            const archiveStore = new Store();
+            const oldQuads = resourceStore.getQuads(uri, null, null, null)
+            const accessAuthzLocale = uri.split("#")[1]
+            for (const quad of oldQuads) {
+                archiveStore.addQuad(new NamedNode(archivedLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph)
+            }
+            let copyBody = n3Writer.quadsToString(archiveStore.getQuads(null, null, null, null))
+            await putResource(archivedLocation, copyBody, session)
+                .then(() =>
+                    console.info({
+                        severity: "success",
+                        summary: "Archived Access Authorization updated.",
+                        life: 5000,
+                    })
+                )
+                .catch((err) => {
+                    console.error({
+                        severity: "error",
+                        summary: "Failed to updated Archived Access Receipt!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+            // create updated authorization
+            const newLocation = await createResource(props.accessAuthzContainer, "", session)
+                .then((loc) => {
+                        console.info({
+                            severity: "info",
+                            summary: "New Access Authorization created.",
+                            life: 5000,
+                        })
+                        return getLocationHeader(loc)
+                    }
+                )
+                .catch((err) => {
+                    console.error({
+                        severity: "error",
+                        summary: "Failed to create new Access Receipt!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+
+            // in new resource, update uris
+            for (const quad of oldQuads) {
+                resourceStore.addQuad(new NamedNode(newLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph)
+                resourceStore.removeQuad(quad)
+            }
+            // in new resource, add replaces
+            resourceStore.addQuad(
+                new NamedNode(newLocation + "#" + accessAuthzLocale),
+                new NamedNode(INTEROP("replaces")),
+                new NamedNode(archivedLocation + "#" + accessAuthzLocale))
+            // in new resource, update grantedAt
+
+            const grantedAtQuads = resourceStore.getQuads(new NamedNode(newLocation + "#" + accessAuthzLocale), INTEROP("grantedAt"), null, null)
+            resourceStore.removeQuads(grantedAtQuads)
+            const dateLiteral = DataFactory.literal(new Date().toISOString(), new NamedNode(XSD("dateTime")));
+            resourceStore.addQuad(
+                new NamedNode(newLocation + "#" + accessAuthzLocale),
+                new NamedNode(INTEROP("grantedAt")),
+                dateLiteral
+            )
+            // in new resource, remove link to data authorization
+            for (const dataAuthorization of dataAuthorizations) {
+                resourceStore.removeQuads(resourceStore.getQuads(
+                    new NamedNode(newLocation + "#" + accessAuthzLocale),
+                    new NamedNode(INTEROP("hasDataAuthorization")),
+                    dataAuthorization, null))
+                // Notice: this is also the place, where you could update a data authorization, e.g. for freeze
+            }
+            // write to new authorization
+            copyBody = n3Writer.quadsToString(resourceStore.getQuads(null, null, null, null))
+            await putResource(newLocation, copyBody, session)
+                .then(() =>
+                    console.info({
+                        severity: "success",
+                        summary: "New Access Authorization updated.",
+                        life: 5000,
+                    })
+                )
+                .catch((err) => {
+                    console.error({
+                        severity: "error",
+                        summary: "Failed to updated new Access Receipt!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+            // delete old one
+            await deleteResource(uri, session)
+            // emit update
+            // emit("updatedAccessAuthorization", newLocation + "#" + accessAuthzLocale, uri)
+
+        }
+
+        return {
+            revokeAccessAuthorizationRights,
+            removeDataAuthorization,
+
+            grantDates,
+            grantees,
+            accessNeedGroups,
+            dataAuthorizations,
+            granteeName,
+            isWaitingForDataAuthorizations,
+            revokedDataAuthorizations,
+        };
     }
 
     /**
@@ -703,6 +1103,181 @@ _:rename a solid:InsertDeletePatch;
         };
     }
 
+    /**
+     * Sub-Composable to retrieve Data Authorization by an URI
+     *
+     * You can inject this function after "useAuthorizations" was called like:
+     *
+     * ```typescript
+     *   const getDataAuthorization = inject('useAuthorizations:getDataAuthorization');
+     * ```
+     *
+     * @param uri
+     * @param forSocialAgents
+     */
+    async function getDataAuthorization(uri: string) {
+        const resourceStore = await _fetchStoreOf(uri);
+
+        const accessModes = resourceStore.getObjects(uri, INTEROP("accessMode"), null).map(t => t.value);
+        const registeredShapeTrees = resourceStore.getObjects(uri, INTEROP("registeredShapeTree"), null).map(t => t.value);
+        const dataInstances = resourceStore.getObjects(uri, INTEROP("hasDataInstance"), null).map(t => t.value);
+        const dataRegistrations = resourceStore.getObjects(uri, INTEROP("hasDataRegistration"), null).map(t => t.value);
+        const grantees = resourceStore.getObjects(uri, INTEROP('grantee'), null).map(t => t.value);
+        const scopes = resourceStore.getObjects(uri, INTEROP('scopeOfAuthorization'), null).map(t => t.value);
+        const accessNeeds = resourceStore.getObjects(uri, INTEROP('satisfiesAccessNeed'), null).map(t => t.value);
+
+        const granteeStore = await _fetchStoreOf(grantees[0]);
+
+        const granteeName = granteeStore.getObjects(null, FOAF("name"), null)[0]?.value;
+
+        /**
+         * Set the .acl for any resource required in this data authorization.
+         */
+        async function revokeDataAuthorizationRights() {
+            for (const shapeTree of registeredShapeTrees) {
+                const dataRegistrations = await getDataRegistrationContainers(
+                    `${memberOf.value}`,
+                    shapeTree,
+                    session
+                ).catch((err) => {
+                    console.error({
+                        severity: "error",
+                        summary: "Error on getDataRegistrationContainers!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                });
+                const dataInstancesForNeed = [] as string[];
+                dataInstancesForNeed.push(...dataInstances); // potentially manually edited (added/removed) in auth agent
+
+                const accessToResources = dataInstancesForNeed.length > 0 ? dataInstancesForNeed : dataRegistrations;
+
+                // only grant specific resource access
+                for (const resource of accessToResources) {
+                    await _updateAccessControlListToDelete(resource, grantees, accessModes)
+                }
+
+                // TODO emit("revokedDataAuthorization", props.resourceURI)
+            }
+        }
+
+        /**
+         * Remove the rights specified in this data authorization from the ACL
+         * Make sure that the owner has still control as well.
+         *
+         * ? This could potentially be extracted to a library.
+         *
+         * @param accessTo
+         * @param agents
+         * @param modes
+         */
+        async function _updateAccessControlListToDelete(
+            accessTo: string,
+            agents: string[],
+            modes: string[]
+        ) {
+
+            const aclURI = await getAclResourceUri(accessTo, session);
+
+            /**
+             * see problems below
+             */
+            //     const patchBody = `
+            // @prefix solid: <http://www.w3.org/ns/solid/terms#>.
+            // @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+
+            // _:rename a solid:InsertDeletePatch;
+            //     solid:where {
+            //         ?auth a acl:Authorization ;
+            //             acl:accessTo <${accessTo}>;
+            //             acl:agent ${agents.map((a) => "<" + a + ">").join(", ")};
+            //             acl:default <${accessTo}> ;
+            //             acl:mode ${modes.map((mode) => "<" + mode + ">").join(", ")} .
+            //     } ;
+            //     solid:deletes {
+            //         ?auth acl:agent ${agents.map((a) => "<" + a + ">").join(", ")} .
+            //     } .` // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
+
+
+            // await patchResource(aclURI, patchBody, session).catch(
+            //     (err) => {
+            //         console.info({
+            //             severity: "error",
+            //             summary: "Error on patch ACL!",
+            //             detail: err,
+            //             life: 5000,
+            //         });
+            //         throw new Error(err);
+            //     }
+            // );
+
+            /**
+             * We have two problems:
+             * * cannot have mutliple matches for where clause on server side (results in status 409)
+             * * no matches for where clause on server side (results in status 409)
+             *
+             */
+
+                //  therefore...
+
+            const aclStore = await _fetchStoreOf(aclURI);
+
+
+            for (const agent of agents) {
+                for (const mode of modes) {
+                    const agentAuthzQuads = aclStore.getQuads(null, ACL("agent"), agent, null)
+                        .filter(quad => (aclStore.getQuads(quad.subject, ACL("mode"), mode, null).length == 1))
+                        .filter(quad => (aclStore.getQuads(quad.subject, ACL("accessTo"), accessTo, null).length == 1))
+                        .filter(quad => (aclStore.getQuads(quad.subject, ACL("default"), accessTo, null).length == 1))
+                    aclStore.removeQuads(agentAuthzQuads)
+                }
+            }
+
+            // START cleanup of authorizations where no agent is attached
+            aclStore.getSubjects(RDF("type"), ACL("Authorization"), null)
+                .filter(subj => (aclStore.getQuads(subj, ACL("agent"), null, null).length == 0))
+                .filter(subj => (aclStore.getQuads(subj, ACL("agentGroup"), null, null).length == 0))
+                .filter(subj => (aclStore.getQuads(subj, ACL("agentClass"), null, null).length == 0))
+                .forEach(subj => aclStore.removeQuads(aclStore.getQuads(subj, null, null, null)))
+            // END cleanup
+
+            const n3Writer = new Writer();
+            const aclBody = n3Writer.quadsToString(aclStore.getQuads(null, null, null, null))
+            await putResource(aclURI, aclBody, session)
+                .then(() =>
+                    console.info({
+                        severity: "success",
+                        summary: "ACL updated.",
+                        life: 5000,
+                    })
+                )
+                .catch((err) => {
+                    console.info({
+                        severity: "error",
+                        summary: "Failed to updated ACL!",
+                        detail: err,
+                        life: 5000,
+                    });
+                    throw new Error(err);
+                })
+        }
+
+        return {
+            revokeDataAuthorizationRights,
+
+            accessModes,
+            registeredShapeTrees,
+            dataInstances,
+            dataRegistrations,
+            grantees,
+            scopes,
+            accessNeeds,
+            granteeName,
+        }
+
+    }
+
     async function refreshAccessRequestInformationResources() {
         const newListOfAccessRequests: string[] = await _getAccessRequestInformationResources(accessInbox.value);
         accessRequestInformationResources.value = [...newListOfAccessRequests]
@@ -802,18 +1377,20 @@ _:rename a solid:InsertDeletePatch;
     // Using provide/inject also prevents duplicate requests and the need to
     // pass the parent URI everytime
 
+    // Requests:
     provide('useAuthorizations:getAccessRequest', getAccessRequest);
     provide('useAuthorizations:getAccessNeedGroup', getAccessNeedGroup);
     provide('useAuthorizations:getAccessNeed', getAccessNeed);
+
+    // Receipts
+    provide('useAuthorizations:getAccessReceipt', getAccessReceipt);
+    provide('useAuthorizations:getAccessAuthorization', getAccessAuthorization);
+    provide('useAuthorizations:getDataAuthorization', getDataAuthorization);
 
     return {
         reload,
 
         accessRequestInformationResources,
         accessReceiptInformationResources,
-
-        // Deprecated
-        accessAuthzContainer,
-        accessAuthzArchiveContainer,
     }
 }

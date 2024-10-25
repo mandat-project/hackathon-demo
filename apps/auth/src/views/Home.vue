@@ -30,8 +30,8 @@
 
     <article v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag">
       <Suspense>
-        <AccessReceipt :informationResourceURI="accessReceiptResource" :accessAuthzContainer="accessAuthzContainer"
-                       :redirect="redirect" :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+        <AccessReceipt :informationResourceURI="accessReceiptResource"
+                       :redirect="redirect"
                        @isReceiptForRequests="addRequestsToHandled"/>
         <template #fallback>
           <Card>
@@ -73,9 +73,6 @@ const {
   accessRequestInformationResources,
   accessReceiptInformationResources,
 
-  // Deprecated
-  accessAuthzContainer,
-  accessAuthzArchiveContainer,
 } = useAuthorizations(props.inspectedAccessRequestURI);
 
 // only display not yet handled
