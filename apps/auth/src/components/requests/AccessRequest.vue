@@ -114,7 +114,7 @@
 import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
-import {computed, inject, reactive, ref} from "vue";
+import {computed, inject, reactive, ref, watch} from "vue";
 
 const props = defineProps(["informationResourceURI", "redirect"]);
 
@@ -128,6 +128,7 @@ const {
   declineWithAccessReceipt,
 
   grantTrigger,
+  shapeTreesOfMissingDataRegs,
 
   purposes,
   fromSocialAgents,
@@ -143,7 +144,6 @@ const confirm = useConfirm();
 
 // set if no matching data registrations are found for any of the child elements registeredShapeTrees
 const noDataRegistrationFound = ref(false);
-const shapeTreesOfMissingDataRegs = ref([] as string[]);
 
 //
 // authorize access request
@@ -160,10 +160,9 @@ function addToAccessAuthorizations(accessNeedGroup: string, accessAuthorization:
   accessAuthorizations.set(accessNeedGroup, accessAuthorization)
 }
 
-function setNoDataRegistrationFound(shapeTreeURI: string) {
-  noDataRegistrationFound.value = true;
-  shapeTreesOfMissingDataRegs.value.push(shapeTreeURI);
-}
+watch(shapeTreesOfMissingDataRegs, value => {
+  noDataRegistrationFound.value = value.length > 0;
+});
 
 /**
  * TODO manage partial decision

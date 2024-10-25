@@ -46,7 +46,7 @@
                   <AccessAuthorization :resourceURI="accessAuthorization"
                                        :receipRevokationTrigger="isWaitingForAccessAuthorizations"
                                        @updatedAccessAuthorization="updateAccessAuthorization"
-                                       @isEmptyAuthorization="addToEmpty"/>
+                                       />
                   <template #fallback>
                                 <span>
                                     Loading {{
@@ -100,7 +100,6 @@ const getAccessReceipt = inject<Function>('useAuthorizations:getAccessReceipt', 
 const {
   revokeAccessReceiptRights,
   updateAccessAuthorization,
-  addToEmpty,
 
   provisionDates,
   accessRequests,

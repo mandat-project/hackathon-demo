@@ -32,6 +32,12 @@ const accessRequestInformationResources = ref<string[]>([]);
 // keep track of access receipts
 const accessReceiptInformationResources = ref<string[]>([]);
 
+const handledAccessRequests = ref<string[]>([]);
+
+// keep track of which children access authorizations are already revoked
+const emptyAuthorizations = ref<string[]>([]);
+const shapeTreesOfMissingDataRegs = ref<string[]>([]);
+
 // create data authorization container if needed
 const dataAuthzContainerName = "data-authorizations"
 
@@ -81,6 +87,10 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
     const accessAuthzContainer = computed(() => storage.value + accessAuthzContainerName + "/");
     const accessAuthzArchiveContainer = computed(() => storage.value + accessAuthzArchiveContainerName + "/");
     const accessReceiptContainer = computed(() => storage.value + accessReceiptContainerName + "/");
+
+    const accessRequests = computed(() =>
+        accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
+    );
 
     const reload = () => {
         refreshAccessRequestInformationResources()
@@ -295,7 +305,9 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         return {
             grantWithAccessReceipt,
             declineWithAccessReceipt,
+
             grantTrigger,
+            shapeTreesOfMissingDataRegs,
 
             purposes,
             fromSocialAgents,
@@ -341,13 +353,8 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         // logic
 
         if (accessRequests.length > 0) {
-            // TODO !!!
-            // TODO: emit("isReceiptForRequests", accessRequests.value)
-            // TODO !!!
+            _addRequestsToHandled(accessRequests);
         }
-
-        // keep track of which children access authorizations are alreay revoked
-        const emptyAuthorizations = ref<string[]>([])
 
         // keep track of which children access authorizations did not yet revoked rights
         // to keep track if this access receipt is revoked yet
@@ -366,11 +373,6 @@ export const useAuthorizations = (inspectedAccessRequestURI = "") => {
         const replacedAccessAuthorizations = ref<ReplacedAuthorizationWrapperType[]>([])
 
         // Functions
-
-        // when a child access authorization emits event that it is empty, i.e. revoked
-        function addToEmpty(emptyAuth: string) {
-            emptyAuthorizations.value.push(emptyAuth)
-        }
 
 
         /**
@@ -469,13 +471,14 @@ _:rename a solid:InsertDeletePatch;
                 informationResourceStore.removeQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.oldAuthorization))
                 informationResourceStore.addQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.newAuthorization))
             }
-            // TODO: informationResourceStore = new Store(informationResourceStore.getQuads(null, null, null, null))
+
+            // TODO: what does this do?
+            //  informationResourceStore = new Store(informationResourceStore.getQuads(null, null, null, null))
         }
 
         return {
             revokeAccessReceiptRights,
             updateAccessAuthorization,
-            addToEmpty,
 
             provisionDates,
             accessRequests,
@@ -661,15 +664,9 @@ _:rename a solid:InsertDeletePatch;
 
         const granteeName = granteeStore.getObjects(null, FOAF("name"), null)[0]?.value;
 
-        // WATCHER
         if (dataAuthorizations.length == 0) {
-            // TODO: emit("isEmptyAuthorization", uri)
+            _addToEmpty(uri);
         }
-
-        // TODO:
-        // if (props.receipRevokationTrigger) {
-        //     revokeAccessAuthorizationRights()
-        // }
 
         /**
          * ensure synchronous operations
@@ -918,10 +915,11 @@ _:rename a solid:InsertDeletePatch;
                 });
                 throw new Error(err);
             });
+
             if (dataRegistrations.length <= 0) {
-                // TODO emit no dataregistration?
-                // emit("noDataRegistrationFound", registeredShapeTrees[0])
+                _noDataRegistrationFound(registeredShapeTrees[0]);
             }
+
             return dataRegistrations;
         }
 
@@ -1294,6 +1292,14 @@ _:rename a solid:InsertDeletePatch;
      * @private
      */
 
+    /**
+     * when an access receipt states that it is associated to specific access requests
+     * @param requests
+     */
+    function _addRequestsToHandled(requests: string[]) {
+        handledAccessRequests.value = [...handledAccessRequests.value, ...requests];
+    }
+
     async function _fillItemStoresIntoStore(itemUris: string[], store: Store) {
         const itemStores: Store[] = await Promise.all(itemUris.map((item) => _fetchStoreOf(item)))
         itemStores
@@ -1349,6 +1355,16 @@ _:rename a solid:InsertDeletePatch;
         return accessReceiptStore.getSubjects(AUTH("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
     }
 
+    // when a child access authorization emits event that it is empty, i.e. revoked
+    function _addToEmpty(emptyAuth: string) {
+        emptyAuthorizations.value.push(emptyAuth)
+    }
+
+    // when a child access authorization emits event that it is empty, i.e. revoked
+    function _noDataRegistrationFound(emptyAuth: string) {
+        shapeTreesOfMissingDataRegs.value.push(emptyAuth)
+    }
+
     /**
      * @param uri
      */
@@ -1390,7 +1406,7 @@ _:rename a solid:InsertDeletePatch;
     return {
         reload,
 
-        accessRequestInformationResources,
+        accessRequests,
         accessReceiptInformationResources,
     }
 }
