@@ -40,5 +40,13 @@
     "dataAuthorizations": "Data Authorizations",
     "revokeGroup": "Revoke Authorizations in this group",
     "loadingData": "Loading Data Authorization"
+  },
+  "accessReceipt": {
+    "authorization": "Authorization",
+    "provided": "Provided At:",
+    "accessRequest": "For Access Request:",
+    "purpose": "Purpose:",
+    "accessAuthorizations": "Access Authorizations",
+    "loading": "Loading"
   }
 }

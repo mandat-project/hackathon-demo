@@ -8,19 +8,19 @@
             :class="{'bg-green-300': status === 'Active', 'bg-red-500': status === 'Revoked', 'text-white': status === 'Revoked', 'text-sm': true}"
           />
         </div>
-        Authorization
+        {{ $t("accessReceipt.authorization") }}
       </template>
 
       <template #content>
         <div class="grid">
           <!-- <div class="accessRequest" v-for="request in requests" :key="request"> -->
           <div class="col-12">
-            <div class="text-black-alpha-60">Provided At: </div>
+            <div class="text-black-alpha-60">{{ $t("accessReceipt.provided") }} </div>
             <DateFormatted :datetimeString="date" v-for="date in provisionDates" :key="date" />
           </div>
           <div class="col-12 md:col">
             <div class="text-black-alpha-60">
-              For Access Request:
+              {{ $t("accessReceipt.accessRequest") }}
             </div>
             <a
               v-for="accessRequest in accessRequests"
@@ -32,7 +32,7 @@
           </div>
           <div class="col-12 md:col">
             <div class="text-black-alpha-60">
-              Purpose:
+              {{ $t("accessReceipt.purpose") }}
             </div>
             <a :href="purpose">
               {{ purpose.split("#").pop() }}
@@ -40,7 +40,7 @@
           </div>
           <div class="col-12">
             <Accordion v-if="accessAuthorizations.length" value="0" class="surface-50 border-round">
-            <AccordionTab header="Access Authorizations">
+            <AccordionTab header='{{ $t("accessReceipt.accessAuthorizations") }}'>
               <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization">
                 <Suspense>
                   <AccessAuthorization :resourceURI="accessAuthorization"
@@ -49,7 +49,7 @@
                                        @isEmptyAuthorization="addToEmpty"/>
                   <template #fallback>
                                 <span>
-                                    Loading {{
+                                    {{ $t("accessReceipt.loading") }} {{
                                     accessAuthorization.split("/")[accessAuthorization.split("/").length - 1]
                                   }}
                                 </span>
