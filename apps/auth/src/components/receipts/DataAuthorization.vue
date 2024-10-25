@@ -2,7 +2,7 @@
   <div class="grid">
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Access Needs:
+        {{ $t("dataAuthorization.accessNeeds") }}
       </div>
       <a
         v-for="accessNeed in accessNeeds"
@@ -14,7 +14,7 @@
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Grantees:
+        {{ $t("dataAuthorization.grantees") }}
       </div>
       <a
         v-for="grantee in grantees"
@@ -26,7 +26,7 @@
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Authorized Data:
+        {{ $t("dataAuthorization.authorizedData") }}
       </div>
       <a
         v-for="shapeTree in registeredShapeTrees"
@@ -38,7 +38,7 @@
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Scope:
+        {{ $t("dataAuthorization.scope") }}
       </div>
       <a
         v-for="scope in scopes"
@@ -50,7 +50,7 @@
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Data Registrations:
+        {{ $t("dataAuthorization.registration") }}
       </div>
       <a
         v-for="dataRegistration in dataRegistrations"
@@ -65,7 +65,7 @@
       class="col-4"
     >
       <div class="text-black-alpha-60">
-        Authorized Instances:
+        {{ $t("dataAuthorization.instances") }}
       </div>
       <a
         v-for="dataInstance in dataInstances"
@@ -77,7 +77,7 @@
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Access Mode:
+        {{ $t("dataAuthorization.accessMode") }}
       </div>
       <a
         v-for="accessMode in accessModes"
@@ -95,7 +95,7 @@
             </Button> -->
             <Button @click="revokeDataAuthorizationRights" type="button" class="my-3" severity="secondary"
                 :disabled="groupRevokationTrigger">
-                Revoke this authorization
+              {{ $t("dataAuthorization.revoke") }}
             </Button>
         </div>
     </div>

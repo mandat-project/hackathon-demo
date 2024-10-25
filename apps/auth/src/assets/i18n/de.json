@@ -48,5 +48,15 @@
     "purpose": "Purpose:",
     "accessAuthorizations": "Access Authorizations",
     "loading": "Loading"
+  },
+  "dataAuthorization": {
+    "accessNeeds": "Access Needs:",
+    "grantees": "Grantees:",
+    "authorizedData": "Authorized Data:",
+    "scope": "Scope:",
+    "registration": "Data Registrations:",
+    "instances": "Authorized Instances:",
+    "accessMode": "Access Mode:",
+    "revoke": "Revoke this authorization"
   }
 }
