@@ -8,13 +8,13 @@
     </a>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Grant date:
+        {{ $t("accessAuthorization.grantDate") }}
       </div>
             <DateFormatted :datetimeString="date" v-for="date in grantDates" :key="date"/>
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Grantees:
+        {{ $t("accessAuthorization.grantees") }}
       </div>
       <a
         v-for="grantee in grantees"
@@ -26,7 +26,7 @@
     </div>
     <div class="col-4">
       <div class="text-black-alpha-60">
-        Access Need Groups:
+        {{ $t("accessAuthorization.groups") }}
       </div>
       <a
         v-for="accessNeedGroup in accessNeedGroups"
@@ -45,7 +45,7 @@
           </Button> -->
               <Button @click="revokeAccessAuthorizationRights" type="button" class="my-3" severity="secondary"
                   :disabled="isWaitingForDataAuthorizations">
-          Revoke Authorizations in this group
+                {{ $t("accessAuthorization.revokeGroup") }}
         </Button>
       </div>
       <div class="col-12">
@@ -54,7 +54,7 @@
           class="border-1 border-round border-bluegray-100"
           value="0"
         >
-          <AccordionTab header="Data Authorizations">
+          <AccordionTab header='{{ $t("accessAuthorization.dataAuthorizations") }}'>
             <div
               v-for="dataAuthorization in dataAuthorizations"
               :key="dataAuthorization"
@@ -66,7 +66,7 @@
                 />
                 <template #fallback>
                   <span>
-                    Loading Data Authorization {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
+                    {{ $t("accessAuthorization.loadingData") }} {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
                   </span>
                 </template>
               </Suspense>

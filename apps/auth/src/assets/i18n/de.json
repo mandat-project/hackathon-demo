@@ -32,5 +32,13 @@
     "description": "Short description of requested access: ",
     "explanation": "Explanation: ",
     "loading": "Loading Access Need"
+  },
+  "accessAuthorization": {
+    "grantDate": "Grant date:",
+    "grantees": "Grantees:",
+    "groups": "Access Need Groups:",
+    "dataAuthorizations": "Data Authorizations",
+    "revokeGroup": "Revoke Authorizations in this group",
+    "loadingData": "Loading Data Authorization"
   }
 }
