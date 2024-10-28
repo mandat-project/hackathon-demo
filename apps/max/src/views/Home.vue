@@ -17,6 +17,7 @@ import {
 import { useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Divider from 'primevue/divider';
 
 const toast = useToast();
 const {session} = useSolidSession();
@@ -117,15 +118,23 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 
 <template>
   <div class="grid">
-    <div class="col lg:col-9 lg:col-offset-2">
+    <div class="col lg:col-12">
+      <h1>Client Requests</h1>
       <ul v-if="isLoggedIn">
-        <Card style="width: 80%; margin-bottom: 1rem;" v-for="([uri, store], index) of documentCreationDemands" :key="index">
-          <template #title>Request #{{ index }}: {{ uri }}</template>
-          <template #content>
-            <p>From: {{ getObject(store!, INTEROP('fromSocialAgent')) }}</p>
-            <p>Requested Data : {{ getObject(store!, INTEROP('registeredShapeTree')) }} </p>
-            <Button @click="processDocumentCreationDemand(uri)">Provide requested Data</Button>
-          </template>
+        <Card style=" margin-bottom: 1rem;" v-for="([uri, store], index) of documentCreationDemands" :key="index">
+          <template #title><div class="col-12" style="display: block;word-wrap: break-word;">Request #{{ index }}:</div></template>
+            <template #content>
+              <div class="grid">
+                <div class="col-12 text-sm"> <b>{{ uri }} </b></div>
+                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">From: </span><b class="text-sm">{{ getObject(store!, INTEROP('fromSocialAgent')) }}</b></p></div>
+                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">Requested Data : </span><b class="text-sm">{{ getObject(store!, INTEROP('registeredShapeTree')) }}</b></p></div>
+                <Divider />
+              </div>
+              <div class="col-12 text-right">
+                <Button @click="processDocumentCreationDemand(uri)" class="mr-4">Provide requested Data</Button>
+                <Button @click="processDocumentCreationDemand(uri)" severity="secondary">Delete Request</Button>
+              </div>
+            </template>
         </Card>
       </ul>
     </div>
@@ -137,7 +146,12 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 .grid {
   margin: 5px;
 }
-
+ul{
+  padding-left:0px;
+}
+.p-card-content{
+  padding:0px;
+}
 .p-inputgroup {
   padding-bottom: 0;
 }
