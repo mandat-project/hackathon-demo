@@ -102,17 +102,14 @@
 </template>
 
 <script setup lang="ts">
+import {useDataAuthorization} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {inject, watch} from "vue";
+import {watch} from "vue";
 
 const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
 const emit = defineEmits(["revokedDataAuthorization"])
 
 const toast = useToast();
-
-const getDataAuthorization = inject<Function>('useAuthorizations:getDataAuthorization', () => {
-  throw new Error('Injection not provided');
-}, true);
 
 const {
   revokeDataAuthorizationRights,
@@ -125,7 +122,7 @@ const {
   scopes,
   accessNeeds,
   granteeName,
-} = await getDataAuthorization(props.resourceURI);
+} = await useDataAuthorization(props.resourceURI);
 
 // check if this component is being triggered to revoke from its parent
 watch(() => props.groupRevokationTrigger, () => {

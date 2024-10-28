@@ -61,16 +61,13 @@
 
 
 <script setup lang="ts">
+import {useAccessNeed} from "@shared/composables";
+
 // import {useAuthorizations} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {inject, ref, watch} from "vue";
+import {ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "groupAuthorizationTrigger"]);
-
-// const { getAccessNeed } = useAuthorizations(props.parentURI);
-const getAccessNeed = inject<Function>('useAuthorizations:getAccessNeed', () => {
-  throw new Error('Injection not provided');
-}, true);
 
 const {
   grantDataAuthorization,
@@ -79,7 +76,7 @@ const {
   registeredShapeTrees,
   dataInstances,
   containers,
-} = await getAccessNeed(props.resourceURI, props.forSocialAgents);
+} = await useAccessNeed(props.resourceURI, props.forSocialAgents);
 
 // const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
 const toast = useToast();

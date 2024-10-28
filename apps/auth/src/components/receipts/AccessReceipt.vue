@@ -85,17 +85,13 @@
 <script setup lang="ts">
 import AccessAuthorization from "@/components/receipts/AccessAuthorization";
 import {DateFormatted} from "@shared/components";
+import {useAccessReceipt} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {inject} from "vue";
 
 const props = defineProps(["informationResourceURI", "redirect"]);
 const emit = defineEmits(["isReceiptForRequests"])
 
 const toast = useToast();
-
-const getAccessReceipt = inject<Function>('useAuthorizations:getAccessReceipt', () => {
-  throw new Error('Injection not provided');
-}, true);
 
 const {
   revokeAccessReceiptRights,
@@ -108,7 +104,7 @@ const {
   isRevokedOrDenied,
   status,
   isWaitingForAccessAuthorizations,
-} = await getAccessReceipt(props.informationResourceURI, props.redirect);
+} = await useAccessReceipt(props.informationResourceURI, props.redirect);
 
 </script>
 

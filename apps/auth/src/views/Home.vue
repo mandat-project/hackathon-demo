@@ -67,6 +67,7 @@ const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
 const headingTitle = ref('Access Manager')
 
 const {
+  initialize,
   reload,
 
   accessReceiptInformationResources,
@@ -74,7 +75,7 @@ const {
 
 } = useAuthorizations(props.inspectedAccessRequestURI);
 
-
+initialize();
 
 /**
  * refresh view
