@@ -103,13 +103,9 @@
 
 <script setup lang="ts">
 import {useDataAuthorization} from "@shared/composables";
-import {useToast} from "primevue/usetoast";
 import {watch} from "vue";
 
 const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
-const emit = defineEmits(["revokedDataAuthorization"])
-
-const toast = useToast();
 
 const {
   revokeDataAuthorizationRights,

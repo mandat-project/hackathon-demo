@@ -82,7 +82,6 @@
 import DataAuthorization from "@/components/receipts/DataAuthorization";
 import {DateFormatted} from "@shared/components";
 import {useAccessAuthorization} from "@shared/composables";
-import {useToast} from "primevue/usetoast";
 import {watch} from "vue";
 
 const props = defineProps([
@@ -90,8 +89,6 @@ const props = defineProps([
     "redirect",
     "receipRevokationTrigger",
 ]);
-const emit = defineEmits(["updatedAccessAuthorization", "isEmptyAuthorization"])
-const toast = useToast();
 
 const {
   revokeAccessAuthorizationRights,
@@ -103,10 +100,10 @@ const {
   dataAuthorizations,
   granteeName,
   isWaitingForDataAuthorizations,
-  revokedDataAuthorizations,
-} = await useAccessAuthorization(props.resourceURI);
+} = await useAccessAuthorization(props.resourceURI, props.redirect);
 
 watch(props.receipRevokationTrigger, () => revokeAccessAuthorizationRights());
+
 </script>
 
 <style scoped>

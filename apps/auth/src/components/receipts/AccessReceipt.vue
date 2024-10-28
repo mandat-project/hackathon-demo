@@ -44,7 +44,7 @@
               <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization">
                 <Suspense>
                   <AccessAuthorization :resourceURI="accessAuthorization"
-                                       :receipRevokationTrigger="isWaitingForAccessAuthorizations"
+                                       :receipRevokationTrigger="revokeReceiptIsWaitingForAccessAuthorizations"
                                        @updatedAccessAuthorization="updateAccessAuthorization"
                                        />
                   <template #fallback>
@@ -72,7 +72,7 @@
   Freeze
 </Button> -->
           <Button @click="revokeAccessReceiptRights" type="button" severity="danger"
-                  :disabled="isWaitingForAccessAuthorizations">
+                  :disabled="revokeReceiptIsWaitingForAccessAuthorizations">
             Revoke All
           </Button>
         </div>
@@ -86,12 +86,8 @@
 import AccessAuthorization from "@/components/receipts/AccessAuthorization";
 import {DateFormatted} from "@shared/components";
 import {useAccessReceipt} from "@shared/composables";
-import {useToast} from "primevue/usetoast";
 
 const props = defineProps(["informationResourceURI", "redirect"]);
-const emit = defineEmits(["isReceiptForRequests"])
-
-const toast = useToast();
 
 const {
   revokeAccessReceiptRights,
@@ -103,7 +99,8 @@ const {
   purpose,
   isRevokedOrDenied,
   status,
-  isWaitingForAccessAuthorizations,
+
+  revokeReceiptIsWaitingForAccessAuthorizations,
 } = await useAccessReceipt(props.informationResourceURI, props.redirect);
 
 </script>

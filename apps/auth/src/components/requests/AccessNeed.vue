@@ -63,7 +63,6 @@
 <script setup lang="ts">
 import {useAccessNeed} from "@shared/composables";
 
-// import {useAuthorizations} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
 import {ref, watch} from "vue";
 
