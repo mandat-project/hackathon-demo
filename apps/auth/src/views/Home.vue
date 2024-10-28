@@ -9,7 +9,7 @@
     </header>
 
   <div class="flex flex-column gap-5 w-full md:w-11 xl:w-9 mx-auto my-5">
-    <article v-for="accessRequestResource in displayAccessRequests" :key="accessRequestResource + reloadFlag">
+    <article v-for="accessRequestResource in accessRequests" :key="accessRequestResource + reloadFlag">
       <Suspense>
         <AccessRequest :informationResourceURI="accessRequestResource" :redirect="redirect" />
         <template #fallback>
@@ -31,8 +31,7 @@
     <article v-for="accessReceiptResource in accessReceiptInformationResources" :key="accessReceiptResource + reloadFlag">
       <Suspense>
         <AccessReceipt :informationResourceURI="accessReceiptResource"
-                       :redirect="redirect"
-                       @isReceiptForRequests="addRequestsToHandled"/>
+                       :redirect="redirect"/>
         <template #fallback>
           <Card>
             <template #content>
@@ -60,7 +59,7 @@ import AccessReceipt from "@/components/receipts/AccessReceipt";
 import AccessRequest from "@/components/requests/AccessRequest";
 import {useAuthorizations} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {computed, provide, ref, watch} from "vue";
+import {ref, watch} from "vue";
 
 const toast = useToast();
 
@@ -68,27 +67,15 @@ const props = defineProps(["inspectedAccessRequestURI", "redirect"]);
 const headingTitle = ref('Access Manager')
 
 const {
+  initialize,
   reload,
 
-  accessRequestInformationResources,
   accessReceiptInformationResources,
+  accessRequests,
 
 } = useAuthorizations(props.inspectedAccessRequestURI);
 
-// only display not yet handled
-const displayAccessRequests = computed(() =>
-  accessRequestInformationResources.value.filter(r => !handledAccessRequests.value.map(h => h.split('#')[0]).includes(r))
-);
-const handledAccessRequests = ref<string[]>([]);
-
-
-/**
- * when an access receipt states that it is associated to specific access requests
- * @param requests
- */
-function addRequestsToHandled(requests: string[]) {
-  handledAccessRequests.value = [...handledAccessRequests.value, ...requests];
-}
+initialize();
 
 /**
  * refresh view

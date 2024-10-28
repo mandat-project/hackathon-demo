@@ -45,15 +45,11 @@
 
 <script setup lang="ts">
 import AccessNeed from "@/components/requests/AccessNeed";
-import {inject, reactive, ref, watch} from "vue";
+import {useAccessNeedGroup} from "@shared/composables";
+import {reactive, ref, watch} from "vue";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
-
-// const { getAccessNeedGroup } = useAuthorizations(props.parentURI);
-const getAccessNeedGroup = inject<Function>('useAuthorizations:getAccessNeedGroup', () => {
-  throw new Error('Injection not provided');
-}, true);
 
 const {
   grantAccessAuthorization,
@@ -63,7 +59,7 @@ const {
   accessNeeds,
   prefLabels,
   definitions,
-} = await getAccessNeedGroup(props.resourceURI, props.forSocialAgents);
+} = await useAccessNeedGroup(props.resourceURI, props.forSocialAgents);
 
 //
 // Authorize Access Need Group

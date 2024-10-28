@@ -81,8 +81,9 @@
 <script setup lang="ts">
 import DataAuthorization from "@/components/receipts/DataAuthorization";
 import {DateFormatted} from "@shared/components";
+import {useAccessAuthorization} from "@shared/composables";
 import {useToast} from "primevue/usetoast";
-import {inject, watch} from "vue";
+import {watch} from "vue";
 
 const props = defineProps([
     "resourceURI",
@@ -91,10 +92,6 @@ const props = defineProps([
 ]);
 const emit = defineEmits(["updatedAccessAuthorization", "isEmptyAuthorization"])
 const toast = useToast();
-
-const getAccessAuthorization = inject<Function>('useAuthorizations:getAccessAuthorization', () => {
-  throw new Error('Injection not provided');
-}, true);
 
 const {
   revokeAccessAuthorizationRights,
@@ -107,7 +104,7 @@ const {
   granteeName,
   isWaitingForDataAuthorizations,
   revokedDataAuthorizations,
-} = await getAccessAuthorization(props.resourceURI);
+} = await useAccessAuthorization(props.resourceURI);
 
 watch(props.receipRevokationTrigger, () => revokeAccessAuthorizationRights());
 </script>
