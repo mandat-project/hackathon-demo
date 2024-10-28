@@ -80,17 +80,16 @@
       </Button>
     </div>
     <!-- <template #footer> -->
-    <div class="flex justify-content-between mt-4">
+    <div class="flex justify-content-between my-4">
       <Button
-          label="Get a Pod!" severity="secondary"
-          class="p-button-outlined p-button-rounded"
+          label="Get a Pod!"
+          severity="secondary"
           @click="GetAPod"
       />
       <Button
           label="close"
           icon="pi pi-times"
           iconPos="right" severity="secondary"
-          class="p-button-outlined p-button-rounded"
           @click="isDisplaingIDPs = !isDisplaingIDPs"
       />
     </div>

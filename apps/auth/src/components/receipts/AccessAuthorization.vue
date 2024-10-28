@@ -1,18 +1,18 @@
 <template>
-  <div class="p-3 grid">
+  <div class="md:p-3 grid">
     <a
-      class="col-12"
+      class="col-12 break-all"
       :href="resourceURI"
     >
       {{ resourceURI.split("/").pop() }}
     </a>
-    <div class="col-4">
+    <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
         Grant date:
       </div>
             <DateFormatted :datetimeString="date" v-for="date in grantDates" :key="date"/>
     </div>
-    <div class="col-4">
+    <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
         Grantees:
       </div>
@@ -24,7 +24,7 @@
         {{ granteeName }}
       </a>
     </div>
-    <div class="col-4">
+    <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
         Access Need Groups:
       </div>
@@ -33,7 +33,7 @@
         :key="accessNeedGroup"
         :href="accessNeedGroup"
       >
-        {{ accessNeedGroup.split("/").pop() }}
+        {{ accessNeedGroup.split("#").pop() }}
       </a>
     </div>
         <div v-if="dataAuthorizations.length > 0" class="col-12 grid">

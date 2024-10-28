@@ -84,8 +84,9 @@
       </div>
     </template>
     <template #footer>
-      <div class="flex justify-content-end border-top-1 gap-2 pt-3 -mt-3 border-blue-100">
+      <div class="grid sm:justify-content-end border-top-1 gap-2 pt-3 -mt-3 border-blue-100">
         <Button
+          class="w-full justify-content-center sm:w-auto"
           severity="primary"
           type="button"
           :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound"
@@ -94,6 +95,7 @@
           Authorize Request
         </Button>
         <Button
+          class="w-full justify-content-center sm:w-auto"
           type="button"
           severity="secondary"
           :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound"

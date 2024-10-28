@@ -74,7 +74,7 @@
   class="p-button-warning">
   Freeze
 </Button> -->
-          <Button @click="revokeRights" type="button" severity="primary"
+          <Button @click="revokeRights" type="button" severity="primary" class="w-full justify-content-center sm:w-auto"
                   :disabled="isWaitingForAccessAuthorizations">
             Revoke All
           </Button>
