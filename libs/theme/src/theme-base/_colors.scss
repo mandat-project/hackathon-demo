@@ -3,27 +3,23 @@
 @use "mixins";
 
 :root {
-    @if meta.variable-exists(colors) {
-        @each $name, $color in variables.$colors {
-            @for $i from 0 through 5 {
-                @if ($i == 0) {
-                    --#{$name}-50:#{mixins.tint($color, (5 - $i) * 19%)};
-                }
-                @else {
-                    --#{$name}-#{$i * 100}:#{mixins.tint($color, (5 - $i) * 19%)};
-                }
+    @each $name, $color in variables.$colors {
+        @for $i from 0 through 5 {
+            @if ($i == 0) {
+                --#{$name}-50:#{mixins.tint($color, (5 - $i) * 19%)};
             }
-            
-            @for $i from 1 through 4 {
-                --#{$name}-#{($i + 5) * 100}:#{mixins.shade($color, $i * 15%)};
+            @else {
+                --#{$name}-#{$i * 100}:#{mixins.tint($color, (5 - $i) * 19%)};
             }
         }
+
+        @for $i from 1 through 4 {
+            --#{$name}-#{($i + 5) * 100}:#{mixins.shade($color, $i * 15%)};
+        }
     }
-    @if meta.variable-exists(dacklColors) {
-        @each $colorName, $colorMap in variables.$dacklColors {
-            @each $shade, $value in $colorMap {
-                --#{$colorName}-#{$shade}: #{$value};
-            }
+    @each $colorName, $colorMap in variables.$dacklColors {
+        @each $shade, $value in $colorMap {
+            --#{$colorName}-#{$shade}: #{$value};
         }
     }
 }
