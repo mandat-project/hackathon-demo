@@ -1,5 +1,6 @@
 {
   "loadingAuthorization": "Loading Authorization",
+  "loadingAccessReceipt": "Loading Access Receipt",
   "accessRequest": {
     "title": "Access Request",
     "purpose": "Purpose:",
@@ -40,7 +41,23 @@
     "groups": "Access Need Groups:",
     "dataAuthorizations": "Data Authorizations",
     "revokeGroup": "Revoke Authorizations in this group",
-    "loadingData": "Loading Data Authorization"
+    "loadingData": "Loading Data Authorization",
+    "error": {
+      "accessRequest": "Could not get access request!",
+      "grantee": "Could not get grantee!",
+      "createArchivedAccessReceipt": "Failed to create Archived Access Receipt!",
+      "updateArchivedAccessReceipt": "Failed to updated Archived Access Receipt!",
+      "createNewAccessReceipt": "Failed to create new Access Receipt!",
+      "updateNewAccessReceipt": "Failed to update new Access Receipt!"
+    },
+    "info": {
+      "archivedAccessAuthorizationCreated": "Archived Access Authorization created.",
+      "newAccessAuthorizationCreated": "New Access Authorization created."
+    },
+    "success": {
+      "archivedAccessAuthorizationUpdated": "Archived Access Authorization updated.",
+      "accessAuthorizationUpdated": "New Access Authorization updated."
+    }
   },
   "accessReceipt": {
     "authorization": "Authorization",
@@ -62,5 +79,13 @@
   },
   "error": {
     "401-unauthenticated": "401 Unauthenticated : Login using the button in the top-right corner!"
+  },
+  "toast": {
+    "error": {
+      "createDataAuthorization": "Failed to create Data Authorization Container!",
+      "createAccessDataAuthorization": "Failed to create Access Authorization Container!",
+      "createAccessReceipt": "Failed to create Access Receipt Container!",
+      "fetchDemand": "Error on fetchDemand!"
+    }
   }
 }
