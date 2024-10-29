@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 // core
 .p-fieldset-legend > a,
 .p-fieldset-legend > span {
@@ -20,54 +24,54 @@
 
 // theme
 .p-fieldset {
-    border: $panelContentBorder;
-    background: $panelContentBg;
-    color: $panelContentTextColor;
-    border-radius: $borderRadius;
+    border: panel.$panelContentBorder;
+    background: panel.$panelContentBg;
+    color: panel.$panelContentTextColor;
+    border-radius: general.$borderRadius;
 
     .p-fieldset-legend {
-        padding: $panelHeaderPadding;
-        border: $panelHeaderBorder;
-        color: $panelHeaderTextColor;
-        background: $panelHeaderBg;
-        font-weight: $panelHeaderFontWeight;
-        border-radius: $borderRadius;
+        padding: panel.$panelHeaderPadding;
+        border: panel.$panelHeaderBorder;
+        color: panel.$panelHeaderTextColor;
+        background: panel.$panelHeaderBg;
+        font-weight: panel.$panelHeaderFontWeight;
+        border-radius: general.$borderRadius;
     }
 
     &.p-fieldset-toggleable {
         .p-fieldset-legend {
             padding: 0;
-            transition: $actionIconTransition;
+            transition: general.$actionIconTransition;
 
             a {
-                padding: $panelHeaderPadding;
-                color: $panelHeaderTextColor;
-                border-radius: $borderRadius;
-                transition: $listItemTransition;
+                padding: panel.$panelHeaderPadding;
+                color: panel.$panelHeaderTextColor;
+                border-radius: general.$borderRadius;
+                transition: general.$listItemTransition;
                 outline-color: transparent;
 
                 .p-fieldset-toggler {
-                    margin-right: $inlineSpacing;
+                    margin-right: general.$inlineSpacing;
                 }
 
                 &:focus-visible {
-                    @include focused();
+                    @include mixins.focused();
                 }
 
                 &:hover {
-                    color: $panelHeaderTextHoverColor;
+                    color: panel.$panelHeaderTextHoverColor;
                 }
             }
 
             &:hover {
-                background: $panelHeaderHoverBg;
-                border-color: $panelHeaderHoverBorderColor;
-                color: $panelHeaderTextHoverColor;
+                background: panel.$panelHeaderHoverBg;
+                border-color: panel.$panelHeaderHoverBorderColor;
+                color: panel.$panelHeaderTextHoverColor;
             }
         }
     }
 
     .p-fieldset-content {
-        padding: $panelContentPadding;
+        padding: panel.$panelContentPadding;
     }
 }

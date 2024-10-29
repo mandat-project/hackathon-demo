@@ -1,112 +1,113 @@
-@import "mixins";
-@import "colors";
+@use "sass:meta";
+@use "mixins";
+@use "colors";
 
-@import "./components/input/editor";
+@use "components/input/editor";
 
 @layer primevue {
-    @import "common";
+    @include meta.load-css("common");
 
     //Input
-    @import "./components/input/autocomplete";
-    @import "./components/input/calendar";
-    @import "./components/input/cascadeselect";
-    @import "./components/input/checkbox";
-    @import "./components/input/chips";
-    @import "./components/input/colorpicker";
-    @import "./components/input/dropdown";
-    @import "./components/input/floatlabel";
-    @import "./components/input/iconfield";
-    @import "./components/input/inputotp";
-    @import "./components/input/inputgroup";
-    @import "./components/input/inputicon";
-    @import "./components/input/inputnumber";
-    @import "./components/input/inputswitch";
-    @import "./components/input/inputtext";
-    @import "./components/input/knob";
-    @import "./components/input/listbox";
-    @import "./components/input/multiselect";
-    @import "./components/input/password";
-    @import "./components/input/radiobutton";
-    @import "./components/input/rating";
-    @import "./components/input/selectbutton";
-    @import "./components/input/slider";
-    @import "./components/input/textarea";
-    @import "./components/input/treeselect";
-    @import "./components/input/togglebutton";
+    @include meta.load-css("components/input/autocomplete");
+    @include meta.load-css("components/input/calendar");
+    @include meta.load-css("components/input/cascadeselect");
+    @include meta.load-css("components/input/checkbox");
+    @include meta.load-css("components/input/chips");
+    @include meta.load-css("components/input/colorpicker");
+    @include meta.load-css("components/input/dropdown");
+    @include meta.load-css("components/input/floatlabel");
+    @include meta.load-css("components/input/iconfield");
+    @include meta.load-css("components/input/inputotp");
+    @include meta.load-css("components/input/inputgroup");
+    @include meta.load-css("components/input/inputicon");
+    @include meta.load-css("components/input/inputnumber");
+    @include meta.load-css("components/input/inputswitch");
+    @include meta.load-css("components/input/inputtext");
+    @include meta.load-css("components/input/knob");
+    @include meta.load-css("components/input/listbox");
+    @include meta.load-css("components/input/multiselect");
+    @include meta.load-css("components/input/password");
+    @include meta.load-css("components/input/radiobutton");
+    @include meta.load-css("components/input/rating");
+    @include meta.load-css("components/input/selectbutton");
+    @include meta.load-css("components/input/slider");
+    @include meta.load-css("components/input/textarea");
+    @include meta.load-css("components/input/treeselect");
+    @include meta.load-css("components/input/togglebutton");
 
     //Button
-    @import "./components/button/button";
-    @import "./components/button/speeddial";
-    @import "./components/button/splitbutton";
+    @include meta.load-css("components/button/button");
+    @include meta.load-css("components/button/speeddial");
+    @include meta.load-css("components/button/splitbutton");
 
     //Data
-    @import "./components/data/carousel";
-    @import "./components/data/datatable";
-    @import "./components/data/dataview";
-    @import "./components/data/filter";
-    @import "./components/data/orderlist";
-    @import "./components/data/organizationchart";
-    @import "./components/data/paginator";
-    @import "./components/data/picklist";
-    @import "./components/data/timeline";
-    @import "./components/data/tree";
-    @import "./components/data/treetable";
+    @include meta.load-css("components/data/carousel");
+    @include meta.load-css("components/data/datatable");
+    @include meta.load-css("components/data/dataview");
+    @include meta.load-css("components/data/filter");
+    @include meta.load-css("components/data/orderlist");
+    @include meta.load-css("components/data/organizationchart");
+    @include meta.load-css("components/data/paginator");
+    @include meta.load-css("components/data/picklist");
+    @include meta.load-css("components/data/timeline");
+    @include meta.load-css("components/data/tree");
+    @include meta.load-css("components/data/treetable");
 
     //Panel
-    @import "./components/panel/accordion";
-    @import "./components/panel/card";
-    @import "./components/panel/fieldset";
-    @import "./components/panel/divider";
-    @import "./components/panel/panel";
-    @import "./components/panel/scrollpanel";
-    @import "./components/panel/splitter";
-    @import "./components/panel/stepper";
-    @import "./components/panel/tabview";
-    @import "./components/panel/toolbar";
+    @include meta.load-css("components/panel/accordion");
+    @include meta.load-css("components/panel/card");
+    @include meta.load-css("components/panel/fieldset");
+    @include meta.load-css("components/panel/divider");
+    @include meta.load-css("components/panel/panel");
+    @include meta.load-css("components/panel/scrollpanel");
+    @include meta.load-css("components/panel/splitter");
+    @include meta.load-css("components/panel/stepper");
+    @include meta.load-css("components/panel/tabview");
+    @include meta.load-css("components/panel/toolbar");
 
     //Overlay
-    @import "./components/overlay/confirmpopup";
-    @import "./components/overlay/dialog";
-    @import "./components/overlay/overlaypanel";
-    @import "./components/overlay/sidebar";
-    @import "./components/overlay/tooltip";
+    @include meta.load-css("components/overlay/confirmpopup");
+    @include meta.load-css("components/overlay/dialog");
+    @include meta.load-css("components/overlay/overlaypanel");
+    @include meta.load-css("components/overlay/sidebar");
+    @include meta.load-css("components/overlay/tooltip");
 
     //File
-    @import "./components/file/fileupload";
+    @include meta.load-css("components/file/fileupload");
 
     //Menu
-    @import "./components/menu/breadcrumb";
-    @import "./components/menu/contextmenu";
-    @import "./components/menu/dock";
-    @import "./components/menu/megamenu";
-    @import "./components/menu/menu";
-    @import "./components/menu/menubar";
-    @import "./components/menu/panelmenu";
-    @import "./components/menu/steps";
-    @import "./components/menu/tabmenu";
-    @import "./components/menu/tieredmenu";
+    @include meta.load-css("components/menu/breadcrumb");
+    @include meta.load-css("components/menu/contextmenu");
+    @include meta.load-css("components/menu/dock");
+    @include meta.load-css("components/menu/megamenu");
+    @include meta.load-css("components/menu/menu");
+    @include meta.load-css("components/menu/menubar");
+    @include meta.load-css("components/menu/panelmenu");
+    @include meta.load-css("components/menu/steps");
+    @include meta.load-css("components/menu/tabmenu");
+    @include meta.load-css("components/menu/tieredmenu");
 
     //Messages
-    @import "./components/messages/inlinemessage";
-    @import "./components/messages/message";
-    @import "components/messages/toast";
+    @include meta.load-css("components/messages/inlinemessage");
+    @include meta.load-css("components/messages/message");
+    @include meta.load-css("components/messages/toast");
 
     //MultiMedia
-    @import "./components/multimedia/galleria";
-    @import "./components/multimedia/image";
+    @include meta.load-css("components/multimedia/galleria");
+    @include meta.load-css("components/multimedia/image");
 
     //Misc
-    @import "./components/misc/avatar";
-    @import "./components/misc/badge";
-    @import "./components/misc/blockui";
-    @import "./components/misc/chip";
-    @import "./components/misc/inplace";
-    @import "./components/misc/metergroup";
-    @import "./components/misc/progressbar";
-    @import "./components/misc/progressspinner";
-    @import "./components/misc/ripple";
-    @import "./components/misc/scrolltop";
-    @import "./components/misc/skeleton";
-    @import "./components/misc/tag";
-    @import "./components/misc/terminal";
+    @include meta.load-css("components/misc/avatar");
+    @include meta.load-css("components/misc/badge");
+    @include meta.load-css("components/misc/blockui");
+    @include meta.load-css("components/misc/chip");
+    @include meta.load-css("components/misc/inplace");
+    @include meta.load-css("components/misc/metergroup");
+    @include meta.load-css("components/misc/progressbar");
+    @include meta.load-css("components/misc/progressspinner");
+    @include meta.load-css("components/misc/ripple");
+    @include meta.load-css("components/misc/scrolltop");
+    @include meta.load-css("components/misc/skeleton");
+    @include meta.load-css("components/misc/tag");
+    @include meta.load-css("components/misc/terminal");
 }

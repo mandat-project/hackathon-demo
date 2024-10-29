@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+
 // core
 .p-skeleton {
     overflow: hidden;
@@ -34,10 +37,10 @@
 
 // theme
 .p-skeleton {
-    background-color: $skeletonBg;
-    border-radius: $borderRadius;
+    background-color: misc.$skeletonBg;
+    border-radius: general.$borderRadius;
 
     &:after {
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0), $skeletonAnimationBg, rgba(255, 255, 255, 0));
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), misc.$skeletonAnimationBg, rgba(255, 255, 255, 0));
     }
 }

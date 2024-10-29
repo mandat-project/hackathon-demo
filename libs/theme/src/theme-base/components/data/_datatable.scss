@@ -1,3 +1,8 @@
+@use "../../../datev-theme/variables/data";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../mixins";
+
 // core
 .p-datatable {
     position: relative;
@@ -237,181 +242,181 @@
 // theme
 .p-datatable {
     .p-paginator-top {
-        border-width: $tableTopPaginatorBorderWidth;
+        border-width: data.$tableTopPaginatorBorderWidth;
         border-radius: 0;
     }
 
     .p-paginator-bottom {
-        border-width: $tableBottomPaginatorBorderWidth;
+        border-width: data.$tableBottomPaginatorBorderWidth;
         border-radius: 0;
     }
 
     .p-datatable-header {
-        background: $tableHeaderBg;
-        color: $tableHeaderTextColor;
-        border: $tableHeaderBorder;
-        border-width: $tableHeaderBorderWidth;
-        padding: $tableHeaderPadding;
-        font-weight: $tableHeaderFontWeight;
+        background: data.$tableHeaderBg;
+        color: data.$tableHeaderTextColor;
+        border: data.$tableHeaderBorder;
+        border-width: data.$tableHeaderBorderWidth;
+        padding: data.$tableHeaderPadding;
+        font-weight: data.$tableHeaderFontWeight;
     }
 
     .p-datatable-footer {
-        background: $tableFooterBg;
-        color: $tableFooterTextColor;
-        border: $tableFooterBorder;
-        border-width: $tableFooterBorderWidth;
-        padding: $tableFooterPadding;
-        font-weight: $tableFooterFontWeight;
+        background: data.$tableFooterBg;
+        color: data.$tableFooterTextColor;
+        border: data.$tableFooterBorder;
+        border-width: data.$tableFooterBorderWidth;
+        padding: data.$tableFooterPadding;
+        font-weight: data.$tableFooterFontWeight;
     }
 
     .p-datatable-thead > tr > th {
-        text-align: $tableCellContentAlignment;
-        padding: $tableHeaderCellPadding;
-        border: $tableHeaderCellBorder;
-        border-width: $tableHeaderCellBorderWidth;
-        font-weight: $tableHeaderCellFontWeight;
-        color: $tableHeaderCellTextColor;
-        background: $tableHeaderCellBg;
-        transition: $listItemTransition;
+        text-align: data.$tableCellContentAlignment;
+        padding: data.$tableHeaderCellPadding;
+        border: data.$tableHeaderCellBorder;
+        border-width: data.$tableHeaderCellBorderWidth;
+        font-weight: data.$tableHeaderCellFontWeight;
+        color: data.$tableHeaderCellTextColor;
+        background: data.$tableHeaderCellBg;
+        transition: general.$listItemTransition;
     }
 
     .p-datatable-tfoot > tr > td {
-        text-align: $tableCellContentAlignment;
-        padding: $tableFooterCellPadding;
-        border: $tableFooterCellBorder;
-        border-width: $tableFooterCellBorderWidth;
-        font-weight: $tableFooterCellFontWeight;
-        color: $tableFooterCellTextColor;
-        background: $tableFooterCellBg;
+        text-align: data.$tableCellContentAlignment;
+        padding: data.$tableFooterCellPadding;
+        border: data.$tableFooterCellBorder;
+        border-width: data.$tableFooterCellBorderWidth;
+        font-weight: data.$tableFooterCellFontWeight;
+        color: data.$tableFooterCellTextColor;
+        background: data.$tableFooterCellBg;
     }
 
     .p-sortable-column {
         .p-sortable-column-icon {
-            color: $tableHeaderCellIconColor;
-            margin-left: $inlineSpacing;
+            color: data.$tableHeaderCellIconColor;
+            margin-left: general.$inlineSpacing;
         }
 
         .p-sortable-column-badge {
             border-radius: 50%;
-            height: $tableSortableColumnBadgeSize;
-            min-width: $tableSortableColumnBadgeSize;
-            line-height: $tableSortableColumnBadgeSize;
-            color: $highlightTextColor;
-            background: $highlightBg;
-            margin-left: $inlineSpacing;
+            height: data.$tableSortableColumnBadgeSize;
+            min-width: data.$tableSortableColumnBadgeSize;
+            line-height: data.$tableSortableColumnBadgeSize;
+            color: general.$highlightTextColor;
+            background: general.$highlightBg;
+            margin-left: general.$inlineSpacing;
         }
 
         &:not(.p-highlight):hover {
-            background: $tableHeaderCellHoverBg;
-            color: $tableHeaderCellTextHoverColor;
+            background: data.$tableHeaderCellHoverBg;
+            color: data.$tableHeaderCellTextHoverColor;
 
             .p-sortable-column-icon {
-                color: $tableHeaderCellIconHoverColor;
+                color: data.$tableHeaderCellIconHoverColor;
             }
         }
 
         &.p-highlight {
-            background: $tableHeaderCellHighlightBg;
-            color: $tableHeaderCellHighlightTextColor;
+            background: data.$tableHeaderCellHighlightBg;
+            color: data.$tableHeaderCellHighlightTextColor;
 
             .p-sortable-column-icon {
-                color: $tableHeaderCellHighlightTextColor;
+                color: data.$tableHeaderCellHighlightTextColor;
             }
 
             &:hover {
-                background: $tableHeaderCellHighlightHoverBg;
-                color: $tableHeaderCellHighlightTextColor;
+                background: data.$tableHeaderCellHighlightHoverBg;
+                color: data.$tableHeaderCellHighlightTextColor;
     
                 .p-sortable-column-icon {
-                    color: $tableHeaderCellHighlightTextColor;
+                    color: data.$tableHeaderCellHighlightTextColor;
                 }
             }
         }
 
         &:focus-visible {
-            box-shadow: $inputListItemFocusShadow;
+            box-shadow: form.$inputListItemFocusShadow;
             outline: 0 none;
         }
     }
 
     .p-datatable-tbody {
         > tr {
-            background: $tableBodyRowBg;
-            color: $tableBodyRowTextColor;
-            transition: $listItemTransition;
+            background: data.$tableBodyRowBg;
+            color: data.$tableBodyRowTextColor;
+            transition: general.$listItemTransition;
 
             > td {
-                text-align: $tableCellContentAlignment;
-                border: $tableBodyCellBorder;
-                border-width: $tableBodyCellBorderWidth;
-                padding: $tableBodyCellPadding;
+                text-align: data.$tableCellContentAlignment;
+                border: data.$tableBodyCellBorder;
+                border-width: data.$tableBodyCellBorderWidth;
+                padding: data.$tableBodyCellPadding;
 
                 .p-row-toggler,
                 .p-row-editor-init,
                 .p-row-editor-save,
                 .p-row-editor-cancel {
-                    @include action-icon();
+                    @include mixins.action-icon();
                 }
 
                 .p-row-editor-save {
-                    margin-right: $inlineSpacing;
+                    margin-right: general.$inlineSpacing;
                 }
 
                 > .p-column-title {
-                    font-weight: $tableHeaderCellFontWeight;
+                    font-weight: data.$tableHeaderCellFontWeight;
                 }
             }
 
             &:focus-visible {
-                outline: 0.15rem solid $focusOutlineColor;
+                outline: 0.15rem solid general.$focusOutlineColor;
                 outline-offset: -0.15rem;
             }
 
             &.p-highlight {
-                background: $highlightBg;
-                color: $highlightTextColor;
+                background: general.$highlightBg;
+                color: general.$highlightTextColor;
             }
 
             &.p-highlight-contextmenu {
-                outline: 0.15rem solid $focusOutlineColor;
+                outline: 0.15rem solid general.$focusOutlineColor;
                 outline-offset: -0.15rem;
             }
 
             &.p-datatable-dragpoint-top > td {
-                box-shadow: inset 0 2px 0 0 $highlightBg;
+                box-shadow: inset 0 2px 0 0 general.$highlightBg;
             }
 
             &.p-datatable-dragpoint-bottom > td {
-                box-shadow: inset 0 -2px 0 0 $highlightBg;
+                box-shadow: inset 0 -2px 0 0 general.$highlightBg;
             }
         }
     }
 
     &.p-datatable-hoverable-rows {
         .p-datatable-tbody > tr:not(.p-highlight):hover {
-            background: $tableBodyRowHoverBg;
-            color: $tableBodyRowTextHoverColor;
+            background: data.$tableBodyRowHoverBg;
+            color: data.$tableBodyRowTextHoverColor;
         }
     }
 
     .p-column-resizer-helper {
-        background: $tableResizerHelperBg;
+        background: data.$tableResizerHelperBg;
     }
 
     &.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table,
     &.p-datatable-scrollable > .p-datatable-wrapper > .p-virtualscroller > .p-datatable-table {
         > .p-datatable-thead,
         > .p-datatable-tfoot {
-            background-color: $tableHeaderCellBg;
+            background-color: data.$tableHeaderCellBg;
         }
     }
 
     .p-datatable-loading-icon {
-        font-size: $loadingIconFontSize;
+        font-size: general.$loadingIconFontSize;
 
         &.p-icon {
-            width:  $loadingIconFontSize;
-            height: $loadingIconFontSize;
+            width:  general.$loadingIconFontSize;
+            height: general.$loadingIconFontSize;
         }
     }
 
@@ -520,17 +525,17 @@
     &.p-datatable-striped {
         .p-datatable-tbody {
             > tr.p-row-odd {
-                background: $tableBodyRowEvenBg;
+                background: data.$tableBodyRowEvenBg;
     
                 &.p-highlight {
-                    background: $highlightBg;
-                    color: $highlightTextColor;
+                    background: general.$highlightBg;
+                    color: general.$highlightTextColor;
     
                     .p-row-toggler {
-                        color: $highlightTextColor;
+                        color: general.$highlightTextColor;
     
                         &:hover {
-                            color: $highlightTextColor;
+                            color: general.$highlightTextColor;
                         }
                     }
                 }
@@ -540,45 +545,45 @@
 
     &.p-datatable-sm {
         .p-datatable-header {
-            @include scaledPadding($tableHeaderPadding, $tableScaleSM);
+            @include mixins.scaledPadding(data.$tableHeaderPadding, data.$tableScaleSM);
         }
 
         .p-datatable-thead > tr > th {
-            @include scaledPadding($tableHeaderCellPadding, $tableScaleSM);
+            @include mixins.scaledPadding(data.$tableHeaderCellPadding, data.$tableScaleSM);
         }
 
         .p-datatable-tbody > tr > td {
-            @include scaledPadding($tableBodyCellPadding, $tableScaleSM);
+            @include mixins.scaledPadding(data.$tableBodyCellPadding, data.$tableScaleSM);
         }
 
         .p-datatable-tfoot > tr > td {
-            @include scaledPadding($tableFooterPadding, $tableScaleSM);
+            @include mixins.scaledPadding(data.$tableFooterPadding, data.$tableScaleSM);
         }
 
         .p-datatable-footer {
-            @include scaledPadding($tableFooterPadding, $tableScaleSM);
+            @include mixins.scaledPadding(data.$tableFooterPadding, data.$tableScaleSM);
         }
     }
 
     &.p-datatable-lg {
         .p-datatable-header {
-            @include scaledPadding($tableHeaderPadding, $tableScaleLG);
+            @include mixins.scaledPadding(data.$tableHeaderPadding, data.$tableScaleLG);
         }
 
         .p-datatable-thead > tr > th {
-            @include scaledPadding($tableHeaderCellPadding, $tableScaleLG);
+            @include mixins.scaledPadding(data.$tableHeaderCellPadding, data.$tableScaleLG);
         }
 
         .p-datatable-tbody > tr > td {
-            @include scaledPadding($tableBodyCellPadding, $tableScaleLG);
+            @include mixins.scaledPadding(data.$tableBodyCellPadding, data.$tableScaleLG);
         }
 
         .p-datatable-tfoot > tr > td {
-            @include scaledPadding($tableFooterPadding, $tableScaleLG);
+            @include mixins.scaledPadding(data.$tableFooterPadding, data.$tableScaleLG);
         }
 
         .p-datatable-footer {
-            @include scaledPadding($tableFooterPadding, $tableScaleLG);
+            @include mixins.scaledPadding(data.$tableFooterPadding, data.$tableScaleLG);
         }
     }
 }

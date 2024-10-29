@@ -1,3 +1,8 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/menu";
+@use "../../mixins";
+
 // core
 .p-cascadeselect {
     display: inline-flex;
@@ -91,39 +96,39 @@
 
 // theme
 .p-cascadeselect {
-    background: $inputBg;
-    border: $inputBorder;
-    transition: $formElementTransition;
-    border-radius: $borderRadius;
+    background: form.$inputBg;
+    border: form.$inputBorder;
+    transition: general.$formElementTransition;
+    border-radius: general.$borderRadius;
     outline-color: transparent;
 
     &:not(.p-disabled):hover {
-        border-color: $inputHoverBorderColor;
+        border-color: form.$inputHoverBorderColor;
     }
 
     &:not(.p-disabled).p-focus {
-        @include focused-input();
+        @include mixins.focused-input();
     }
 
     &.p-variant-filled {
-        background-color: $inputFilledBg;
+        background-color: form.$inputFilledBg;
 
         &:enabled:hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:enabled:focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 
     .p-cascadeselect-label {
         background: transparent;
         border: 0 none;
-        padding: $inputPadding;
+        padding: form.$inputPadding;
 
         &.p-placeholder {
-            color: $inputPlaceholderTextColor;
+            color: form.$inputPlaceholderTextColor;
         }
 
         &:enabled:focus {
@@ -134,34 +139,34 @@
 
     .p-cascadeselect-trigger {
         background: transparent;
-        color: $inputIconColor;
-        width: $inputGroupAddOnMinWidth;
-        border-top-right-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        color: form.$inputIconColor;
+        width: form.$inputGroupAddOnMinWidth;
+        border-top-right-radius: general.$borderRadius;
+        border-bottom-right-radius: general.$borderRadius;
     }
 
     &.p-invalid.p-component {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 }
 
 .p-cascadeselect-panel {
-    background: $inputOverlayBg;
-    color: $inputListTextColor;
-    border: $inputOverlayBorder;
-    border-radius: $borderRadius;
-    box-shadow: $inputOverlayShadow;
+    background: form.$inputOverlayBg;
+    color: form.$inputListTextColor;
+    border: form.$inputOverlayBorder;
+    border-radius: general.$borderRadius;
+    box-shadow: form.$inputOverlayShadow;
 
     .p-cascadeselect-items {
-        padding: $inputListPadding;
+        padding: form.$inputListPadding;
 
         .p-cascadeselect-item {
-            margin: $inputListItemMargin;
-            border: $inputListItemBorder;
-            color: $inputListItemTextColor;
-            background: $inputListItemBg;
-            transition: $listItemTransition;
-            border-radius: $inputListItemBorderRadius;
+            margin: form.$inputListItemMargin;
+            border: form.$inputListItemBorder;
+            color: form.$inputListItemTextColor;
+            background: form.$inputListItemBg;
+            transition: general.$listItemTransition;
+            border-radius: form.$inputListItemBorderRadius;
 
             &:first-child {
                 margin-top: 0;
@@ -172,27 +177,27 @@
             }
 
             &.p-highlight {
-                color: $highlightTextColor;
-                background: $highlightBg;
+                color: general.$highlightTextColor;
+                background: general.$highlightBg;
 
                 &.p-focus {
-                    background: $highlightFocusBg;
+                    background: general.$highlightFocusBg;
                 }
             }
 
             &:not(.p-highlight):not(.p-disabled) {
                 &.p-focus {
-                    color: $inputListItemTextHoverColor;
-                    background: $inputListItemHoverBg;
+                    color: form.$inputListItemTextHoverColor;
+                    background: form.$inputListItemHoverBg;
                 }
             }
 
             .p-cascadeselect-item-content {
-                padding: $inputListItemPadding;
+                padding: form.$inputListItemPadding;
             }
 
             .p-cascadeselect-group-icon {
-                font-size: $menuitemSubmenuIconFontSize;
+                font-size: menu.$menuitemSubmenuIconFontSize;
             }
         }
     }

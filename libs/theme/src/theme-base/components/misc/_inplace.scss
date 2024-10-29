@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+@use "../../mixins";
+
 // core
 .p-inplace .p-inplace-display {
     display: inline;
@@ -20,18 +24,18 @@
 // theme
 .p-inplace {
     .p-inplace-display {
-        padding: $inplacePadding;
-        border-radius: $borderRadius;
-        transition: $formElementTransition;
+        padding: misc.$inplacePadding;
+        border-radius: general.$borderRadius;
+        transition: general.$formElementTransition;
         outline-color: transparent;
 
         &:not(.p-disabled):hover {
-            background: $inplaceHoverBg;
-            color: $inplaceTextHoverColor;
+            background: misc.$inplaceHoverBg;
+            color: misc.$inplaceTextHoverColor;
         }
 
         &:focus {
-            @include focused();
+            @include mixins.focused();
         }
     }
 }

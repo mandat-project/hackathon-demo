@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+
 @use "sass:math";
 
 // core
@@ -40,25 +43,25 @@
 
 // theme
 .p-metergroup {
-    gap: $inlineSpacing * 2;
+    gap: general.$inlineSpacing * 2;
 
     .p-metergroup-meters {
-        background: $progressBarBg;
-        border-radius: $borderRadius;
+        background: misc.$progressBarBg;
+        border-radius: general.$borderRadius;
     }
 
     .p-metergroup-meter {
-        border: $progressBarBorder;
-        background: $progressBarValueBg;
+        border: misc.$progressBarBorder;
+        background: misc.$progressBarValueBg;
     }
 
     .p-metergroup-labels {
         .p-metergroup-label {
-            gap: $inlineSpacing;
+            gap: general.$inlineSpacing;
         }
 
         .p-metergroup-label-marker {
-            background: $progressBarValueBg;
+            background: misc.$progressBarValueBg;
             width: 0.5rem;
             height: 0.5rem;
             border-radius: 100%;
@@ -70,11 +73,11 @@
         }
 
         &.p-metergroup-labels-vertical {
-            gap: $inlineSpacing;
+            gap: general.$inlineSpacing;
         }
 
         &.p-metergroup-labels-horizontal {
-            gap: $inlineSpacing * 2;
+            gap: general.$inlineSpacing * 2;
         }
     }
 
@@ -86,13 +89,13 @@
         }
 
         .p-metergroup-meter:first-of-type {
-            border-top-left-radius: $borderRadius;
-            border-bottom-left-radius: $borderRadius;
+            border-top-left-radius: general.$borderRadius;
+            border-bottom-left-radius: general.$borderRadius;
         }
 
         .p-metergroup-meter:last-of-type {
-            border-top-right-radius: $borderRadius;
-            border-bottom-right-radius: $borderRadius;
+            border-top-right-radius: general.$borderRadius;
+            border-bottom-right-radius: general.$borderRadius;
         }
     }
 
@@ -105,13 +108,13 @@
         }
 
         .p-metergroup-meter:first-of-type {
-            border-top-left-radius: $borderRadius;
-            border-top-right-radius: $borderRadius;
+            border-top-left-radius: general.$borderRadius;
+            border-top-right-radius: general.$borderRadius;
         }
 
         .p-metergroup-meter:last-of-type {
-            border-bottom-left-radius: $borderRadius;
-            border-bottom-right-radius: $borderRadius;
+            border-bottom-left-radius: general.$borderRadius;
+            border-bottom-right-radius: general.$borderRadius;
         }
     }
 }

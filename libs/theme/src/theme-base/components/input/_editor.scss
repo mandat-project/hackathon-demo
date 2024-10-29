@@ -1,71 +1,74 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+
 .p-editor-container {
     .p-editor-toolbar {
-        background: $editorToolbarBg;
-        border-top-right-radius: $borderRadius;
-        border-top-left-radius: $borderRadius;
+        background: form.$editorToolbarBg;
+        border-top-right-radius: general.$borderRadius;
+        border-top-left-radius: general.$borderRadius;
 
         &.ql-snow {
-            border: $editorToolbarBorder;
+            border: form.$editorToolbarBorder;
 
             .ql-stroke {
-                stroke: $editorToolbarIconColor;
+                stroke: form.$editorToolbarIconColor;
             }
     
             .ql-fill {
-                fill: $editorToolbarIconColor;
+                fill: form.$editorToolbarIconColor;
             }
     
             .ql-picker {
                 .ql-picker-label {
                     border: 0 none;
-                    color: $editorToolbarIconColor;
+                    color: form.$editorToolbarIconColor;
 
                     &:hover {
-                        color: $editorToolbarIconHoverColor;
+                        color: form.$editorToolbarIconHoverColor;
 
                         .ql-stroke {
-                            stroke: $editorToolbarIconHoverColor;
+                            stroke: form.$editorToolbarIconHoverColor;
                         }
                 
                         .ql-fill {
-                            fill: $editorToolbarIconHoverColor;
+                            fill: form.$editorToolbarIconHoverColor;
                         }
                     }
                 }
 
                 &.ql-expanded {
                     .ql-picker-label {
-                        color: $editorToolbarIconHoverColor;
+                        color: form.$editorToolbarIconHoverColor;
 
                         .ql-stroke {
-                            stroke: $editorToolbarIconHoverColor;
+                            stroke: form.$editorToolbarIconHoverColor;
                         }
                 
                         .ql-fill {
-                            fill: $editorToolbarIconHoverColor;
+                            fill: form.$editorToolbarIconHoverColor;
                         }
                     }
 
                     .ql-picker-options {
-                        background: $inputOverlayBg;
-                        border:$inputOverlayBorder;
-                        box-shadow:$inputOverlayShadow;
-                        border-radius: $borderRadius;
-                        padding: $inputListPadding;
+                        background: form.$inputOverlayBg;
+                        border:form.$inputOverlayBorder;
+                        box-shadow:form.$inputOverlayShadow;
+                        border-radius: general.$borderRadius;
+                        padding: form.$inputListPadding;
 
                         .ql-picker-item {
-                            color: $inputListItemTextColor;
+                            color: form.$inputListItemTextColor;
                             
                             &:hover {
-                                color: $inputListItemTextHoverColor;
-                                background: $inputListItemHoverBg;
+                                color: form.$inputListItemTextHoverColor;
+                                background: form.$inputListItemHoverBg;
                             }
                         }
                     }
 
                     &:not(.ql-icon-picker) {
                         .ql-picker-item {
-                            padding: $inputListItemPadding;
+                            padding: form.$inputListItemPadding;
                         }
                     }
                 }
@@ -74,49 +77,49 @@
     }
 
     .p-editor-content {
-        border-bottom-right-radius: $borderRadius;
-        border-bottom-left-radius: $borderRadius;
+        border-bottom-right-radius: general.$borderRadius;
+        border-bottom-left-radius: general.$borderRadius;
 
         &.ql-snow {
-            border: $editorContentBorder;
+            border: form.$editorContentBorder;
         }
 
         .ql-editor {
-            background: $inputBg;
-            color: $inputTextColor;
-            border-bottom-right-radius: $borderRadius;
-            border-bottom-left-radius: $borderRadius;
+            background: form.$inputBg;
+            color: form.$inputTextColor;
+            border-bottom-right-radius: general.$borderRadius;
+            border-bottom-left-radius: general.$borderRadius;
         }
     }
 
     .ql-snow.ql-toolbar button:hover,
     .ql-snow.ql-toolbar button:focus {
-        color: $editorToolbarIconHoverColor;
+        color: form.$editorToolbarIconHoverColor;
 
         .ql-stroke {
-            stroke: $editorToolbarIconHoverColor;
+            stroke: form.$editorToolbarIconHoverColor;
         }
 
         .ql-fill {
-            fill: $editorToolbarIconHoverColor;
+            fill: form.$editorToolbarIconHoverColor;
         }
     }
 
     .ql-snow.ql-toolbar button.ql-active,
     .ql-snow.ql-toolbar .ql-picker-label.ql-active,
     .ql-snow.ql-toolbar .ql-picker-item.ql-selected {
-        color: $editorIconActiveColor;
+        color: form.$editorIconActiveColor;
 
         .ql-stroke {
-            stroke: $editorIconActiveColor;
+            stroke: form.$editorIconActiveColor;
         }
 
         .ql-fill {
-            fill: $editorIconActiveColor;
+            fill: form.$editorIconActiveColor;
         }
 
         .ql-picker-label {
-            color: $editorIconActiveColor;
+            color: form.$editorIconActiveColor;
         }
     }
 }

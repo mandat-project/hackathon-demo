@@ -1,3 +1,10 @@
+@use "sass:list";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/menu";
+@use "../../../datev-theme/variables/misc";
+@use "../../mixins";
+
 @use "sass:math";
 
 // core
@@ -109,65 +116,65 @@
 
 // theme
 .p-multiselect {
-    background: $inputBg;
-    border: $inputBorder;
-    transition: $formElementTransition;
-    border-radius: $borderRadius;
+    background: form.$inputBg;
+    border: form.$inputBorder;
+    transition: general.$formElementTransition;
+    border-radius: general.$borderRadius;
     outline-color: transparent;
 
     &:not(.p-disabled):hover {
-        border-color: $inputHoverBorderColor;
+        border-color: form.$inputHoverBorderColor;
     }
 
     &:not(.p-disabled).p-focus {
-        @include focused-input();
+        @include mixins.focused-input();
     }
 
     &.p-variant-filled {
-        background: $inputFilledBg;
+        background: form.$inputFilledBg;
 
         &:not(.p-disabled):hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:not(.p-disabled).p-focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 
     .p-multiselect-label {
-        padding: $inputPadding;
-        transition: $formElementTransition;
+        padding: form.$inputPadding;
+        transition: general.$formElementTransition;
 
         &.p-placeholder {
-            color: $inputPlaceholderTextColor;
+            color: form.$inputPlaceholderTextColor;
         }
     }
 
     &.p-multiselect-chip {
         .p-multiselect-token {
-            padding: math.div(nth($inputPadding, 1), 2) nth($inputPadding, 2);
-            margin-right: $inlineSpacing;
-            background: $chipBg;
-            color: $chipTextColor;
-            border-radius: $chipBorderRadius;
+            padding: math.div(list.nth(form.$inputPadding, 1), 2) list.nth(form.$inputPadding, 2);
+            margin-right: general.$inlineSpacing;
+            background: misc.$chipBg;
+            color: misc.$chipTextColor;
+            border-radius: misc.$chipBorderRadius;
 
             .p-multiselect-token-icon {
-                margin-left: $inlineSpacing;
+                margin-left: general.$inlineSpacing;
             }
         }
     }
 
     .p-multiselect-trigger {
         background: transparent;
-        color: $inputIconColor;
-        width: $inputGroupAddOnMinWidth;
-        border-top-right-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        color: form.$inputIconColor;
+        width: form.$inputGroupAddOnMinWidth;
+        border-top-right-radius: general.$borderRadius;
+        border-bottom-right-radius: general.$borderRadius;
     }
 
     &.p-invalid.p-component {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 }
 
@@ -175,61 +182,61 @@
     &.p-multiselect {
         &.p-multiselect-chip {
             .p-multiselect-label {
-                padding: math.div(nth($inputPadding, 1), 2)
-                    nth($inputPadding, 2);
+                padding: math.div(list.nth(form.$inputPadding, 1), 2)
+                    list.nth(form.$inputPadding, 2);
             }
         }
     }
 }
 
 .p-multiselect-panel {
-    background: $inputOverlayBg;
-    color: $inputListTextColor;
-    border: $inputOverlayBorder;
-    border-radius: $borderRadius;
-    box-shadow: $inputOverlayShadow;
+    background: form.$inputOverlayBg;
+    color: form.$inputListTextColor;
+    border: form.$inputOverlayBorder;
+    border-radius: general.$borderRadius;
+    box-shadow: form.$inputOverlayShadow;
 
     .p-multiselect-header {
-        padding: $inputListHeaderPadding;
-        border-bottom: $inputListHeaderBorder;
-        color: $inputListHeaderTextColor;
-        background: $inputOverlayHeaderBg;
-        margin: $inputListHeaderMargin;
-        border-top-right-radius: $borderRadius;
-        border-top-left-radius: $borderRadius;
+        padding: form.$inputListHeaderPadding;
+        border-bottom: form.$inputListHeaderBorder;
+        color: form.$inputListHeaderTextColor;
+        background: form.$inputOverlayHeaderBg;
+        margin: form.$inputListHeaderMargin;
+        border-top-right-radius: general.$borderRadius;
+        border-top-left-radius: general.$borderRadius;
 
         .p-multiselect-filter-container {
             .p-inputtext {
-                padding-right: nth($inputPadding, 2) + $primeIconFontSize;
+                padding-right: list.nth(form.$inputPadding, 2) + general.$primeIconFontSize;
             }
 
             .p-multiselect-filter-icon {
-                right: nth($inputPadding, 2);
-                color: $inputIconColor;
+                right: list.nth(form.$inputPadding, 2);
+                color: form.$inputIconColor;
             }
         }
 
         .p-checkbox {
-            margin-right: $inlineSpacing;
+            margin-right: general.$inlineSpacing;
         }
 
         .p-multiselect-close {
-            margin-left: $inlineSpacing;
-            @include action-icon();
+            margin-left: general.$inlineSpacing;
+            @include mixins.action-icon();
         }
     }
 
     .p-multiselect-items {
-        padding: $inputListPadding;
+        padding: form.$inputListPadding;
 
         .p-multiselect-item {
-            margin: $inputListItemMargin;
-            padding: $inputListItemPadding;
-            border: $inputListItemBorder;
-            color: $inputListItemTextColor;
-            background: $inputListItemBg;
-            transition: $listItemTransition;
-            border-radius: $inputListItemBorderRadius;
+            margin: form.$inputListItemMargin;
+            padding: form.$inputListItemPadding;
+            border: form.$inputListItemBorder;
+            color: form.$inputListItemTextColor;
+            background: form.$inputListItemBg;
+            transition: general.$listItemTransition;
+            border-radius: form.$inputListItemBorderRadius;
 
             &:first-child {
                 margin-top: 0;
@@ -240,38 +247,38 @@
             }
 
             &.p-highlight {
-                color: $highlightTextColor;
-                background: $highlightBg;
+                color: general.$highlightTextColor;
+                background: general.$highlightBg;
 
                 &.p-focus {
-                    background: $highlightFocusBg;
+                    background: general.$highlightFocusBg;
                 }
             }
 
             &:not(.p-highlight):not(.p-disabled) {
                 &.p-focus {
-                    color: $inputListItemTextHoverColor;
-                    background: $inputListItemHoverBg;
+                    color: form.$inputListItemTextHoverColor;
+                    background: form.$inputListItemHoverBg;
                 }
             }
 
             .p-checkbox {
-                margin-right: $inlineSpacing;
+                margin-right: general.$inlineSpacing;
             }
         }
 
         .p-multiselect-item-group {
-            margin: $submenuHeaderMargin;
-            padding: $submenuHeaderPadding;
-            color: $submenuHeaderTextColor;
-            background: $submenuHeaderBg;
-            font-weight: $submenuHeaderFontWeight;
+            margin: menu.$submenuHeaderMargin;
+            padding: menu.$submenuHeaderPadding;
+            color: menu.$submenuHeaderTextColor;
+            background: menu.$submenuHeaderBg;
+            font-weight: menu.$submenuHeaderFontWeight;
         }
 
         .p-multiselect-empty-message {
-            padding: $inputListItemPadding;
-            color: $inputListItemTextColor;
-            background: $inputListItemBg;
+            padding: form.$inputListItemPadding;
+            color: form.$inputListItemTextColor;
+            background: form.$inputListItemBg;
         }
     }
 }

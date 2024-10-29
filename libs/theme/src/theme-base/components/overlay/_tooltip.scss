@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/overlay";
+
 // core
 .p-tooltip {
     position:absolute;
@@ -57,34 +61,34 @@
 // theme
 .p-tooltip {
     .p-tooltip-text {
-        background: $tooltipBg;
-        color: $tooltipTextColor;
-        padding: $tooltipPadding;
-        box-shadow: $inputOverlayShadow;
-        border-radius: $borderRadius;
+        background: overlay.$tooltipBg;
+        color: overlay.$tooltipTextColor;
+        padding: overlay.$tooltipPadding;
+        box-shadow: form.$inputOverlayShadow;
+        border-radius: general.$borderRadius;
     }
 
     &.p-tooltip-right {
         .p-tooltip-arrow {
-            border-right-color: $tooltipBg;
+            border-right-color: overlay.$tooltipBg;
         }
     }
 
     &.p-tooltip-left {
         .p-tooltip-arrow {
-            border-left-color: $tooltipBg;
+            border-left-color: overlay.$tooltipBg;
         }
     }
 
     &.p-tooltip-top {
         .p-tooltip-arrow {
-            border-top-color: $tooltipBg;
+            border-top-color: overlay.$tooltipBg;
         }
     }
 
     &.p-tooltip-bottom {
         .p-tooltip-arrow {
-            border-bottom-color: $tooltipBg;
+            border-bottom-color: overlay.$tooltipBg;
         }
     }
 }

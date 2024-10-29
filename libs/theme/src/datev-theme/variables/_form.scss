@@ -1,3 +1,6 @@
+@use "../variables";
+@use "general";
+
 /// Padding of an input field, must be defined with a shorthand for vertical and horizontal values e.g. ".5rem .5rem"
 /// @group form
 $inputPadding: .5rem .5rem;
@@ -12,11 +15,11 @@ $inputTextFontSize: 1rem;
 
 /// Text color of an input field
 /// @group form
-$inputTextColor: $textColor;
+$inputTextColor: general.$textColor;
 
 /// Color of an icon inside an input field
 /// @group form
-$inputIconColor: $textColor;
+$inputIconColor: general.$textColor;
 
 /// Border of an input field
 /// @group form
@@ -24,15 +27,15 @@ $inputBorder: 1px solid #ced4da;
 
 /// Border of an input field in hover state
 /// @group form
-$inputHoverBorderColor: $primaryColor;
+$inputHoverBorderColor: variables.$primaryColor;
 
 /// Border of an input field in focus state
 /// @group form
-$inputFocusBorderColor: $primaryColor;
+$inputFocusBorderColor: variables.$primaryColor;
 
 /// Color of an input field in invalid state
 /// @group form
-$inputErrorBorderColor: #ced4da #ced4da #ced4da $errorColor;
+$inputErrorBorderColor: #ced4da #ced4da #ced4da general.$errorColor;
 
 /// Text color of a placeholder
 /// @group form
@@ -56,7 +59,7 @@ $inputGroupBg: #e9ecef;
 
 /// Text color of an input group addon
 /// @group form
-$inputGroupTextColor: $textSecondaryColor;
+$inputGroupTextColor: general.$textSecondaryColor;
 
 /// Minimum width of an input group addon
 /// @group form
@@ -68,7 +71,7 @@ $inputListBg: #ffffff;
 
 /// Text color of an input list
 /// @group form
-$inputListTextColor: $textColor;
+$inputListTextColor: general.$textColor;
 
 /// Border of an input list
 /// @group form
@@ -88,7 +91,7 @@ $inputListItemBg: transparent;
 
 /// Text color for an individual itrem of an input list
 /// @group form
-$inputListItemTextColor: $textColor;
+$inputListItemTextColor: general.$textColor;
 
 /// Hover state background for an individual itrem of an input list
 /// @group form
@@ -96,7 +99,7 @@ $inputListItemHoverBg: #e9ecef;
 
 /// Hover state text color for an individual itrem of an input list
 /// @group form
-$inputListItemTextHoverColor: $textColor;
+$inputListItemTextHoverColor: general.$textColor;
 
 /// Focus state background for an individual itrem of an input list
 /// @group form
@@ -104,7 +107,7 @@ $inputListItemFocusBg: #f8f9fa;
 
 /// Focus state text color for an individual itrem of an input list
 /// @group form
-$inputListItemTextFocusColor: $textColor;
+$inputListItemTextFocusColor: general.$textColor;
 
 /// Border for an individual itrem of an input list
 /// @group form
@@ -120,7 +123,7 @@ $inputListItemMargin: 0;
 
 /// Box shadow for an individual itrem of an input list in focused state
 /// @group form
-$inputListItemFocusShadow: inset 0 0 0 0.15rem $focusOutlineColor;
+$inputListItemFocusShadow: inset 0 0 0 0.15rem general.$focusOutlineColor;
 
 /// Padding for a header of an input list
 /// @group form
@@ -136,7 +139,7 @@ $inputListHeaderBg: #f8f9fa;
 
 /// Text color for a header of an input list
 /// @group form
-$inputListHeaderTextColor: $textColor;
+$inputListHeaderTextColor: general.$textColor;
 
 /// Border for a header of an input list
 /// @group form
@@ -177,27 +180,27 @@ $checkboxIconFontSize: 14px;
 
 /// Border color of a selected checkbox
 /// @group form
-$checkboxActiveBorderColor: $primaryColor;
+$checkboxActiveBorderColor: variables.$primaryColor;
 
 /// Background of a selected checkbox
 /// @group form
-$checkboxActiveBg: $primaryColor;
+$checkboxActiveBg: variables.$primaryColor;
 
 /// Icon color of a selected checkbox
 /// @group form
-$checkboxIconActiveColor: $primaryTextColor;
+$checkboxIconActiveColor: variables.$primaryTextColor;
 
 /// Background of a selected checkbox in hover state
 /// @group form
-$checkboxActiveHoverBg: $primaryDarkerColor;
+$checkboxActiveHoverBg: variables.$primaryDarkerColor;
 
 /// Icon color of a selected checkbox in hover state
 /// @group form
-$checkboxIconActiveHoverColor: $primaryTextColor;
+$checkboxIconActiveHoverColor: variables.$primaryTextColor;
 
 /// Border color of a selected checkbox in hover state
 /// @group form
-$checkboxActiveHoverBorderColor: $primaryDarkerColor;
+$checkboxActiveHoverBorderColor: variables.$primaryDarkerColor;
 
 /// Width of a radiobutton
 /// @group form
@@ -217,27 +220,27 @@ $radiobuttonIconSize: 12px;
 
 /// Border color of a selected radiobutton
 /// @group form
-$radiobuttonActiveBorderColor: $primaryColor;
+$radiobuttonActiveBorderColor: variables.$primaryColor;
 
 /// Background of a selected radiobutton
 /// @group form
-$radiobuttonActiveBg: $primaryColor;
+$radiobuttonActiveBg: variables.$primaryColor;
 
 /// Icon color of a selected radiobutton
 /// @group form
-$radiobuttonIconActiveColor: $primaryTextColor;
+$radiobuttonIconActiveColor: variables.$primaryTextColor;
 
 /// Background of a selected radiobutton in hover state
 /// @group form
-$radiobuttonActiveHoverBg: $primaryDarkerColor;
+$radiobuttonActiveHoverBg: variables.$primaryDarkerColor;
 
 /// Icon color of a selected radiobutton in hover state
 /// @group form
-$radiobuttonIconActiveHoverColor: $primaryTextColor;
+$radiobuttonIconActiveHoverColor: variables.$primaryTextColor;
 
 /// Border color of a selected radiobutton in hover state
 /// @group form
-$radiobuttonActiveHoverBorderColor: $primaryDarkerColor;
+$radiobuttonActiveHoverBorderColor: variables.$primaryDarkerColor;
 
 /// Width of a color picker preview element
 /// @group form
@@ -273,15 +276,15 @@ $ratingCancelIconHoverColor: #c0392b;
 
 /// Icon color for the star icon of a rating in unselected state
 /// @group form
-$ratingStarIconOffColor: $textColor;
+$ratingStarIconOffColor: general.$textColor;
 
 /// Icon color for the star icon of a rating in selected state
 /// @group form
-$ratingStarIconOnColor: $primaryColor;
+$ratingStarIconOnColor: variables.$primaryColor;
 
 /// Icon color for the star icon of a rating in hover state
 /// @group form
-$ratingStarIconHoverColor: $primaryColor;
+$ratingStarIconHoverColor: variables.$primaryColor;
 
 /// Background of a slider
 /// @group form
@@ -313,7 +316,7 @@ $sliderHandleBg: #ffffff;
 
 /// Border of a slider handle
 /// @group form
-$sliderHandleBorder: 2px solid $primaryColor;
+$sliderHandleBorder: 2px solid variables.$primaryColor;
 
 /// Border radius of a slider handle
 /// @group form
@@ -321,15 +324,15 @@ $sliderHandleBorderRadius: 50%;
 
 /// Border of a slider handle in hover state
 /// @group form
-$sliderHandleHoverBorderColor: $primaryColor;
+$sliderHandleHoverBorderColor: variables.$primaryColor;
 
 /// Background of a slider handle in hover state
 /// @group form
-$sliderHandleHoverBg: $primaryColor;
+$sliderHandleHoverBg: variables.$primaryColor;
 
 /// Background color of a range slider
 /// @group form
-$sliderRangeBg: $primaryColor;
+$sliderRangeBg: variables.$primaryColor;
 
 /// Margin of a calendar table
 /// @group form
@@ -349,7 +352,7 @@ $calendarInlineBg:$calendarBg;
 
 /// Text color of a calendar
 /// @group form
-$calendarTextColor: $textColor;
+$calendarTextColor: general.$textColor;
 
 /// Border of an inline calendar
 /// @group form
@@ -377,7 +380,7 @@ $calendarHeaderBorder: 1px solid #dee2e6;
 
 /// Text color of a calendar header
 /// @group form
-$calendarHeaderTextColor: $textColor;
+$calendarHeaderTextColor: general.$textColor;
 
 /// Font weight of a calendar header
 /// @group form
@@ -389,7 +392,7 @@ $calendarHeaderCellPadding: .5rem;
 
 /// Text color of current month and year text in hover state
 /// @group form
-$calendarMonthYearHeaderHoverTextColor: $primaryColor !default;
+$calendarMonthYearHeaderHoverTextColor: variables.$primaryColor !default;
 
 /// Padding of a calendar date cell
 /// @group form
@@ -425,7 +428,7 @@ $calendarCellDateTodayBorderColor: transparent;
 
 /// Text color of a calendar date cell indicating today
 /// @group form
-$calendarCellDateTodayTextColor: $textColor;
+$calendarCellDateTodayTextColor: general.$textColor;
 
 /// Padding of the calendar button bar
 /// @group form
@@ -493,11 +496,11 @@ $inputSwitchSliderOffHoverBg: #c3cad2;
 
 /// Background color of an inputswitch slider when selected
 /// @group form
-$inputSwitchSliderOnBg: $primaryColor;
+$inputSwitchSliderOnBg: variables.$primaryColor;
 
 /// Hover background color of an inputswitch slider when selected
 /// @group form
-$inputSwitchSliderOnHoverBg: $primaryDarkColor;
+$inputSwitchSliderOnHoverBg: variables.$primaryDarkColor;
 
 /// Background color of an inputswitch handle when selected
 /// @group form
@@ -545,7 +548,7 @@ $editorToolbarIconHoverColor:#495057;
 
 /// Icon color of an editor toolbar in active state
 /// @group form
-$editorIconActiveColor:$primaryColor;
+$editorIconActiveColor:variables.$primaryColor;
 
 /// Border of an editor content
 /// @group form

@@ -1,3 +1,8 @@
+@use "sass:list";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../mixins";
+
 // core
 .p-fluid .p-inputtext {
     width: 100%;
@@ -7,101 +12,101 @@
 .p-inputtext {
     font-family: var(--font-family);
     font-feature-settings: var(--font-feature-settings, normal);
-    font-size: $inputTextFontSize;
-    color: $inputTextColor;
-    background: $inputBg;
-    padding: $inputPadding;
-    border: $inputBorder;
-    transition: $formElementTransition;
+    font-size: form.$inputTextFontSize;
+    color: form.$inputTextColor;
+    background: form.$inputBg;
+    padding: form.$inputPadding;
+    border: form.$inputBorder;
+    transition: general.$formElementTransition;
     appearance: none;
-    border-radius: $borderRadius;
+    border-radius: general.$borderRadius;
     outline-color: transparent;
 
     &:enabled:hover {
-        border-color: $inputHoverBorderColor;
+        border-color: form.$inputHoverBorderColor;
     }
 
     &:enabled:focus {
-        @include focused-input();
+        @include mixins.focused-input();
     }
 
     &.p-invalid.p-component {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 
     &.p-variant-filled {
-        background-color: $inputFilledBg;
+        background-color: form.$inputFilledBg;
 
         &:enabled:hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:enabled:focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 
     &.p-inputtext-sm {
-        @include scaledFontSize($inputTextFontSize, $scaleSM);
-        @include scaledPadding($inputPadding, $scaleSM);
+        @include mixins.scaledFontSize(form.$inputTextFontSize, general.$scaleSM);
+        @include mixins.scaledPadding(form.$inputPadding, general.$scaleSM);
     }
 
     &.p-inputtext-lg {
-        @include scaledFontSize($inputTextFontSize, $scaleLG);
-        @include scaledPadding($inputPadding, $scaleLG);
+        @include mixins.scaledFontSize(form.$inputTextFontSize, general.$scaleLG);
+        @include mixins.scaledPadding(form.$inputPadding, general.$scaleLG);
     }
 }
 
 .p-float-label > label {
-    left: nth($inputPadding, 2);
-    color: $inputPlaceholderTextColor;
-    transition-duration: $transitionDuration;
+    left: list.nth(form.$inputPadding, 2);
+    color: form.$inputPlaceholderTextColor;
+    transition-duration: general.$transitionDuration;
 }
 
 .p-float-label > .p-invalid + label {
-    color: $inputErrorBorderColor;
+    color: form.$inputErrorBorderColor;
 }
 
 .p-icon-field-left > .p-inputtext {
-    padding-left: nth($inputPadding, 2) * 2 + $primeIconFontSize;
+    padding-left: list.nth(form.$inputPadding, 2) * 2 + general.$primeIconFontSize;
 }
 
 .p-icon-field-left.p-float-label > label {
-    left: nth($inputPadding, 2) * 2 + $primeIconFontSize;
+    left: list.nth(form.$inputPadding, 2) * 2 + general.$primeIconFontSize;
 }
 
 .p-icon-field-right > .p-inputtext {
-    padding-right: nth($inputPadding, 2) * 2 + $primeIconFontSize;
+    padding-right: list.nth(form.$inputPadding, 2) * 2 + general.$primeIconFontSize;
 }
 
-@include placeholder {
-    color: $inputPlaceholderTextColor;
+@include mixins.placeholder {
+    color: form.$inputPlaceholderTextColor;
 }
 
 .p-input-filled {
     .p-inputtext {
-        background-color: $inputFilledBg;
+        background-color: form.$inputFilledBg;
 
         &:enabled:hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:enabled:focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 }
 
 .p-inputtext-sm {
     .p-inputtext {
-        @include scaledFontSize($inputTextFontSize, $scaleSM);
-        @include scaledPadding($inputPadding, $scaleSM);
+        @include mixins.scaledFontSize(form.$inputTextFontSize, general.$scaleSM);
+        @include mixins.scaledPadding(form.$inputPadding, general.$scaleSM);
     }
 }
 
 .p-inputtext-lg {
     .p-inputtext {
-        @include scaledFontSize($inputTextFontSize, $scaleLG);
-        @include scaledPadding($inputPadding, $scaleLG);
+        @include mixins.scaledFontSize(form.$inputTextFontSize, general.$scaleLG);
+        @include mixins.scaledPadding(form.$inputPadding, general.$scaleLG);
     }
 }

@@ -1,50 +1,54 @@
+@use "../../../datev-theme/variables/button";
+@use "../../../datev-theme/variables/general";
+@use "../../mixins";
+
 .p-selectbutton {
     .p-button {
-        background: $toggleButtonBg;
-        border: $toggleButtonBorder;
-        color: $toggleButtonTextColor;
-        transition: $formElementTransition;
+        background: button.$toggleButtonBg;
+        border: button.$toggleButtonBorder;
+        color: button.$toggleButtonTextColor;
+        transition: general.$formElementTransition;
 
         .p-button-icon-left,
         .p-button-icon-right {
-            color: $toggleButtonIconColor;
+            color: button.$toggleButtonIconColor;
         }
 
         &:not(.p-disabled):not(.p-highlight):hover {
-            background: $toggleButtonHoverBg;
-            border-color: $toggleButtonHoverBorderColor;
-            color: $toggleButtonTextHoverColor;
+            background: button.$toggleButtonHoverBg;
+            border-color: button.$toggleButtonHoverBorderColor;
+            color: button.$toggleButtonTextHoverColor;
 
             .p-button-icon-left,
             .p-button-icon-right {
-                color: $toggleButtonIconHoverColor;
+                color: button.$toggleButtonIconHoverColor;
             }
         }
 
         &.p-highlight {
-            background: $toggleButtonActiveBg;
-            border-color: $toggleButtonActiveBorderColor;
-            color: $toggleButtonTextActiveColor;
+            background: button.$toggleButtonActiveBg;
+            border-color: button.$toggleButtonActiveBorderColor;
+            color: button.$toggleButtonTextActiveColor;
 
             .p-button-icon-left,
             .p-button-icon-right {
-                color: $toggleButtonIconActiveColor;
+                color: button.$toggleButtonIconActiveColor;
             }
 
             &:hover {
-                background: $toggleButtonActiveHoverBg;
-                border-color: $toggleButtonActiveHoverBorderColor;
-                color: $toggleButtonTextActiveHoverColor;
+                background: button.$toggleButtonActiveHoverBg;
+                border-color: button.$toggleButtonActiveHoverBorderColor;
+                color: button.$toggleButtonTextActiveHoverColor;
 
                 .p-button-icon-left,
                 .p-button-icon-right {
-                    color: $toggleButtonIconActiveHoverColor;
+                    color: button.$toggleButtonIconActiveHoverColor;
                 }
             }
         }
     }
 
     &.p-invalid > .p-button {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 }

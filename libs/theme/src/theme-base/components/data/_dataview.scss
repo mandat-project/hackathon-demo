@@ -1,38 +1,41 @@
+@use "../../../datev-theme/variables/data";
+@use "../../../datev-theme/variables/general";
+
 .p-dataview {
     .p-paginator-top {
-        border-width: $tableTopPaginatorBorderWidth;
+        border-width: data.$tableTopPaginatorBorderWidth;
         border-radius: 0;
     }
 
     .p-paginator-bottom {
-        border-width: $tableBottomPaginatorBorderWidth;
+        border-width: data.$tableBottomPaginatorBorderWidth;
         border-radius: 0;
     }
 
     .p-dataview-header {
-        background: $tableHeaderBg;
-        color: $tableHeaderTextColor;
-        border: $tableHeaderBorder;
-        border-width: $tableHeaderBorderWidth;
-        padding: $tableHeaderPadding;
-        font-weight: $tableHeaderFontWeight;
+        background: data.$tableHeaderBg;
+        color: data.$tableHeaderTextColor;
+        border: data.$tableHeaderBorder;
+        border-width: data.$tableHeaderBorderWidth;
+        padding: data.$tableHeaderPadding;
+        font-weight: data.$tableHeaderFontWeight;
     }
 
     .p-dataview-content {
-        background: $tableBodyRowBg;
-        color: $tableBodyRowTextColor;
-        border: $dataViewContentBorder;
-        padding: $dataViewContentPadding;
+        background: data.$tableBodyRowBg;
+        color: data.$tableBodyRowTextColor;
+        border: data.$dataViewContentBorder;
+        padding: data.$dataViewContentPadding;
     }
 
     .p-dataview-footer {
-        background: $tableFooterBg;
-        color: $tableFooterTextColor;
-        border: $tableFooterBorder;
-        border-width: $tableFooterBorderWidth;
-        padding: $tableFooterPadding;
-        font-weight: $tableFooterFontWeight;
-        border-bottom-left-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        background: data.$tableFooterBg;
+        color: data.$tableFooterTextColor;
+        border: data.$tableFooterBorder;
+        border-width: data.$tableFooterBorderWidth;
+        padding: data.$tableFooterPadding;
+        font-weight: data.$tableFooterFontWeight;
+        border-bottom-left-radius: general.$borderRadius;
+        border-bottom-right-radius: general.$borderRadius;
     }
 }

@@ -1,4 +1,8 @@
+@use "../variables";
+@use "general";
+
 @use 'sass:color';
+@use 'sass:map';
 
 /// Padding of a button, must be defined with a shorthand for vertical and horizontal values e.g. ".5rem .5rem"
 /// @group button
@@ -14,11 +18,11 @@ $buttonIconOnlyPadding: .5rem 0;
 
 /// Background of a button
 /// @group button
-$buttonBg: $primaryColor;
+$buttonBg: variables.$primaryColor;
 
 /// Text color of a button
 /// @group button
-$buttonTextColor: $primaryTextColor;
+$buttonTextColor: variables.$primaryTextColor;
 
 /// Border of a button
 /// @group button
@@ -26,27 +30,27 @@ $buttonBorder: 4px solid transparent;
 
 /// Background of a button in hover state
 /// @group button
-$buttonHoverBg: $primaryDarkColor;
+$buttonHoverBg: variables.$primaryDarkColor;
 
 /// Text color of a button in hover state
 /// @group button
-$buttonTextHoverColor: $primaryTextColor;
+$buttonTextHoverColor: variables.$primaryTextColor;
 
 /// Border color of a button in hover state
 /// @group button
-$buttonHoverBorderColor: rgba(map-get($coldgray, 900), .1);
+$buttonHoverBorderColor: rgba(map.get(variables.$coldgray, 900), .1);
 
 /// Background of a button in pressed state
 /// @group button
-$buttonActiveBg: $primaryDarkerColor;
+$buttonActiveBg: variables.$primaryDarkerColor;
 
 /// Color of a button in pressed state
 /// @group button
-$buttonTextActiveColor: $primaryTextColor;
+$buttonTextActiveColor: variables.$primaryTextColor;
 
 /// Border color of a button in pressed state
 /// @group button
-$buttonActiveBorderColor: rgba(map-get($coldgray, 900), .1);
+$buttonActiveBorderColor: rgba(map.get(variables.$coldgray, 900), .1);
 
 /// Shadow of a raised button
 /// @group button
@@ -82,11 +86,11 @@ $plainButtonActiveBgColor:#dee2e6;
 
 /// Background of a secondary button
 /// @group button
-$secondaryButtonBg: $secondaryColor;
+$secondaryButtonBg: variables.$secondaryColor;
 
 /// Text color of a secondary button
 /// @group button
-$secondaryButtonTextColor: $secondaryTextColor;
+$secondaryButtonTextColor: variables.$secondaryTextColor;
 
 /// Border of a secondary button
 /// @group button
@@ -94,27 +98,27 @@ $secondaryButtonBorder: 4px solid transparent;
 
 /// Background of a secondary button in hover state
 /// @group button
-$secondaryButtonHoverBg: $secondaryDarkColor;
+$secondaryButtonHoverBg: variables.$secondaryDarkColor;
 
 /// Text color of a secondary button in hover state
 /// @group button
-$secondaryButtonTextHoverColor: $secondaryTextColor;
+$secondaryButtonTextHoverColor: variables.$secondaryTextColor;
 
 /// Border color of a secondary button in hover state
 /// @group button
-$secondaryButtonHoverBorderColor: rgba($secondaryDarkColor, .2);
+$secondaryButtonHoverBorderColor: rgba(variables.$secondaryDarkColor, .2);
 
 /// Background of a secondary button in pressed state
 /// @group button
-$secondaryButtonActiveBg: $secondaryDarkerColor;
+$secondaryButtonActiveBg: variables.$secondaryDarkerColor;
 
 /// Text color of a secondary button in pressed state
 /// @group button
-$secondaryButtonTextActiveColor: $secondaryTextColor;
+$secondaryButtonTextActiveColor: variables.$secondaryTextColor;
 
 /// Border color of a secondary button in pressed state
 /// @group button
-$secondaryButtonActiveBorderColor: rgba($secondaryDarkerColor, .2);
+$secondaryButtonActiveBorderColor: rgba(variables.$secondaryDarkerColor, .2);
 
 /// Box shadow of a secondary button in focused state
 /// @group button
@@ -206,7 +210,7 @@ $warningButtonBg: #FFC107;
 
 /// Text color of a warning button
 /// @group button
-$warningButtonTextColor: $textColor;
+$warningButtonTextColor: general.$textColor;
 
 /// Border of a warning button
 /// @group button
@@ -218,7 +222,7 @@ $warningButtonHoverBg: #FFB300;
 
 /// Text color of a warning button in hover state
 /// @group button
-$warningButtonTextHoverColor: $textColor;
+$warningButtonTextHoverColor: general.$textColor;
 
 /// Border color of a warning button in hover state
 /// @group button
@@ -230,7 +234,7 @@ $warningButtonActiveBg: #FFA000;
 
 /// Text color of a warning button in pressed state
 /// @group button
-$warningButtonTextActiveColor: $textColor;
+$warningButtonTextActiveColor: general.$textColor;
 
 /// Border color of a warning button in pressed state
 /// @group button
@@ -322,11 +326,11 @@ $dangerButtonFocusShadow: 0 0 0 0.2rem var(--red-200, #fff);
 
 /// Text color of a link button
 /// @group button
-$linkButtonColor:$primaryDarkerColor;
+$linkButtonColor:variables.$primaryDarkerColor;
 
 /// Text color of a link button in hover state
 /// @group button
-$linkButtonHoverColor:$primaryDarkerColor;
+$linkButtonHoverColor:variables.$primaryDarkerColor;
 
 /// Text decoration of a link button in hover state
 /// @group button
@@ -334,7 +338,7 @@ $linkButtonTextHoverDecoration:underline;
 
 /// Box shadow of a link button in focused state
 /// @group button
-$linkButtonFocusShadow: 0 0 0 0.2rem $focusOutlineColor;
+$linkButtonFocusShadow: 0 0 0 0.2rem general.$focusOutlineColor;
 
 /// Background of a toggle button
 /// @group button
@@ -346,11 +350,11 @@ $toggleButtonBorder: 4px solid #ced4da;
 
 /// Text color of a toggle button
 /// @group button
-$toggleButtonTextColor: $textColor;
+$toggleButtonTextColor: general.$textColor;
 
 /// Icon color of a toggle button
 /// @group button
-$toggleButtonIconColor: $textSecondaryColor;
+$toggleButtonIconColor: general.$textSecondaryColor;
 
 /// Background of a toggle button in hover state
 /// @group button
@@ -362,43 +366,43 @@ $toggleButtonHoverBorderColor: rgba(#ced4da, .2);
 
 /// Text color of a toggle button in hover state
 /// @group button
-$toggleButtonTextHoverColor: $textColor;
+$toggleButtonTextHoverColor: general.$textColor;
 
 /// Icon color of a toggle button in hover state
 /// @group button
-$toggleButtonIconHoverColor: $textSecondaryColor;
+$toggleButtonIconHoverColor: general.$textSecondaryColor;
 
 /// Background of a toggle button in selected state
 /// @group button
-$toggleButtonActiveBg: $primaryColor;
+$toggleButtonActiveBg: variables.$primaryColor;
 
 /// Border color of a toggle button in selected state
 /// @group button
-$toggleButtonActiveBorderColor: rgba($primaryColor, .2);
+$toggleButtonActiveBorderColor: rgba(variables.$primaryColor, .2);
 
 /// Text color of a toggle button in selected state
 /// @group button
-$toggleButtonTextActiveColor: $primaryTextColor;
+$toggleButtonTextActiveColor: variables.$primaryTextColor;
 
 /// Icon color of a toggle button in selected state
 /// @group button
-$toggleButtonIconActiveColor: $primaryTextColor;
+$toggleButtonIconActiveColor: variables.$primaryTextColor;
 
 /// Hover background of a toggle button in selected state
 /// @group button
-$toggleButtonActiveHoverBg: $primaryDarkColor;
+$toggleButtonActiveHoverBg: variables.$primaryDarkColor;
 
 /// Hover border color of a toggle button in selected state
 /// @group button
-$toggleButtonActiveHoverBorderColor: rgba($primaryDarkColor, .2);
+$toggleButtonActiveHoverBorderColor: rgba(variables.$primaryDarkColor, .2);
 
 /// Hover text color of a toggle button in selected state
 /// @group button
-$toggleButtonTextActiveHoverColor: $primaryTextColor;
+$toggleButtonTextActiveHoverColor: variables.$primaryTextColor;
 
 /// Hover icon of a toggle button in selected state
 /// @group button
-$toggleButtonIconActiveHoverColor: $primaryTextColor;
+$toggleButtonIconActiveHoverColor: variables.$primaryTextColor;
 
 /// Width of the speed dial button
 /// @group button
@@ -438,4 +442,4 @@ $speedDialActionTextHoverColor: #212121;
 
 /// Radius of the corners
 /// @group general
-$borderRadius: .3125rem;
+general.$borderRadius: .3125rem;

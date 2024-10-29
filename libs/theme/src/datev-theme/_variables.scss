@@ -1,3 +1,4 @@
+@use "sass:map";
 // DATEV Colors
 $blue: (
     50: #E6F8FC,
@@ -75,14 +76,14 @@ $petrol: (
 );
 
 // Theme Specific Variables
-$primaryColor: map-get($green, 300);
-$primaryDarkColor: map-get($green, 350);
-$primaryDarkerColor: map-get($green, 400);
+$primaryColor: map.get($green, 300);
+$primaryDarkColor: map.get($green, 350);
+$primaryDarkerColor: map.get($green, 400);
 $primaryTextColor: rgba(0, 0, 0, 0.9);
 
-$secondaryColor: map-get($coldgray, 50);
-$secondaryDarkColor: map-get($coldgray, 100);
-$secondaryDarkerColor: map-get($coldgray, 150);
+$secondaryColor: map.get($coldgray, 50);
+$secondaryDarkColor: map.get($coldgray, 100);
+$secondaryDarkerColor: map.get($coldgray, 150);
 $secondaryTextColor: rgba(0, 0, 0, 0.9);
 
 $dacklColors: (
@@ -109,16 +110,16 @@ $colors: (
 );
 
 // Mandatory Designer Variables
-@import './variables/general';
-@import './variables/form';
-@import './variables/button';
-@import './variables/panel';
-@import './variables/data';
-@import './variables/overlay';
-@import './variables/message';
-@import './variables/menu';
-@import './variables/media';
-@import './variables/misc';
+@use 'variables/general';
+@use 'variables/form';
+@use 'variables/button';
+@use 'variables/panel';
+@use 'variables/data';
+@use 'variables/overlay';
+@use 'variables/message';
+@use 'variables/menu';
+@use 'variables/media';
+@use 'variables/misc';
 
 :root {
 
@@ -132,40 +133,40 @@ $colors: (
     --primary-color: #2196F3;
     --primary-color-text: #ffffff;
     --surface-0: #ffffff;
-    --surface-50: #{map-get($coldgray, 50)};
-    --surface-100: #{map-get($coldgray, 100)};
-    --surface-200: #{map-get($coldgray, 200)};
-    --surface-300: #{map-get($coldgray, 300)};
-    --surface-400: #{map-get($coldgray, 400)};
-    --surface-500: #{map-get($coldgray, 500)};
-    --surface-600: #{map-get($coldgray, 600)};
-    --surface-700: #{map-get($coldgray, 700)};
-    --surface-800: #{map-get($coldgray, 800)};
-    --surface-900: #{map-get($coldgray, 900)};
+    --surface-50: #{map.get($coldgray, 50)};
+    --surface-100: #{map.get($coldgray, 100)};
+    --surface-200: #{map.get($coldgray, 200)};
+    --surface-300: #{map.get($coldgray, 300)};
+    --surface-400: #{map.get($coldgray, 400)};
+    --surface-500: #{map.get($coldgray, 500)};
+    --surface-600: #{map.get($coldgray, 600)};
+    --surface-700: #{map.get($coldgray, 700)};
+    --surface-800: #{map.get($coldgray, 800)};
+    --surface-900: #{map.get($coldgray, 900)};
 
-    --bluegray-50: #{map-get($coldgray, 50)};
-    --bluegray-100: #{map-get($coldgray, 100)};
-    --bluegray-200: #{map-get($coldgray, 200)};
-    --bluegray-300: #{map-get($coldgray, 300)};
-    --bluegray-400: #{map-get($coldgray, 400)};
-    --bluegray-500: #{map-get($coldgray, 500)};
-    --bluegray-600: #{map-get($coldgray, 600)};
-    --bluegray-700: #{map-get($coldgray, 700)};
-    --bluegray-800: #{map-get($coldgray, 800)};
-    --bluegray-900: #{map-get($coldgray, 900)};
+    --bluegray-50: #{map.get($coldgray, 50)};
+    --bluegray-100: #{map.get($coldgray, 100)};
+    --bluegray-200: #{map.get($coldgray, 200)};
+    --bluegray-300: #{map.get($coldgray, 300)};
+    --bluegray-400: #{map.get($coldgray, 400)};
+    --bluegray-500: #{map.get($coldgray, 500)};
+    --bluegray-600: #{map.get($coldgray, 600)};
+    --bluegray-700: #{map.get($coldgray, 700)};
+    --bluegray-800: #{map.get($coldgray, 800)};
+    --bluegray-900: #{map.get($coldgray, 900)};
 
-    --content-padding: #{$panelContentPadding};
-    --inline-spacing: #{$inlineSpacing};
-    --border-radius: #{$borderRadius};
+    --content-padding: #{panel.$panelContentPadding};
+    --inline-spacing: #{general.$inlineSpacing};
+    --border-radius: #{general.$borderRadius};
     --surface-ground: #f8f9fa;
     --surface-section: #ffffff;
     --surface-card: #ffffff;
     --surface-overlay: #ffffff;
     --surface-border: #dee2e6;
     --surface-hover: #e9ecef;
-    --focus-ring: #{$focusShadow};
-    --maskbg: #{$maskBg};
-    --highlight-bg: #{$highlightBg};
-    --highlight-text-color: #{$highlightTextColor};
+    --focus-ring: #{general.$focusShadow};
+    --maskbg: #{general.$maskBg};
+    --highlight-bg: #{general.$highlightBg};
+    --highlight-text-color: #{general.$highlightTextColor};
     color-scheme: light;
 }

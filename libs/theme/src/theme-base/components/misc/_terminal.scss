@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/panel";
+
 // core
 .p-terminal {
 	height: 18rem;
@@ -24,14 +27,14 @@
 
 // theme
 .p-terminal {
-	background: $panelContentBg;
-	color: $panelContentTextColor;
-	border: $panelContentBorder;
-	padding: $panelContentPadding;
+	background: panel.$panelContentBg;
+	color: panel.$panelContentTextColor;
+	border: panel.$panelContentBorder;
+	padding: panel.$panelContentPadding;
 
 	.p-terminal-input {
 		font-family: var(--font-family);
 		font-feature-settings: var(--font-feature-settings, normal);
-		font-size: $inputTextFontSize;
+		font-size: form.$inputTextFontSize;
 	}
 }

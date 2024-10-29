@@ -1,3 +1,5 @@
+@use "../../../datev-theme/variables/data";
+
 // core
 .p-timeline {
     display: flex;
@@ -113,36 +115,36 @@
 // theme
 .p-timeline {
     .p-timeline-event-marker {
-        border: $timelineEventMarkerBorder; 
-        border-radius: $timelineEventMarkerBorderRadius;
-        width: $timelineEventMarkerWidth;
-        height: $timelineEventMarkerHeight;
-        background-color: $timelineEventMarkerBackground;
+        border: data.$timelineEventMarkerBorder; 
+        border-radius: data.$timelineEventMarkerBorderRadius;
+        width: data.$timelineEventMarkerWidth;
+        height: data.$timelineEventMarkerHeight;
+        background-color: data.$timelineEventMarkerBackground;
     }
 
     .p-timeline-event-connector {
-        background-color: $timelineEventColor;
+        background-color: data.$timelineEventColor;
     }
 
     &.p-timeline-vertical {
         .p-timeline-event-opposite,
         .p-timeline-event-content  {
-            padding: $timelineVerticalEventContentPadding;
+            padding: data.$timelineVerticalEventContentPadding;
         }
 
         .p-timeline-event-connector {
-            width: $timelineEventConnectorSize;
+            width: data.$timelineEventConnectorSize;
         }
     }
 
     &.p-timeline-horizontal {
         .p-timeline-event-opposite,
         .p-timeline-event-content  {
-            padding: $timelineHorizontalEventContentPadding;
+            padding: data.$timelineHorizontalEventContentPadding;
         }
 
         .p-timeline-event-connector {
-            height: $timelineEventConnectorSize;
+            height: data.$timelineEventConnectorSize;
         }
     }
 }

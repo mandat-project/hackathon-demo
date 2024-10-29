@@ -1,3 +1,5 @@
+@use "general";
+
 /// Padding of a carousel indicators container
 /// @group media
 $carouselIndicatorsPadding: 1rem;
@@ -96,7 +98,7 @@ $galleriaItemNavigatorHeight: 4rem;
 
 /// Border radius of a galleria navigator item
 /// @group media
-$galleriaItemNavigatorBorderRadius: $borderRadius;
+$galleriaItemNavigatorBorderRadius: general.$borderRadius;
 
 /// Background of a galleria caption
 /// @group media

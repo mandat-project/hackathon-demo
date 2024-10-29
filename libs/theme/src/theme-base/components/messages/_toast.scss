@@ -1,3 +1,8 @@
+@use "sass:meta";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/message";
+@use "../../mixins";
+
 // core
 .p-toast {
     width: 25rem;
@@ -74,45 +79,45 @@
 
 // theme
 .p-toast {
-    opacity: $toastOpacity;
+    opacity: message.$toastOpacity;
 
     .p-toast-message {
-        margin: $toastMargin;
-        box-shadow: $toastShadow;
-        border-radius: $borderRadius;
+        margin: message.$toastMargin;
+        box-shadow: message.$toastShadow;
+        border-radius: general.$borderRadius;
 
         .p-toast-message-content {
-            padding: $toastPadding;
-            border-width: $toastBorderWidth;
+            padding: message.$toastPadding;
+            border-width: message.$toastBorderWidth;
 
             .p-toast-message-text {
-                margin: $toastMessageTextMargin;
+                margin: message.$toastMessageTextMargin;
             }
 
             .p-toast-message-icon {
-                font-size: $toastIconFontSize;
+                font-size: message.$toastIconFontSize;
 
                 &.p-icon {
-                    width: $toastIconFontSize;
-                    height: $toastIconFontSize;
+                    width: message.$toastIconFontSize;
+                    height: message.$toastIconFontSize;
                 }
             }
 
             .p-toast-summary {
-                font-weight: $toastTitleFontWeight;
+                font-weight: message.$toastTitleFontWeight;
             }
 
             .p-toast-detail {
-                margin: $toastDetailMargin;
+                margin: message.$toastDetailMargin;
             }
         }
 
         .p-toast-icon-close {
-            width: $toastIconFontSize;
-            height: $toastIconFontSize;
-            border-radius: $actionIconBorderRadius;
+            width: message.$toastIconFontSize;
+            height: message.$toastIconFontSize;
+            border-radius: general.$actionIconBorderRadius;
             background: transparent;
-            transition: $actionIconTransition;
+            transition: general.$actionIconTransition;
             outline-color: transparent;
 
             &:hover {
@@ -120,63 +125,63 @@
             }
 
             &:focus-visible {
-                @include focused();
+                @include mixins.focused();
             }
         }
 
         &.p-toast-message-info {
-            background: $infoMessageBg;
-            border: $infoMessageBorder;
-            border-width: $messageBorderWidth;
-            color: $infoMessageTextColor;
+            background: message.$infoMessageBg;
+            border: message.$infoMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$infoMessageTextColor;
 
             .p-toast-message-icon,
             .p-toast-icon-close {
-                color: $infoMessageIconColor;
+                color: message.$infoMessageIconColor;
             }
         }
 
         &.p-toast-message-success {
-            background: $successMessageBg;
-            border: $successMessageBorder;
-            border-width: $messageBorderWidth;
-            color: $successMessageTextColor;
+            background: message.$successMessageBg;
+            border: message.$successMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$successMessageTextColor;
 
             .p-toast-message-icon,
             .p-toast-icon-close {
-                color: $successMessageIconColor;
+                color: message.$successMessageIconColor;
             }
         }
 
         &.p-toast-message-warn {
-            background: $warningMessageBg;
-            border: $warningMessageBorder;
-            border-width: $messageBorderWidth;
-            color: $warningMessageTextColor;
+            background: message.$warningMessageBg;
+            border: message.$warningMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$warningMessageTextColor;
 
             .p-toast-message-icon,
             .p-toast-icon-close {
-                color: $warningMessageIconColor;
+                color: message.$warningMessageIconColor;
             }
         }
 
         &.p-toast-message-error {
-            background: $errorMessageBg;
-            border: $errorMessageBorder;
-            border-width: $messageBorderWidth;
-            color: $errorMessageTextColor;
+            background: message.$errorMessageBg;
+            border: message.$errorMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$errorMessageTextColor;
 
             .p-toast-message-icon,
             .p-toast-icon-close {
-                color: $errorMessageIconColor;
+                color: message.$errorMessageIconColor;
             }
         }
 
-        @if variable-exists(secondaryMessageBg) {
+        @if meta.variable-exists(secondaryMessageBg) {
             &.p-toast-message-secondary {
                 background: $secondaryMessageBg;
                 border: $secondaryMessageBorder;
-                border-width: $messageBorderWidth;
+                border-width: message.$messageBorderWidth;
                 color: $secondaryMessageTextColor;
 
                 .p-toast-message-icon,
@@ -186,11 +191,11 @@
             }
         }
 
-        @if variable-exists(contrastMessageBg) {
+        @if meta.variable-exists(contrastMessageBg) {
             &.p-toast-message-contrast {
                 background: $contrastMessageBg;
                 border: $contrastMessageBorder;
-                border-width: $messageBorderWidth;
+                border-width: message.$messageBorderWidth;
                 color: $contrastMessageTextColor;
 
                 .p-toast-message-icon,

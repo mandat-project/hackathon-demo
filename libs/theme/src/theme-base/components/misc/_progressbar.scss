@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+
 // core
 .p-progressbar {
     position: relative;
@@ -110,19 +113,19 @@
 
 // theme
 .p-progressbar {
-    border: $progressBarBorder;
-    height: $progressBarHeight;
-    background: $progressBarBg;
-    border-radius: $borderRadius;
+    border: misc.$progressBarBorder;
+    height: misc.$progressBarHeight;
+    background: misc.$progressBarBg;
+    border-radius: general.$borderRadius;
 
     .p-progressbar-value {
         border: 0 none;
         margin: 0;
-        background: $progressBarValueBg;
+        background: misc.$progressBarValueBg;
     }
 
     .p-progressbar-label {
-        color: $progressBarValueTextColor;
-        line-height: $progressBarHeight;
+        color: misc.$progressBarValueTextColor;
+        line-height: misc.$progressBarHeight;
     }
 }

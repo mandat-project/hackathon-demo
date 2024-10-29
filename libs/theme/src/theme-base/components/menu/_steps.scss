@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/menu";
+@use "../../mixins";
+
 @use 'sass:math';
 
 // core
@@ -59,54 +63,54 @@
     .p-steps-item {
         .p-menuitem-link {
             background: transparent;
-            transition: $listItemTransition;
-            border-radius: $borderRadius;
-            background: $stepsItemBg;
+            transition: general.$listItemTransition;
+            border-radius: general.$borderRadius;
+            background: menu.$stepsItemBg;
             outline-color: transparent;
 
             .p-steps-number {
-                color: $stepsItemNumberColor;
-                border: $stepsItemBorder;
-                background: $stepsItemBg;
-                min-width: $stepsItemNumberWidth;
-                height: $stepsItemNumberHeight;
-                line-height: $stepsItemNumberHeight;
-                font-size: $stepsItemNumberFontSize;
+                color: menu.$stepsItemNumberColor;
+                border: menu.$stepsItemBorder;
+                background: menu.$stepsItemBg;
+                min-width: menu.$stepsItemNumberWidth;
+                height: menu.$stepsItemNumberHeight;
+                line-height: menu.$stepsItemNumberHeight;
+                font-size: menu.$stepsItemNumberFontSize;
                 z-index: 1;
-                border-radius: $stepsItemNumberBorderRadius;
+                border-radius: menu.$stepsItemNumberBorderRadius;
             }
 
             .p-steps-title {
-                margin-top: $inlineSpacing;
-                color: $stepsItemTextColor;
+                margin-top: general.$inlineSpacing;
+                color: menu.$stepsItemTextColor;
             }
 
             &:not(.p-disabled):focus-visible {
-                @include focused();
+                @include mixins.focused();
             }
         }
 
         &.p-highlight {
             .p-steps-number {
-                background: $highlightBg;
-                color: $highlightTextColor;
+                background: general.$highlightBg;
+                color: general.$highlightTextColor;
             }
 
             .p-steps-title {
-                font-weight: $stepsItemActiveFontWeight;
-                color: $textColor;
+                font-weight: menu.$stepsItemActiveFontWeight;
+                color: general.$textColor;
             }
         }
 
         &:before {
             content:' ';
-            border-top: $divider;
+            border-top: general.$divider;
             width: 100%;
             top: 50%;
             left: 0;
             display: block;
             position: absolute;
-            margin-top: math.div(-1 * $stepsItemNumberHeight, 2);
+            margin-top: math.div(-1 * menu.$stepsItemNumberHeight, 2);
         }
     }
 }
