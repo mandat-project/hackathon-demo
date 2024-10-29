@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+@use "../../../datev-theme/variables/panel";
+
 // core
 .p-avatar {
     display: inline-flex;
@@ -40,8 +44,8 @@
 
 // theme
 .p-avatar {
-    background-color: $avatarBg;
-    border-radius: $borderRadius;
+    background-color: misc.$avatarBg;
+    border-radius: general.$borderRadius;
 
     &.p-avatar-lg {
         width: 3rem;
@@ -66,6 +70,6 @@
 
 .p-avatar-group {
     .p-avatar {
-        border: 2px solid $panelContentBg;
+        border: 2px solid panel.$panelContentBg;
     }
 }

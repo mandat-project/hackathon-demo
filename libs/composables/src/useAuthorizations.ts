@@ -47,6 +47,17 @@ const accessRequests = computed(() =>
 const emptyAuthorizations = ref<string[]>([]);
 const shapeTreesOfMissingDataRegs = ref<string[]>([]);
 
+// keep track of which children access authorizations already revoked rights
+type ReplacedAuthorizationWrapperType = { newAuthorization: string, oldAuthorization: string };
+const replacedAccessAuthorizations = ref<ReplacedAuthorizationWrapperType[]>([]);
+
+/**
+ * ensure synchronous operations
+ * idea: disable children while running
+ */
+const revokeReceiptIsWaitingForAccessAuthorizations = ref(false);
+const _revokeAccessAuthorizationEvents = ref<ReplacedAuthorizationWrapperType[]>([]);
+
 // create data authorization container if needed
 const dataAuthzContainerName = "data-authorizations"
 
@@ -292,15 +303,26 @@ export async function useAccessReceipt(uri: string, redirect?: string) {
     const isRevokedOrDenied = !nonEmptyAuthorizations.length;
     const status: 'Active' | 'Revoked' | 'Denied' = isRevokedOrDenied ? accessAuthorizations.length > 0 ? 'Revoked' : 'Denied' : 'Active';
 
-    // a quick and dirty wrapper for type-saftey
-    type ReplacedAuthorizationWrapperType = { newAuthorization: string, oldAuthorization: string }
-    /**
-     * ensure synchronous operations
-     * idea: disable children while running
-     */
-    const isWaitingForAccessAuthorizations = ref(false)
-    // keep track of which children access authorizations already revoked rights
-    const replacedAccessAuthorizations = ref<ReplacedAuthorizationWrapperType[]>([])
+    // Watchers
+
+    watch(_revokeAccessAuthorizationEvents, async () => {
+        const event = _revokeAccessAuthorizationEvents.value.pop();
+
+        if (event) {
+            const {oldAuthorization,
+                newAuthorization} = event;
+            await updateAccessAuthorization(oldAuthorization, newAuthorization);
+
+            if (redirect) {
+                window.open(
+                    `${redirect}?uri=${encodeURIComponent(
+                        uri
+                    )}`,
+                    "_self"
+                );
+            }
+        }
+    });
 
     // Functions
 
@@ -311,7 +333,7 @@ export async function useAccessReceipt(uri: string, redirect?: string) {
      */
     async function revokeAccessReceiptRights() {
         // trigger access authorizations to revoke rights
-        isWaitingForAccessAuthorizations.value = true // use this as trigger
+        revokeReceiptIsWaitingForAccessAuthorizations.value = true // use this as trigger
         // wait on all the not yet empty (i.e. revoked) access authorizations
         while (replacedAccessAuthorizations.value.length !== nonEmptyAuthorizations.length) {
             console.log("Waiting for access authorizations to be revoked ...");
@@ -319,7 +341,7 @@ export async function useAccessReceipt(uri: string, redirect?: string) {
         }
         // then removeAccessAuthroizations
         await _updateAccessReceipt(replacedAccessAuthorizations.value)
-        isWaitingForAccessAuthorizations.value = false
+        revokeReceiptIsWaitingForAccessAuthorizations.value = false
 
         if (redirect) {
             window.open(
@@ -341,7 +363,7 @@ export async function useAccessReceipt(uri: string, redirect?: string) {
     async function updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
         replacedAccessAuthorizations.value.push({newAuthorization, oldAuthorization})
         // if this component is waiting, do nothing, we will handle this in batch
-        if (isWaitingForAccessAuthorizations.value) {
+        if (revokeReceiptIsWaitingForAccessAuthorizations.value) {
             return
         }
         // else, just remove this one data authorization from the event
@@ -415,7 +437,8 @@ _:rename a solid:InsertDeletePatch;
         purpose,
         isRevokedOrDenied,
         status,
-        isWaitingForAccessAuthorizations,
+
+        revokeReceiptIsWaitingForAccessAuthorizations,
     };
 }
 
@@ -583,7 +606,7 @@ export async function useAccessNeedGroup(uri: string, forSocialAgents: string[])
  *
  * @param uri
  */
-export async function useAccessAuthorization(uri: string) {
+export async function useAccessAuthorization(uri: string, redirect?: string) {
 
     const resourceStore = await _fetchStoreOf(uri);
 
@@ -766,9 +789,20 @@ export async function useAccessAuthorization(uri: string) {
             })
         // delete old one
         await deleteResource(uri, session.value)
-        // emit update
-        // TODO emit("updatedAccessAuthorization", newLocation + "#" + accessAuthzLocale, uri)
 
+        // emit update
+        _updateAccessAuthorization(`${newLocation}#${accessAuthzLocale}`, uri);
+    }
+
+    async function _updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
+        replacedAccessAuthorizations.value.push({newAuthorization, oldAuthorization})
+        // if this component is waiting, do nothing, we will handle this in batch
+        if (revokeReceiptIsWaitingForAccessAuthorizations.value) {
+            return
+        }
+
+        // else, just remove this one data authorization from the event
+        _revokeAccessAuthorizationEvents.value.push({newAuthorization, oldAuthorization});
     }
 
     return {
@@ -780,6 +814,7 @@ export async function useAccessAuthorization(uri: string) {
         accessNeedGroups,
         dataAuthorizations,
         granteeName,
+
         isWaitingForDataAuthorizations,
         revokedDataAuthorizations,
     };

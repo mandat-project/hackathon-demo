@@ -1,3 +1,5 @@
+@use "../../../datev-theme/variables/general";
+
 // core
 .p-blockui-container {
     position: relative;
@@ -13,5 +15,5 @@
 
 // theme
 .p-blockui {
-    border-radius: $borderRadius;
+    border-radius: general.$borderRadius;
 }

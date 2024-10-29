@@ -1,6 +1,11 @@
+@use "../variables";
+@use "general";
+@use "form";
+@use "message";
+
 /// Padding of an inplace element
 /// @group misc
-$inplacePadding: $inputPadding;
+$inplacePadding: form.$inputPadding;
 
 /// Background of an inplace element in hover state
 /// @group misc
@@ -8,15 +13,15 @@ $inplaceHoverBg: #e9ecef;
 
 /// Text color of an inplace element in hover state
 /// @group misc
-$inplaceTextHoverColor: $textColor;
+$inplaceTextHoverColor: general.$textColor;
 
 /// Background of a badge
 /// @group misc
-$badgeBg: $primaryColor;
+$badgeBg: variables.$primaryColor;
 
 /// Text color of a badge
 /// @group misc
-$badgeTextColor: $primaryTextColor;
+$badgeTextColor: variables.$primaryTextColor;
 
 /// Minimum width of a badge
 /// @group misc
@@ -52,31 +57,31 @@ $progressBarBg: #dee2e6;
 
 /// Background of a progress bar value
 /// @group misc
-$progressBarValueBg: $primaryColor;
+$progressBarValueBg: variables.$primaryColor;
 
 /// Text color of a progress bar value
 /// @group misc
-$progressBarValueTextColor:$primaryTextColor;
+$progressBarValueTextColor:variables.$primaryTextColor;
 
 /// Stroke color of a progress spinner
 /// @group misc
-$progressSpinnerStrokeColor:$errorMessageTextColor !default;
+$progressSpinnerStrokeColor:message.$errorMessageTextColor !default;
 
 /// First spinner color of a progress spinner
 /// @group misc
-$progressSpinnerColorOne:$errorMessageTextColor !default;
+$progressSpinnerColorOne:message.$errorMessageTextColor !default;
 
 /// Second spinner color of a progress spinner
 /// @group misc
-$progressSpinnerColorTwo:$infoMessageTextColor !default;
+$progressSpinnerColorTwo:message.$infoMessageTextColor !default;
 
 /// Third spinner color of a progress spinner
 /// @group misc
-$progressSpinnerColorThree:$successMessageTextColor !default;
+$progressSpinnerColorThree:message.$successMessageTextColor !default;
 
 /// Fourth spinner color of a progress spinner
 /// @group misc
-$progressSpinnerColorFour:$warningMessageTextColor !default;
+$progressSpinnerColorFour:message.$warningMessageTextColor !default;
 
 /// Background of an avatar
 /// @group misc
@@ -84,7 +89,7 @@ $avatarBg:#dee2e6;
 
 /// Text color of an avatar
 /// @group misc
-$avatarTextColor:$textColor;
+$avatarTextColor:general.$textColor;
 
 /// Background of a chip
 /// @group misc
@@ -92,7 +97,7 @@ $chipBg:#dee2e6;
 
 /// Text color of a chip
 /// @group misc
-$chipTextColor:$textColor;
+$chipTextColor:general.$textColor;
 
 /// Border radius of a chip
 /// @group misc
@@ -104,7 +109,7 @@ $chipFocusBg:#dee2e6 !default;
 
 /// Color of a chip in focus state
 /// @group misc
-$chipFocusTextColor:$textColor !default;
+$chipFocusTextColor:general.$textColor !default;
 
 /// Background of a scrollTop
 /// @group misc

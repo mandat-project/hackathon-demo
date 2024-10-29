@@ -1,3 +1,8 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 // core
 .p-orderlist {
     display: flex;
@@ -40,47 +45,47 @@
 // theme
 .p-orderlist {
     .p-orderlist-controls {
-        padding: $panelContentPadding;
+        padding: panel.$panelContentPadding;
 
         .p-button {
-            margin-bottom: $inlineSpacing;
+            margin-bottom: general.$inlineSpacing;
         }
     }
 
     .p-orderlist-list-container {
-        background: $panelContentBg;
-        border: $panelContentBorder;
-        border-radius: $borderRadius;
-        transition: $formElementTransition;
+        background: panel.$panelContentBg;
+        border: panel.$panelContentBorder;
+        border-radius: general.$borderRadius;
+        transition: general.$formElementTransition;
         outline-color: transparent;
 
         &.p-focus {
-            @include focused-input();
+            @include mixins.focused-input();
         }
     }
 
     .p-orderlist-header {
-        color: $panelHeaderTextColor;
-        padding: $panelHeaderPadding;
-        font-weight: $panelHeaderFontWeight;
+        color: panel.$panelHeaderTextColor;
+        padding: panel.$panelHeaderPadding;
+        font-weight: panel.$panelHeaderFontWeight;
     }
 
     .p-orderlist-list {
-        color: $panelContentTextColor;
-        padding: $inputListPadding;
+        color: panel.$panelContentTextColor;
+        padding: form.$inputListPadding;
         outline: 0 none;
         
         &:not(:first-child) {
-            border-top: $panelContentBorder;
+            border-top: panel.$panelContentBorder;
         }
 
         .p-orderlist-item {
-            padding: $inputListItemPadding;
-            margin: $inputListItemMargin;
-            border: $inputListItemBorder;
-            color: $inputListItemTextColor;
-            background: $inputListItemBg;
-            transition: transform $transitionDuration, $listItemTransition;
+            padding: form.$inputListItemPadding;
+            margin: form.$inputListItemMargin;
+            border: form.$inputListItemBorder;
+            color: form.$inputListItemTextColor;
+            background: form.$inputListItemBg;
+            transition: transform general.$transitionDuration, general.$listItemTransition;
 
             &:first-child {
                 margin-top: 0;
@@ -91,26 +96,26 @@
             }
 
             &:not(.p-highlight):hover {
-                background: $inputListItemHoverBg;
-                color: $inputListItemTextHoverColor;
+                background: form.$inputListItemHoverBg;
+                color: form.$inputListItemTextHoverColor;
 
                 &.p-focus {
-                    color: $inputListItemTextHoverColor;
-                    background: $inputListItemHoverBg;
+                    color: form.$inputListItemTextHoverColor;
+                    background: form.$inputListItemHoverBg;
                 }
             }
 
             &.p-focus {
-                color: $inputListItemTextHoverColor;
-                background: $inputListItemHoverBg;
+                color: form.$inputListItemTextHoverColor;
+                background: form.$inputListItemHoverBg;
             }
 
             &.p-highlight {
-                color: $highlightTextColor;
-                background: $highlightBg;
+                color: general.$highlightTextColor;
+                background: general.$highlightBg;
 
                 &.p-focus {
-                    background: $highlightFocusBg;
+                    background: general.$highlightFocusBg;
                 }
             }
         }
@@ -119,10 +124,10 @@
     &.p-orderlist-striped {
         .p-orderlist-list {
             .p-orderlist-item:nth-child(even) {
-                background: $panelContentEvenRowBg;
+                background: panel.$panelContentEvenRowBg;
 
                 &:hover {
-                    background: $inputListItemHoverBg;
+                    background: form.$inputListItemHoverBg;
                 }
             }
         }

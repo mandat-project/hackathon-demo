@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+
 // core
 .p-toolbar {
     display: flex;
@@ -21,13 +24,13 @@
 
 // theme
 .p-toolbar {
-    background: $panelHeaderBg;
-    border: $panelHeaderBorder;
-    padding: $panelHeaderPadding;
-    border-radius: $borderRadius;
-    gap: $inlineSpacing;
+    background: panel.$panelHeaderBg;
+    border: panel.$panelHeaderBorder;
+    padding: panel.$panelHeaderPadding;
+    border-radius: general.$borderRadius;
+    gap: general.$inlineSpacing;
 
     .p-toolbar-separator {
-        margin: 0 $inlineSpacing;
+        margin: 0 general.$inlineSpacing;
     }
 }

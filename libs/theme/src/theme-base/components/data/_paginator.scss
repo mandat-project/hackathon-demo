@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/data";
+@use "../../../datev-theme/variables/general";
+
 // core
 .p-paginator-default {
     display: flex;
@@ -41,47 +44,47 @@
 
 // theme
 .p-paginator {
-    background: $paginatorBg;
-    color: $paginatorTextColor;
-    border: $paginatorBorder;
-    border-width: $paginatorBorderWidth;
-    padding: $paginatorPadding;
-    border-radius: $borderRadius;
+    background: data.$paginatorBg;
+    color: data.$paginatorTextColor;
+    border: data.$paginatorBorder;
+    border-width: data.$paginatorBorderWidth;
+    padding: data.$paginatorPadding;
+    border-radius: general.$borderRadius;
 
     .p-paginator-first,
     .p-paginator-prev,
     .p-paginator-next,
     .p-paginator-last {
-        background-color: $paginatorElementBg;
-        border: $paginatorElementBorder;
-        color: $paginatorElementIconColor;
-        min-width: $paginatorElementWidth;
-        height: $paginatorElementHeight;
-        margin: $paginatorElementMargin;
-        transition: $listItemTransition;
-        border-radius: $paginatorElementBorderRadius;
+        background-color: data.$paginatorElementBg;
+        border: data.$paginatorElementBorder;
+        color: data.$paginatorElementIconColor;
+        min-width: data.$paginatorElementWidth;
+        height: data.$paginatorElementHeight;
+        margin: data.$paginatorElementMargin;
+        transition: general.$listItemTransition;
+        border-radius: data.$paginatorElementBorderRadius;
 
         &:not(.p-disabled):not(.p-highlight):hover {
-            background: $paginatorElementHoverBg;
-            border-color: $paginatorElementHoverBorderColor;
-            color: $paginatorElementIconHoverColor;
+            background: data.$paginatorElementHoverBg;
+            border-color: data.$paginatorElementHoverBorderColor;
+            color: data.$paginatorElementIconHoverColor;
         }
     }
 
     .p-paginator-first {
-        border-top-left-radius: $paginatorElementBorderRadius;
-        border-bottom-left-radius: $paginatorElementBorderRadius;
+        border-top-left-radius: data.$paginatorElementBorderRadius;
+        border-bottom-left-radius: data.$paginatorElementBorderRadius;
     }
     
     .p-paginator-last {
-        border-top-right-radius: $paginatorElementBorderRadius;
-        border-bottom-right-radius: $paginatorElementBorderRadius;
+        border-top-right-radius: data.$paginatorElementBorderRadius;
+        border-bottom-right-radius: data.$paginatorElementBorderRadius;
     }
 
     .p-dropdown {
-        margin-left: $inlineSpacing;
-        margin-right: $inlineSpacing;
-        height: $paginatorElementHeight;
+        margin-left: general.$inlineSpacing;
+        margin-right: general.$inlineSpacing;
+        height: data.$paginatorElementHeight;
 
         .p-dropdown-label {
             padding-right: 0;
@@ -89,45 +92,45 @@
     }
 
     .p-paginator-page-input {
-        margin-left: $inlineSpacing;
-        margin-right: $inlineSpacing;
+        margin-left: general.$inlineSpacing;
+        margin-right: general.$inlineSpacing;
 
         .p-inputtext {
-            max-width: $paginatorElementWidth;
+            max-width: data.$paginatorElementWidth;
         }
     }
 
     .p-paginator-current {
-        background-color: $paginatorElementBg;
-        border: $paginatorElementBorder;
-        color: $paginatorElementIconColor;
-        min-width: $paginatorElementWidth;
-        height: $paginatorElementHeight;
-        margin: $paginatorElementMargin;
-        padding: 0 $inlineSpacing;
+        background-color: data.$paginatorElementBg;
+        border: data.$paginatorElementBorder;
+        color: data.$paginatorElementIconColor;
+        min-width: data.$paginatorElementWidth;
+        height: data.$paginatorElementHeight;
+        margin: data.$paginatorElementMargin;
+        padding: 0 general.$inlineSpacing;
     }
 
     .p-paginator-pages {
         .p-paginator-page {
-            background-color: $paginatorElementBg;
-            border: $paginatorElementBorder;
-            color: $paginatorElementIconColor;
-            min-width: $paginatorElementWidth;
-            height: $paginatorElementHeight;
-            margin: $paginatorElementMargin;
-            transition: $listItemTransition;
-            border-radius: $paginatorElementBorderRadius;
+            background-color: data.$paginatorElementBg;
+            border: data.$paginatorElementBorder;
+            color: data.$paginatorElementIconColor;
+            min-width: data.$paginatorElementWidth;
+            height: data.$paginatorElementHeight;
+            margin: data.$paginatorElementMargin;
+            transition: general.$listItemTransition;
+            border-radius: data.$paginatorElementBorderRadius;
 
             &.p-highlight {
-                background: $highlightBg;
-                border-color: $highlightBg;
-                color: $highlightTextColor;
+                background: general.$highlightBg;
+                border-color: general.$highlightBg;
+                color: general.$highlightTextColor;
             }
 
             &:not(.p-highlight):hover {
-                background: $paginatorElementHoverBg;
-                border-color: $paginatorElementHoverBorderColor;
-                color: $paginatorElementIconHoverColor;
+                background: data.$paginatorElementHoverBg;
+                border-color: data.$paginatorElementHoverBorderColor;
+                color: data.$paginatorElementIconHoverColor;
             }
         }
     }

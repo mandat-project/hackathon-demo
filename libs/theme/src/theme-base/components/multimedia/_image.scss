@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/media";
+
 // core
 .p-image-mask {
     display: flex;
@@ -73,56 +76,56 @@
 
 // theme
 .p-image-mask {
-    --maskbg: #{$imageMaskBg};
+    --maskbg: #{media.$imageMaskBg};
 }
 
 .p-image-preview-indicator {
     background-color: transparent;
-    color: $imagePreviewIndicatorColor;
-    transition: $actionIconTransition;
+    color: media.$imagePreviewIndicatorColor;
+    transition: general.$actionIconTransition;
 
     .p-icon {
-        width: $imagePreviewActionIconFontSize;
-        height: $imagePreviewActionIconFontSize;
+        width: media.$imagePreviewActionIconFontSize;
+        height: media.$imagePreviewActionIconFontSize;
     }
 }
 
 .p-image-preview-container {
     &:hover {
         > .p-image-preview-indicator {
-            background-color: $imagePreviewIndicatorBg;
+            background-color: media.$imagePreviewIndicatorBg;
         }
     }
 }
 
 .p-image-toolbar {
-    padding: $imagePreviewToolbarPadding;
+    padding: media.$imagePreviewToolbarPadding;
 }
 
 .p-image-action.p-link {
-    color: $imagePreviewActionIconColor;
-    background-color: $imagePreviewActionIconBg;
-    width: $imagePreviewActionIconWidth;
-    height: $imagePreviewActionIconHeight;
-    border-radius: $imagePreviewActionIconBorderRadius;
-    transition: $actionIconTransition;
-    margin-right: $inlineSpacing;
+    color: media.$imagePreviewActionIconColor;
+    background-color: media.$imagePreviewActionIconBg;
+    width: media.$imagePreviewActionIconWidth;
+    height: media.$imagePreviewActionIconHeight;
+    border-radius: media.$imagePreviewActionIconBorderRadius;
+    transition: general.$actionIconTransition;
+    margin-right: general.$inlineSpacing;
 
     &:last-child {
         margin-right: 0;
     }
 
     &:hover {
-        color: $imagePreviewActionIconHoverColor;
-        background-color: $imagePreviewActionIconHoverBg;
+        color: media.$imagePreviewActionIconHoverColor;
+        background-color: media.$imagePreviewActionIconHoverBg;
     }
 
     i {
-        font-size: $imagePreviewActionIconFontSize;
+        font-size: media.$imagePreviewActionIconFontSize;
     }
 
     .p-icon {
-        width: $imagePreviewActionIconFontSize;
-        height: $imagePreviewActionIconFontSize;
+        width: media.$imagePreviewActionIconFontSize;
+        height: media.$imagePreviewActionIconFontSize;
     }
 }

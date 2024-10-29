@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/button";
+@use "../../../datev-theme/variables/general";
+
 // core
 .p-splitbutton {
     display: inline-flex;
@@ -34,17 +37,17 @@
 
 // theme
 .p-splitbutton {
-    border-radius: $borderRadius;
+    border-radius: general.$borderRadius;
 
     &.p-button-rounded {
-        border-radius: $roundedButtonBorderRadius;
+        border-radius: button.$roundedButtonBorderRadius;
 
         > .p-button {
-            border-radius: $roundedButtonBorderRadius;
+            border-radius: button.$roundedButtonBorderRadius;
         }
     }
 
     &.p-button-raised {
-        box-shadow: $raisedButtonShadow;
+        box-shadow: button.$raisedButtonShadow;
     }
 }

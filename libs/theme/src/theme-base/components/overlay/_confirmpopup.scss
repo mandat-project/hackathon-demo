@@ -1,3 +1,9 @@
+@use "sass:color";
+@use "sass:list";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/overlay";
+@use "../../../datev-theme/variables/panel";
+
 // core
 .p-confirm-popup {
     position: absolute;
@@ -71,22 +77,22 @@
 
 // theme
 .p-confirm-popup {
-    background: $overlayContentBg;
-    color: $panelContentTextColor;
-    border: $overlayContentBorder;
-    border-radius: $borderRadius;
-    box-shadow: $overlayContainerShadow;
+    background: overlay.$overlayContentBg;
+    color: panel.$panelContentTextColor;
+    border: overlay.$overlayContentBorder;
+    border-radius: general.$borderRadius;
+    box-shadow: overlay.$overlayContainerShadow;
 
     .p-confirm-popup-content {
-        padding: $confirmPopupContentPadding;
+        padding: overlay.$confirmPopupContentPadding;
     }
 
     .p-confirm-popup-footer {
         text-align: right;
-        padding: $confirmPopupFooterPadding;
+        padding: overlay.$confirmPopupFooterPadding;
 
         button {
-            margin: 0 $inlineSpacing 0 0;
+            margin: 0 general.$inlineSpacing 0 0;
             width: auto;
 
             &:last-child {
@@ -97,48 +103,48 @@
 
     &:after {
         border-style: solid;
-        border-color: rgba($overlayContentBg, 0);
-        border-bottom-color: $overlayContentBg;
+        border-color: rgba(overlay.$overlayContentBg, 0);
+        border-bottom-color: overlay.$overlayContentBg;
     }
 
     &:before {
         border-style: solid;
 
-        @if (nth($overlayContentBorder, 2) == 'none') {
-            border-color: rgba($overlayContentBg, 0);
-            border-bottom-color: scale-color($overlayContentBg, $lightness: -5%);
+        @if (list.nth(overlay.$overlayContentBorder, 2) == 'none') {
+            border-color: rgba(overlay.$overlayContentBg, 0);
+            border-bottom-color: color.scale(overlay.$overlayContentBg, $lightness: -5%);
         }
         @else {
-            border-color: rgba(nth($overlayContentBorder, 3), 0);
-            border-bottom-color: scale-color(nth($overlayContentBorder, 3), $lightness: -5%);
+            border-color: rgba(list.nth(overlay.$overlayContentBorder, 3), 0);
+            border-bottom-color: color.scale(list.nth(overlay.$overlayContentBorder, 3), $lightness: -5%);
         }
     }
 
     &.p-confirm-popup-flipped {
         &:after {
-            border-top-color: $overlayContentBg;
+            border-top-color: overlay.$overlayContentBg;
         }
 
         &:before {
-            @if (nth($overlayContentBorder, 2) == 'none') {
-                border-top-color: $overlayContentBg;
+            @if (list.nth(overlay.$overlayContentBorder, 2) == 'none') {
+                border-top-color: overlay.$overlayContentBg;
             }
             @else {
-                border-top-color: nth($overlayContentBorder, 3);
+                border-top-color: list.nth(overlay.$overlayContentBorder, 3);
             }
         }
     }
 
     .p-confirm-popup-icon {
-        font-size: $primeIconFontSize * 1.5;
+        font-size: general.$primeIconFontSize * 1.5;
 
         &.p-icon {
-            width: $primeIconFontSize * 1.5;
-            height: $primeIconFontSize * 1.5;
+            width: general.$primeIconFontSize * 1.5;
+            height: general.$primeIconFontSize * 1.5;
         }
     }
 
     .p-confirm-popup-message {
-        margin-left: $inlineSpacing * 2;
+        margin-left: general.$inlineSpacing * 2;
     }
 }

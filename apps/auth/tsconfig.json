@@ -9,6 +9,11 @@
     ],
     "resolveJsonModule": true
   },
+  "paths": {
+    "@/*": [
+      "./src/*"
+    ]
+  },
   "include": [
     "**/*.ts",
     "**/*.js",

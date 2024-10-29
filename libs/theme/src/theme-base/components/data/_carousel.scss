@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/media";
+@use "../../mixins";
+
 // core
 .p-carousel {
     display: flex;
@@ -74,34 +78,34 @@
     .p-carousel-content {
         .p-carousel-prev,
         .p-carousel-next {
-            @include action-icon();
-            margin: $inlineSpacing;
+            @include mixins.action-icon();
+            margin: general.$inlineSpacing;
         }
     }
 
     .p-carousel-indicators {
-        padding: $carouselIndicatorsPadding;
+        padding: media.$carouselIndicatorsPadding;
 
         .p-carousel-indicator {
-            margin-right: $inlineSpacing;
-            margin-bottom: $inlineSpacing;
+            margin-right: general.$inlineSpacing;
+            margin-bottom: general.$inlineSpacing;
            
             button {
-                background-color: $carouselIndicatorBg;
-                width: $carouselIndicatorWidth;
-                height: $carouselIndicatorHeight;
-                transition: $actionIconTransition;
-                border-radius: $carouselIndicatorBorderRadius;
+                background-color: media.$carouselIndicatorBg;
+                width: media.$carouselIndicatorWidth;
+                height: media.$carouselIndicatorHeight;
+                transition: general.$actionIconTransition;
+                border-radius: media.$carouselIndicatorBorderRadius;
 
                 &:hover {
-                    background: $carouselIndicatorHoverBg;
+                    background: media.$carouselIndicatorHoverBg;
                 }
             }
 
             &.p-highlight {
                 button {
-                    background: $highlightBg;
-                    color: $highlightTextColor;
+                    background: general.$highlightBg;
+                    color: general.$highlightTextColor;
                 }
             }
         }

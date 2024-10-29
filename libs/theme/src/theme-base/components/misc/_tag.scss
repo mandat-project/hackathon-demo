@@ -1,3 +1,8 @@
+@use "sass:meta";
+@use "../../../datev-theme/variables/button";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+
 @use "sass:math";
 
 // core
@@ -19,37 +24,37 @@
 
 // theme
 .p-tag {
-    background: $badgeBg;
-    color: $badgeTextColor;
-    font-size: $badgeFontSize;
-    font-weight: $badgeFontWeight;
-    padding: $tagPadding;
-    border-radius: $borderRadius;
+    background: misc.$badgeBg;
+    color: misc.$badgeTextColor;
+    font-size: misc.$badgeFontSize;
+    font-weight: misc.$badgeFontWeight;
+    padding: misc.$tagPadding;
+    border-radius: general.$borderRadius;
 
     &.p-tag-success {
-        background-color: $successButtonBg;
-        color: $successButtonTextColor;
+        background-color: button.$successButtonBg;
+        color: button.$successButtonTextColor;
     }
 
     &.p-tag-info {
-        background-color: $infoButtonBg;
-        color: $infoButtonTextColor;
+        background-color: button.$infoButtonBg;
+        color: button.$infoButtonTextColor;
     }
 
     &.p-tag-warning {
-        background-color: $warningButtonBg;
-        color: $warningButtonTextColor;
+        background-color: button.$warningButtonBg;
+        color: button.$warningButtonTextColor;
     }
 
     &.p-tag-danger {
-        background-color: $dangerButtonBg;
-        color: $dangerButtonTextColor;
+        background-color: button.$dangerButtonBg;
+        color: button.$dangerButtonTextColor;
     }
 
-    @if variable-exists(secondaryMessageBg) {
+    @if meta.variable-exists(secondaryMessageBg) {
         &.p-tag-secondary {
-            background-color: $secondaryButtonBg;
-            color: $secondaryButtonTextColor;
+            background-color: button.$secondaryButtonBg;
+            color: button.$secondaryButtonTextColor;
         }
     
         &.p-tag-contrast {
@@ -59,15 +64,15 @@
     }
 
     .p-tag-icon {
-        font-size: $badgeFontSize;
+        font-size: misc.$badgeFontSize;
 
         &:not(:last-child) {
-            margin-right: math.div($inlineSpacing, 2);
+            margin-right: math.div(general.$inlineSpacing, 2);
         }
 
         &.p-icon {
-            width: $badgeFontSize;
-            height: $badgeFontSize;
+            width: misc.$badgeFontSize;
+            height: misc.$badgeFontSize;
         }
     }
 }

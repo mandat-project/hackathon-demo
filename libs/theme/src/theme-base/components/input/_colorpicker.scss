@@ -1,3 +1,5 @@
+@use "../../../datev-theme/variables/form";
+
 // core
 .p-colorpicker-panel .p-colorpicker-color {
     background: linear-gradient(to top, #000 0%, rgb(0 0 0 / 0) 100%), linear-gradient(to right, #fff 0%, rgb(255 255 255 / 0) 100%)
@@ -9,20 +11,20 @@
 
 // theme
 .p-colorpicker-preview  {
-    width: $colorPickerPreviewWidth;
-    height: $colorPickerPreviewHeight;
+    width: form.$colorPickerPreviewWidth;
+    height: form.$colorPickerPreviewHeight;
 }
 
 .p-colorpicker-panel {
-    background: $colorPickerBg;
-    border: $colorPickerBorder;
+    background: form.$colorPickerBg;
+    border: form.$colorPickerBorder;
 
     .p-colorpicker-color-handle,
     .p-colorpicker-hue-handle {
-        border-color: $colorPickerHandleColor;
+        border-color: form.$colorPickerHandleColor;
     }
 }
 
 .p-colorpicker-overlay-panel {
-    box-shadow: $inputOverlayShadow;
+    box-shadow: form.$inputOverlayShadow;
 }

@@ -1,4 +1,9 @@
-@import './variables';
-@import './fonts';
-@import '../theme-base/components';
-@import './extensions';
+@use "sass:map";
+
+@use 'css-variables';
+
+@use 'fonts';
+@use '../theme-base/components';
+@use 'extensions';
+
+

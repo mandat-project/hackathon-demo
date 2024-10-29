@@ -1,10 +1,14 @@
+@use "form";
+@use "general";
+@use "panel";
+
 /// Border of an overlay container element such as dialog or overlaypanel
 /// @group overlay
 $overlayContentBorder: 0 none;
 
 /// Background of an overlay container element such as dialog or overlaypanel
 /// @group overlay
-$overlayContentBg:$panelContentBg;
+$overlayContentBg:panel.$panelContentBg;
 
 /// Box shadow of an overlay container element such as dialog or overlaypanel
 /// @group overlay
@@ -20,7 +24,7 @@ $dialogHeaderBorder: 1px solid #dee2e6;
 
 /// Text color of a dialog header
 /// @group overlay
-$dialogHeaderTextColor: $panelHeaderTextColor;
+$dialogHeaderTextColor: panel.$panelHeaderTextColor;
 
 /// Font weight of a dialog header
 /// @group overlay
@@ -48,7 +52,7 @@ $dialogFooterPadding: 1.5rem;
 
 /// Padding of a confirmpopup content
 /// @group overlay
-$confirmPopupContentPadding:$panelContentPadding;
+$confirmPopupContentPadding:panel.$panelContentPadding;
 
 /// Padding of a confirmpopup footer
 /// @group overlay
@@ -56,7 +60,7 @@ $confirmPopupFooterPadding:0 1rem 1rem 1rem;
 
 /// Background of a tooltip
 /// @group overlay
-$tooltipBg: $textColor;
+$tooltipBg: general.$textColor;
 
 /// Text color of a tooltip
 /// @group overlay
@@ -64,4 +68,4 @@ $tooltipTextColor: #ffffff;
 
 /// Padding of a tooltip
 /// @group overlay
-$tooltipPadding: $inputPadding;
+$tooltipPadding: form.$inputPadding;

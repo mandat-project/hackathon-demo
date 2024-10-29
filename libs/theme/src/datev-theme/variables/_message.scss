@@ -1,3 +1,6 @@
+@use "form";
+@use "general";
+
 /// Margin of a message
 /// @group message
 $messageMargin: 1rem 0;
@@ -24,7 +27,7 @@ $messageTextFontWeight: 500;
 
 /// Padding of an inline message
 /// @group message
-$inlineMessagePadding: $inputPadding;
+$inlineMessagePadding: form.$inputPadding;
 
 /// Margin of an inline message
 /// @group message
@@ -76,7 +79,7 @@ $toastTitleFontWeight: 700;
 
 /// Margin of a toast message detail text
 /// @group message
-$toastDetailMargin: $inlineSpacing 0 0 0;
+$toastDetailMargin: general.$inlineSpacing 0 0 0;
 
 /// Background of an info message
 /// @group message
@@ -120,11 +123,11 @@ $warningMessageBorder: 0 none;
 
 /// Text color of a warning message
 /// @group message
-$warningMessageTextColor: $textColor;
+$warningMessageTextColor: general.$textColor;
 
 /// Icon color of a warning message
 /// @group message
-$warningMessageIconColor: $textColor;
+$warningMessageIconColor: general.$textColor;
 
 /// Background of an error message
 /// @group message

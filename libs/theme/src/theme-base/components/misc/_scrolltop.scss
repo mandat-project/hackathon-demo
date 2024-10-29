@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+
 // core
 .p-scrolltop {
     position: fixed;
@@ -34,27 +38,27 @@
 
 // theme
 .p-scrolltop {
-    width: $scrollTopWidth;
-    height: $scrollTopHeight;
-    border-radius: $scrollTopBorderRadius;
-    box-shadow: $inputOverlayShadow;
-    transition: $actionIconTransition;
+    width: misc.$scrollTopWidth;
+    height: misc.$scrollTopHeight;
+    border-radius: misc.$scrollTopBorderRadius;
+    box-shadow: form.$inputOverlayShadow;
+    transition: general.$actionIconTransition;
 
     &.p-link {
-        background: $scrollTopBg;
+        background: misc.$scrollTopBg;
 
         &:hover {
-            background: $scrollTopHoverBg;
+            background: misc.$scrollTopHoverBg;
         }
     }
 
     .p-scrolltop-icon {
-        font-size: $scrollTopFontSize;
-        color: $scrollTopTextColor;
+        font-size: misc.$scrollTopFontSize;
+        color: misc.$scrollTopTextColor;
 
         &.p-icon {
-            width: $scrollTopFontSize;
-            height: $scrollTopFontSize;
+            width: misc.$scrollTopFontSize;
+            height: misc.$scrollTopFontSize;
         }
     }
 }

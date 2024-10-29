@@ -1,10 +1,14 @@
+@use "sass:list";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+
 .p-inputotp {
     display: flex;
     align-items: center;
-    gap: $inlineSpacing;
+    gap: general.$inlineSpacing;
 }
 
 .p-inputotp-input {
     text-align: center;
-    width: 2 * nth($inputPadding, 2) + 1rem;
+    width: 2 * list.nth(form.$inputPadding, 2) + 1rem;
 }

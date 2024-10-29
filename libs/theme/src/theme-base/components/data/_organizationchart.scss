@@ -1,3 +1,9 @@
+@use "../../../datev-theme/variables/data";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 @use "sass:color";
 
 // core
@@ -58,41 +64,41 @@
 .p-organizationchart {
     .p-organizationchart-node-content {
         &.p-organizationchart-selectable-node:not(.p-highlight):hover {
-            background: $inputListItemHoverBg;
-            color: $inputListItemTextHoverColor;
+            background: form.$inputListItemHoverBg;
+            color: form.$inputListItemTextHoverColor;
         }
 
         &.p-highlight {
-            background: $highlightBg;
-            color: $highlightTextColor;
+            background: general.$highlightBg;
+            color: general.$highlightTextColor;
 
             .p-node-toggler {
                 i {
-                    color: color.adjust($highlightBg, $lightness: -25%);
+                    color: color.adjust(general.$highlightBg, $lightness: -25%);
                 }
             }
         }
     }
 
     .p-organizationchart-line-down {
-        background: $organizationChartConnectorColor;
+        background: data.$organizationChartConnectorColor;
     }
 
     .p-organizationchart-line-left {
-        border-right: $panelContentBorder;
-        border-color: $organizationChartConnectorColor;
+        border-right: panel.$panelContentBorder;
+        border-color: data.$organizationChartConnectorColor;
     }
 
     .p-organizationchart-line-top {
-        border-top: $panelContentBorder;
-        border-color: $organizationChartConnectorColor;
+        border-top: panel.$panelContentBorder;
+        border-color: data.$organizationChartConnectorColor;
     }
 
     .p-organizationchart-node-content {
-        border: $panelContentBorder;
-        background: $panelContentBg;
-        color: $panelContentTextColor;
-        padding: $panelContentPadding;
+        border: panel.$panelContentBorder;
+        background: panel.$panelContentBg;
+        color: panel.$panelContentTextColor;
+        padding: panel.$panelContentPadding;
     }
 
     .p-organizationchart-node-content .p-node-toggler {
@@ -102,7 +108,7 @@
         outline-color: transparent;
 
         &:focus-visible {
-            @include focused();
+            @include mixins.focused();
         }
     }
 }

@@ -1,3 +1,5 @@
+@use "general";
+
 /// Background of a steps item
 /// @group menu
 $stepsItemBg: #ffffff;
@@ -8,7 +10,7 @@ $stepsItemBorder: 1px solid #c8c8c8;
 
 /// Text color of a steps item
 /// @group menu
-$stepsItemTextColor: $textSecondaryColor;
+$stepsItemTextColor: general.$textSecondaryColor;
 
 /// Width of a steps itrem number
 /// @group menu
@@ -24,7 +26,7 @@ $stepsItemNumberFontSize: 1.143rem;
 
 /// Color of a steps itrem number
 /// @group menu
-$stepsItemNumberColor: $textColor;
+$stepsItemNumberColor: general.$textColor;
 
 /// Border radius of a steps itrem number
 /// @group menu
@@ -48,7 +50,7 @@ $menuBorder: 1px solid #dee2e6;
 
 /// Text color of a menu
 /// @group menu
-$menuTextColor: $textColor;
+$menuTextColor: general.$textColor;
 
 /// Padding of a menuitem
 /// @group menu
@@ -60,19 +62,19 @@ $menuitemBorderRadius: 0;
 
 /// Text color of a menuitem
 /// @group menu
-$menuitemTextColor: $textColor;
+$menuitemTextColor: general.$textColor;
 
 /// Icon color of a menuitem
 /// @group menu
-$menuitemIconColor: $textSecondaryColor;
+$menuitemIconColor: general.$textSecondaryColor;
 
 /// Text color of a menuitem in hover state
 /// @group menu
-$menuitemTextHoverColor: $textColor;
+$menuitemTextHoverColor: general.$textColor;
 
 /// Icon color of a menuitem in hover state
 /// @group menu
-$menuitemIconHoverColor: $textSecondaryColor;
+$menuitemIconHoverColor: general.$textSecondaryColor;
 
 /// Background of a menuitem in hover state
 /// @group menu
@@ -80,11 +82,11 @@ $menuitemHoverBg: #e9ecef;
 
 /// Text color of a menuitem in focus state
 /// @group menu
-$menuitemTextFocusColor: $textColor;
+$menuitemTextFocusColor: general.$textColor;
 
 /// Icon color of a menuitem in focus state
 /// @group menu
-$menuitemIconFocusColor: $textColor;
+$menuitemIconFocusColor: general.$textColor;
 
 /// Background of a menuitem in focus state
 /// @group menu
@@ -92,11 +94,11 @@ $menuitemFocusBg: #f8f9fa;
 
 /// Text color of a menuitem in active state
 /// @group menu
-$menuitemTextActiveColor: $textColor;
+$menuitemTextActiveColor: general.$textColor;
 
 /// Icon color of a menuitem in active state
 /// @group menu
-$menuitemIconActiveColor: $textSecondaryColor;
+$menuitemIconActiveColor: general.$textSecondaryColor;
 
 /// Background of a menuitem in active state
 /// @group menu
@@ -124,7 +126,7 @@ $submenuHeaderBg: #ffffff;
 
 /// Text color of a submenu header
 /// @group menu
-$submenuHeaderTextColor: $textColor;
+$submenuHeaderTextColor: general.$textColor;
 
 /// Border radius of a submenu header
 /// @group menu
@@ -208,7 +210,7 @@ $horizontalMenuRootMenuitemPadding: $menuitemPadding;
 
 /// Border radius of a horizontal menu root item e.g. menubar
 /// @group menu
-$horizontalMenuRootMenuitemBorderRadius: $borderRadius;
+$horizontalMenuRootMenuitemBorderRadius: general.$borderRadius;
 
 /// Text color of a horizontal menu root item e.g. menubar
 /// @group menu
@@ -256,7 +258,7 @@ $dockItemPadding: .5rem;
 
 /// Border radius of an action item on dock
 /// @group menu
-$dockItemBorderRadius:$borderRadius;
+$dockItemBorderRadius:general.$borderRadius;
 
 /// Margin of the current action item on dock
 /// @group menu

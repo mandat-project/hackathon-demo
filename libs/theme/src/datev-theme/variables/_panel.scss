@@ -1,3 +1,6 @@
+@use "../variables";
+@use "general";
+
 /// Border color of a panel header
 /// @group panel
 $panelHeaderBorderColor: #dee2e6;
@@ -12,7 +15,7 @@ $panelHeaderBg: #f8f9fa;
 
 /// Text color of a panel header
 /// @group panel
-$panelHeaderTextColor: $textColor;
+$panelHeaderTextColor: general.$textColor;
 
 /// Font weight of a panel header
 /// @group panel
@@ -56,7 +59,7 @@ $panelContentEvenRowBg: #e9ecef;
 
 /// Text color for the content section of a panel
 /// @group panel
-$panelContentTextColor: $textColor;
+$panelContentTextColor: general.$textColor;
 
 /// Padding for the content section of a panel
 /// @group panel
@@ -72,7 +75,7 @@ $panelFooterBg: #ffffff;
 
 /// Text color for the footer section of a panel
 /// @group panel
-$panelFooterTextColor: $textColor;
+$panelFooterTextColor: general.$textColor;
 
 /// Padding for the footer section of a panel
 /// @group panel
@@ -112,7 +115,7 @@ $accordionHeaderHoverBorderColor: transparent;
 
 /// Text color of an accordion panel header in hover state
 /// @group panel
-$accordionHeaderTextHoverColor: $textColor;
+$accordionHeaderTextHoverColor: general.$textColor;
 
 /// Background of an accordion panel header in expanded state
 /// @group panel
@@ -124,7 +127,7 @@ $accordionHeaderActiveBorderColor: transparent;
 
 /// Text color of an accordion panel header in expanded state
 /// @group panel
-$accordionHeaderTextActiveColor: $textColor;
+$accordionHeaderTextActiveColor: general.$textColor;
 
 /// Hover background of an accordion panel header in expanded state
 /// @group panel
@@ -136,7 +139,7 @@ $accordionHeaderActiveHoverBorderColor: transparent;
 
 /// Text color of an accordion panel header in expanded state
 /// @group panel
-$accordionHeaderTextActiveHoverColor: $textColor;
+$accordionHeaderTextActiveHoverColor: general.$textColor;
 
 /// Border for a content section of an accordion panel
 /// @group panel
@@ -188,7 +191,7 @@ $tabviewHeaderBg: #ffffff;
 
 /// Text color of a tabview header
 /// @group panel
-$tabviewHeaderTextColor: $textSecondaryColor;
+$tabviewHeaderTextColor: general.$textSecondaryColor;
 
 /// Font weight of a tabview header
 /// @group panel
@@ -212,7 +215,7 @@ $tabviewHeaderHoverBorderColor: #9ba2aa;
 
 /// Text color of a tabview header in hover state
 /// @group panel
-$tabviewHeaderTextHoverColor: $textSecondaryColor;
+$tabviewHeaderTextHoverColor: general.$textSecondaryColor;
 
 /// Background of a tabview header in selected state
 /// @group panel
@@ -220,11 +223,11 @@ $tabviewHeaderActiveBg: #ffffff;
 
 /// Border of a tabview header in selected state
 /// @group panel
-$tabviewHeaderActiveBorderColor: $primaryColor;
+$tabviewHeaderActiveBorderColor: variables.$primaryColor;
 
 /// Text color of a tabview header in selected state
 /// @group panel
-$tabviewHeaderTextActiveColor: $primaryColor;
+$tabviewHeaderTextActiveColor: variables.$primaryColor;
 
 /// Border for content section of a tabview tab
 /// @group panel
@@ -252,7 +255,7 @@ $panelHeaderHoverBorderColor: #dee2e6;
 
 /// Text color of a fieldset header in hover state
 /// @group panel
-$panelHeaderTextHoverColor: $textColor;
+$panelHeaderTextHoverColor: general.$textColor;
 
 /// Border for a track bar of a scroll panel
 /// @group panel
@@ -280,7 +283,7 @@ $cardSubTitleFontWeight: 700;
 
 /// Text color of a card subtitle
 /// @group panel
-$cardSubTitleColor: $textSecondaryColor;
+$cardSubTitleColor: general.$textSecondaryColor;
 
 /// Padding of a card content
 /// @group panel

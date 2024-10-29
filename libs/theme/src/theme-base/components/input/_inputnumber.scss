@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/form";
+@use "../../mixins";
+
 // core
 .p-inputnumber {
     display: inline-flex;
@@ -103,18 +106,18 @@
 // theme
 .p-inputnumber {
     &.p-invalid.p-component > .p-inputtext {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 
     &.p-variant-filled > .p-inputnumber-input {
-        background-color: $inputFilledBg;
+        background-color: form.$inputFilledBg;
 
         &:enabled:hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:enabled:focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 }
