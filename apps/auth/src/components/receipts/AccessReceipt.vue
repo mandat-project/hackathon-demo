@@ -100,11 +100,13 @@ import {
 import {NamedNode, Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
 const {session} = useSolidSession();
 const toast = useToast();
+const { t } = useI18n();
 
 const state = reactive({
   informationResourceStore: new Store(),
@@ -116,7 +118,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access receipt!",
+      summary: t("accessReceipt.error.accessReceipt"),
       detail: err,
       life: 5000,
     });
@@ -148,7 +150,7 @@ state.accessRequestStore = await getResource(accessRequests.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access request!",
+      summary: t("accessReceipt.error.accessReceipt"),
       detail: err,
       life: 5000,
     });
@@ -274,7 +276,7 @@ _:rename a solid:InsertDeletePatch;
       .then(() =>
         toast.add({
           severity: "success",
-          summary: "Access Receipt updated.",
+          summary: t("accessReceipt.success.accessReceiptUpdated"),
           life: 5000,
         })
       )
@@ -282,7 +284,7 @@ _:rename a solid:InsertDeletePatch;
         (err) => {
           toast.add({
             severity: "error",
-            summary: "Error on patch Receipt!",
+            summary: t("accessReceipt.error.patchReceipt"),
             detail: err,
             life: 5000,
           });

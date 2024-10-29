@@ -22,18 +22,41 @@
       "message": "Are you sure you want to proceed?",
       "authorize": "Authorize Request",
       "cancel": "Cancel"
+    },
+    "error": {
+      "sender": "Could not get sender!",
+      "grantee": "Could not get grantee!",
+      "createAccessReceipt": "Failed to create Access Receipt!"
+    },
+    "success": {
+      "accessReceiptCreated": "Access Receipt created."
     }
   },
   "accessNeed": {
     "requiredDataFormat": "Access need for required data format:",
     "container": "Access need for container:",
     "resources": "Access need for resources:",
-    "mode": "Access Mode:"
+    "mode": "Access Mode:",
+    "error": {
+      "accessRequest": "Could not get access request!",
+      "getDataRegistrationContainers": "Error on getDataRegistrationContainers!",
+      "dataAuthorization": "Failed to create Data Authorization!"
+    },
+    "success": {
+      "dataAuthorizationCreated": "Data Authorization created."
+    }
   },
   "accessNeedGroup": {
     "description": "Short description of requested access:",
     "explanation": "Explanation:",
-    "loading": "Loading Access Need"
+    "loading": "Loading Access Need",
+    "error": {
+      "accessRequest": "Could not get access request!",
+      "accessAuthorization": "Failed to create Access Authorization!"
+    },
+    "success": {
+      "accessAuthorization": "Access Authorization created."
+    }
   },
   "accessAuthorization": {
     "grantDate": "Grant date:",
@@ -65,7 +88,14 @@
     "accessRequest": "For Access Request:",
     "purpose": "Purpose:",
     "accessAuthorizations": "Access Authorizations",
-    "loading": "Loading"
+    "loading": "Loading",
+    "error": {
+      "accessReceipt": "Could not get access receipt!",
+      "patchReceipt": "Error on patch Receipt!"
+    },
+    "success": {
+      "accessReceiptUpdated": "Access Receipt updated."
+    }
   },
   "dataAuthorization": {
     "accessNeeds": "Access Needs:",
@@ -75,7 +105,17 @@
     "registration": "Data Registrations:",
     "instances": "Authorized Instances:",
     "accessMode": "Access Mode:",
-    "revoke": "Revoke this authorization"
+    "revoke": "Revoke this authorization",
+    "error": {
+      "dataAuthorization": "Could not get data authorization!",
+      "grantee": "Could not get grantee!",
+      "getDataRegistrationContainers": "Error on getDataRegistrationContainers!",
+      "loadACL": "Could not load ACL!",
+      "updateACL": "Failed to updated ACL!"
+    },
+    "success": {
+      "aclUpdated": "ACL updated."
+    }
   },
   "error": {
     "401-unauthenticated": "401 Unauthenticated : Login using the button in the top-right corner!"

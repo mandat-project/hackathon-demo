@@ -183,7 +183,7 @@ state.senderStore = await getResource(fromSocialAgents.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get sender!",
+      summary: t("accessRequest.error.sender"),
       detail: err,
       life: 5000,
     });
@@ -197,7 +197,7 @@ state.granteeStore = await getResource(forSocialAgents.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get grantee!",
+      summary: t("accessRequest.error.grantee"),
       detail: err,
       life: 5000,
     });
@@ -314,7 +314,7 @@ async function createAccessReceipt(
     .then((loc) => {
         toast.add({
           severity: "success",
-          summary: "Access Receipt created.",
+          summary: t("accessRequest.success.accessReceiptCreated"),
           life: 5000,
         })
         return getLocationHeader(loc)
@@ -323,7 +323,7 @@ async function createAccessReceipt(
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to create Access Receipt!",
+        summary: t("accessRequest.error.createAccessReceipt"),
         detail: err,
         life: 5000,
       });
