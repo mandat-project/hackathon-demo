@@ -3,28 +3,24 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "npm run serve",
-    "lint": "lerna run lint",
-    "build": "lerna run build",
     "serve": "lerna run serve",
-    "auth:serve": "lerna run serve --scope auth",
+    "build": "lerna run build",
+    "lint": "lerna run lint",
     "auth:build": "lerna run build --scope auth",
     "auth:lint": "lerna run lint --scope auth",
-    "max:serve": "lerna run serve --scope max",
-    "max:build": "lerna run build --scope max",
-    "max:lint": "lerna run lint --scope max",
-    "lisa:serve": "lerna run serve --scope lisa",
+    "auth:serve": "lerna run serve --scope auth",
     "lisa:build": "lerna run build --scope lisa",
     "lisa:lint": "lerna run lint --scope lisa",
-    "tom:serve": "lerna run serve --scope tom",
+    "lisa:serve": "lerna run serve --scope lisa",
+    "max:build": "lerna run build --scope max",
+    "max:lint": "lerna run lint --scope max",
+    "max:serve": "lerna run serve --scope max",
+    "prepare": "husky",
+    "start": "npm run serve",
     "tom:build": "lerna run build --scope tom",
     "tom:lint": "lerna run lint --scope tom",
-    "prepare": "husky"
+    "tom:serve": "lerna run serve --scope tom"
   },
-  "workspaces": [
-    "apps/*",
-    "libs/*"
-  ],
   "dependencies": {
     "@vueuse/components": "^11.1.0",
     "@vueuse/core": "^11.1.0",
@@ -39,6 +35,8 @@
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^4.0.0",
+    "@fullhuman/vue-cli-plugin-purgecss": "~6.0.0",
     "@types/n3": "^1.10.4",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
@@ -56,5 +54,9 @@
     "sass": "^1.72.0",
     "sass-loader": "^16.0.2",
     "typescript": "^5.4.5"
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ]
 }
