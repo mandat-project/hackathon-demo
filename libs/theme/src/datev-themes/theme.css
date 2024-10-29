@@ -5815,9 +5815,6 @@
     outline-offset: 0;
     box-shadow: 0 0 0 0.2rem #bfd1f6;
   }
-  .p-stepper .p-stepper-header:has(~ .p-highlight) .p-stepper-separator {
-    background-color: #99E827;
-  }
   .p-stepper .p-stepper-panels {
     background: #ffffff;
     padding: 1rem;
@@ -5860,9 +5857,6 @@
     width: 2px;
     height: auto;
     margin-inline-start: calc(1.75rem + 2px);
-  }
-  .p-stepper.p-stepper-vertical .p-stepper-panel:has(~ .p-stepper-panel-active) .p-stepper-separator {
-    background-color: #99E827;
   }
   .p-stepper.p-stepper-vertical .p-stepper-panel:last-of-type .p-stepper-content {
     padding-left: 3rem;
