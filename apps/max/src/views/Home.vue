@@ -134,7 +134,7 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
                 </div>
                 <div class="col-12 sm:col-6 block word-break pt-4">
                   <span class="text-black-alpha-70 text-xs">Requested Data : </span>
-                  <a :href="getObject(store!, INTEROP('registeredShapeTree'))" target="_blank" class="text-sm font-bold">{{ getObject(store!, INTEROP('registeredShapeTree')) }}</a></div>
+                  <a :href="getObject(store!, INTEROP('registeredShapeTree'))" target="_blank" class="text-sm font-bold">{{ getObject(store!, INTEROP('registeredShapeTree')).split('#')?.[1] }}</a></div>
                 <Divider />
               </div>
               <div class="col-12 text-right">
