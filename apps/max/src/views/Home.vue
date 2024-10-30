@@ -118,21 +118,21 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 
 <template>
   <div class="grid">
-    <div class="col lg:col-12">
+    <div class="col lg:col-12" style="width: -webkit-fill-available">
       <h1>Client Requests</h1>
       <ul v-if="isLoggedIn">
         <Card style=" margin-bottom: 1rem;" v-for="([uri, store], index) of documentCreationDemands" :key="index">
-          <template #title><div class="col-12" style="display: block;word-wrap: break-word;">Request #{{ index }}:</div></template>
+          <template #title><div class="col-12" style="display: block;word-wrap: break-word;">Request #{{ index + 1 }}:</div></template>
             <template #content>
               <div class="grid">
-                <div class="col-12 text-sm"> <b>{{ uri }} </b></div>
-                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">From: </span><b class="text-sm">{{ getObject(store!, INTEROP('fromSocialAgent')) }}</b></p></div>
-                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">Requested Data : </span><b class="text-sm">{{ getObject(store!, INTEROP('registeredShapeTree')) }}</b></p></div>
+                <div class="col-12 text-sm" style="display: block;word-wrap: break-word;"> <a :href="uri" target="_blank"><b>Documents Demands</b></a></div>
+                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">From: </span><a :href="getObject(store!, INTEROP('fromSocialAgent'))" target="_blank"><b class="text-sm">{{ getObject(store!, INTEROP('fromSocialAgent')) }}</b></a></p></div>
+                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">Requested Data : </span><a :href="getObject(store!, INTEROP('registeredShapeTree'))" target="_blank"><b class="text-sm">{{ getObject(store!, INTEROP('registeredShapeTree')) }}</b></a></p></div>
                 <Divider />
               </div>
               <div class="col-12 text-right">
                 <Button @click="processDocumentCreationDemand(uri)" class="mr-4">Provide requested Data</Button>
-                <Button @click="processDocumentCreationDemand(uri)" severity="secondary">Delete Request</Button>
+                <Button severity="secondary">Delete Request</Button>
               </div>
             </template>
         </Card>
