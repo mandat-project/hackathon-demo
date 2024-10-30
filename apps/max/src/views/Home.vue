@@ -120,19 +120,26 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
   <div class="grid">
     <div class="col lg:col-12" style="width: -webkit-fill-available">
       <h1>Client Requests</h1>
-      <ul v-if="isLoggedIn">
-        <Card style=" margin-bottom: 1rem;" v-for="([uri, store], index) of documentCreationDemands" :key="index">
-          <template #title><div class="col-12" style="display: block;word-wrap: break-word;">Request #{{ index + 1 }}:</div></template>
+      <ul v-if="isLoggedIn" class="pb-2">
+        <Card class="mb-4" v-for="([uri, store], index) of documentCreationDemands" :key="index">
+          <template #title><div class="col-12 block text-green-800 title">Request #{{ index + 1 }}:</div></template>
             <template #content>
               <div class="grid">
-                <div class="col-12 text-sm" style="display: block;word-wrap: break-word;"> <a :href="uri" target="_blank"><b>Documents Demands</b></a></div>
-                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">From: </span><a :href="getObject(store!, INTEROP('fromSocialAgent'))" target="_blank"><b class="text-sm">{{ getObject(store!, INTEROP('fromSocialAgent')) }}</b></a></p></div>
-                <div class="col-12 sm:col-6" style="display: block;word-wrap: break-word;"><p><span class="text-black-alpha-70 text-xs">Requested Data : </span><a :href="getObject(store!, INTEROP('registeredShapeTree'))" target="_blank"><b class="text-sm">{{ getObject(store!, INTEROP('registeredShapeTree')) }}</b></a></p></div>
+                <div class="col-12 text-sm block word-break"> <a :href="uri" target="_blank" class="font-bold">Documents Demands</a></div>
+                <div class="col-12 sm:col-6 block word-break pt-4">
+                    <span class="text-black-alpha-70 text-xs">From: </span>
+                    <a :href="getObject(store!, INTEROP('fromSocialAgent'))" target="_blank" class="font-bold text-sm">
+                      {{ getObject(store!, INTEROP('fromSocialAgent')) }}
+                    </a>
+                </div>
+                <div class="col-12 sm:col-6 block word-break pt-4">
+                  <span class="text-black-alpha-70 text-xs">Requested Data : </span>
+                  <a :href="getObject(store!, INTEROP('registeredShapeTree'))" target="_blank" class="text-sm font-bold">{{ getObject(store!, INTEROP('registeredShapeTree')) }}</a></div>
                 <Divider />
               </div>
               <div class="col-12 text-right">
-                <Button @click="processDocumentCreationDemand(uri)" class="mr-4">Provide requested Data</Button>
-                <Button severity="secondary">Delete Request</Button>
+                <Button @click="processDocumentCreationDemand(uri)" class="mr-0 md:mr-4 w-full sm:w-auto text-center inline-block	">Provide requested Data</Button>
+                <Button severity="secondary" class="w-full sm:w-auto inline-block	mt-2 sm:mt-0">Delete Request</Button>
               </div>
             </template>
         </Card>
@@ -148,6 +155,13 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 }
 ul{
   padding-left:0px;
+  .title{
+    word-wrap: break-word;
+    color:var(--text-color-heading-standard);
+  }
+  .word-break{
+    word-wrap: break-word;
+  }
 }
 .p-card-content{
   padding:0px;

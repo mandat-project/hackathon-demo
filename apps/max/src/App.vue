@@ -3,7 +3,7 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
   <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
-  <div v-if="isLoggedIn && session.rdp !== ''" class="m-0 lg:m-5">
+  <div v-if="isLoggedIn && session.rdp !== ''" class="m-5">
     <router-view />
   </div>
 
