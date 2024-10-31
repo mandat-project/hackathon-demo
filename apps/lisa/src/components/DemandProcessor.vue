@@ -308,8 +308,10 @@ const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(nul
 const orderStoreFilledFlag = ref(false)
 const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
-watch(() => offersForDemand.value, () =>
-    fillItemStoresIntoStore(offersForDemand.value, state.offerStore,orderStoreFilledFlag), {immediate: true})
+
+await fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag)
+watch(() => offersForDemand.value, () => fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag));
+
 const offerIsAccessible = computed(() => state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value));
 const offerAccessRequests = computed(() => state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value));
 watch(() => offerAccessRequests.value,
@@ -335,7 +337,7 @@ watch(() => offerAccessRequests.value,
 watch(() => offersForDemand.value,
     async () => {
       const orderContainers = await getDataRegistrationContainers(memberOf.value, orderShapeTreeUri, session);
-      const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer)))).flat()
+      const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer, session)))).flat()
       await fillItemStoresIntoStore(orderItems, state.orderStore, orderStoreFilledFlag)
     }, {immediate: true})
 const hasOrderForAnyOfferForThisDemand = computed(() => {
