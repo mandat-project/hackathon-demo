@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/menu";
+@use "../../mixins";
+
 // core
 .p-breadcrumb {
     overflow-x: auto;
@@ -33,43 +37,43 @@
 
 // theme
 .p-breadcrumb {
-    background: $breadcrumbBg;
-    border: $breadcrumbBorder;
-    border-radius: $borderRadius;
-    padding: $breadcrumbPadding;
+    background: menu.$breadcrumbBg;
+    border: menu.$breadcrumbBorder;
+    border-radius: general.$borderRadius;
+    padding: menu.$breadcrumbPadding;
 
     .p-breadcrumb-list {
         li {
             .p-menuitem-link {
-                transition: $listItemTransition;
-                border-radius: $borderRadius;
+                transition: general.$listItemTransition;
+                border-radius: general.$borderRadius;
                 outline-color: transparent;
 
                 &:focus-visible {
-                    @include focused();
+                    @include mixins.focused();
                 }
 
                 .p-menuitem-text {
-                    color: $breadcrumbItemTextColor;
+                    color: menu.$breadcrumbItemTextColor;
                 }
 
                 .p-menuitem-icon {
-                    color: $breadcrumbItemIconColor;
+                    color: menu.$breadcrumbItemIconColor;
                 }
             }
 
             &.p-menuitem-separator {
-                margin: 0 $inlineSpacing 0 $inlineSpacing;
-                color: $breadcrumbSeparatorColor;
+                margin: 0 general.$inlineSpacing 0 general.$inlineSpacing;
+                color: menu.$breadcrumbSeparatorColor;
             }
 
             &:last-child {
                 .p-menuitem-text {
-                    color: $breadcrumbLastItemTextColor;
+                    color: menu.$breadcrumbLastItemTextColor;
                 }
 
                 .p-menuitem-icon {
-                    color: $breadcrumbLastItemIconColor;
+                    color: menu.$breadcrumbLastItemIconColor;
                 }
             }
         }

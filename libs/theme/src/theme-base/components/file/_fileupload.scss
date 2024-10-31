@@ -1,3 +1,10 @@
+@use "../../../datev-theme/variables/button";
+@use "../../../datev-theme/variables/data";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 // core
 .p-fileupload-content {
     position: relative;
@@ -46,42 +53,42 @@
 // theme
 .p-fileupload {
     .p-fileupload-buttonbar {
-        background: $panelHeaderBg;
-        padding: $panelHeaderPadding;
-        border: $panelHeaderBorder;
-        color: $panelHeaderTextColor;
+        background: panel.$panelHeaderBg;
+        padding: panel.$panelHeaderPadding;
+        border: panel.$panelHeaderBorder;
+        color: panel.$panelHeaderTextColor;
         border-bottom: 0 none;
-        border-top-right-radius: $borderRadius;
-        border-top-left-radius: $borderRadius;
-        gap: $inlineSpacing;
+        border-top-right-radius: general.$borderRadius;
+        border-top-left-radius: general.$borderRadius;
+        gap: general.$inlineSpacing;
 
         .p-button {
             &.p-fileupload-choose.p-focus {
-                @include focused();
+                @include mixins.focused();
             }
         }
     }
 
     .p-fileupload-content {
-        background: $panelContentBg;
-        padding: $fileUploadContentPadding;
-        border: $panelContentBorder;
-        color: $panelContentTextColor;
-        border-bottom-right-radius: $borderRadius;
-        border-bottom-left-radius: $borderRadius;
+        background: panel.$panelContentBg;
+        padding: form.$fileUploadContentPadding;
+        border: panel.$panelContentBorder;
+        color: panel.$panelContentTextColor;
+        border-bottom-right-radius: general.$borderRadius;
+        border-bottom-left-radius: general.$borderRadius;
 
         &.p-fileupload-highlight {
-            border: $fileUploadContentHoverBorder;
-            background-color: $highlightBg;
+            border: form.$fileUploadContentHoverBorder;
+            background-color: general.$highlightBg;
         }
     }
 
     .p-fileupload-file {
-        padding: $fileUploadFilePadding;
-        border: $fileUploadFileBorder;
-        border-radius: $borderRadius;
-        gap: $inlineSpacing;
-        margin-bottom: $inlineSpacing;
+        padding: form.$fileUploadFilePadding;
+        border: form.$fileUploadFileBorder;
+        border-radius: general.$borderRadius;
+        gap: general.$inlineSpacing;
+        margin-bottom: general.$inlineSpacing;
 
         &:last-child {
             margin-bottom: 0;
@@ -89,20 +96,20 @@
     }
 
     .p-fileupload-file-name {
-        margin-bottom: $inlineSpacing;
+        margin-bottom: general.$inlineSpacing;
     }
 
     .p-fileupload-file-size {
-        margin-right: $inlineSpacing;
+        margin-right: general.$inlineSpacing;
     }
 
     .p-progressbar {
-        height: $fileUploadProgressBarHeight;
+        height: form.$fileUploadProgressBarHeight;
     }
 
     .p-fileupload-row {
         >div {
-            padding: $tableBodyCellPadding;
+            padding: data.$tableBodyCellPadding;
         }
     }
 
@@ -115,14 +122,14 @@
 
 .p-fileupload-choose {
     &:not(.p-disabled):hover {
-        background: $buttonHoverBg;
-        color: $buttonTextHoverColor;
-        border-color: $buttonHoverBorderColor;
+        background: button.$buttonHoverBg;
+        color: button.$buttonTextHoverColor;
+        border-color: button.$buttonHoverBorderColor;
     }
 
     &:not(.p-disabled):active {
-        background: $buttonActiveBg;
-        color: $buttonTextActiveColor;
-        border-color: $buttonActiveBorderColor;
+        background: button.$buttonActiveBg;
+        color: button.$buttonTextActiveColor;
+        border-color: button.$buttonActiveBorderColor;
     }
 }

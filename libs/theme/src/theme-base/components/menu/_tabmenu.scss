@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 // core
 .p-tabmenu {
     overflow-x: auto;
@@ -42,49 +46,49 @@
 // theme
 .p-tabmenu {
     .p-tabmenu-nav {
-        background: $tabviewNavBg;
-        border: $tabviewNavBorder;
-        border-width: $tabviewNavBorderWidth;
+        background: panel.$tabviewNavBg;
+        border: panel.$tabviewNavBorder;
+        border-width: panel.$tabviewNavBorderWidth;
 
         .p-tabmenuitem {
-            margin-right: $tabviewHeaderSpacing;
+            margin-right: panel.$tabviewHeaderSpacing;
 
             .p-menuitem-link {
-                border: $tabviewHeaderBorder;
-                border-width: $tabviewHeaderBorderWidth;
-                border-color: $tabviewHeaderBorderColor;
-                background: $tabviewHeaderBg;
-                color: $tabviewHeaderTextColor;
-                padding: $tabviewHeaderPadding;
-                font-weight: $tabviewHeaderFontWeight;
-                border-top-right-radius: $borderRadius;
-                border-top-left-radius: $borderRadius;
-                transition: $listItemTransition;
-                margin: $tabviewHeaderMargin;
+                border: panel.$tabviewHeaderBorder;
+                border-width: panel.$tabviewHeaderBorderWidth;
+                border-color: panel.$tabviewHeaderBorderColor;
+                background: panel.$tabviewHeaderBg;
+                color: panel.$tabviewHeaderTextColor;
+                padding: panel.$tabviewHeaderPadding;
+                font-weight: panel.$tabviewHeaderFontWeight;
+                border-top-right-radius: general.$borderRadius;
+                border-top-left-radius: general.$borderRadius;
+                transition: general.$listItemTransition;
+                margin: panel.$tabviewHeaderMargin;
                 outline-color: transparent;
 
                 .p-menuitem-icon {
-                    margin-right: $inlineSpacing;
+                    margin-right: general.$inlineSpacing;
                 }
 
                 &:not(.p-disabled):focus-visible {
-                    @include focused-inset();
+                    @include mixins.focused-inset();
                 }
             }
 
             &:not(.p-highlight):not(.p-disabled):hover {
                 .p-menuitem-link {
-                    background: $tabviewHeaderHoverBg;
-                    border-color: $tabviewHeaderHoverBorderColor;
-                    color: $tabviewHeaderTextHoverColor;
+                    background: panel.$tabviewHeaderHoverBg;
+                    border-color: panel.$tabviewHeaderHoverBorderColor;
+                    color: panel.$tabviewHeaderTextHoverColor;
                 }
             }
 
             &.p-highlight {
                 .p-menuitem-link {
-                    background: $tabviewHeaderActiveBg;
-                    border-color: $tabviewHeaderActiveBorderColor;
-                    color: $tabviewHeaderTextActiveColor;
+                    background: panel.$tabviewHeaderActiveBg;
+                    border-color: panel.$tabviewHeaderActiveBorderColor;
+                    color: panel.$tabviewHeaderTextActiveColor;
                 }
             }
         }

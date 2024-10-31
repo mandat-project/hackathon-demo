@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 // core
 .p-scrollpanel-wrapper {
     overflow: hidden;
@@ -58,13 +62,13 @@
 // theme
 .p-scrollpanel {
     .p-scrollpanel-bar {
-        background: $scrollPanelTrackBg;
-        border: $scrollPanelTrackBorder;
-        transition: $formElementTransition;
+        background: panel.$scrollPanelTrackBg;
+        border: panel.$scrollPanelTrackBorder;
+        transition: general.$formElementTransition;
         outline-color: transparent;
 
         &:focus-visible {
-            @include focused();
+            @include mixins.focused();
         }
     }
 }

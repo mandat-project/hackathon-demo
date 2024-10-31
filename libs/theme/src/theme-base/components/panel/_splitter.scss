@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+@use "../../mixins";
+
 // core
 .p-splitter {
     display: flex;
@@ -61,27 +65,27 @@
 
 // theme
 .p-splitter {
-    border: $panelContentBorder;
-    background: $panelContentBg;
-    border-radius: $borderRadius;
-    color: $panelContentTextColor;
+    border: panel.$panelContentBorder;
+    background: panel.$panelContentBg;
+    border-radius: general.$borderRadius;
+    color: panel.$panelContentTextColor;
 
     .p-splitter-gutter {
-        transition: $actionIconTransition;
-        background: $splitterGutterBg;
+        transition: general.$actionIconTransition;
+        background: panel.$splitterGutterBg;
         
         .p-splitter-gutter-handle {
-            background: $splitterGutterHandleBg;
-            transition: $formElementTransition;
+            background: panel.$splitterGutterHandleBg;
+            transition: general.$formElementTransition;
             outline-color: transparent;
             
             &:focus-visible {
-                @include focused();
+                @include mixins.focused();
             }
         }
     }
 
     .p-splitter-gutter-resizing {
-        background: $splitterGutterHandleBg;
+        background: panel.$splitterGutterHandleBg;
     }
 }

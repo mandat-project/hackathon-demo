@@ -1,3 +1,7 @@
+@use "sass:meta";
+@use "../../../datev-theme/variables/button";
+@use "../../../datev-theme/variables/misc";
+
 // core
 .p-badge {
     display: inline-block;
@@ -34,43 +38,43 @@
 
 // theme
 .p-badge {
-    background: $badgeBg;
-    color: $badgeTextColor;
-    font-size: $badgeFontSize;
-    font-weight: $badgeFontWeight;
-    min-width: $badgeMinWidth;
-    height: $badgeHeight;
-    line-height: $badgeHeight;
+    background: misc.$badgeBg;
+    color: misc.$badgeTextColor;
+    font-size: misc.$badgeFontSize;
+    font-weight: misc.$badgeFontWeight;
+    min-width: misc.$badgeMinWidth;
+    height: misc.$badgeHeight;
+    line-height: misc.$badgeHeight;
 
     &.p-badge-secondary {
-        background-color: $secondaryButtonBg;
-        color: $secondaryButtonTextColor;
+        background-color: button.$secondaryButtonBg;
+        color: button.$secondaryButtonTextColor;
     }
 
     &.p-badge-success {
-        background-color: $successButtonBg;
-        color: $successButtonTextColor;
+        background-color: button.$successButtonBg;
+        color: button.$successButtonTextColor;
     }
 
     &.p-badge-info {
-        background-color: $infoButtonBg;
-        color: $infoButtonTextColor;
+        background-color: button.$infoButtonBg;
+        color: button.$infoButtonTextColor;
     }
 
     &.p-badge-warning {
-        background-color: $warningButtonBg;
-        color: $warningButtonTextColor;
+        background-color: button.$warningButtonBg;
+        color: button.$warningButtonTextColor;
     }
 
     &.p-badge-danger {
-        background-color: $dangerButtonBg;
-        color: $dangerButtonTextColor;
+        background-color: button.$dangerButtonBg;
+        color: button.$dangerButtonTextColor;
     }
 
-    @if variable-exists(secondaryMessageBg) {
+    @if meta.variable-exists(secondaryMessageBg) {
         &.p-badge-secondary {
-            background-color: $secondaryButtonBg;
-            color: $secondaryButtonTextColor;
+            background-color: button.$secondaryButtonBg;
+            color: button.$secondaryButtonTextColor;
         }
     
         &.p-badge-contrast {
@@ -80,16 +84,16 @@
     }
 
     &.p-badge-lg {
-        font-size: 1.5 * $badgeFontSize;
-        min-width: 1.5 * $badgeMinWidth;
-        height: 1.5 * $badgeHeight;
-        line-height: 1.5 * $badgeHeight;
+        font-size: 1.5 * misc.$badgeFontSize;
+        min-width: 1.5 * misc.$badgeMinWidth;
+        height: 1.5 * misc.$badgeHeight;
+        line-height: 1.5 * misc.$badgeHeight;
     }
 
     &.p-badge-xl {
-        font-size: 2 * $badgeFontSize;
-        min-width: 2 * $badgeMinWidth;
-        height: 2 * $badgeHeight;
-        line-height: 2 * $badgeHeight;
+        font-size: 2 * misc.$badgeFontSize;
+        min-width: 2 * misc.$badgeMinWidth;
+        height: 2 * misc.$badgeHeight;
+        line-height: 2 * misc.$badgeHeight;
     }
 }

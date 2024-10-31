@@ -1,3 +1,6 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/panel";
+
 // core
 .p-divider-horizontal {
     display: flex;
@@ -65,32 +68,32 @@
 // theme
 .p-divider {
     .p-divider-content {
-        background-color: $panelContentBg;
+        background-color: panel.$panelContentBg;
     }
 
     &.p-divider-horizontal {
-        margin: $dividerHorizontalMargin;
-        padding: $dividerHorizontalPadding;
+        margin: panel.$dividerHorizontalMargin;
+        padding: panel.$dividerHorizontalPadding;
 
         &:before {
-            border-top: $dividerSize solid $dividerColor;
+            border-top: panel.$dividerSize solid panel.$dividerColor;
         }
 
         .p-divider-content {
-            padding: 0 $inlineSpacing;
+            padding: 0 general.$inlineSpacing;
         }
     }
 
     &.p-divider-vertical {
-        margin: $dividerVerticalMargin;
-        padding: $dividerVerticalPadding;
+        margin: panel.$dividerVerticalMargin;
+        padding: panel.$dividerVerticalPadding;
 
         &:before {
-            border-left: $dividerSize solid $dividerColor;
+            border-left: panel.$dividerSize solid panel.$dividerColor;
         }
 
         .p-divider-content {
-            padding: $inlineSpacing 0;
+            padding: general.$inlineSpacing 0;
         }
     }
 }

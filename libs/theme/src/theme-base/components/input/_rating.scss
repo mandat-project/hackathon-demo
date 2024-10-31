@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../mixins";
+
 @use 'sass:math';
 
 // core
@@ -19,34 +23,34 @@
 
 // theme
 .p-rating {
-    gap: $inlineSpacing;
+    gap: general.$inlineSpacing;
 
     .p-rating-item {
         outline-color: transparent;
         border-radius: 50%;
         
         .p-rating-icon {
-            color: $ratingStarIconOffColor;
-            transition: $formElementTransition;   
-            font-size: $ratingIconFontSize;
+            color: form.$ratingStarIconOffColor;
+            transition: general.$formElementTransition;   
+            font-size: form.$ratingIconFontSize;
 
             &.p-icon {
-                width: $ratingIconFontSize;
-                height: $ratingIconFontSize;
+                width: form.$ratingIconFontSize;
+                height: form.$ratingIconFontSize;
             }
     
             &.p-rating-cancel {
-                color: $ratingCancelIconColor;
+                color: form.$ratingCancelIconColor;
             }
         }
 
         &.p-focus {
-            @include focused();
+            @include mixins.focused();
         }
 
         &.p-rating-item-active {
             .p-rating-icon {
-                color: $ratingStarIconOnColor;
+                color: form.$ratingStarIconOnColor;
             }
         }
     }
@@ -55,10 +59,10 @@
         .p-rating-item {
             &:hover {
                 .p-rating-icon {
-                    color: $ratingStarIconHoverColor;
+                    color: form.$ratingStarIconHoverColor;
 
                     &.p-rating-cancel {
-                        color: $ratingCancelIconHoverColor;
+                        color: form.$ratingCancelIconHoverColor;
                     }
                 }
             }
@@ -66,13 +70,13 @@
     }
 }
 
-@if ($highlightBg == $ratingStarIconOnColor) {
+@if (general.$highlightBg == form.$ratingStarIconOnColor) {
     .p-highlight {
         .p-rating {
             .p-rating-item {
                 &.p-rating-item-active {
                     .p-rating-icon {
-                        color: $highlightTextColor;
+                        color: general.$highlightTextColor;
                     }
                 }
             }

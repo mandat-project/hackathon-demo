@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../mixins";
+
 // core
 .p-checkbox {
     position: relative;
@@ -18,8 +22,8 @@
 
 // theme
 .p-checkbox {
-    width: $checkboxWidth;
-    height: $checkboxHeight;
+    width: form.$checkboxWidth;
+    height: form.$checkboxHeight;
 
     .p-checkbox-input {
         appearance: none;
@@ -33,85 +37,85 @@
         opacity: 0;
         z-index: 1;
         outline: 0 none;
-        border: $checkboxBorder;
-        border-radius: $borderRadius;
+        border: form.$checkboxBorder;
+        border-radius: general.$borderRadius;
     }
 
     .p-checkbox-box {
-        border: $checkboxBorder;
-        background: $inputBg;
-        width: $checkboxWidth;
-        height: $checkboxHeight;
-        color: $textColor;
-        border-radius: $borderRadius;
-        transition: $formElementTransition;
+        border: form.$checkboxBorder;
+        background: form.$inputBg;
+        width: form.$checkboxWidth;
+        height: form.$checkboxHeight;
+        color: general.$textColor;
+        border-radius: general.$borderRadius;
+        transition: general.$formElementTransition;
         outline-color: transparent;
 
         .p-checkbox-icon {
-            transition-duration: $transitionDuration;
-            color: $checkboxIconActiveColor;
-            font-size: $checkboxIconFontSize;
+            transition-duration: general.$transitionDuration;
+            color: form.$checkboxIconActiveColor;
+            font-size: form.$checkboxIconFontSize;
 
             &.p-icon {
-                width: $checkboxIconFontSize;
-                height: $checkboxIconFontSize;
+                width: form.$checkboxIconFontSize;
+                height: form.$checkboxIconFontSize;
             }
         }
     }
 
     &.p-highlight {
         .p-checkbox-box {
-            border-color: $checkboxActiveBorderColor;
-            background: $checkboxActiveBg;
+            border-color: form.$checkboxActiveBorderColor;
+            background: form.$checkboxActiveBg;
         }
     }
 
     &:not(.p-disabled) {
         &:has(.p-checkbox-input:hover) {
             .p-checkbox-box {
-                border-color: $inputHoverBorderColor;
+                border-color: form.$inputHoverBorderColor;
             }
 
             &.p-highlight {
                 .p-checkbox-box {
-                    border-color: $checkboxActiveHoverBorderColor;
-                    background: $checkboxActiveHoverBg;
-                    color: $checkboxIconActiveHoverColor;
+                    border-color: form.$checkboxActiveHoverBorderColor;
+                    background: form.$checkboxActiveHoverBg;
+                    color: form.$checkboxIconActiveHoverColor;
                 }
             }
         }
 
         &:has(.p-checkbox-input:focus-visible) {
             .p-checkbox-box {
-                @include focused-input();
+                @include mixins.focused-input();
             }
         }
     }
 
     &.p-invalid > .p-checkbox-box {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 
     &.p-variant-filled {
         .p-checkbox-box {
-            background-color: $inputFilledBg;
+            background-color: form.$inputFilledBg;
         }
 
         &.p-highlight {
             .p-checkbox-box {
-                background: $checkboxActiveBg;
+                background: form.$checkboxActiveBg;
             }
         }
 
         &:not(.p-disabled) {
             &:has(.p-checkbox-input:hover) {
                 .p-checkbox-box {
-                    background-color: $inputFilledHoverBg;
+                    background-color: form.$inputFilledHoverBg;
                 }
 
                 &.p-highlight {
                     .p-checkbox-box {
-                        background: $checkboxActiveHoverBg;
+                        background: form.$checkboxActiveHoverBg;
                     }
                 }
             }
@@ -122,24 +126,24 @@
 .p-input-filled {
     .p-checkbox {
         .p-checkbox-box {
-            background-color: $inputFilledBg;
+            background-color: form.$inputFilledBg;
         }
 
         &.p-highlight {
             .p-checkbox-box {
-                background: $checkboxActiveBg;
+                background: form.$checkboxActiveBg;
             }
         }
 
         &:not(.p-disabled) {
             &:has(.p-checkbox-input:hover) {
                 .p-checkbox-box {
-                    background-color: $inputFilledHoverBg;
+                    background-color: form.$inputFilledHoverBg;
                 }
 
                 &.p-highlight {
                     .p-checkbox-box {
-                        background: $checkboxActiveHoverBg;
+                        background: form.$checkboxActiveHoverBg;
                     }
                 }
             }
@@ -147,11 +151,11 @@
     }
 }
 
-@if ($highlightBg == $checkboxActiveBg) {
+@if (general.$highlightBg == form.$checkboxActiveBg) {
     .p-highlight {
         .p-checkbox {
             .p-checkbox-box {
-                border-color: $checkboxIconActiveColor;
+                border-color: form.$checkboxIconActiveColor;
             }
         }
     }

@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/menu";
+@use "../../mixins";
+
 // core
 .p-tieredmenu ul {
     margin: 0;
@@ -50,17 +54,17 @@
 
 // theme
 .p-tieredmenu {
-    padding: $verticalMenuPadding;
-    background: $menuBg;
-    color: $menuTextColor;
-    border: $menuBorder;
-    border-radius: $borderRadius;
-    min-width: $menuWidth;
+    padding: menu.$verticalMenuPadding;
+    background: menu.$menuBg;
+    color: menu.$menuTextColor;
+    border: menu.$menuBorder;
+    border-radius: general.$borderRadius;
+    min-width: menu.$menuWidth;
 
     &.p-tieredmenu-overlay {
-        background: $overlayMenuBg;
-        border: $overlayMenuBorder;
-        box-shadow: $overlayMenuShadow;
+        background: menu.$overlayMenuBg;
+        border: menu.$overlayMenuBorder;
+        box-shadow: menu.$overlayMenuShadow;
     }
 
     .p-tieredmenu-root-list {
@@ -68,28 +72,28 @@
     }
 
     .p-submenu-list {
-        padding: $verticalMenuPadding;
-        background: $overlayMenuBg;
-        border: $overlayMenuBorder;
-        box-shadow: $overlayMenuShadow;
-        border-radius: $borderRadius;
+        padding: menu.$verticalMenuPadding;
+        background: menu.$overlayMenuBg;
+        border: menu.$overlayMenuBorder;
+        box-shadow: menu.$overlayMenuShadow;
+        border-radius: general.$borderRadius;
     }
 
     .p-menuitem {
-        @include menuitem();
+        @include mixins.menuitem();
     }
 
     .p-menuitem-separator {
-        border-top: $divider;
-        margin: $menuSeparatorMargin;
+        border-top: general.$divider;
+        margin: menu.$menuSeparatorMargin;
     }
 
     .p-submenu-icon {
-        font-size: $menuitemSubmenuIconFontSize;
+        font-size: menu.$menuitemSubmenuIconFontSize;
 
         &.p-icon {
-            width: $menuitemSubmenuIconFontSize;
-            height: $menuitemSubmenuIconFontSize;
+            width: menu.$menuitemSubmenuIconFontSize;
+            height: menu.$menuitemSubmenuIconFontSize;
         }
     }
 }

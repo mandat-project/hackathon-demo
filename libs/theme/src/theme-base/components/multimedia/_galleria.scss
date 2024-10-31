@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/media";
+@use "../../mixins";
+
 // core
 .p-galleria-content {
     display: flex;
@@ -286,82 +290,82 @@
 // theme
 .p-galleria {
     .p-galleria-close {
-        margin: $galleriaCloseIconMargin;
-        background: $galleriaCloseIconBg;
-        color: $galleriaCloseIconColor;
-        width: $galleriaCloseIconWidth;
-        height: $galleriaCloseIconHeight;
-        transition: $actionIconTransition;
-        border-radius: $galleriaCloseIconBorderRadius;
+        margin: media.$galleriaCloseIconMargin;
+        background: media.$galleriaCloseIconBg;
+        color: media.$galleriaCloseIconColor;
+        width: media.$galleriaCloseIconWidth;
+        height: media.$galleriaCloseIconHeight;
+        transition: general.$actionIconTransition;
+        border-radius: media.$galleriaCloseIconBorderRadius;
 
         .p-galleria-close-icon {
-            font-size: $galleriaCloseIconFontSize;
+            font-size: media.$galleriaCloseIconFontSize;
         }
 
         .p-icon {
-            width: $galleriaCloseIconFontSize;
-            height: $galleriaCloseIconFontSize;
+            width: media.$galleriaCloseIconFontSize;
+            height: media.$galleriaCloseIconFontSize;
         }
 
         &:hover {
-            background: $galleriaCloseIconHoverBg;
-            color: $galleriaCloseIconHoverColor;
+            background: media.$galleriaCloseIconHoverBg;
+            color: media.$galleriaCloseIconHoverColor;
         }
     }
 
     .p-galleria-item-nav {
-        background: $galleriaItemNavigatorBg;
-        color: $galleriaItemNavigatorColor;
-        width: $galleriaItemNavigatorWidth;
-        height: $galleriaItemNavigatorHeight;
-        transition: $actionIconTransition;
-        border-radius: $galleriaItemNavigatorBorderRadius;
-        margin: $galleriaItemNavigatorMargin;
+        background: media.$galleriaItemNavigatorBg;
+        color: media.$galleriaItemNavigatorColor;
+        width: media.$galleriaItemNavigatorWidth;
+        height: media.$galleriaItemNavigatorHeight;
+        transition: general.$actionIconTransition;
+        border-radius: media.$galleriaItemNavigatorBorderRadius;
+        margin: media.$galleriaItemNavigatorMargin;
 
         .p-galleria-item-prev-icon,
         .p-galleria-item-next-icon {
-            font-size: $galleriaItemNavigatorFontSize;
+            font-size: media.$galleriaItemNavigatorFontSize;
         }
 
         .p-icon {
-            width: $galleriaCloseIconFontSize;
-            height: $galleriaCloseIconFontSize;
+            width: media.$galleriaCloseIconFontSize;
+            height: media.$galleriaCloseIconFontSize;
         }
 
         &:not(.p-disabled) {
             &:hover {
-                background: $galleriaItemNavigatorHoverBg;
-                color: $galleriaItemNavigatorHoverColor;
+                background: media.$galleriaItemNavigatorHoverBg;
+                color: media.$galleriaItemNavigatorHoverColor;
             }
         }
     }
 
     .p-galleria-caption {
-        background: $galleriaCaptionBg;
-        color: $galleriaCaptionTextColor;
-        padding: $galleriaCaptionPadding;
+        background: media.$galleriaCaptionBg;
+        color: media.$galleriaCaptionTextColor;
+        padding: media.$galleriaCaptionPadding;
     }
 
     .p-galleria-indicators {
-        padding: $galleriaIndicatorsPadding;
+        padding: media.$galleriaIndicatorsPadding;
 
         .p-galleria-indicator {
             button {
-                background-color: $galleriaIndicatorBg;
-                width: $galleriaIndicatorWidth;
-                height: $galleriaIndicatorHeight;
-                transition: $actionIconTransition;
-                border-radius: $galleriaIndicatorBorderRadius;
+                background-color: media.$galleriaIndicatorBg;
+                width: media.$galleriaIndicatorWidth;
+                height: media.$galleriaIndicatorHeight;
+                transition: general.$actionIconTransition;
+                border-radius: media.$galleriaIndicatorBorderRadius;
 
                 &:hover {
-                    background: $galleriaIndicatorHoverBg;
+                    background: media.$galleriaIndicatorHoverBg;
                 }
             }
 
             &.p-highlight {
                 button {
-                    background: $highlightBg;
-                    color: $highlightTextColor;
+                    background: general.$highlightBg;
+                    color: general.$highlightTextColor;
                 }
             }
         }
@@ -370,34 +374,34 @@
     &.p-galleria-indicators-bottom,
     &.p-galleria-indicators-top {
         .p-galleria-indicator {
-            margin-right: $inlineSpacing;
+            margin-right: general.$inlineSpacing;
         }
     }
 
     &.p-galleria-indicators-left,
     &.p-galleria-indicators-right {
         .p-galleria-indicator {
-            margin-bottom: $inlineSpacing;
+            margin-bottom: general.$inlineSpacing;
         }
     }
 
     &.p-galleria-indicator-onitem {
         .p-galleria-indicators {
-            background: $galleriaIndicatorsBgOnItem;
+            background: media.$galleriaIndicatorsBgOnItem;
 
             .p-galleria-indicator {
                 button {
-                    background: $galleriaIndicatorBgOnItem;
+                    background: media.$galleriaIndicatorBgOnItem;
 
                     &:hover {
-                        background: $galleriaIndicatorHoverBgOnItem;
+                        background: media.$galleriaIndicatorHoverBgOnItem;
                     }
                 }
 
                 &.p-highlight {
                     button {
-                        background: $highlightBg;
-                        color: $highlightTextColor;
+                        background: general.$highlightBg;
+                        color: general.$highlightTextColor;
                     }
                 }
             }
@@ -405,22 +409,22 @@
     }
 
     .p-galleria-thumbnail-container {
-        background: $galleriaThumbnailContainerBg;
-        padding: $galleriaThumbnailContainerPadding;
+        background: media.$galleriaThumbnailContainerBg;
+        padding: media.$galleriaThumbnailContainerPadding;
 
         .p-galleria-thumbnail-prev,
         .p-galleria-thumbnail-next {
-            margin: $inlineSpacing;
-            background-color: $galleriaThumbnailNavigatorBg;
-            color: $galleriaThumbnailNavigatorColor;
-            width: $galleriaThumbnailNavigatorWidth;
-            height: $galleriaThumbnailNavigatorHeight;
-            transition: $actionIconTransition;
-            border-radius: $galleriaThumbnailNavigatorBorderRadius;
+            margin: general.$inlineSpacing;
+            background-color: media.$galleriaThumbnailNavigatorBg;
+            color: media.$galleriaThumbnailNavigatorColor;
+            width: media.$galleriaThumbnailNavigatorWidth;
+            height: media.$galleriaThumbnailNavigatorHeight;
+            transition: general.$actionIconTransition;
+            border-radius: media.$galleriaThumbnailNavigatorBorderRadius;
 
             &:hover {
-                background: $galleriaThumbnailNavigatorHoverBg;
-                color: $galleriaThumbnailNavigatorHoverColor;
+                background: media.$galleriaThumbnailNavigatorHoverBg;
+                color: media.$galleriaThumbnailNavigatorHoverColor;
             }
         }
 
@@ -428,12 +432,12 @@
             outline-color: transparent;
             
             &:focus-visible {
-                @include focused();
+                @include mixins.focused();
             }
         }
     }
 }
 
 .p-galleria-mask {
-    --maskbg: #{$galleriaMaskBg};
+    --maskbg: #{media.$galleriaMaskBg};
 }

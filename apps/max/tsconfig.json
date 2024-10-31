@@ -8,6 +8,11 @@
       "scripthost"
     ]
   },
+  "paths": {
+    "@/*": [
+      "./src/*"
+    ]
+  },
   "include": [
     "**/*.ts",
     "**/*.js",

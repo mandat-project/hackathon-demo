@@ -79,13 +79,14 @@ type PRIME_THEMES =
 | 'viva-light';
 type THEMES = CUSTOM_THEMES | PRIME_THEMES;
 
-export const requireStyles = (theme: THEMES = 'dackl-like') => {
+export const requireStyles = (_theme: THEMES = 'dackl-like') => {
     require("primeflex/primeflex.css"); // layouts
 
-    if (theme === 'dackl-like'){
+    //if (theme === 'dackl-like'){
         require("@shared/theme"); // theme
-    } else {
-        require(`primevue/resources/themes/${theme}/theme.css`); // theme
-    }
+    //} else {
+    //    Note, this causes the bundle to explode up to 17megabytes.
+    //    require(`primevue/resources/themes/${theme}/theme.css`); // theme
+    //}
     require("primeicons/primeicons.css"); // icons
 }

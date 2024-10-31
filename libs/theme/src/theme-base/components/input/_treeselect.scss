@@ -1,3 +1,9 @@
+@use "sass:list";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+@use "../../mixins";
+
 @use "sass:math";
 
 // core
@@ -54,61 +60,61 @@
 
 // theme
 .p-treeselect {
-    background: $inputBg;
-    border: $inputBorder;
-    transition: $formElementTransition;
-    border-radius: $borderRadius;
+    background: form.$inputBg;
+    border: form.$inputBorder;
+    transition: general.$formElementTransition;
+    border-radius: general.$borderRadius;
     outline-color: transparent;
 
     &:not(.p-disabled):hover {
-        border-color: $inputHoverBorderColor;
+        border-color: form.$inputHoverBorderColor;
     }
 
     &:not(.p-disabled).p-focus {
-        @include focused-input();
+        @include mixins.focused-input();
     }
 
     &.p-variant-filled {
-        background: $inputFilledBg;
+        background: form.$inputFilledBg;
 
         &:not(.p-disabled):hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:not(.p-disabled).p-focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 
     .p-treeselect-label {
-        padding: $inputPadding;
-        transition: $formElementTransition;
+        padding: form.$inputPadding;
+        transition: general.$formElementTransition;
 
         &.p-placeholder {
-            color: $inputPlaceholderTextColor;
+            color: form.$inputPlaceholderTextColor;
         }
     }
 
     &.p-treeselect-chip {
         .p-treeselect-token {
-            padding: math.div(nth($inputPadding, 1), 2) nth($inputPadding, 2);
-            margin-right: $inlineSpacing;
-            background: $chipBg;
-            color: $chipTextColor;
-            border-radius: $chipBorderRadius;
+            padding: math.div(list.nth(form.$inputPadding, 1), 2) list.nth(form.$inputPadding, 2);
+            margin-right: general.$inlineSpacing;
+            background: misc.$chipBg;
+            color: misc.$chipTextColor;
+            border-radius: misc.$chipBorderRadius;
         }
     }
 
     .p-treeselect-trigger {
         background: transparent;
-        color: $inputIconColor;
-        width: $inputGroupAddOnMinWidth;
-        border-top-right-radius: $borderRadius;
-        border-bottom-right-radius: $borderRadius;
+        color: form.$inputIconColor;
+        width: form.$inputGroupAddOnMinWidth;
+        border-top-right-radius: general.$borderRadius;
+        border-bottom-right-radius: general.$borderRadius;
     }
 
     &.p-invalid.p-component {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 }
 
@@ -116,19 +122,19 @@
     &.p-treeselect {
         &.p-treeselect-chip {
             .p-treeselect-label {
-                padding: math.div(nth($inputPadding, 1), 2)
-                    nth($inputPadding, 2);
+                padding: math.div(list.nth(form.$inputPadding, 1), 2)
+                    list.nth(form.$inputPadding, 2);
             }
         }
     }
 }
 
 .p-treeselect-panel {
-    background: $inputOverlayBg;
-    color: $inputListTextColor;
-    border: $inputOverlayBorder;
-    border-radius: $borderRadius;
-    box-shadow: $inputOverlayShadow;
+    background: form.$inputOverlayBg;
+    color: form.$inputListTextColor;
+    border: form.$inputOverlayBorder;
+    border-radius: general.$borderRadius;
+    box-shadow: form.$inputOverlayShadow;
 
     .p-treeselect-items-wrapper {
         .p-tree {
@@ -136,23 +142,23 @@
         }
 
         .p-treeselect-empty-message {
-            padding: $inputListItemPadding;
-            color: $inputListItemTextColor;
-            background: $inputListItemBg;
+            padding: form.$inputListItemPadding;
+            color: form.$inputListItemTextColor;
+            background: form.$inputListItemBg;
         }
     }
 }
 
 .p-input-filled {
     .p-treeselect {
-        background: $inputFilledBg;
+        background: form.$inputFilledBg;
 
         &:not(.p-disabled):hover {
-            background-color: $inputFilledHoverBg;
+            background-color: form.$inputFilledHoverBg;
         }
 
         &:not(.p-disabled).p-focus {
-            background-color: $inputFilledFocusBg;
+            background-color: form.$inputFilledFocusBg;
         }
     }
 }

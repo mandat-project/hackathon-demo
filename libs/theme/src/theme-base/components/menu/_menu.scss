@@ -1,3 +1,7 @@
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/menu";
+@use "../../mixins";
+
 // core
 .p-menu ul {
     margin: 0;
@@ -20,35 +24,35 @@
 
 // theme
 .p-menu {
-    padding: $verticalMenuPadding;
-    background: $menuBg;
-    color: $menuTextColor;
-    border: $menuBorder;
-    border-radius: $borderRadius;
-    min-width: $menuWidth;
+    padding: menu.$verticalMenuPadding;
+    background: menu.$menuBg;
+    color: menu.$menuTextColor;
+    border: menu.$menuBorder;
+    border-radius: general.$borderRadius;
+    min-width: menu.$menuWidth;
 
     .p-menuitem {
-        @include menuitem();
+        @include mixins.menuitem();
     }
 
     &.p-menu-overlay {
-        background: $overlayMenuBg;
-        border: $overlayMenuBorder;
-        box-shadow: $overlayMenuShadow;
+        background: menu.$overlayMenuBg;
+        border: menu.$overlayMenuBorder;
+        box-shadow: menu.$overlayMenuShadow;
     }
 
     .p-submenu-header {
-        margin: $submenuHeaderMargin;
-        padding: $submenuHeaderPadding;
-        color: $submenuHeaderTextColor;
-        background: $submenuHeaderBg;
-        font-weight: $submenuHeaderFontWeight;
-        border-top-right-radius: $submenuHeaderBorderRadius; 
-        border-top-left-radius: $submenuHeaderBorderRadius; 
+        margin: menu.$submenuHeaderMargin;
+        padding: menu.$submenuHeaderPadding;
+        color: menu.$submenuHeaderTextColor;
+        background: menu.$submenuHeaderBg;
+        font-weight: menu.$submenuHeaderFontWeight;
+        border-top-right-radius: menu.$submenuHeaderBorderRadius; 
+        border-top-left-radius: menu.$submenuHeaderBorderRadius; 
     }
 
     .p-menuitem-separator {
-        border-top: $divider;
-        margin: $menuSeparatorMargin;
+        border-top: general.$divider;
+        margin: menu.$menuSeparatorMargin;
     }
 }

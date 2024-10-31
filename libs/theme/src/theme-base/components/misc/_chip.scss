@@ -1,3 +1,9 @@
+@use "sass:list";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+@use "../../mixins";
+
 @use 'sass:math';
 
 // core
@@ -25,36 +31,36 @@
 
 // theme
 .p-chip {
-    background-color: $chipBg;
-    color: $chipTextColor;
-    border-radius: $chipBorderRadius;
-    padding: 0 nth($inputPadding, 2);
+    background-color: misc.$chipBg;
+    color: misc.$chipTextColor;
+    border-radius: misc.$chipBorderRadius;
+    padding: 0 list.nth(form.$inputPadding, 2);
 
     .p-chip-text {
         line-height: 1.5;
-        margin-top: math.div(nth($inputPadding, 1), 2);
-        margin-bottom: math.div(nth($inputPadding, 1), 2);
+        margin-top: math.div(list.nth(form.$inputPadding, 1), 2);
+        margin-bottom: math.div(list.nth(form.$inputPadding, 1), 2);
     }
 
     .p-chip-icon {
-        margin-right: $inlineSpacing;
+        margin-right: general.$inlineSpacing;
     }
 
     img {
-        width: 1.5 + nth($inputPadding, 1);
-        height: 1.5 + nth($inputPadding, 1);
-        margin-left: -1 * nth($inputPadding, 2);
-        margin-right: $inlineSpacing;
+        width: 1.5 + list.nth(form.$inputPadding, 1);
+        height: 1.5 + list.nth(form.$inputPadding, 1);
+        margin-left: -1 * list.nth(form.$inputPadding, 2);
+        margin-right: general.$inlineSpacing;
     }
 
     .p-chip-remove-icon {
-        margin-left: $inlineSpacing;
-        border-radius: $borderRadius;
-        transition: $actionIconTransition;
+        margin-left: general.$inlineSpacing;
+        border-radius: general.$borderRadius;
+        transition: general.$actionIconTransition;
         outline-color: transparent;
         
         &:focus-visible {
-            @include focused();
+            @include mixins.focused();
         }
 
         &:focus {

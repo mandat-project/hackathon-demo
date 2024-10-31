@@ -1,3 +1,9 @@
+@use "sass:list";
+@use "../../../datev-theme/variables/form";
+@use "../../../datev-theme/variables/general";
+@use "../../../datev-theme/variables/misc";
+@use "../../mixins";
+
 @use "sass:math";
 
 // core
@@ -51,45 +57,45 @@
 .p-chips {
     &:not(.p-disabled):hover {
         .p-chips-multiple-container {
-            border-color: $inputHoverBorderColor;
+            border-color: form.$inputHoverBorderColor;
         }
     }
 
     &:not(.p-disabled).p-focus {
         .p-chips-multiple-container {
-            @include focused-input();
+            @include mixins.focused-input();
         }
     }
 
     .p-chips-multiple-container {
-        padding: math.div(nth($inputPadding, 1), 2) nth($inputPadding, 2);
+        padding: math.div(list.nth(form.$inputPadding, 1), 2) list.nth(form.$inputPadding, 2);
         outline-color: transparent;
 
         .p-chips-token {
-            padding: math.div(nth($inputPadding, 1), 2) nth($inputPadding, 2);
-            margin-right: $inlineSpacing;
-            background: $chipBg;
-            color: $chipTextColor;
-            border-radius: $chipBorderRadius;
+            padding: math.div(list.nth(form.$inputPadding, 1), 2) list.nth(form.$inputPadding, 2);
+            margin-right: general.$inlineSpacing;
+            background: misc.$chipBg;
+            color: misc.$chipTextColor;
+            border-radius: misc.$chipBorderRadius;
 
             &.p-focus {
-                background: $chipFocusBg;
-                color: $chipFocusTextColor;
+                background: misc.$chipFocusBg;
+                color: misc.$chipFocusTextColor;
             }
 
             .p-chips-token-icon {
-                margin-left: $inlineSpacing;
+                margin-left: general.$inlineSpacing;
             }
         }
 
         .p-chips-input-token {
-            padding: math.div(nth($inputPadding, 1), 2) 0;
+            padding: math.div(list.nth(form.$inputPadding, 1), 2) 0;
 
             input {
                 font-family: var(--font-family);
                 font-feature-settings: var(--font-feature-settings, normal);
-                font-size: $inputTextFontSize;
-                color: $textColor;
+                font-size: form.$inputTextFontSize;
+                color: general.$textColor;
                 padding: 0;
                 margin: 0;
             }
@@ -97,6 +103,6 @@
     }
 
     &.p-invalid.p-component > .p-inputtext {
-        @include invalid-input();
+        @include mixins.invalid-input();
     }
 }

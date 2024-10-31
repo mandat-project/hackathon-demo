@@ -1,0 +1,61 @@
+@use 'sass:map';
+
+@use 'variables';
+@use 'variables/general';
+@use 'variables/form';
+@use 'variables/button';
+@use 'variables/panel';
+@use 'variables/data';
+@use 'variables/overlay';
+@use 'variables/message';
+@use 'variables/menu';
+@use 'variables/media';
+@use 'variables/misc';
+
+:root {
+  font-family:"Noto Sans Display", Arial, sans-serif;
+  --font-family:"Noto Sans Display", Arial, sans-serif;
+  --font-family-serif:"Compatil DATEV W01 Regular", "Noto Serif", Palatino Linotype, serif;
+
+  --text-color: #{variables.$primaryTextColor};
+  --text-color-secondary: #6c757d;
+  --primary-color: #2196F3;
+  --primary-color-text: #ffffff;
+  --surface-0: #ffffff;
+  --surface-50: #{map.get(variables.$coldgray, 50)};
+  --surface-100: #{map.get(variables.$coldgray, 100)};
+  --surface-200: #{map.get(variables.$coldgray, 200)};
+  --surface-300: #{map.get(variables.$coldgray, 300)};
+  --surface-400: #{map.get(variables.$coldgray, 400)};
+  --surface-500: #{map.get(variables.$coldgray, 500)};
+  --surface-600: #{map.get(variables.$coldgray, 600)};
+  --surface-700: #{map.get(variables.$coldgray, 700)};
+  --surface-800: #{map.get(variables.$coldgray, 800)};
+  --surface-900: #{map.get(variables.$coldgray, 900)};
+
+  --bluegray-50: #{map.get(variables.$coldgray, 50)};
+  --bluegray-100: #{map.get(variables.$coldgray, 100)};
+  --bluegray-200: #{map.get(variables.$coldgray, 200)};
+  --bluegray-300: #{map.get(variables.$coldgray, 300)};
+  --bluegray-400: #{map.get(variables.$coldgray, 400)};
+  --bluegray-500: #{map.get(variables.$coldgray, 500)};
+  --bluegray-600: #{map.get(variables.$coldgray, 600)};
+  --bluegray-700: #{map.get(variables.$coldgray, 700)};
+  --bluegray-800: #{map.get(variables.$coldgray, 800)};
+  --bluegray-900: #{map.get(variables.$coldgray, 900)};
+
+  --content-padding: #{panel.$panelContentPadding};
+  --inline-spacing: #{general.$inlineSpacing};
+  --border-radius: #{general.$borderRadius};
+  --surface-ground: #f8f9fa;
+  --surface-section: #ffffff;
+  --surface-card: #ffffff;
+  --surface-overlay: #ffffff;
+  --surface-border: #dee2e6;
+  --surface-hover: #e9ecef;
+  --focus-ring: #{general.$focusShadow};
+  --maskbg: #{general.$maskBg};
+  --highlight-bg: #{general.$highlightBg};
+  --highlight-text-color: #{general.$highlightTextColor};
+  color-scheme: light;
+}
