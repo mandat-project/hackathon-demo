@@ -118,11 +118,11 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 
 <template>
   <div class="grid">
-    <div class="col lg:col-12" style="width: -webkit-fill-available">
-      <h1>Client Requests</h1>
+    <div class="col lg:col-12 wrapper">
+      <h1 class="heading">Client Requests</h1>
       <ul v-if="isLoggedIn" class="pb-2">
         <Card class="mb-4" v-for="([uri, store], index) of documentCreationDemands" :key="index">
-          <template #title><div class="col-12 block text-green-800 title">Request #{{ index + 1 }}:</div></template>
+          <template #title><div class="col-12 block">Request #{{ index + 1 }}:</div></template>
             <template #content>
               <div class="grid">
                 <div class="col-12 text-sm block word-break"> <a :href="uri" target="_blank" class="font-bold">Documents Demands</a></div>
@@ -138,7 +138,7 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
                 <Divider />
               </div>
               <div class="col-12 text-right">
-                <Button @click="processDocumentCreationDemand(uri)" class="mr-0 md:mr-4 w-full sm:w-auto text-center inline-block	">Provide requested Data</Button>
+                <Button @click="processDocumentCreationDemand(uri)" class="mr-0 sm:mr-3 w-full sm:w-auto text-center inline-block	">Provide requested Data</Button>
                 <Button severity="secondary" class="w-full sm:w-auto inline-block	mt-2 sm:mt-0">Delete Request</Button>
               </div>
             </template>
@@ -152,17 +152,20 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 <style scoped>
 .grid {
   margin: 5px;
-}
-ul{
-  padding-left:0px;
-  .title{
-    word-wrap: break-word;
-    color:var(--text-color-heading-standard);
+  .wrapper {
+    width: -webkit-fill-available;
+    .heading{
+      color: #007577;
+    }
+    ul{
+      padding-left:0px;
+      .word-break{
+        word-wrap: break-word;
+      }
+    }
   }
-  .word-break{
-    word-wrap: break-word;
-  }
 }
+
 .p-card-content{
   padding:0px;
 }
