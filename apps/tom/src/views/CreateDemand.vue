@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AdvertisementCard from "@/components/AdvertisementCard.vue";
+import CheckMarkSvg from "@/components/CheckMarkSvg.vue";
 import {useIsLoggedIn} from "@/composables/useIsLoggedIn";
 import {bank, creditDemandShapeTreeUri} from "@/constants/solid-urls";
 import {Advertisement} from "@/types/Advertisement";
@@ -30,7 +31,8 @@ const chosenAdvertisement = ref("")
 const isLoadingAds = ref(false)
 
 const chosenAdvertiserDemandInbox = ref("")
-const activeIndex = ref<number>(-1);
+const activeAdvertisementIndex = ref<number>(-1);
+const activeStep = ref<number>(0);
 
 watch(storage, () => {
   if (!storage.value) return;
@@ -57,20 +59,18 @@ watch(chosenAdvertisement, () => {// Pre-select first URL
 
 watch(advertisements, () => {
   chosenAdvertiserDemandInbox.value = '';
-  activeIndex.value = -1;
-
-  if (advertisements.value.length === 1) {
-    chosedAdvertiser(advertisements.value[0], 0);
-  }
+  activeAdvertisementIndex.value = -1;
 }, {});
 
 async function chosedAdvertiser(ad: Advertisement, index: number){
   chosenAdvertiserDemandInbox.value = ad.inbox;
-  activeIndex.value = index;
+  activeAdvertisementIndex.value = index;
+  activeStep.value += 1;
 }
 
 function adClick(ad: string): void {
   chosenAdvertisement.value = ad;
+  activeStep.value += 1;
 }
 
 /*After user has chosen an ad shape, get all ads from the market pod*/
@@ -263,67 +263,120 @@ async function createDemand(demandContainerUris: string[], payload: string) {
   <div v-if="isLoggedIn">
     <div class="">
       <div class="">
-        <h1>Select Service Type</h1>
-        <ul class="list-none gap-5 flex">
-          <li v-for="ad of listedAdvertisements" :key="ad">
-            <AdvertisementCard @adClick="adClick" :ad="ad"/>
-          </li>
-        </ul>
+        <h1 class="text-petrol-650 font-normal text-4xl md:text-6xl">Select Service Type</h1>
+
+        <Stepper v-model:active-step="activeStep">
+          <StepperPanel>
+            <template #header="{ index, clickCallback }">
+              <button class="bg-transparent cursor-pointer border-none inline-flex flex-row gap-2 align-items-center font-medium text-base" @click="clickCallback">
+                <div v-if="index < activeStep" class="flex flex-shrink-0 justify-content-center align-items-center bg-transparent border-1 border-petrol-600 w-2rem h-2rem border-round-3xl">
+                  <CheckMarkSvg class="fill-petrol-600" />
+                </div>
+                <span v-else :class="['border-round-3xl border-1 border-black w-2rem h-2rem inline-flex align-items-center justify-content-center', { 'bg-petrol-600 border-petrol-600 text-white': index === activeStep }]">
+                    {{ index + 1 }}
+                </span>
+                <span class="hidden sm:inline">Service Type</span>
+              </button>
+            </template>
+
+            <template #content>
+              <ul class="list-none gap-5 flex">
+                <li v-for="ad of listedAdvertisements" :key="ad">
+                  <AdvertisementCard @adClick="adClick" :ad="ad"/>
+                </li>
+              </ul>
+            </template>
+          </StepperPanel>
+          <StepperPanel>
+            <template #header="{ index, clickCallback }">
+              <button class="bg-transparent cursor-pointer border-none inline-flex flex-row gap-2 align-items-center font-medium text-base" @click="clickCallback">
+                <div v-if="index < activeStep" class="flex flex-shrink-0 justify-content-center align-items-center bg-transparent border-1 border-petrol-600 w-2rem h-2rem border-round-3xl">
+                  <CheckMarkSvg class="fill-petrol-600" />
+                </div>
+                <span v-else :class="['border-round-3xl border-1 border-black w-2rem h-2rem inline-flex align-items-center justify-content-center', { 'bg-petrol-600 border-petrol-600 text-white': index === activeStep }]">
+                    {{ index + 1 }}
+                </span>
+                <span class="hidden sm:inline">Service Provider</span>
+              </button>
+            </template>
+
+            <template #content>
+              <ul v-if="advertisements" class="flex flex-column p-0">
+                <li v-for="(ad, index) in advertisements" :key="ad.id" class="flex flex-wrap align-items-center justify-content-between">
+                  <hr v-if="index !== 0" class="w-full" />
+                  <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'bg-bluegray-100 font-bold': index == activeAdvertisementIndex }">
+                    <span> {{ad.label}}</span>
+                    <span> Ad no. {{ ad.id
+                      }}, valid until {{
+                        ad.validUntil.split("/").pop()
+                      }}</span>
+                    <span> Lowest interest rate: {{ad.lowestInterestRate}}</span>
+                    <span> Credit periods from {{ad.minCreditPeriodMonths}} to {{ad.maxCreditPeriodMonths}} months</span>
+                    <span> Contact advertiser at: </span>
+                    <a :href="ad.inbox"><img :src="ad.creatorIconURI" width="50" height="50"></a>
+                  </div>
+                  <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'bg-bluegray-100 font-bold': index == activeAdvertisementIndex }">
+                    <span> {{ad.comment}}</span>
+                    <span>
+                  <Button @click="chosedAdvertiser(ad, index)" label="Choose"
+                          icon="pi pi-check" /></span>
+                  </div>
+                </li>
+              </ul>
+              <span v-if="!isLoadingAds && advertisements.length === 0 && chosenAdvertisement">No ads found</span>
+            </template>
+          </StepperPanel>
+          <StepperPanel>
+            <template #header="{ index, clickCallback }">
+              <button class="bg-transparent cursor-pointer border-none inline-flex flex-row gap-2 align-items-center font-medium text-base" @click="clickCallback">
+                <div v-if="index < activeStep" class="flex flex-shrink-0 justify-content-center align-items-center bg-transparent border-1 border-petrol-600 w-2rem h-2rem border-round-3xl">
+                  <CheckMarkSvg class="fill-petrol-600" />
+                </div>
+                <span v-else :class="['border-round-3xl border-1 border-black w-2rem h-2rem inline-flex align-items-center justify-content-center', { 'bg-petrol-600 border-petrol-600 text-white': index === activeStep }]">
+                    {{ index + 1 }}
+                </span>
+                <span class="hidden sm:inline">Submit Request</span>
+              </button>
+            </template>
+
+            <template #content>
+              <h1>Create Demand</h1>
+              <!-- We just display the chosen ad's demand container here - currently it is not used in the form below -->
+              <span v-if="chosenAdvertiserDemandInbox != ''">Create a demand at
+              <strong>{{chosenAdvertiserDemandInbox}}</strong></span>
+
+              <form>
+                <div class="grid">
+                  <span class="align-self-center font-bold">Amount</span>
+                  <div class="col">
+                    <InputNumber id="amount" type="number" v-model="enteredAmount" />
+                  </div>
+                </div>
+
+                <div class="grid">
+                  <span class="align-self-center font-bold">Currency</span>
+                  <div class="col">
+                    <Dropdown v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label"
+                              placeholder="Select a Currency" />
+                  </div>
+                </div>
+
+                <Button class="mt-2" @click="postCreditDemand">Submit demand</Button>
+              </form>
+            </template>
+          </StepperPanel>
+        </Stepper>
 
         <ProgressBar v-if="isLoadingAds" mode="indeterminate" style="height: 2px" />
 
-        <ul v-if="advertisements" class="flex flex-column p-0">
-          <li v-for="(ad, index) in advertisements" :key="ad.id" class="flex flex-wrap align-items-center justify-content-between">
-            <hr v-if="index !== 0" class="w-full" />
-            <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'bg-bluegray-100 font-bold': index == activeIndex }">
-              <span> {{ad.label}}</span>
-              <span> Ad no. {{ ad.id
-                }}, valid until {{
-                  ad.validUntil.split("/").pop()
-                }}</span>
-              <span> Lowest interest rate: {{ad.lowestInterestRate}}</span>
-              <span> Credit periods from {{ad.minCreditPeriodMonths}} to {{ad.maxCreditPeriodMonths}} months</span>
-              <span> Contact advertiser at: </span>
-              <a :href="ad.inbox"><img :src="ad.creatorIconURI" width="50" height="50"></a>
-            </div>
-            <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'bg-bluegray-100 font-bold': index == activeIndex }">
-              <span> {{ad.comment}}</span>
-              <span>
-                  <Button @click="chosedAdvertiser(ad, index)" label="Choose"
-                          icon="pi pi-check" /></span>
-            </div>
-          </li>
-        </ul>
-        <span v-if="!isLoadingAds && advertisements.length === 0 && chosenAdvertisement">No ads found</span>
+
       </div>
     </div>
-    <div class="">
-    <div class="">
-      <h1>Create Demand</h1>
-      <!-- We just display the chosen ad's demand container here - currently it is not used in the form below -->
-      <span v-if="chosenAdvertiserDemandInbox != ''">Create a demand at
-          <strong>{{chosenAdvertiserDemandInbox}}</strong></span>
-
-      <form>
-        <div class="grid">
-          <span class="align-self-center font-bold">Amount</span>
-          <div class="col">
-            <InputNumber id="amount" type="number" v-model="enteredAmount" />
-          </div>
-        </div>
-
-        <div class="grid">
-          <span class="align-self-center font-bold">Currency</span>
-          <div class="col">
-            <Dropdown v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label"
-                      placeholder="Select a Currency" />
-          </div>
-        </div>
-
-        <Button class="mt-2" @click="postCreditDemand">Submit demand</Button>
-      </form>
-    </div>
-  </div>
   </div>
 </template>
 
+<style scoped>
+.-top-1rem {
+  top: -1rem;
+}
+</style>
