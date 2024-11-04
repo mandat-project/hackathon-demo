@@ -40,7 +40,10 @@
           </div>
           <div class="col-12">
             <Accordion v-if="accessAuthorizations.length" value="0" class="surface-50 border-round">
-            <AccordionTab header='{{ $t("accessReceipt.accessAuthorizations") }}'>
+            <AccordionTab>
+              <template #header>
+                {{ $t("accessReceipt.accessAuthorizations") }}
+              </template>
               <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization">
                 <Suspense>
                   <AccessAuthorization :resourceURI="accessAuthorization"

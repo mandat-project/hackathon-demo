@@ -54,7 +54,10 @@
           class="border-1 border-round border-bluegray-100"
           value="0"
         >
-          <AccordionTab header='{{ $t("accessAuthorization.dataAuthorizations") }}'>
+          <AccordionTab>
+            <template #header>
+              {{ $t("accessAuthorization.dataAuthorizations") }}
+            </template>
             <div
               v-for="dataAuthorization in dataAuthorizations"
               :key="dataAuthorization"
