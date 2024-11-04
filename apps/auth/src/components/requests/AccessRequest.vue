@@ -58,7 +58,11 @@
         </div>
 
         <Accordion class="col-12 surface-50 border-round" value="0">
-            <AccordionTab header="Access Need Groups">
+            <AccordionTab>
+              <template #header>
+                {{ $t("accessRequest.accessNeedGroups") }}
+              </template>
+
               <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup">
                 <Suspense>
                   <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"

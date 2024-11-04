@@ -3,6 +3,7 @@
   "loadingAccessReceipt": "Loading Access Receipt",
   "accessRequest": {
     "title": "Access Request",
+    "accessNeedGroups": "Access Need Groups",
     "purpose": "Purpose:",
     "dataRequester" : "Data Requester:",
     "granted": "Access will be granted to:",
