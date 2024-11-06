@@ -2,13 +2,13 @@
 import AdvertisementCard from "@/components/AdvertisementCard.vue";
 import {bank, creditDemandShapeTreeUri} from "@/constants/solid-urls";
 import {Advertisement} from "@/types/Advertisement";
-import {toAdvertisementName} from "@/utils/toAdvertisementName";
 import {CheckMarkSvg, HorizontalLine, PageHeadline, SmeCard, SmeCardHeadline} from "@shared/components";
 import {useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
 import {AD, createResource, CREDIT, getLocationHeader, INTEROP, LDP, RDFS, SCHEMA, VCARD,} from "@shared/solid";
 import {fetchStoreOf, getContainerUris} from "@shared/utils";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
+import {toAdvertisementName} from "@/utils/toAdvertisementName";
 import {computed, ref, shallowRef, watch} from "vue";
 
 const {session} = useSolidSession();
@@ -317,28 +317,47 @@ async function createDemand(demandContainerUris: string[], payload: string) {
             <strong>Type: {{ toAdvertisementName(chosenAdvertisement) }}</strong>
             <p>{{ chosenAdvertisement }}</p>
             <HorizontalLine/>
-            <ul v-if="advertisements" class="flex flex-column p-0">
-              <li v-for="(ad, index) in advertisements" :key="ad.id" class="flex flex-wrap align-items-center justify-content-between">
-                <hr v-if="index !== 0" class="w-full" />
-                <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'bg-bluegray-100 font-bold': index == activeAdvertisementIndex }">
-                  <span> {{ad.label}}</span>
-                  <span> Ad no. {{ ad.id
-                    }}, valid until {{
-                      ad.validUntil.split("/").pop()
-                    }}</span>
-                  <span> Lowest interest rate: {{ad.lowestInterestRate}}</span>
-                  <span> Credit periods from {{ad.minCreditPeriodMonths}} to {{ad.maxCreditPeriodMonths}} months</span>
-                  <span> Contact advertiser at: </span>
-                  <a :href="ad.inbox"><img :src="ad.creatorIconURI" width="50" height="50"></a>
-                </div>
-                <div class="flex flex-column md:flex-row gap-2 p-3" :class="{ 'bg-bluegray-100 font-bold': index == activeAdvertisementIndex }">
-                  <span> {{ad.comment}}</span>
-                  <span>
-                <Button @click="chosedAdvertiser(ad, index)" label="Choose"
-                        icon="pi pi-check" /></span>
-                </div>
-              </li>
-            </ul>
+            <div role="list" v-if="advertisements" class="flex flex-column gap-3 p-0">
+              <Card role="listitem" v-for="(ad, index) in advertisements" :key="ad.id">
+                <template #header>
+                  <header class="flex gap-4 m-4">
+                    <div class="w-6rem h-6rem p-3 bg-bluegray-50 flex justify-content-center align-items-center">
+                      <a class="" :href="ad.inbox"><img :src="ad.creatorIconURI" class="max-w-full"></a>
+                    </div>
+                    <div>
+                      <h3 class="m-0 text-xl font-normal">{{ ad.label }}</h3>
+                      <p class="my-2">Valid until {{ ad.validUntil.split("/").pop() }}</p>
+                      <p class="my-2 text-sm">{{ad.comment}}</p>
+                    </div>
+                  </header>
+                  <HorizontalLine class="mt-0"/>
+                </template>
+                <template #content>
+
+                  <div class="grid">
+                    <div class="col-12 md:col-3">
+                      <p class="my-0 text-xs text-black-alpha-70">Lowest interest rate: </p>
+                      <p class="my-0 text-xl font-semibold">{{ad.lowestInterestRate}} %</p>
+                    </div>
+                    <div class="col-12 md:col-3">
+                      <p class="my-0 text-xs text-black-alpha-70">Repayment Periods (months)</p>
+                      <p class="my-0 text-xl font-semibold">{{ad.minCreditPeriodMonths}} - {{ad.maxCreditPeriodMonths}}</p>
+                    </div>
+                    <div class="col-12 md:col-3">
+                      <p class="my-0 text-xs text-black-alpha-70">Contact advertiser at:</p>
+                      <a class="my-0 text-xl font-semibold" :href="ad.inbox">advertiser</a>
+                    </div>
+                    <div class="col-12 md:col-3 align-content-end">
+                      <Button class="w-full md:w-auto" @click="chosedAdvertiser(ad, index)" icon="pi pi-check">
+                        Select&nbsp;
+                        <span class="md:hidden">Provider</span>
+                        <span class="hidden md:inline">{{ ad.label }}</span>
+                      </Button>
+                    </div>
+                  </div>
+                </template>
+              </Card>
+            </div>
             <span v-if="!isLoadingAds && advertisements.length === 0 && chosenAdvertisement">No ads found</span>
           </SmeCard>
         </template>
