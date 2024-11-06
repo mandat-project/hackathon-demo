@@ -7,7 +7,9 @@ import LDNs from './src/LDNs.vue';
 import LoginButton from './src/LoginButton.vue';
 import LogoutButton from './src/LogoutButton.vue';
 import SignUpButton from './src/SignUpButton.vue';
-
+import CheckMarkSvg from './src/CheckMarkSvg.vue';
+import { TabItemType } from './src/tabs/TabItemType';
+import TabList from './src/tabs/TabList.vue';
 export {
     HeaderBar,
     AuthAppHeaderBar,
@@ -17,5 +19,8 @@ export {
     DateFormatted,
     LDN,
     LDNs,
-    AccessRequestCallback
+    AccessRequestCallback,
+    CheckMarkSvg,
+    TabItemType,
+    TabList,
 }

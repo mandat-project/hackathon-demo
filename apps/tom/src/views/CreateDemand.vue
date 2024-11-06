@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AdvertisementCard from "@/components/AdvertisementCard.vue";
-import CheckMarkSvg from "@/components/CheckMarkSvg.vue";
 import {useIsLoggedIn} from "@/composables/useIsLoggedIn";
 import {bank, creditDemandShapeTreeUri} from "@/constants/solid-urls";
 import {Advertisement} from "@/types/Advertisement";
+import {CheckMarkSvg} from "@shared/components";
 import {useSolidProfile, useSolidSession,} from "@shared/composables";
 import {AD, createResource, CREDIT, getLocationHeader, INTEROP, LDP, RDFS, SCHEMA, VCARD,} from "@shared/solid";
 import {fetchStoreOf, getContainerUris} from "@shared/utils";

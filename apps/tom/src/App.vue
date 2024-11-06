@@ -39,10 +39,8 @@
 </template>
 
 <script lang="ts" setup>
-import {TabItemType} from "@/components/tabs/TabItemType";
-import TabList from "@/components/tabs/TabList.vue";
 import {useIsLoggedIn} from "@/composables/useIsLoggedIn";
-import {HeaderBar} from "@shared/components";
+import {HeaderBar, TabItemType, TabList} from "@shared/components";
 import {useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";

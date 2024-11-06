@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {TabItemType} from "@/components/tabs/TabItemType";
+import {TabItemType} from "./TabItemType";
 
 const props = defineProps<{ item: TabItemType; active: boolean; }>();
 </script>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import TabItem from "@/components/tabs/TabItem.vue";
-import {TabItemType} from "@/components/tabs/TabItemType";
+import TabItem from "./TabItem.vue";
+import {TabItemType} from "./TabItemType";
 import {ref, watch} from "vue";
 
 const props = defineProps<{ model: TabItemType[], active?: string }>();
