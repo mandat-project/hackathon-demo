@@ -23,6 +23,7 @@ import Message from "primevue/message";
 import Panel from "primevue/panel";
 import ProgressBar from "primevue/progressbar";
 import RadioButton from "primevue/radiobutton";
+import SelectButton from "primevue/selectbutton";
 import Skeleton from "primevue/skeleton";
 import SpeedDial from "primevue/speeddial";
 import Stepper from "primevue/stepper";
@@ -73,6 +74,7 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("Skeleton", Skeleton);
     app.component("Accordion", Accordion);
     app.component("AccordionTab", AccordionTab);
+    app.component("SelectButton", SelectButton);
 
     app.directive('badge', BadgeDirective);
     app.directive("tooltip", Tooltip);

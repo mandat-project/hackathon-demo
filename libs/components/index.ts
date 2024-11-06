@@ -14,6 +14,7 @@ import SmeCard from "./src/SmeCard.vue";
 import SmeCardHeadline from "./src/SmeCardHeadline.vue";
 import {TabItemType} from './src/tabs/TabItemType';
 import TabList from './src/tabs/TabList.vue';
+import DacklTextInput from './src/DacklTextInput.vue';
 
 export {
     HeaderBar,
@@ -32,4 +33,5 @@ export {
     SmeCard,
     PageHeadline,
     SmeCardHeadline,
+    DacklTextInput,
 };

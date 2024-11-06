@@ -10718,4 +10718,10 @@ a:not(.p-accordion-header-link) {
   background: linear-gradient(to right, #195B78, #287F8F);
 }
 
+input.p-inputtext {
+  border: 0 none;
+  border-radius: 4px;
+  box-shadow: 0px 1px 0px 0px rgba(3, 59, 74, 0.46), 0px 0px 2px 0px rgba(44, 51, 53, 0.4), 0px 2px 5px 0px rgba(44, 51, 53, 0.12);
+}
+
 /*# sourceMappingURL=theme.css.map */

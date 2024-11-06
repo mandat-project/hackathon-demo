@@ -2,13 +2,13 @@
 import AdvertisementCard from "@/components/AdvertisementCard.vue";
 import {bank, creditDemandShapeTreeUri} from "@/constants/solid-urls";
 import {Advertisement} from "@/types/Advertisement";
-import {CheckMarkSvg, HorizontalLine, PageHeadline, SmeCard, SmeCardHeadline} from "@shared/components";
+import {toAdvertisementName} from "@/utils/toAdvertisementName";
+import {CheckMarkSvg, HorizontalLine, PageHeadline, SmeCard, SmeCardHeadline, DacklTextInput} from "@shared/components";
 import {useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
 import {AD, createResource, CREDIT, getLocationHeader, INTEROP, LDP, RDFS, SCHEMA, VCARD,} from "@shared/solid";
 import {fetchStoreOf, getContainerUris} from "@shared/utils";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
-import {toAdvertisementName} from "@/utils/toAdvertisementName";
 import {computed, ref, shallowRef, watch} from "vue";
 
 const {session} = useSolidSession();
@@ -315,7 +315,7 @@ async function createDemand(demandContainerUris: string[], payload: string) {
             <SmeCardHeadline>Loan Provider</SmeCardHeadline>
             <HorizontalLine/>
             <strong>Type: {{ toAdvertisementName(chosenAdvertisement) }}</strong>
-            <p>{{ chosenAdvertisement }}</p>
+            <p class="break-all">{{ chosenAdvertisement }}</p>
             <HorizontalLine/>
             <div role="list" v-if="advertisements" class="flex flex-column gap-3 p-0">
               <Card role="listitem" v-for="(ad, index) in advertisements" :key="ad.id">
@@ -377,27 +377,33 @@ async function createDemand(demandContainerUris: string[], payload: string) {
 
         <template #content>
           <SmeCard>
-            <SmeCardHeadline>Create Demand</SmeCardHeadline>
-            <!-- We just display the chosen ad's demand container here - currently it is not used in the form below -->
-            <span v-if="chosenAdvertiserDemandInbox != ''">Create a demand at <strong>{{chosenAdvertiserDemandInbox}}</strong></span>
+            <SmeCardHeadline>Loan Demand</SmeCardHeadline>
+            <HorizontalLine/>
+            <div class="grid">
+              <div class="col-6">
+                <strong>Type: {{ toAdvertisementName(chosenAdvertisement) }}</strong>
+                <p class="break-all">{{ chosenAdvertisement }}</p>
+              </div>
+              <div class="col-6">
+                <strong v-if="chosenAdvertiserDemandInbox">Provider: {{ advertisements[activeAdvertisementIndex].label }}</strong>
+                <p class="break-all" v-if="chosenAdvertiserDemandInbox">{{ chosenAdvertiserDemandInbox }}</p>
+              </div>
+            </div>
+            <HorizontalLine/>
 
-            <form>
-              <div class="grid">
-                <span class="align-self-center font-bold">Amount</span>
-                <div class="col">
-                  <InputNumber id="amount" type="number" v-model="enteredAmount" />
+            <form @submit="(event) => event.preventDefault()">
+              <div class="grid mt-3">
+                <DacklTextInput type="number" class="ml-2 mt-2" label="Enter amount" v-model="enteredAmount" />
+
+                <div class="dropdown relative mx-3">
+                  <label style="z-index: 1;padding-left: 0.6rem;padding-top: 0.5rem;" class="text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
+                  <Dropdown style="padding-top: 1.5rem;margin-top: 0.2rem;" class="h-4rem control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
                 </div>
               </div>
 
-              <div class="grid">
-                <span class="align-self-center font-bold">Currency</span>
-                <div class="col">
-                  <Dropdown v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label"
-                            placeholder="Select a Currency" />
-                </div>
-              </div>
-
-              <Button class="mt-2" @click="postCreditDemand">Submit demand</Button>
+              <Button class="mt-3" @click="postCreditDemand">
+                Submit {{ Number(enteredAmount).toLocaleString() + ' ' + (selectedCurrency === 'EUR' ? '&euro;' : '&dollar;') }} Demand
+              </Button>
             </form>
           </SmeCard>
         </template>
