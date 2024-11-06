@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import {useIsLoggedIn} from "@/composables/useIsLoggedIn";
 import {
   bank,
   creditDemandShapeTreeUri,
@@ -10,7 +9,7 @@ import {
   tax
 } from "@/constants/solid-urls";
 import {Demand} from "@/types/Demand";
-import {useCache, useSolidProfile, useSolidSession,} from "@shared/composables";
+import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
 import {
   createResource,
   CREDIT,

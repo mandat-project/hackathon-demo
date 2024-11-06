@@ -5,7 +5,7 @@
     <TabList class="mt-4" @item-change="tabListItemChange" :model="tabMenu" :active="routeName" />
   </div>
 
-  <div v-if="isLoggedIn && session.rdp" class="m-0 lg:m-5">
+  <div v-if="isLoggedIn && session.rdp" class="m-1 lg:m-5">
     <router-view />
   </div>
   <Card v-else class="w-6 mt-5 block mx-auto">
@@ -39,9 +39,8 @@
 </template>
 
 <script lang="ts" setup>
-import {useIsLoggedIn} from "@/composables/useIsLoggedIn";
 import {HeaderBar, TabItemType, TabList} from "@shared/components";
-import {useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
+import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Toast from "primevue/toast";

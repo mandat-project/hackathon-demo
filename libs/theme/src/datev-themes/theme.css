@@ -221,6 +221,9 @@
   .outline-blue-50 {
     outline-color: var(--blue-50);
   }
+  .fill-blue-50 {
+    fill: var(--blue-50);
+  }
   .bg-blue-100 {
     background-color: var(--blue-100);
   }
@@ -232,6 +235,9 @@
   }
   .outline-blue-100 {
     outline-color: var(--blue-100);
+  }
+  .fill-blue-100 {
+    fill: var(--blue-100);
   }
   .bg-blue-150 {
     background-color: var(--blue-150);
@@ -245,6 +251,9 @@
   .outline-blue-150 {
     outline-color: var(--blue-150);
   }
+  .fill-blue-150 {
+    fill: var(--blue-150);
+  }
   .bg-blue-200 {
     background-color: var(--blue-200);
   }
@@ -256,6 +265,9 @@
   }
   .outline-blue-200 {
     outline-color: var(--blue-200);
+  }
+  .fill-blue-200 {
+    fill: var(--blue-200);
   }
   .bg-blue-300 {
     background-color: var(--blue-300);
@@ -269,6 +281,9 @@
   .outline-blue-300 {
     outline-color: var(--blue-300);
   }
+  .fill-blue-300 {
+    fill: var(--blue-300);
+  }
   .bg-blue-350 {
     background-color: var(--blue-350);
   }
@@ -280,6 +295,9 @@
   }
   .outline-blue-350 {
     outline-color: var(--blue-350);
+  }
+  .fill-blue-350 {
+    fill: var(--blue-350);
   }
   .bg-blue-400 {
     background-color: var(--blue-400);
@@ -293,6 +311,9 @@
   .outline-blue-400 {
     outline-color: var(--blue-400);
   }
+  .fill-blue-400 {
+    fill: var(--blue-400);
+  }
   .bg-blue-500 {
     background-color: var(--blue-500);
   }
@@ -304,6 +325,9 @@
   }
   .outline-blue-500 {
     outline-color: var(--blue-500);
+  }
+  .fill-blue-500 {
+    fill: var(--blue-500);
   }
   .bg-blue-600 {
     background-color: var(--blue-600);
@@ -317,6 +341,9 @@
   .outline-blue-600 {
     outline-color: var(--blue-600);
   }
+  .fill-blue-600 {
+    fill: var(--blue-600);
+  }
   .bg-blue-700 {
     background-color: var(--blue-700);
   }
@@ -328,6 +355,9 @@
   }
   .outline-blue-700 {
     outline-color: var(--blue-700);
+  }
+  .fill-blue-700 {
+    fill: var(--blue-700);
   }
   .bg-blue-800 {
     background-color: var(--blue-800);
@@ -341,6 +371,9 @@
   .outline-blue-800 {
     outline-color: var(--blue-800);
   }
+  .fill-blue-800 {
+    fill: var(--blue-800);
+  }
   .bg-blue-900 {
     background-color: var(--blue-900);
   }
@@ -352,6 +385,9 @@
   }
   .outline-blue-900 {
     outline-color: var(--blue-900);
+  }
+  .fill-blue-900 {
+    fill: var(--blue-900);
   }
   .bg-coldgray-50 {
     background-color: var(--coldgray-50);
@@ -365,6 +401,9 @@
   .outline-coldgray-50 {
     outline-color: var(--coldgray-50);
   }
+  .fill-coldgray-50 {
+    fill: var(--coldgray-50);
+  }
   .bg-coldgray-80 {
     background-color: var(--coldgray-80);
   }
@@ -376,6 +415,9 @@
   }
   .outline-coldgray-80 {
     outline-color: var(--coldgray-80);
+  }
+  .fill-coldgray-80 {
+    fill: var(--coldgray-80);
   }
   .bg-coldgray-100 {
     background-color: var(--coldgray-100);
@@ -389,6 +431,9 @@
   .outline-coldgray-100 {
     outline-color: var(--coldgray-100);
   }
+  .fill-coldgray-100 {
+    fill: var(--coldgray-100);
+  }
   .bg-coldgray-150 {
     background-color: var(--coldgray-150);
   }
@@ -400,6 +445,9 @@
   }
   .outline-coldgray-150 {
     outline-color: var(--coldgray-150);
+  }
+  .fill-coldgray-150 {
+    fill: var(--coldgray-150);
   }
   .bg-coldgray-200 {
     background-color: var(--coldgray-200);
@@ -413,6 +461,9 @@
   .outline-coldgray-200 {
     outline-color: var(--coldgray-200);
   }
+  .fill-coldgray-200 {
+    fill: var(--coldgray-200);
+  }
   .bg-coldgray-300 {
     background-color: var(--coldgray-300);
   }
@@ -424,6 +475,9 @@
   }
   .outline-coldgray-300 {
     outline-color: var(--coldgray-300);
+  }
+  .fill-coldgray-300 {
+    fill: var(--coldgray-300);
   }
   .bg-coldgray-400 {
     background-color: var(--coldgray-400);
@@ -437,6 +491,9 @@
   .outline-coldgray-400 {
     outline-color: var(--coldgray-400);
   }
+  .fill-coldgray-400 {
+    fill: var(--coldgray-400);
+  }
   .bg-coldgray-500 {
     background-color: var(--coldgray-500);
   }
@@ -448,6 +505,9 @@
   }
   .outline-coldgray-500 {
     outline-color: var(--coldgray-500);
+  }
+  .fill-coldgray-500 {
+    fill: var(--coldgray-500);
   }
   .bg-coldgray-600 {
     background-color: var(--coldgray-600);
@@ -461,6 +521,9 @@
   .outline-coldgray-600 {
     outline-color: var(--coldgray-600);
   }
+  .fill-coldgray-600 {
+    fill: var(--coldgray-600);
+  }
   .bg-coldgray-700 {
     background-color: var(--coldgray-700);
   }
@@ -472,6 +535,9 @@
   }
   .outline-coldgray-700 {
     outline-color: var(--coldgray-700);
+  }
+  .fill-coldgray-700 {
+    fill: var(--coldgray-700);
   }
   .bg-coldgray-800 {
     background-color: var(--coldgray-800);
@@ -485,6 +551,9 @@
   .outline-coldgray-800 {
     outline-color: var(--coldgray-800);
   }
+  .fill-coldgray-800 {
+    fill: var(--coldgray-800);
+  }
   .bg-coldgray-900 {
     background-color: var(--coldgray-900);
   }
@@ -496,6 +565,9 @@
   }
   .outline-coldgray-900 {
     outline-color: var(--coldgray-900);
+  }
+  .fill-coldgray-900 {
+    fill: var(--coldgray-900);
   }
   .bg-gray-50 {
     background-color: var(--gray-50);
@@ -509,6 +581,9 @@
   .outline-gray-50 {
     outline-color: var(--gray-50);
   }
+  .fill-gray-50 {
+    fill: var(--gray-50);
+  }
   .bg-gray-100 {
     background-color: var(--gray-100);
   }
@@ -520,6 +595,9 @@
   }
   .outline-gray-100 {
     outline-color: var(--gray-100);
+  }
+  .fill-gray-100 {
+    fill: var(--gray-100);
   }
   .bg-gray-150 {
     background-color: var(--gray-150);
@@ -533,6 +611,9 @@
   .outline-gray-150 {
     outline-color: var(--gray-150);
   }
+  .fill-gray-150 {
+    fill: var(--gray-150);
+  }
   .bg-gray-200 {
     background-color: var(--gray-200);
   }
@@ -544,6 +625,9 @@
   }
   .outline-gray-200 {
     outline-color: var(--gray-200);
+  }
+  .fill-gray-200 {
+    fill: var(--gray-200);
   }
   .bg-gray-250 {
     background-color: var(--gray-250);
@@ -557,6 +641,9 @@
   .outline-gray-250 {
     outline-color: var(--gray-250);
   }
+  .fill-gray-250 {
+    fill: var(--gray-250);
+  }
   .bg-gray-300 {
     background-color: var(--gray-300);
   }
@@ -568,6 +655,9 @@
   }
   .outline-gray-300 {
     outline-color: var(--gray-300);
+  }
+  .fill-gray-300 {
+    fill: var(--gray-300);
   }
   .bg-gray-400 {
     background-color: var(--gray-400);
@@ -581,6 +671,9 @@
   .outline-gray-400 {
     outline-color: var(--gray-400);
   }
+  .fill-gray-400 {
+    fill: var(--gray-400);
+  }
   .bg-gray-500 {
     background-color: var(--gray-500);
   }
@@ -592,6 +685,9 @@
   }
   .outline-gray-500 {
     outline-color: var(--gray-500);
+  }
+  .fill-gray-500 {
+    fill: var(--gray-500);
   }
   .bg-gray-600 {
     background-color: var(--gray-600);
@@ -605,6 +701,9 @@
   .outline-gray-600 {
     outline-color: var(--gray-600);
   }
+  .fill-gray-600 {
+    fill: var(--gray-600);
+  }
   .bg-gray-700 {
     background-color: var(--gray-700);
   }
@@ -616,6 +715,9 @@
   }
   .outline-gray-700 {
     outline-color: var(--gray-700);
+  }
+  .fill-gray-700 {
+    fill: var(--gray-700);
   }
   .bg-gray-800 {
     background-color: var(--gray-800);
@@ -629,6 +731,9 @@
   .outline-gray-800 {
     outline-color: var(--gray-800);
   }
+  .fill-gray-800 {
+    fill: var(--gray-800);
+  }
   .bg-gray-900 {
     background-color: var(--gray-900);
   }
@@ -640,6 +745,9 @@
   }
   .outline-gray-900 {
     outline-color: var(--gray-900);
+  }
+  .fill-gray-900 {
+    fill: var(--gray-900);
   }
   .bg-green-50 {
     background-color: var(--green-50);
@@ -653,6 +761,9 @@
   .outline-green-50 {
     outline-color: var(--green-50);
   }
+  .fill-green-50 {
+    fill: var(--green-50);
+  }
   .bg-green-100 {
     background-color: var(--green-100);
   }
@@ -664,6 +775,9 @@
   }
   .outline-green-100 {
     outline-color: var(--green-100);
+  }
+  .fill-green-100 {
+    fill: var(--green-100);
   }
   .bg-green-150 {
     background-color: var(--green-150);
@@ -677,6 +791,9 @@
   .outline-green-150 {
     outline-color: var(--green-150);
   }
+  .fill-green-150 {
+    fill: var(--green-150);
+  }
   .bg-green-200 {
     background-color: var(--green-200);
   }
@@ -688,6 +805,9 @@
   }
   .outline-green-200 {
     outline-color: var(--green-200);
+  }
+  .fill-green-200 {
+    fill: var(--green-200);
   }
   .bg-green-300 {
     background-color: var(--green-300);
@@ -701,6 +821,9 @@
   .outline-green-300 {
     outline-color: var(--green-300);
   }
+  .fill-green-300 {
+    fill: var(--green-300);
+  }
   .bg-green-350 {
     background-color: var(--green-350);
   }
@@ -712,6 +835,9 @@
   }
   .outline-green-350 {
     outline-color: var(--green-350);
+  }
+  .fill-green-350 {
+    fill: var(--green-350);
   }
   .bg-green-400 {
     background-color: var(--green-400);
@@ -725,6 +851,9 @@
   .outline-green-400 {
     outline-color: var(--green-400);
   }
+  .fill-green-400 {
+    fill: var(--green-400);
+  }
   .bg-green-500 {
     background-color: var(--green-500);
   }
@@ -736,6 +865,9 @@
   }
   .outline-green-500 {
     outline-color: var(--green-500);
+  }
+  .fill-green-500 {
+    fill: var(--green-500);
   }
   .bg-green-550 {
     background-color: var(--green-550);
@@ -749,6 +881,9 @@
   .outline-green-550 {
     outline-color: var(--green-550);
   }
+  .fill-green-550 {
+    fill: var(--green-550);
+  }
   .bg-green-600 {
     background-color: var(--green-600);
   }
@@ -760,6 +895,9 @@
   }
   .outline-green-600 {
     outline-color: var(--green-600);
+  }
+  .fill-green-600 {
+    fill: var(--green-600);
   }
   .bg-green-700 {
     background-color: var(--green-700);
@@ -773,6 +911,9 @@
   .outline-green-700 {
     outline-color: var(--green-700);
   }
+  .fill-green-700 {
+    fill: var(--green-700);
+  }
   .bg-green-800 {
     background-color: var(--green-800);
   }
@@ -784,6 +925,9 @@
   }
   .outline-green-800 {
     outline-color: var(--green-800);
+  }
+  .fill-green-800 {
+    fill: var(--green-800);
   }
   .bg-green-900 {
     background-color: var(--green-900);
@@ -797,6 +941,9 @@
   .outline-green-900 {
     outline-color: var(--green-900);
   }
+  .fill-green-900 {
+    fill: var(--green-900);
+  }
   .bg-petrol-50 {
     background-color: var(--petrol-50);
   }
@@ -808,6 +955,9 @@
   }
   .outline-petrol-50 {
     outline-color: var(--petrol-50);
+  }
+  .fill-petrol-50 {
+    fill: var(--petrol-50);
   }
   .bg-petrol-100 {
     background-color: var(--petrol-100);
@@ -821,6 +971,9 @@
   .outline-petrol-100 {
     outline-color: var(--petrol-100);
   }
+  .fill-petrol-100 {
+    fill: var(--petrol-100);
+  }
   .bg-petrol-150 {
     background-color: var(--petrol-150);
   }
@@ -832,6 +985,9 @@
   }
   .outline-petrol-150 {
     outline-color: var(--petrol-150);
+  }
+  .fill-petrol-150 {
+    fill: var(--petrol-150);
   }
   .bg-petrol-200 {
     background-color: var(--petrol-200);
@@ -845,6 +1001,9 @@
   .outline-petrol-200 {
     outline-color: var(--petrol-200);
   }
+  .fill-petrol-200 {
+    fill: var(--petrol-200);
+  }
   .bg-petrol-300 {
     background-color: var(--petrol-300);
   }
@@ -856,6 +1015,9 @@
   }
   .outline-petrol-300 {
     outline-color: var(--petrol-300);
+  }
+  .fill-petrol-300 {
+    fill: var(--petrol-300);
   }
   .bg-petrol-400 {
     background-color: var(--petrol-400);
@@ -869,6 +1031,9 @@
   .outline-petrol-400 {
     outline-color: var(--petrol-400);
   }
+  .fill-petrol-400 {
+    fill: var(--petrol-400);
+  }
   .bg-petrol-500 {
     background-color: var(--petrol-500);
   }
@@ -880,6 +1045,9 @@
   }
   .outline-petrol-500 {
     outline-color: var(--petrol-500);
+  }
+  .fill-petrol-500 {
+    fill: var(--petrol-500);
   }
   .bg-petrol-600 {
     background-color: var(--petrol-600);
@@ -893,6 +1061,9 @@
   .outline-petrol-600 {
     outline-color: var(--petrol-600);
   }
+  .fill-petrol-600 {
+    fill: var(--petrol-600);
+  }
   .bg-petrol-650 {
     background-color: var(--petrol-650);
   }
@@ -904,6 +1075,9 @@
   }
   .outline-petrol-650 {
     outline-color: var(--petrol-650);
+  }
+  .fill-petrol-650 {
+    fill: var(--petrol-650);
   }
   .bg-petrol-700 {
     background-color: var(--petrol-700);
@@ -917,6 +1091,9 @@
   .outline-petrol-700 {
     outline-color: var(--petrol-700);
   }
+  .fill-petrol-700 {
+    fill: var(--petrol-700);
+  }
   .bg-petrol-800 {
     background-color: var(--petrol-800);
   }
@@ -929,6 +1106,9 @@
   .outline-petrol-800 {
     outline-color: var(--petrol-800);
   }
+  .fill-petrol-800 {
+    fill: var(--petrol-800);
+  }
   .bg-petrol-900 {
     background-color: var(--petrol-900);
   }
@@ -940,6 +1120,9 @@
   }
   .outline-petrol-900 {
     outline-color: var(--petrol-900);
+  }
+  .fill-petrol-900 {
+    fill: var(--petrol-900);
   }
 }
 .p-editor-container .p-editor-toolbar {
