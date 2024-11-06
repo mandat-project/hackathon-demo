@@ -1,0 +1,132 @@
+{
+  "loadingAuthorization": "Loading Authorization",
+  "loadingAccessReceipt": "Loading Access Receipt",
+  "accessRequest": {
+    "title": "Access Request",
+    "accessNeedGroups": "Access Need Groups",
+    "purpose": "Purpose:",
+    "dataRequester" : "Data Requester:",
+    "granted": "Access will be granted to:",
+    "additionalInformation": "For additional information see also:",
+    "loadingNeedGroup": "Loading Access Need Group",
+    "noDataRegistrationFound": "No matching Data Registrations were found for",
+    "authorizeRequest": "Authorize Request",
+    "declineRequest": "Decline Request",
+    "declineDialog": {
+      "header": "Decline Access Request",
+      "message": "Are you sure you want to proceed?",
+      "decline": "Decline Request",
+      "cancel": "Cancel"
+    },
+    "confirmDialog": {
+      "header": "Authorize Access Request",
+      "message": "Are you sure you want to proceed?",
+      "authorize": "Authorize Request",
+      "cancel": "Cancel"
+    },
+    "error": {
+      "sender": "Could not get sender!",
+      "grantee": "Could not get grantee!",
+      "createAccessReceipt": "Failed to create Access Receipt!"
+    },
+    "success": {
+      "accessReceiptCreated": "Access Receipt created."
+    }
+  },
+  "accessNeed": {
+    "requiredDataFormat": "Access need for required data format:",
+    "container": "Access need for container:",
+    "resources": "Access need for resources:",
+    "mode": "Access Mode:",
+    "error": {
+      "accessRequest": "Could not get access request!",
+      "getDataRegistrationContainers": "Error on getDataRegistrationContainers!",
+      "dataAuthorization": "Failed to create Data Authorization!"
+    },
+    "success": {
+      "dataAuthorizationCreated": "Data Authorization created."
+    }
+  },
+  "accessNeedGroup": {
+    "description": "Short description of requested access:",
+    "explanation": "Explanation:",
+    "loading": "Loading Access Need",
+    "error": {
+      "accessRequest": "Could not get access request!",
+      "accessAuthorization": "Failed to create Access Authorization!"
+    },
+    "success": {
+      "accessAuthorization": "Access Authorization created."
+    }
+  },
+  "accessAuthorization": {
+    "grantDate": "Grant date:",
+    "grantees": "Grantees:",
+    "groups": "Access Need Groups:",
+    "dataAuthorizations": "Data Authorizations",
+    "revokeGroup": "Revoke Authorizations in this group",
+    "loadingData": "Loading Data Authorization",
+    "error": {
+      "accessRequest": "Could not get access request!",
+      "grantee": "Could not get grantee!",
+      "createArchivedAccessReceipt": "Failed to create Archived Access Receipt!",
+      "updateArchivedAccessReceipt": "Failed to updated Archived Access Receipt!",
+      "createNewAccessReceipt": "Failed to create new Access Receipt!",
+      "updateNewAccessReceipt": "Failed to update new Access Receipt!"
+    },
+    "info": {
+      "archivedAccessAuthorizationCreated": "Archived Access Authorization created.",
+      "newAccessAuthorizationCreated": "New Access Authorization created."
+    },
+    "success": {
+      "archivedAccessAuthorizationUpdated": "Archived Access Authorization updated.",
+      "accessAuthorizationUpdated": "New Access Authorization updated."
+    }
+  },
+  "accessReceipt": {
+    "authorization": "Authorization",
+    "provided": "Provided At:",
+    "accessRequest": "For Access Request:",
+    "purpose": "Purpose:",
+    "accessAuthorizations": "Access Authorizations",
+    "loading": "Loading",
+    "error": {
+      "accessReceipt": "Could not get access receipt!",
+      "patchReceipt": "Error on patch Receipt!"
+    },
+    "success": {
+      "accessReceiptUpdated": "Access Receipt updated."
+    }
+  },
+  "dataAuthorization": {
+    "accessNeeds": "Access Needs:",
+    "grantees": "Grantees:",
+    "authorizedData": "Authorized Data:",
+    "scope": "Scope:",
+    "registration": "Data Registrations:",
+    "instances": "Authorized Instances:",
+    "accessMode": "Access Mode:",
+    "revoke": "Revoke this authorization",
+    "error": {
+      "dataAuthorization": "Could not get data authorization!",
+      "grantee": "Could not get grantee!",
+      "getDataRegistrationContainers": "Error on getDataRegistrationContainers!",
+      "loadACL": "Could not load ACL!",
+      "updateACL": "Failed to updated ACL!"
+    },
+    "success": {
+      "aclUpdated": "ACL updated."
+    }
+  },
+  "error": {
+    "401-unauthenticated": "401 Unauthenticated : Login using the button in the top-right corner!"
+  },
+  "toast": {
+    "error": {
+      "createDataAuthorization": "Failed to create Data Authorization Container!",
+      "createAccessDataAuthorization": "Failed to create Access Authorization Container!",
+      "createAccessReceipt": "Failed to create Access Receipt Container!",
+      "fetchDemand": "Error on fetchDemand!"
+    }
+  }
+}

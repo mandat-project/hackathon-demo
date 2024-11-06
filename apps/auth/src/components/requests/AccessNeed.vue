@@ -2,7 +2,7 @@
   <div class="grid m-0 gap-0">
     <div class="col-12 lg:col p-0">
       <p class="mb-0 text-black-alpha-60">
-        Access need for required data format:
+        {{ $t("accessNeed.requiredDataFormat") }}
       </p>
       <a
         v-for="shapeTree in registeredShapeTrees"
@@ -14,7 +14,7 @@
     </div>
     <div class="col-12 lg:col p-0">
       <p class="mb-0 text-black-alpha-60">
-        Access need for container:
+        {{ $t("accessNeed.container") }}
       </p>
       <a
         v-for="container in containers"
@@ -29,7 +29,7 @@
       class="col-12 lg:col p-0"
     >
       <p class="mb-0 text-black-alpha-60">
-        Access need for resources:
+        {{ $t("accessNeed.resources") }}
       </p>
       <a
         v-for="dataInstance in dataInstances"
@@ -41,7 +41,7 @@
     </div>
     <div class="col-12 lg:col p-0">
       <p class="mb-0 text-black-alpha-60">
-        Access Mode:
+        {{ $t("accessNeed.mode") }}
       </p>
       <a
         v-for="accessMode in accessModes"
@@ -79,12 +79,14 @@ import {
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "dataAuthzContainer", "groupAuthorizationTrigger"]);
 const emit = defineEmits(["createdDataAuthorization", "noDataRegistrationFound"])
 const { session } = useSolidSession();
 const { memberOf } = useSolidProfile();
 const toast = useToast();
+const { t } = useI18n();
 
 // get data
 const store = ref(new Store());
@@ -92,7 +94,7 @@ store.value = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access request!",
+      summary: t("accessNeed.error.accessRequest"),
       detail: err,
       life: 5000,
     });
@@ -172,7 +174,7 @@ async function checkIfMatchingDataRegistrationExists() {
   ).catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Error on getDataRegistrationContainers!",
+      summary: t("accessNeed.error.getDataRegistrationContainers"),
       detail: err,
       life: 5000,
     });
@@ -198,7 +200,7 @@ async function grantDataAuthorization() {
     ).catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Error on getDataRegistrationContainers!",
+        summary: t("accessNeed.error.getDataRegistrationContainers"),
         detail: err,
         life: 5000,
       });
@@ -273,7 +275,7 @@ async function createDataAuthorization(
     .then((loc) => {
         toast.add({
           severity: "success",
-          summary: "Data Authorization created.",
+          summary: t("accessNeed.success.dataAuthorizationCreated"),
           life: 5000,
         })
         return getLocationHeader(loc)
@@ -282,7 +284,7 @@ async function createDataAuthorization(
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to create Data Authorization!",
+        summary: t("accessNeed.error.dataAuthorization"),
         detail: err,
         life: 5000,
       });

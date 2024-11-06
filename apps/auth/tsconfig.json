@@ -6,6 +6,12 @@
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "resolveJsonModule": true
+  },
+  "paths": {
+    "@/*": [
+      "./src/*"
     ]
   },
   "paths": {

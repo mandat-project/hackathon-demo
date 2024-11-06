@@ -22,7 +22,7 @@
               <Skeleton class="mb-2"></Skeleton>
               <Skeleton width="2rem" class="mb-2"></Skeleton>
               <span>
-                Loading Authorization {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
+                {{ $t("loadingAuthorization") }} {{ accessRequestResource.split("/")[accessRequestResource.split("/").length - 1] }}
               </span>
             </template>
           </Card>
@@ -43,7 +43,7 @@
               <Skeleton class="mb-2"></Skeleton>
               <Skeleton width="2rem" class="mb-2"></Skeleton>
               <span>
-                Loading Access Receipt {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
+                {{ $t("loadingAccessReceipt") }} {{ accessReceiptResource.split("/")[accessReceiptResource.split("/").length - 1] }}
               </span>
             </template>
           </Card>
@@ -65,8 +65,11 @@ import { useSolidProfile, useSolidSession } from "@shared/composables";
 import { computed, onMounted, ref, watch } from "vue";
 import { useToast } from "primevue/usetoast";
 import { Store } from "n3";
+import {useI18n} from "vue-i18n";
 
 const toast = useToast();
+
+const { t } = useI18n();
 
 const { session } = useSolidSession();
 const { accessInbox, storage } = useSolidProfile();
@@ -108,7 +111,7 @@ watch(() => storage.value,
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Failed to create Data Authorization Container!",
+          summary: t('toast.error.createDataAuthorization'),
           detail: err,
           life: 5000,
         });
@@ -119,7 +122,7 @@ watch(() => storage.value,
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Failed to create Access Authorization Container!",
+          summary: t("toast.error.createAccessDataAuthorization"),
           detail: err,
           life: 5000,
         });
@@ -130,7 +133,7 @@ watch(() => storage.value,
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Failed to create Access Receipt Container!",
+          summary: t("toast.error.createAccessReceipt"),
           detail: err,
           life: 5000,
         });
@@ -141,7 +144,7 @@ watch(() => storage.value,
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Failed to create Access Receipt Container!",
+          summary: t("toast.error.failedCreateAccessReceipt"),
           detail: err,
           life: 5000,
         });
@@ -230,7 +233,7 @@ async function fetchStoreOf(uri: string): Promise<Store> {
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Error on fetchDemand!",
+        summary: t('toast.error.fetchDemand'),
         detail: err,
         life: 5000,
       });

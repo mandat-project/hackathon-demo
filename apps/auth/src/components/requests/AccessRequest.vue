@@ -1,13 +1,13 @@
 <template>
   <Card>
     <template #title>
-      Access Request
+      {{ $t("accessRequest.title") }}
     </template>
     <template #content>
       <div class="grid">
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
-            Purpose:
+            {{ $t("accessRequest.purpose") }}
           </div>
           <a
             v-for="label in purposes"
@@ -19,7 +19,7 @@
         </div>
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
-            Data requester:
+            {{ $t("accessRequest.dataRequester") }}
           </div>
           <a
             v-for="sender in fromSocialAgents"
@@ -31,7 +31,7 @@
         </div>
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
-            Access will be granted to:
+            {{ $t("accessRequest.granted") }}
           </div>
           <a
             v-for="grantee in forSocialAgents"
@@ -46,7 +46,7 @@
           class="col-12 md:col"
         >
           <div class="text-black-alpha-60">
-            For additional information see also:
+            {{ $t("accessRequest.additionalInformation") }}
           </div>
           <a
             v-for="reference in seeAlso"
@@ -58,7 +58,11 @@
         </div>
 
         <Accordion class="col-12 surface-50 border-round" value="0">
-            <AccordionTab header="Access Need Groups">
+            <AccordionTab>
+              <template #header>
+                {{ $t("accessRequest.accessNeedGroups") }}
+              </template>
+
               <div v-for="accessNeedGroup in accessNeedGroups" :key="accessNeedGroup">
                 <Suspense>
                   <AccessNeedGroup :resourceURI="accessNeedGroup" :forSocialAgents="forSocialAgents"
@@ -68,13 +72,13 @@
                                    @noDataRegistrationFound="setNoDataRegistrationFound"/>
                   <template #fallback>
                     <span>
-                      Loading Access Need Group {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
+                      {{ $t("accessRequest.loadingNeedGroup") }} {{ accessNeedGroup.split("/")[accessNeedGroup.split("/").length - 1] }}
                     </span>
                   </template>
                 </Suspense>
               </div>
               <div v-if="noDataRegistrationFound" class="col-12 md:col">
-                <div class="text-black-alpha-60">No matching Data Registrations were found for: </div>
+                <div class="text-black-alpha-60">{{ $t("accessRequest.noDataRegistrationFound") }}: </div>
                 <a v-for="shapeTree in shapeTreesOfMissingDataRegs" :key="shapeTree.toString()" :href="shapeTree.toString()">
                   {{ shapeTree.split('#').pop() }}
                 </a>
@@ -92,7 +96,7 @@
           :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || noDataRegistrationFound"
           @click="confirmGrantWithAccessReceipt"
         >
-          Authorize Request
+          {{ $t("accessRequest.authorizeRequest") }}
         </Button>
         <Button
           class="w-full justify-content-center sm:w-auto"
@@ -101,7 +105,7 @@
           :disabled="associatedAccessReceipt !== '' || accessAuthorizationTrigger || isPartiallyAuthorized || noDataRegistrationFound"
           @click="confirmDeclineWithAccessReceipt"
         >
-          Decline Request
+          {{ $t("accessRequest.declineRequest") }}
         </Button>
       </div>
     </template>
@@ -127,12 +131,15 @@ import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, reactive, ref } from "vue";
 import {useConfirm} from "primevue/useconfirm";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["informationResourceURI", "redirect", "dataAuthzContainer", "accessAuthzContainer", "accessReceiptContainer"]);
 const emit = defineEmits(["createdAccessReceipt"])
 const { session } = useSolidSession();
 const toast = useToast();
 const confirm = useConfirm();
+
+const { t } = useI18n();
 
 const state = reactive({
   informationResourceStore: new Store(),
@@ -180,7 +187,7 @@ state.senderStore = await getResource(fromSocialAgents.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get sender!",
+      summary: t("accessRequest.error.sender"),
       detail: err,
       life: 5000,
     });
@@ -194,7 +201,7 @@ state.granteeStore = await getResource(forSocialAgents.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get grantee!",
+      summary: t("accessRequest.error.grantee"),
       detail: err,
       life: 5000,
     });
@@ -311,7 +318,7 @@ async function createAccessReceipt(
     .then((loc) => {
         toast.add({
           severity: "success",
-          summary: "Access Receipt created.",
+          summary: t("accessRequest.success.accessReceiptCreated"),
           life: 5000,
         })
         return getLocationHeader(loc)
@@ -320,7 +327,7 @@ async function createAccessReceipt(
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to create Access Receipt!",
+        summary: t("accessRequest.error.createAccessReceipt"),
         detail: err,
         life: 5000,
       });
@@ -354,10 +361,10 @@ function confirmGrantWithAccessReceipt(): void {
 
   confirm.require({
     group: `accessRequest-${props.informationResourceURI}`,
-    message: 'Are you sure you want to proceed?',
-    header: 'Authorize Access Request',
-    rejectLabel: 'Cancel',
-    acceptLabel: 'Authorize Request',
+    message: t('accessRequest.confirmDialog.message'),
+    header: t('accessRequest.confirmDialog.header'),
+    rejectLabel: t('accessRequest.confirmDialog.cancel'),
+    acceptLabel: t('accessRequest.confirmDialog.authorize'),
     accept: () => {
       // TODO add authorizations from groups and data-authorizations
       grantWithAccessReceipt();
@@ -371,11 +378,11 @@ function confirmGrantWithAccessReceipt(): void {
 function confirmDeclineWithAccessReceipt(): void {
   confirm.require({
     group: `accessRequest-${props.informationResourceURI}`,
-    message: 'Are you sure you want to proceed?',
-    header: 'Decline Access Request',
+    message: t('accessRequest.declineDialog.message'),
+    header: t('accessRequest.declineDialog.header'),
     acceptClass: 'p-button-danger',
-    rejectLabel: 'Cancel',
-    acceptLabel: 'Decline Request',
+    rejectLabel: t('accessRequest.declineDialog.cancel'),
+    acceptLabel: t('accessRequest.declineDialog.decline'),
     accept: () => {
       declineWithAccessReceipt();
     },

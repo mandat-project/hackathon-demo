@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="text-black-alpha-60">Short description of requested access: </span>
+    <span class="text-black-alpha-60"> {{ $t("accessNeedGroup.description") }} </span>
     <div
       v-for="label in prefLabels"
       :key="label"
@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="mt-3">
-    <span class="text-black-alpha-60">Explanation: </span>
+    <span class="text-black-alpha-60"> {{ $t("accessNeedGroup.explanation") }} </span>
     <div
       v-for="definition in definitions"
       :key="definition"
@@ -30,7 +30,7 @@
                   :groupAuthorizationTrigger="dataAuthorizationTrigger" />
       <template #fallback>
         <p>
-          Loading Access Need {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
+          {{ $t("accessNeedGroup.explanation") }} {{ accessNeed.split("/")[accessNeed.split("/").length - 1] }}
         </p>
       </template>
     </Suspense>
@@ -58,12 +58,14 @@ import {
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["resourceURI", "redirect", "forSocialAgents", "accessAuthzContainer", "dataAuthzContainer", "requestAuthorizationTrigger"]);
 const emit = defineEmits(["createdAccessAuthorization", "noDataRegistrationFound"])
 const { session } = useSolidSession();
 const { memberOf } = useSolidProfile()
 const toast = useToast();
+const { t } = useI18n();
 
 // get data
 const store = ref(new Store());
@@ -71,7 +73,7 @@ store.value = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access request!",
+      summary: t("accessNeedGroup.error.accessRequest"),
       detail: err,
       life: 5000,
     });
@@ -101,7 +103,7 @@ for (const descriptionResource of descriptionResources) {
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Could not get access request!",
+        summary: t("accessNeedGroup.error.accessRequest"),
         detail: err,
         life: 5000,
       });
@@ -232,7 +234,7 @@ async function createAccessAuthorization(
     .then((loc) => {
         toast.add({
           severity: "success",
-          summary: "Access Authorization created.",
+          summary: t("accessNeedGroup.success.accessAuthorization"),
           life: 5000,
         })
         return getLocationHeader(loc)
@@ -241,7 +243,7 @@ async function createAccessAuthorization(
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to create Access Authorization!",
+        summary: t("accessNeedGroup.error.accessAuthorization"),
         detail: err,
         life: 5000,
       });

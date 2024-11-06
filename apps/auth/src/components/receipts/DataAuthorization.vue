@@ -2,7 +2,7 @@
   <div class="grid">
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Access Needs:
+        {{ $t("dataAuthorization.accessNeeds") }}
       </div>
       <a
         class="break-all"
@@ -15,7 +15,7 @@
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Grantees:
+        {{ $t("dataAuthorization.grantees") }}
       </div>
       <a
         v-for="grantee in grantees"
@@ -27,7 +27,7 @@
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Authorized Data:
+        {{ $t("dataAuthorization.authorizedData") }}
       </div>
       <a
         class="break-all"
@@ -40,7 +40,7 @@
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Scope:
+        {{ $t("dataAuthorization.scope") }}
       </div>
       <a
         class="break-all"
@@ -53,7 +53,7 @@
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Data Registrations:
+        {{ $t("dataAuthorization.registration") }}
       </div>
       <a
         class="break-all"
@@ -69,7 +69,7 @@
       class="col-12 md:col-4"
     >
       <div class="text-black-alpha-60">
-        Authorized Instances:
+        {{ $t("dataAuthorization.instances") }}
       </div>
       <a
         class="break-all"
@@ -82,7 +82,7 @@
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Access Mode:
+        {{ $t("dataAuthorization.accessMode") }}
       </div>
       <a
         class="break-all"
@@ -101,7 +101,7 @@
             </Button> -->
             <Button @click="revokeRights" type="button" class="my-3" severity="secondary"
                 :disabled="groupRevokationTrigger">
-                Revoke this authorization
+              {{ $t("dataAuthorization.revoke") }}
             </Button>
         </div>
     </div>
@@ -122,12 +122,14 @@ import {
 import { Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import {computed, reactive, watch} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["resourceURI", "groupRevokationTrigger"]);
 const emit = defineEmits(["revokedDataAuthorization"])
 const { session } = useSolidSession();
 const { memberOf } = useSolidProfile();
 const toast = useToast();
+const { t } = useI18n();
 
 const state = reactive({
   resourceStore: new Store(),
@@ -139,7 +141,7 @@ state.resourceStore = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get data authorization!",
+      summary: t("dataAuthorization.error.dataAuthorization"),
       detail: err,
       life: 5000,
     });
@@ -178,7 +180,7 @@ state.granteeStore = await getResource(grantees.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get grantee!",
+      summary: t("dataAuthorization.error.grantee"),
       detail: err,
       life: 5000,
     });
@@ -214,7 +216,7 @@ async function revokeRights() {
     ).catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Error on getDataRegistrationContainers!",
+        summary: t("dataAuthorization.error.getDataRegistrationContainers"),
         detail: err,
         life: 5000,
       });
@@ -295,7 +297,7 @@ async function updateAccessControlListToDelete(
       .catch((err) => {
         toast.add({
           severity: "error",
-          summary: "Could not load ACL!",
+          summary: t("dataAuthorization.error.loadACL"),
           detail: err,
           life: 5000,
         });
@@ -330,14 +332,14 @@ async function updateAccessControlListToDelete(
     .then(() =>
       toast.add({
         severity: "success",
-        summary: "ACL updated.",
+        summary: "dataAuthorization.success.aclUpdated",
         life: 5000,
       })
     )
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to updated ACL!",
+        summary: t("dataAuthorization.error.updateACL"),
         detail: err,
         life: 5000,
       });

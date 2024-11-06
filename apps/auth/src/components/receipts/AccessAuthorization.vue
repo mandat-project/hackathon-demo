@@ -8,13 +8,13 @@
     </a>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Grant date:
+        {{ $t("accessAuthorization.grantDate") }}
       </div>
             <DateFormatted :datetimeString="date" v-for="date in grantDates" :key="date"/>
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Grantees:
+        {{ $t("accessAuthorization.grantees") }}
       </div>
       <a
         v-for="grantee in grantees"
@@ -26,7 +26,7 @@
     </div>
     <div class="col-12 md:col-4">
       <div class="text-black-alpha-60">
-        Access Need Groups:
+        {{ $t("accessAuthorization.groups") }}
       </div>
       <a
         v-for="accessNeedGroup in accessNeedGroups"
@@ -45,7 +45,7 @@
           </Button> -->
               <Button @click="revokeRights" type="button" class="my-3" severity="secondary"
                   :disabled="isWaitingForDataAuthorizations">
-          Revoke Authorizations in this group
+                {{ $t("accessAuthorization.revokeGroup") }}
         </Button>
       </div>
       <div class="col-12">
@@ -54,7 +54,10 @@
           class="border-1 border-round border-bluegray-100"
           value="0"
         >
-          <AccordionTab header="Data Authorizations">
+          <AccordionTab>
+            <template #header>
+              {{ $t("accessAuthorization.dataAuthorizations") }}
+            </template>
             <div
               v-for="dataAuthorization in dataAuthorizations"
               :key="dataAuthorization"
@@ -66,7 +69,7 @@
                 />
                 <template #fallback>
                   <span>
-                    Loading Data Authorization {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
+                    {{ $t("accessAuthorization.loadingData") }} {{ dataAuthorization.split("/")[dataAuthorization.split("/").length - 1] }}
                   </span>
                 </template>
               </Suspense>
@@ -96,6 +99,9 @@ import {
 import { DataFactory, NamedNode, Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps([
   "resourceURI",
@@ -120,7 +126,7 @@ state.resourceStore = await getResource(props.resourceURI, session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access request!",
+      summary: t('accessAuthorization.error.accessRequest'),
       detail: err,
       life: 5000,
     });
@@ -142,7 +148,7 @@ state.granteeStore = await getResource(grantees.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get grantee!",
+      summary: t('accessAuthorization.error.grantee'),
       detail: err,
       life: 5000,
     });
@@ -228,7 +234,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     .then((loc) => {
         toast.add({
           severity: "info",
-          summary: "Archived Access Authorization created.",
+          summary: t("accessAuthorization.info.archivedAccessAuthorizationCreated"),
           life: 5000,
         })
         return getLocationHeader(loc)
@@ -237,7 +243,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to create Archived Access Receipt!",
+        summary: t("accessAuthorization.error.createArchivedAccessReceipt"),
         detail: err,
         life: 5000,
       });
@@ -255,14 +261,14 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     .then(() =>
       toast.add({
         severity: "success",
-        summary: "Archived Access Authorization updated.",
+        summary: t("accessAuthorization.success.archivedAccessAuthorizationUpdated"),
         life: 5000,
       })
     )
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to updated Archived Access Receipt!",
+        summary: t("accessAuthorization.error.updateArchivedAccessReceipt"),
         detail: err,
         life: 5000,
       });
@@ -273,7 +279,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     .then((loc) => {
         toast.add({
           severity: "info",
-          summary: "New Access Authorization created.",
+          summary: t("accessAuthorization.info.newAccessAuthorizationCreated"),
           life: 5000,
         })
         return getLocationHeader(loc)
@@ -282,7 +288,7 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to create new Access Receipt!",
+        summary: t("accessAuthorization.error.createNewAccessReceipt"),
         detail: err,
         life: 5000,
       });
@@ -323,14 +329,14 @@ async function removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAutho
     .then(() =>
       toast.add({
         severity: "success",
-        summary: "New Access Authorization updated.",
+        summary: "accessAuthorization.success.accessAuthorizationUpdated",
         life: 5000,
       })
     )
     .catch((err) => {
       toast.add({
         severity: "error",
-        summary: "Failed to updated new Access Receipt!",
+        summary: "accessAuthorization.error.updateNewAccessReceipt",
         detail: err,
         life: 5000,
       });

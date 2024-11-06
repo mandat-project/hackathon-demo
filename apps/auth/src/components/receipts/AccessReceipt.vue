@@ -8,19 +8,19 @@
             :class="{'bg-green-300': status === 'Active', 'bg-red-500': status === 'Revoked', 'text-white': status === 'Revoked', 'text-sm': true}"
           />
         </div>
-        Authorization
+        {{ $t("accessReceipt.authorization") }}
       </template>
 
       <template #content>
         <div class="grid">
           <!-- <div class="accessRequest" v-for="request in requests" :key="request"> -->
           <div class="col-12">
-            <div class="text-black-alpha-60">Provided At: </div>
+            <div class="text-black-alpha-60">{{ $t("accessReceipt.provided") }} </div>
             <DateFormatted :datetimeString="date" v-for="date in provisionDates" :key="date" />
           </div>
           <div class="col-12 md:col">
             <div class="text-black-alpha-60">
-              For Access Request:
+              {{ $t("accessReceipt.accessRequest") }}
             </div>
             <a
               v-for="accessRequest in accessRequests"
@@ -32,7 +32,7 @@
           </div>
           <div class="col-12 md:col">
             <div class="text-black-alpha-60">
-              Purpose:
+              {{ $t("accessReceipt.purpose") }}
             </div>
             <a :href="purpose">
               {{ purpose.split("#").pop() }}
@@ -40,7 +40,10 @@
           </div>
           <div class="col-12">
             <Accordion v-if="accessAuthorizations.length" value="0" class="surface-50 border-round">
-            <AccordionTab header="Access Authorizations">
+            <AccordionTab>
+              <template #header>
+                {{ $t("accessReceipt.accessAuthorizations") }}
+              </template>
               <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization">
                 <Suspense>
                   <AccessAuthorization :resourceURI="accessAuthorization"
@@ -52,7 +55,7 @@
                                        />
                   <template #fallback>
                                 <span>
-                                    Loading {{
+                                    {{ $t("accessReceipt.loading") }} {{
                                     accessAuthorization.split("/")[accessAuthorization.split("/").length - 1]
                                   }}
                                 </span>
@@ -100,11 +103,13 @@ import {
 import {NamedNode, Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, reactive, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
 
 const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
 const emit = defineEmits(["isReceiptForRequests"])
 const {session} = useSolidSession();
 const toast = useToast();
+const { t } = useI18n();
 
 const state = reactive({
   informationResourceStore: new Store(),
@@ -116,7 +121,7 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access receipt!",
+      summary: t("accessReceipt.error.accessReceipt"),
       detail: err,
       life: 5000,
     });
@@ -148,7 +153,7 @@ state.accessRequestStore = await getResource(accessRequests.value[0], session)
   .catch((err) => {
     toast.add({
       severity: "error",
-      summary: "Could not get access request!",
+      summary: t("accessReceipt.error.accessReceipt"),
       detail: err,
       life: 5000,
     });
@@ -274,7 +279,7 @@ _:rename a solid:InsertDeletePatch;
       .then(() =>
         toast.add({
           severity: "success",
-          summary: "Access Receipt updated.",
+          summary: t("accessReceipt.success.accessReceiptUpdated"),
           life: 5000,
         })
       )
@@ -282,7 +287,7 @@ _:rename a solid:InsertDeletePatch;
         (err) => {
           toast.add({
             severity: "error",
-            summary: "Error on patch Receipt!",
+            summary: t("accessReceipt.error.patchReceipt"),
             detail: err,
             life: 5000,
           });
