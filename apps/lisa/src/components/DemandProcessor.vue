@@ -1,11 +1,96 @@
 <template>
+  <div class="px-3 pb-4">
+    <Card class="pb-4">
+      <template #content>
+        <h2> Sate => {{ currentState}}</h2>
+        <div class="grid">
+          <div class="col-6">
+            <span>Applicant</span>
+            <h2>{{demanderName}}</h2>
+          </div>
+          <div class="col-6">
+            <span>Amount</span>
+            <h2>{{ amount }} - {{ currency }}</h2></div>
+        </div>
+        <div class="bg-gray-50 border-round m-2 p-4">
+          <div v-if="currentState === STATES.DataNeeded" class="ml-2">
+            <Chip label="Data needed" class="text-0 text-sm " style="background-color:red"/>
+            <div class="dropdown-container w-full mt-5">
+              <!--        <span>Business Assessemnent data</span>
+                      <Dropdown v-model="selectedYear" class="w-full" :options="assessmentYear" optionLabel="label" placeholder="Select loan term"/>-->
+              <FloatLabel class="w-full">
+                <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label"  class="w-full" />
+                <label>Business Assessemnent data</label>
+              </FloatLabel>
+            </div>
+            <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
+                    @click="requestAccessToData()">Request Data</Button>
+          </div>
+          <div v-else-if="currentState === STATES.PendingDataRequest || currentState === STATES.DataSuccessfullyProvided" class="ml-2">
+            <Chip label="Pending Data Request" v-if="currentState === STATES.PendingDataRequest" class=" text-color text-sm " style="background-color:#FFCEA3"/>
+            <Chip label="Data successfully provided" v-else class=" text-color text-sm "/>
+              <h5>Business Assessemnent data</h5>
+              <p class="text-xs pb-2">Requested Data</p>
+              <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
+            <Button class="step-button"
+                    v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
+                    @click="fetchProcessedData()">Show Data</Button>
+          </div>
+          <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class="ml-2">
+            <Chip v-if="currentState === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm "/>
+            <Chip v-else-if ="currentState === STATES.Terminated" label="Terminated" class=" text-color text-sm "/>
+            <Chip v-else label="Offer Accepted" class=" text-color text-sm "/>
+            <h5>Business Assessemnent data</h5>
+            <p class="text-xs pb-2">Requested Data</p>
+            <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
+            <Button class="step-button"
+                    v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
+                    @click="fetchProcessedData()" severity="secondary">Show Data</Button>
+          </div>
+        </div>
+        <div class="grid pt-2 pb-2">
+<!-- on Pending the elements should be disable          -->
+          <div class="col-6">
+            <FloatLabel>
+              <InputText id="amount" type="number" :disabled="currentState === STATES.DataSuccessfullyProvided" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate" class="w-full" />
+              <label for="username">Annual Percentage rate in %</label>
+            </FloatLabel>
+          </div>
+          <div class="col-6">
+            <!--          <span>Loan terms:</span>
+                      <Dropdown class="w-full"  v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>-->
+            <FloatLabel class="w-full">
+              <Dropdown  v-model="selectedLoanTerm" :disabled="currentState === STATES.DataSuccessfullyProvided" :options="loanTerms" optionLabel="label" placeholder="Select loan term" class="w-full" />
+              <label for="dd-city">Loan terms</label>
+            </FloatLabel>
+          </div>
+        </div>
+        <Button v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder" severity="danger"
+                class="step-button text-0" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
+        </Button>
+        <Button v-else class="step-button" :disabled="!isAccessRequestGranted || isOfferCreated"
+                @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
+
+<!--        <div class="dropdown-container">
+          <span>Annual percentage rate %:</span>
+          <InputNumber id="amount" type="number" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate"/>
+        </div>
+        <div class="dropdown-container">
+          <span>Loan terms:</span>
+          <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>
+        </div>-->
+
+      </template>
+    </Card>
+  </div>
   <div class="container">
+
     <div class="content-left">
       <div class="refresh-container">
         <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
       </div>
       <Stepper orientation="vertical" v-model:active-step="activeStep">
-
+        <!-- Stepper 1 -->
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -29,7 +114,7 @@
             </div>
           </template>
         </StepperPanel>
-
+        <!-- Stepper 2 -->
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -52,7 +137,7 @@
             </div>
           </template>
         </StepperPanel>
-
+        <!-- Stepper 3 -->
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -74,7 +159,7 @@
             </div>
           </template>
         </StepperPanel>
-
+        <!-- Stepper 4 -->
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -119,7 +204,7 @@
             </div>
           </template>
         </StepperPanel>
-
+        <!-- Stepper 5 -->
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -198,6 +283,9 @@ import {AxiosResponse} from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, reactive, Ref, ref, watch} from 'vue';
+import LoanCard from "@/components/LoanCard.vue";
+import Card from "primevue/card";
+import FloatLabel from 'primevue/floatlabel';
 
 const props = defineProps<{ demandUri: string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
@@ -309,6 +397,7 @@ const orderStoreFilledFlag = ref(false)
 const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
 
+const dataNeeded = computed(() => accessRequestUri.value !== undefined || isOfferCreated)
 await fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag)
 watch(() => offersForDemand.value, () => fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag));
 
@@ -331,7 +420,39 @@ watch(() => offerAccessRequests.value,
     }, {immediate: true}
 )
 
+enum STATES {
+  DataNeeded = 'DataNeeded',
+  PendingDataRequest = 'PendingDataRequest',
+  DataSuccessfullyProvided = 'DataSuccessfullyProvided',
+  WaitingForResponse = 'WaitingForResponse',
+  OfferAccepted = 'OfferAccepted',
+  Terminated = 'Terminated',
+  NoOperation = 'NoOperation'
+}
 
+
+const currentState = computed(() =>{
+  if (accessRequestUri.value === undefined && !isOfferCreated.value) {
+    return STATES.DataNeeded;
+  }
+  if(!isAccessRequestGranted.value || isAccessRequestGranted.value === 'false'){
+    return STATES.PendingDataRequest;
+  }
+  if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
+    return STATES.DataSuccessfullyProvided;
+  }
+  if(hasOrderForAnyOfferForThisDemand.value && !hasTerminatedOrder.value){
+    return STATES.OfferAccepted
+  }
+  if(!(offerAccessRequests.value.length > 0 && !offerIsAccessible.value.some(response => response === 'true')) && !hasTerminatedOrder.value){
+    return STATES.WaitingForResponse;
+  }
+  if(hasTerminatedOrder.value){
+    return STATES.Terminated;
+  }
+
+  return STATES.NoOperation;
+});
 // ORDER
 // meh. this imposes unnecessary requests and memory, should be application wide, but it works and I dont care at this point anymore.
 watch(() => offersForDemand.value,
@@ -370,7 +491,10 @@ function setActiveProcessStep(): number {
     step = 4;
   }
   return step;
+
 }
+
+
 
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
@@ -840,8 +964,7 @@ async function handleAuthorizationRequestRedirect(
 }
 
 .step-button {
-  color: rgba(0, 108, 110, 1);
-  text-decoration: underline;
+  color:black;
   width: fit-content;
   font-weight: bold;
   border: none;
