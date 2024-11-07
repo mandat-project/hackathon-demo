@@ -1,28 +1,45 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "@/views/Home.vue";
-import Inbox from "@/views/Inbox.vue";
-import { AccessRequestCallback } from "@shared/components";
+import component from "*.vue";
+import CreateDemand from "@/views/CreateDemand.vue";
+import Demands from "@/views/Demands.vue";
+import Services from "@/views/Services.vue";
+import {AccessRequestCallback} from "@shared/components";
+import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import onResult from "./accessRequestHandledCallback";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    redirect: '/demands',
   },
   {
-    path: "/inbox/",
-    name: "Inbox",
-    component: Inbox,
+    path: "/create-demand",
+    name: "create-demand",
+    component: CreateDemand,
+  },
+  {
+    path: "/demands",
+    name: "demands",
+    component: Demands,
+    props: {
+      type: 'pending'
+    }
+  },
+  {
+    path: "/services",
+    name: "services",
+    component: Demands,
+      props: {
+      type: 'active'
+    }
   },
   {
     path: "/accessRequestHandled",
     name: "AccessRequestHandled",
     component: AccessRequestCallback,
-    props: (route) => ({
-      uri: route.query.uri,
-      result: route.query.result,
-      onResult: onResult
+    props: ({query: { uri, result }}) => ({
+      uri: uri,
+      result: result,
+      onResult
     }),
   },
 ];

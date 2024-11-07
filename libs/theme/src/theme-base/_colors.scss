@@ -23,3 +23,26 @@
         }
     }
 }
+
+@layer utilities {
+    @each $colorName, $colorMap in variables.$dacklColors {
+        @each $shade, $value in $colorMap {
+            .bg-#{$colorName}-#{$shade} {
+                background-color: var(--#{$colorName}-#{$shade});
+            }
+            .text-#{$colorName}-#{$shade} {
+                color: var(--#{$colorName}-#{$shade});
+            }
+            .border-#{$colorName}-#{$shade} {
+                border-color: var(--#{$colorName}-#{$shade});
+            }
+            .outline-#{$colorName}-#{$shade} {
+                outline-color: var(--#{$colorName}-#{$shade});
+            }
+            .fill-#{$colorName}-#{$shade} {
+                fill: var(--#{$colorName}-#{$shade});
+            }
+        }
+    }
+}
+

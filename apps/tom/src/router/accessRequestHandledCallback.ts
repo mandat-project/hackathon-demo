@@ -1,4 +1,4 @@
-import { useCache } from "@shared/composables";
+import {useCache} from "@shared/composables";
 import router from ".";
 
 export default async function onResult(
@@ -7,5 +7,5 @@ export default async function onResult(
 ) {
   const appMemory = useCache();
   appMemory[accessRequestUri] = result;
-  router.push({ name: "Home" });
+  router.push({ name: "demands" });
 }

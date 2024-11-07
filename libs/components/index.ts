@@ -1,12 +1,20 @@
 import AccessRequestCallback from './src/AccessRequestCallback.vue';
 import AuthAppHeaderBar from './src/AuthAppHeaderBar.vue';
+import CheckMarkSvg from './src/CheckMarkSvg.vue';
 import DateFormatted from './src/DateFormatted.vue';
 import HeaderBar from './src/HeaderBar.vue';
+import HorizontalLine from "./src/HorizontalLine.vue";
 import LDN from './src/LDN.vue';
 import LDNs from './src/LDNs.vue';
 import LoginButton from './src/LoginButton.vue';
 import LogoutButton from './src/LogoutButton.vue';
+import PageHeadline from "./src/PageHeadline.vue";
 import SignUpButton from './src/SignUpButton.vue';
+import SmeCard from "./src/SmeCard.vue";
+import SmeCardHeadline from "./src/SmeCardHeadline.vue";
+import {TabItemType} from './src/tabs/TabItemType';
+import TabList from './src/tabs/TabList.vue';
+import DacklTextInput from './src/DacklTextInput.vue';
 
 export {
     HeaderBar,
@@ -17,5 +25,13 @@ export {
     DateFormatted,
     LDN,
     LDNs,
-    AccessRequestCallback
-}
+    AccessRequestCallback,
+    CheckMarkSvg,
+    TabItemType,
+    TabList,
+    HorizontalLine,
+    SmeCard,
+    PageHeadline,
+    SmeCardHeadline,
+    DacklTextInput,
+};

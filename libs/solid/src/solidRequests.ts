@@ -210,9 +210,10 @@ export function getLocationHeader(resp: AxiosResponse<any, any>): string {
  * Shortcut to get the items in a container.
  *
  * @param uri The container's URI to get the items from
+ * @param session
  * @returns string URIs of the items in the container
  */
-export async function getContainerItems(uri: string, session?: Session) {
+export async function getContainerItems(uri: string, session: Session) {
   console.log("### SoLiD\t| GET CONTAINER ITEMS\n" + uri);
   return getResource(uri, session)
     .then((resp) => resp.data)

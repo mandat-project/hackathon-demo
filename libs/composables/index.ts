@@ -8,3 +8,4 @@ export * from './src/useSolidSession';
 // export * from './src/useSolidWallet';
 export * from './src/useSolidWebPush';
 export * from "./src/webPushSubscription";
+export * from "./src/useIsLoggedIn";
