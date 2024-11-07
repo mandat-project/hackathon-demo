@@ -288,7 +288,7 @@ async function createDemand(demandContainerUris: string[], payload: string) {
         <template #content>
           <SmeCard>
             <SmeCardHeadline>Service Type</SmeCardHeadline>
-            <ul class="list-none gap-5 p-0 flex">
+            <ul class="list-none gap-5 p-0 flex flex-column md:flex-row">
               <li v-for="ad of listedAdvertisements" :key="ad">
                 <AdvertisementCard @adClick="adClick" :ad="ad"/>
               </li>
@@ -380,11 +380,11 @@ async function createDemand(demandContainerUris: string[], payload: string) {
             <SmeCardHeadline>Loan Demand</SmeCardHeadline>
             <HorizontalLine/>
             <div class="grid">
-              <div class="col-6">
+              <div class="col-12 md:col-6">
                 <strong>Type: {{ toAdvertisementName(chosenAdvertisement) }}</strong>
                 <p class="break-all">{{ chosenAdvertisement }}</p>
               </div>
-              <div class="col-6">
+              <div class="col-12 md:col-6">
                 <strong v-if="chosenAdvertiserDemandInbox">Provider: {{ advertisements[activeAdvertisementIndex].label }}</strong>
                 <p class="break-all" v-if="chosenAdvertiserDemandInbox">{{ chosenAdvertiserDemandInbox }}</p>
               </div>
@@ -392,16 +392,16 @@ async function createDemand(demandContainerUris: string[], payload: string) {
             <HorizontalLine/>
 
             <form @submit="(event) => event.preventDefault()">
-              <div class="grid mt-3">
-                <DacklTextInput type="number" class="ml-2 mt-2" label="Enter amount" v-model="enteredAmount" />
+              <div class="flex flex-column md:flex-row mt-3">
+                <DacklTextInput type="number" class="w-full md:w-auto md:ml-2 mt-2" label="Enter amount" v-model="enteredAmount" />
 
-                <div class="dropdown relative mx-3">
+                <div class="dropdown relative mt-2 md:mt-0 md:mx-3">
                   <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
-                  <Dropdown class="h-4rem pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
+                  <Dropdown class="w-full md:w-auto h-4rem pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
                 </div>
               </div>
 
-              <Button class="mt-3" @click="postCreditDemand">
+              <Button class="mt-3 w-full md:w-auto" @click="postCreditDemand">
                 Submit {{ Number(enteredAmount).toLocaleString() + ' ' + (selectedCurrency === 'EUR' ? '&euro;' : '&dollar;') }} Demand
               </Button>
             </form>
