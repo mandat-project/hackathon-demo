@@ -69,6 +69,9 @@ a:not(.p-accordion-header-link) {
 .bg-gradient-blue {
     background: linear-gradient(to right, #195B78, #287F8F);
 }
+[class*="pt-2.5"] {
+    padding-top: 0.75rem;
+}
 input.p-inputtext, .control-shadow {
     border: 0 none;
     border-radius: 4px;

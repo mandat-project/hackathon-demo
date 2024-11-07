@@ -396,8 +396,8 @@ async function createDemand(demandContainerUris: string[], payload: string) {
                 <DacklTextInput type="number" class="ml-2 mt-2" label="Enter amount" v-model="enteredAmount" />
 
                 <div class="dropdown relative mx-3">
-                  <label style="z-index: 1;padding-left: 0.6rem;padding-top: 0.5rem;" class="text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
-                  <Dropdown style="padding-top: 1.5rem;margin-top: 0.2rem;" class="h-4rem control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
+                  <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
+                  <Dropdown class="h-4rem pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
                 </div>
               </div>
 
