@@ -1,3 +1,4 @@
+import component from "*.vue";
 import CreateDemand from "@/views/CreateDemand.vue";
 import Demands from "@/views/Demands.vue";
 import Services from "@/views/Services.vue";
@@ -19,11 +20,17 @@ const routes: Array<RouteRecordRaw> = [
     path: "/demands",
     name: "demands",
     component: Demands,
+    props: {
+      type: 'pending'
+    }
   },
   {
     path: "/services",
     name: "services",
-    component: Services,
+    component: Demands,
+      props: {
+      type: 'active'
+    }
   },
   {
     path: "/accessRequestHandled",

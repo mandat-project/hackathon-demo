@@ -10,6 +10,7 @@ import {
 } from "@/constants/solid-urls";
 import {Demand} from "@/types/Demand";
 import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
+import {PageHeadline, HorizontalLine} from "@shared/components";
 import {
   createResource,
   CREDIT,
@@ -28,7 +29,7 @@ import {
 import {fetchStoreOf, getContainerUris} from "@shared/utils";
 import {Literal, NamedNode, Store, Writer} from "n3";
 import {useToast} from "primevue/usetoast";
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 
 const toast = useToast();
 const {session} = useSolidSession();
@@ -36,7 +37,45 @@ const {memberOf, storage, authAgent} = useSolidProfile();
 const appMemory = useCache();
 const { isLoggedIn } = useIsLoggedIn();
 
+const props = defineProps<{ type?: 'all' | 'pending' | 'active'; }>();
+
 const demands = ref<Demand[]>([]);
+const sortedDemands = computed<Demand[]>(() => {
+  return [...demands.value].sort((a, b) => {
+    const accessRequestOfA = a.hasAccessRequest && a.isAccessRequestGranted !== 'true';
+    const documentCreationDemandOfA = a.documentCreationDemand && !a.offer;
+    const accessRequestOfB = b.hasAccessRequest && b.isAccessRequestGranted !== 'true';
+    const documentCreationDemandOfB = b.documentCreationDemand && !b.offer;
+
+    if (a.order && !b.order) { return -1; }
+    if (b.order && !a.order) { return 1; }
+
+    if (a.offer && !b.offer) { return -1; }
+    if (b.offer && !a.offer) { return 1; }
+
+    if (documentCreationDemandOfA && !documentCreationDemandOfB) { return -1; }
+    if (documentCreationDemandOfB && !documentCreationDemandOfA) { return 1; }
+
+    if (accessRequestOfA && !accessRequestOfB) { return -1; }
+    if (accessRequestOfB && !accessRequestOfA) { return 1; }
+
+    if (a.order && b.order) {
+      if (a.order.isTerminated && !b.order.isTerminated) { return -1; }
+      if (b.order.isTerminated && !a.order.isTerminated) { return 1; }
+    }
+
+    return 0;
+  });
+});
+const displayedDemands = computed<Demand[]>(() => {
+  if (props.type === 'pending') {
+    return sortedDemands.value.filter(demand => !demand.order?.isTerminated && (!demand.order || !demand.offer));
+  }
+  if (props.type === 'active') {
+    return sortedDemands.value.filter(demand => demand.order);
+  }
+  return sortedDemands.value;
+});
 const isLoading = ref(false);
 
 watch(storage, () => {
@@ -116,6 +155,7 @@ async function loadCreditDemands() {
       const bankname = profileCard.getObjects(bank, VCARD("fn"), null)[0].value;
 
       const demandObject = {
+        id: demand.id,
         hasAccessRequest: accessRequestURI,
         isAccessRequestGranted,
         providerName: bankname,
@@ -308,56 +348,102 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
 </script>
 
 <template>
-  <div v-if="isLoggedIn">
-    <div class="grid">
-      <div class="col lg:col-6 lg:col-offset-3">
-        <h1>
-          Demands
-          <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-                  @click="loadCreditDemands()" />
-        </h1>
+  <PageHeadline v-if="type === 'pending'">Current Loan Demands <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" /></PageHeadline>
+  <PageHeadline v-if="type === 'active'">Active Loans <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" /></PageHeadline>
+  <PageHeadline v-if="type === 'all'">Loans <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" /></PageHeadline>
 
-        <ul v-if="demands" class="flex flex-column p-0">
-          <li v-for="(demand, index) in demands" :key="JSON.stringify(demand)"
-              class="flex flex-wrap align-items-center justify-content-between">
-            <hr v-if="index !== 0" class="w-full" />
-            <div class="flex flex-column md:flex-row gap-2 p-3">
-              <span> From </span>
-              <span style="font-weight: bold">
-                <a :href="demand.providerWebID">{{ demand.providerName }} </a> :
-              </span>
-              <span>{{ demand.amount }} {{ demand.currency }}</span>
-              <span v-if="demand.offer && !demand.order?.isTerminated">(interest rate %: {{ demand.offer.interestRate
-                }})</span>
-              <span v-if="demand.offer && !demand.order?.isTerminated">(duration: {{ demand.offer.duration }})</span>
-              <span v-if="demand.order?.isTerminated">(credit contract terminated)</span>
-              <span v-if="!demand.offer">(currently no offer)</span>
-            </div>
-            <Button v-if="demand.hasAccessRequest &&
-              !(demand.isAccessRequestGranted == 'true')
-              " type="submit" :label="'Handle Access Request'" icon="pi pi-question" class="p-button-text"
-                    @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
-            <Button v-if="demand.offer && !demand.order" type="submit" label="Accept Offer" icon="pi pi-check"
-                    class="p-button-text" @click="createOrder(demand.offer?.id)" />
-            <Button v-if="demand.documentCreationDemand && !demand.offer" type="submit" label="Request creation of data"
-                    icon="pi pi-question" class="p-button-text"
-                    @click="postDocumentCreationDemand(demand.documentCreationDemand)" />
-            <Button v-if="demand.order?.isTerminated" type="submit" label="Revoke Rights" icon="pi pi-question"
-                    class="p-button-text" @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
-          </li>
-        </ul>
+  <ProgressBar v-show="isLoading" mode="indeterminate" style="height: 2px" />
 
-        <p v-else>No released demands</p>
+  <div role="list" v-if="displayedDemands" class="flex flex-column gap-3 py-0 px-3">
+    <Card role="listitem" v-for="demand in displayedDemands" :key="demand.id">
+      <template #title>
+        <a class="font-normal text-black-alpha-90 no-underline" :href="demand.providerWebID">{{ demand.providerName }}</a>
+      </template>
+      <template #content>
 
-        <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
-      </div>
-    </div>
+        <p class="text-xs">Amount: </p>
+        <strong>{{ Number(demand.amount).toLocaleString() }} {{ demand.currency }}</strong>
+
+        <HorizontalLine />
+      </template>
+      <template #footer>
+
+        <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-if="demand.hasAccessRequest && demand.isAccessRequestGranted !== 'true'">
+          <div><Chip
+              label="Data Required"
+              class="bg-red-500 text-white text-sm"
+          /></div>
+          <span>Please provide additional information to continue.</span>
+          <Button class="md:ml-auto" severity="primary" :label="'Handle Access Request'"
+                  @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
+        </div>
+
+        <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.offer && !demand.order">
+          <div><Chip
+              label="Pending"
+              class="text-sm"
+          /></div>
+          <span>interest rate %: {{demand.offer.interestRate}} duration: {{ demand.offer.duration }}</span>
+          <Button class="md:ml-auto" severity="primary" label="Accept Offer"
+                  @click="createOrder(demand.offer?.id)" />
+        </div>
+
+        <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.documentCreationDemand && !demand.offer">
+          <div><Chip
+              label="New Data Required"
+              class="bg-red-500 text-white text-sm"
+          /></div>
+          <span>Your information is outdated.</span>
+          <Button class="md:ml-auto" severity="primary" label="Request creation of data"
+                  @click="postDocumentCreationDemand(demand.documentCreationDemand)" />
+        </div>
+
+        <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.order?.isTerminated">
+          <div><Chip
+              label="Terminated"
+              class="text-sm"
+          /></div>
+          <span>credit contract terminated</span>
+          <Button class="md:ml-auto" severity="secondary" label="Revoke Rights"
+                  @click="handleAuthorizationRequest(demand.hasAccessRequest)" />
+        </div>
+
+        <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.offer && demand.order">
+          <div><Chip
+              label="Active"
+              class="bg-green-300 text-sm"
+          /></div>
+          <span>interest rate %: {{demand.offer.interestRate}} duration: {{ demand.offer.duration }}</span>
+
+        </div>
+
+        <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else>
+          <div><Chip
+              label="Pending"
+              class="text-sm"
+          /></div>
+          <span>currently no offer</span>
+        </div>
+      </template>
+    </Card>
   </div>
-  <span v-else>
-    401 Unauthenticated : Login using the button in the top-right corner!
-  </span>
+
+  <p v-else>No released demands</p>
+
+  <div v-if="isLoading" class="relative flex flex-column gap-3 py-0 mt-3 px-3">
+    <Card v-for="index in 5" :key="index" class="h-15rem">
+      <template #content>
+        <Skeleton width="10rem" class="mb-2" />
+        <Skeleton width="5rem" class="mb-2" />
+        <Skeleton class="mb-2" />
+        <Skeleton width="2rem" class="mb-2" />
+      </template>
+    </Card>
+  </div>
 </template>
 
 <style scoped>
-
+.-top-1rem {
+  top: -1rem;
+}
 </style>

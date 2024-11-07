@@ -1,6 +1,7 @@
 import Accordion from 'primevue/accordion';
 import AccordionTab from "primevue/accordiontab";
 import Avatar from "primevue/avatar";
+import Badge from "primevue/badge";
 import BadgeDirective from "primevue/badgedirective";
 import Button from "primevue/button";
 import Card from "primevue/card";
@@ -75,6 +76,7 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.component("Accordion", Accordion);
     app.component("AccordionTab", AccordionTab);
     app.component("SelectButton", SelectButton);
+    app.component("Badge", Badge);
 
     app.directive('badge', BadgeDirective);
     app.directive("tooltip", Tooltip);
