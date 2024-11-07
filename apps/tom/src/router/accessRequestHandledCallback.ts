@@ -7,5 +7,5 @@ export default async function onResult(
 ) {
   const appMemory = useCache();
   appMemory[accessRequestUri] = result;
-  router.push({ name: "Home" });
+  router.push({ name: "demands" });
 }

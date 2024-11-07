@@ -229,7 +229,7 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
       <${memberOf.value}> schema:seeks <> .
     `;
   const documentCreationDemandContainerUris = await getContainerUris(
-      tax.value,
+      tax,
       documentCreationDemandShapeTreeUri,
       session
   );
@@ -260,11 +260,8 @@ async function handleAuthorizationRequestRedirect(
       .then((resp) => resp.data)
       .then((txt) => parseToN3(txt, demandUri))
       .then((parsedN3) => {
-        const {store, prefixes} = parsedN3;
-        const {addQuad, getQuads, removeQuads} = store;
-
-        removeQuads(
-            getQuads(
+        parsedN3.store.removeQuads(
+            parsedN3.store.getQuads(
                 new NamedNode(demandUri),
                 new NamedNode(CREDIT("isAccessRequestGranted")),
                 null,
@@ -272,16 +269,16 @@ async function handleAuthorizationRequestRedirect(
             )
         );
 
-        addQuad(
+        parsedN3.store.addQuad(
             new NamedNode(demandUri),
             new NamedNode(CREDIT("isAccessRequestGranted")),
             new Literal(`"true"^^${XSD("boolean")}`)
         );
         const writer = new Writer({
           format: "text/turtle",
-          prefixes,
+          prefixes: parsedN3.prefixes,
         });
-        writer.addQuads(getQuads(null, null, null, null));
+        writer.addQuads(parsedN3.store.getQuads(null, null, null, null));
         let body = "";
         writer.end((error, result) => (body = result));
         return body;
