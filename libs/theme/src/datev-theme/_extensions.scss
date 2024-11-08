@@ -75,6 +75,9 @@ a:not(.p-accordion-header-link) {
 .p-chip, .h-4, [class*="h-1.5rem"] {
     height: 1.5rem;
 }
+[class*="h-3.75rem"] {
+    height: 3.75rem;
+}
 input.p-inputtext, .control-shadow {
     border: 0 none;
     border-radius: 4px;

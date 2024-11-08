@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-column gap-2">
     <label v-if="label" class="text-sm relative z-1 pl-2 text-black-alpha-70" :for="id">{{ label }}</label>
-    <InputText :inputmode="type === 'number' ? 'numeric' : 'text'" class="pt-5 -mt-5" :id="id" :value="modelValue" @change="emit('update:modelValue', $event.target.value)" />
+    <InputText :inputmode="type === 'number' ? 'numeric' : 'text'" class="pt-5 -mt-5" :id="id" :value="modelValue" @keyup="emit('update:modelValue', $event.target.value)" />
   </div>
 </template>
 <script setup lang="ts">

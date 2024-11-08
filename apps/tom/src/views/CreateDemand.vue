@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdvertisementCard from "@/components/AdvertisementCard.vue";
 import {bank, creditDemandShapeTreeUri} from "@/constants/solid-urls";
+import router from "@/router";
 import {Advertisement} from "@/types/Advertisement";
 import {toAdvertisementName} from "@/utils/toAdvertisementName";
 import {CheckMarkSvg, HorizontalLine, PageHeadline, SmeCard, SmeCardHeadline, DacklTextInput} from "@shared/components";
@@ -127,11 +128,11 @@ async function getSelectedAds() {
     advertisements.value = _advertisements;
 
     // Success Message \o/
-    toast.add({
+    /*toast.add({
       severity: "success",
       summary: "Received advertisements",
       life: 5000,
-    });
+    });/**/
   } catch (err) {
     toast.add({
       severity: "error",
@@ -191,11 +192,11 @@ async function getAdsFromMarket() {
      */
 
     // Success Message \o/
-    toast.add({
+    /*toast.add({
       severity: "success",
       summary: "Received services",
       life: 5000,
-    });
+    });/**/
   } catch (err) {
     toast.add({
       severity: "error",
@@ -243,6 +244,8 @@ const postCreditDemand = async () => {
       summary: "Demand created sucessfully",
       life: 5000,
     });
+
+    await router.push({name:'demands', query: { amount: `${enteredAmount.value}` }});
   } catch (err) {
     toast.add({
       severity: "error",
@@ -393,11 +396,11 @@ async function createDemand(demandContainerUris: string[], payload: string) {
 
             <form @submit="(event) => event.preventDefault()">
               <div class="flex flex-column md:flex-row mt-3">
-                <DacklTextInput type="number" class="w-full md:w-auto md:ml-2 mt-2" label="Enter amount" v-model="enteredAmount" />
+                <DacklTextInput type="number" class="w-full md:w-auto mt-2" label="Enter amount" v-model="enteredAmount" />
 
                 <div class="dropdown relative mt-2 md:mt-0 md:mx-3">
                   <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
-                  <Dropdown class="w-full md:w-auto h-4rem pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
+                  <Dropdown class="w-full h-3.75rem md:w-auto pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
                 </div>
               </div>
 
