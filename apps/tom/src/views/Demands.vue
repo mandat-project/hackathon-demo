@@ -28,10 +28,13 @@ import {
   XSD,
 } from "@shared/solid";
 import {fetchStoreOf, getContainerUris} from "@shared/utils";
+import {toRef, watchThrottled} from "@vueuse/core";
 import {Literal, NamedNode, Store, Writer} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, watch} from "vue";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const toast = useToast();
 const {session} = useSolidSession();
 const {memberOf, storage, authAgent} = useSolidProfile();
@@ -39,6 +42,14 @@ const appMemory = useCache();
 const { isLoggedIn } = useIsLoggedIn();
 
 const props = defineProps<{ type?: 'all' | 'pending' | 'active'; }>();
+
+const highlightAmountValue = toRef<number | null>(() => {
+  const value = route.query.amount;
+  if (!value) { return null; }
+  const amountNumber = Number(value);
+  if (isNaN(amountNumber)) { return null; }
+  return amountNumber;
+});
 
 const demands = ref<Demand[]>([]);
 const sortedDemands = computed<Demand[]>(() => {
@@ -83,6 +94,22 @@ watch(storage, () => {
   if (!storage.value) return;
   loadCreditDemands();
 }, {immediate:true});
+
+watchThrottled(
+    displayedDemands,
+    () => {
+      if (!highlightAmountValue.value || displayedDemands.value.length < 5) {
+        return;
+      }
+
+      const highlightElement = document.querySelector<HTMLElement>(`.amount-${highlightAmountValue.value}`);
+      if (!highlightElement) {
+        return;
+      }
+
+      highlightElement.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    },
+  { throttle: 1_000 },)
 
 async function loadCreditDemands() {
   isLoading.value = true;
@@ -356,7 +383,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
   <ProgressBar v-show="isLoading" mode="indeterminate" style="height: 2px" />
 
   <div role="list" v-if="displayedDemands" class="flex flex-column gap-3 py-0 px-3">
-    <Card role="listitem" v-for="demand in displayedDemands" :key="demand.id">
+    <Card :class="{'bg-yellow-100' : highlightAmountValue === demand.amount, ['amount-'+demand.amount]: true }" role="listitem" v-for="demand in displayedDemands" :key="demand.id">
       <template #title>
         <a class="font-normal text-black-alpha-90 no-underline" :href="demand.providerWebID">{{ demand.providerName }}</a>
       </template>
