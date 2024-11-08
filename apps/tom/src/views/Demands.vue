@@ -329,7 +329,7 @@ async function createDemand(demandContainerUris: string[], payload: string) {
       .then((res) => getLocationHeader(res));
 }
 
-const createOrder = async (offerId?: string) => {
+const createOrder = async (amount: number, offerId?: string) => {
   if (!offerId) { return; }
 
   const payload = `\
@@ -359,7 +359,7 @@ const createOrder = async (offerId?: string) => {
         // Don't wait to be finished before rerouting. It's the same component, so it will just update the
         // view and the demands.
         loadCreditDemands();
-        router.push({name:'services'});
+        router.push({name:'services', query: { amount }});
       });
 };
 
@@ -413,7 +413,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
           /></div>
           <span>interest rate %: {{demand.offer.interestRate}} duration: {{ demand.offer.duration }}</span>
           <Button class="md:ml-auto" severity="primary" label="Accept Offer"
-                  @click="createOrder(demand.offer?.id)" />
+                  @click="createOrder(demand.amount, demand.offer?.id)" />
         </div>
 
         <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.documentCreationDemand && !demand.offer">
