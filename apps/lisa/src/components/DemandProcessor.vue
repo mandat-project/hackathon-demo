@@ -1,8 +1,10 @@
 <template>
-  <div class="px-3 pb-4">
+  <div class="px-3 pb-4" v-show="currentState === currentDemandState">
     <Card class="pb-4">
       <template #content>
         <h2> Sate => {{ currentState}}</h2>
+        <h2> Current Demand Sate => {{ currentDemandState}}</h2>
+        <h2> Prop value => {{ props.demandState}}</h2>
         <div class="grid">
           <div class="col-6">
             <span>Applicant</span>
@@ -83,14 +85,14 @@
       </template>
     </Card>
   </div>
-  <div class="container">
+<!--  <div class="container">
 
     <div class="content-left">
       <div class="refresh-container">
         <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
       </div>
       <Stepper orientation="vertical" v-model:active-step="activeStep">
-        <!-- Stepper 1 -->
+        &lt;!&ndash; Stepper 1 &ndash;&gt;
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -114,7 +116,7 @@
             </div>
           </template>
         </StepperPanel>
-        <!-- Stepper 2 -->
+        &lt;!&ndash; Stepper 2 &ndash;&gt;
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -137,7 +139,7 @@
             </div>
           </template>
         </StepperPanel>
-        <!-- Stepper 3 -->
+        &lt;!&ndash; Stepper 3 &ndash;&gt;
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -159,7 +161,7 @@
             </div>
           </template>
         </StepperPanel>
-        <!-- Stepper 4 -->
+        &lt;!&ndash; Stepper 4 &ndash;&gt;
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -186,7 +188,7 @@
               </span>
               <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
                 <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
-                  <!-- Make offer accessible -->
+                  &lt;!&ndash; Make offer accessible &ndash;&gt;
                   <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
                     <Button type="submit" class="step-button"
                             @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
@@ -204,7 +206,7 @@
             </div>
           </template>
         </StepperPanel>
-        <!-- Stepper 5 -->
+        &lt;!&ndash; Stepper 5 &ndash;&gt;
         <StepperPanel>
           <template #header="{ index, clickCallback }">
             <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
@@ -252,7 +254,7 @@
         </a>
       </div>
     </div>
-  </div>
+  </div>-->
 </template>
 
 <script setup lang="ts">
@@ -287,7 +289,7 @@ import LoanCard from "@/components/LoanCard.vue";
 import Card from "primevue/card";
 import FloatLabel from 'primevue/floatlabel';
 
-const props = defineProps<{ demandUri: string }>();
+const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
 const toast = useToast();
 const appMemory = useCache();
@@ -378,7 +380,7 @@ const amount = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"
 const currency = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
 let activeStep = computed(() => setActiveProcessStep());
-
+let currentDemandState= ref('Demand');
 // DEMANDER
 watch(() => demanderUri.value,
     async () => {
@@ -388,6 +390,10 @@ watch(() => demanderUri.value,
       }
     }, {immediate: true}
 )
+watch(()=> props.demandState,()=> {
+  currentDemandState.value = props.demandState;
+  console.log("DemandStae is updated");
+}, {immediate:true});
 const demanderName = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
 const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value);

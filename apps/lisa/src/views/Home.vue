@@ -8,6 +8,7 @@
   <div class="grid">
 
       <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background-color: rgba(65, 132, 153, 0.2);" />
+    <h1>{{activeTab}}</h1>
     <ul class="col-12 flex flex-column gap-4" style="background-color:white">
 <!--    <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />-->
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
@@ -84,11 +85,11 @@ const tabMenu = ref<TabItemType[]>([
   { id: STATES.OfferAccepted, label: 'Active Loans' },
   { id: STATES.Terminated, label: 'Terminated' },
 ]);
-let activeTab = ref(STATES.DEMANDS).value;
+let activeTab = ref(STATES.DEMANDS);
 
 function tabListItemChange(itemId: STATES) {
   console.log(itemId);
-  activeTab = itemId;
+  activeTab.value = itemId;
   console.log('Active tab',activeTab);
 }
 // refetch demandUris on login
