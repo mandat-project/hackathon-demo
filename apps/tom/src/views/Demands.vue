@@ -8,6 +8,7 @@ import {
   orderShapeTreeUri,
   tax
 } from "@/constants/solid-urls";
+import router from "@/router";
 import {Demand} from "@/types/Demand";
 import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
 import {PageHeadline, HorizontalLine} from "@shared/components";
@@ -60,11 +61,11 @@ const sortedDemands = computed<Demand[]>(() => {
     if (accessRequestOfB && !accessRequestOfA) { return 1; }
 
     if (a.order && b.order) {
-      if (a.order.isTerminated && !b.order.isTerminated) { return -1; }
-      if (b.order.isTerminated && !a.order.isTerminated) { return 1; }
+      if (a.order.isTerminated && !b.order.isTerminated) { return 1; }
+      if (b.order.isTerminated && !a.order.isTerminated) { return -1; }
     }
 
-    return 0;
+    return b.amount - a.amount;
   });
 });
 const displayedDemands = computed<Demand[]>(() => {
@@ -141,7 +142,6 @@ async function loadCreditDemands() {
             demand.id,
             accessRequestURI
         ).then(() => {
-          demands.value = [];
           loadCreditDemands();
         });
       }
@@ -241,7 +241,6 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
   });
 }
 
-
 async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
   const itemStores: Store[] = await Promise.all(
       itemUris.map((item) => fetchStoreOf(item, session))
@@ -289,7 +288,6 @@ async function handleAuthorizationRequestRedirect(
       .then(() => delete appMemory[accessRequestURI]);
 }
 
-
 async function createDemand(demandContainerUris: string[], payload: string) {
   return await createResource(demandContainerUris[0], payload, session)
       .catch((err) => {
@@ -329,6 +327,12 @@ const createOrder = async (offerId?: string) => {
           summary: "Order created sucessfully",
           life: 5000,
         });
+      })
+      .then(() => {
+        // Don't wait to be finished before rerouting. It's the same component, so it will just update the
+        // view and the demands.
+        loadCreditDemands();
+        router.push({name:'services'});
       });
 };
 

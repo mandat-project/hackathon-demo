@@ -12,9 +12,10 @@ import PageHeadline from "./src/PageHeadline.vue";
 import SignUpButton from './src/SignUpButton.vue';
 import SmeCard from "./src/SmeCard.vue";
 import SmeCardHeadline from "./src/SmeCardHeadline.vue";
-import {TabItemType} from './src/tabs/TabItemType';
 import TabList from './src/tabs/TabList.vue';
 import DacklTextInput from './src/DacklTextInput.vue';
+
+export * from './src/tabs/TabItemType';
 
 export {
     HeaderBar,
@@ -27,7 +28,6 @@ export {
     LDNs,
     AccessRequestCallback,
     CheckMarkSvg,
-    TabItemType,
     TabList,
     HorizontalLine,
     SmeCard,
