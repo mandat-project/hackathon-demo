@@ -3,6 +3,7 @@ import AuthAppHeaderBar from './src/AuthAppHeaderBar.vue';
 import CheckMarkSvg from './src/CheckMarkSvg.vue';
 import DateFormatted from './src/DateFormatted.vue';
 import HeaderBar from './src/HeaderBar.vue';
+import DacklHeaderBar from './src/DacklHeaderBar.vue';
 import HorizontalLine from "./src/HorizontalLine.vue";
 import LDN from './src/LDN.vue';
 import LDNs from './src/LDNs.vue';
@@ -19,6 +20,7 @@ export * from './src/tabs/TabItemType';
 
 export {
     HeaderBar,
+    DacklHeaderBar,
     AuthAppHeaderBar,
     LoginButton,
     LogoutButton,
