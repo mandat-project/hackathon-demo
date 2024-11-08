@@ -1,6 +1,6 @@
 <template>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
+  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="backgroundColor" />
 
   <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
@@ -46,7 +46,9 @@ const { session, restoreSession } = useSolidSession();
 const { memberOf } = useSolidProfile()
 const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
-})
+});
+
+const backgroundColor = ref("rgba(65, 132, 153, 0.2)");
 
 // re-use Solid session
 router.isReady().then(restoreSession)
@@ -59,6 +61,7 @@ html {
   height: 100vh;
   overscroll-behavior-y: contain;
 }
+
 
 body {
   overscroll-behavior-y: contain;
@@ -106,7 +109,8 @@ ol {
 
 /* PrimeFlex Overrides */
 .grid {
-  margin: 5px !important;
+  margin: 4px !important;
+  padding-top:16px!important;
 }
 .p-button {
   -webkit-tap-highlight-color: transparent;

@@ -1,19 +1,21 @@
 <template>
-  <h1 class="header col-12 flex align-items-center gap-2">
+<!--  <h1 class="header col-12 flex align-items-center gap-2">
     Credit Demands
     <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
       @click="fetchDemandUris(memberOf)" />
-  </h1>
-  <div style="height: 75px" id="header-bar-spacer" />
+  </h1>-->
+
   <div class="grid">
-    <ul class="col-12 flex flex-column gap-4">
-      <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
+
+      <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background-color: rgba(65, 132, 153, 0.2);" />
+    <ul class="col-12 flex flex-column gap-4" style="background-color:white">
+<!--    <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />-->
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
         <div class="w-full" v-if="index === 0"></div>
-        <Suspense>
+        <Suspense timeout="0">
           <!-- main content -->
           <li>
-            <DemandProcessor :demandUri="demandUri" />
+            <DemandProcessor :demandUri="demandUri" :demandState="activeTab"/>
           </li>
           <!-- loading state -->
           <template #fallback>
@@ -56,6 +58,8 @@ import { useSolidProfile, useSolidSession } from "@shared/composables";
 import { getResource, LDP, parseToN3, getDataRegistrationContainers } from "@shared/solid";
 import { computed, ref, watch } from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
+import {TabItemType, TabList} from "@shared/components";
+
 
 const toast = useToast();
 const { session } = useSolidSession();
@@ -67,7 +71,26 @@ const demandUris = ref<string[]>([]);
 const { memberOf } = useSolidProfile()
 const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf.value) || (session.webId && memberOf.value && session.rdp) ? true : false)
-})
+});
+
+enum STATES {
+  DEMANDS = 'DEMANDS',
+  OfferAccepted = 'OfferAccepted',
+  Terminated = 'Terminated',
+}
+
+const tabMenu = ref<TabItemType[]>([
+  { id: STATES.DEMANDS, label: 'Demands' },
+  { id: STATES.OfferAccepted, label: 'Active Loans' },
+  { id: STATES.Terminated, label: 'Terminated' },
+]);
+let activeTab = ref(STATES.DEMANDS).value;
+
+function tabListItemChange(itemId: STATES) {
+  console.log(itemId);
+  activeTab = itemId;
+  console.log('Active tab',activeTab);
+}
 // refetch demandUris on login
 watch(() => isLoggedIn.value, (isLoggedIn) => isLoggedIn ? fetchDemandUris(((memberOf.value) ? memberOf.value : session.webId!)) : {}, { immediate: true });
 

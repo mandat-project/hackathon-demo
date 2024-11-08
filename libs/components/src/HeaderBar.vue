@@ -22,9 +22,13 @@ export default defineComponent({
   },
   props: {
     isLoggedIn: Boolean,
-    webId: String
+    webId: String,
+    backgroundColor : {
+      type: String,
+      default: '', // Default color if not provided
+    }
   },
-  setup() {
+  setup(props) {
 
     const { hasActivePush, askForNotificationPermission } =
       useServiceWorkerNotifications();
@@ -33,6 +37,12 @@ export default defineComponent({
     const { name, img, inbox } = useSolidProfile();
     // const { ldns } = useSolidInbox();
     const toast = useToast();
+
+    // Computed property to determine the background color
+    const computedBgColor = computed(() => {
+      console.log('bgColor',props.backgroundColor);
+      return props.backgroundColor || 'linear-gradient(90deg, #195B78 0%, #287F8F 100%)'; // Default color if bgColor is not provided
+    });
 
     // const inboxBadge = computed(() => ldns.value.length);
 
@@ -72,13 +82,16 @@ export default defineComponent({
     //   }
     // };
     // return { inboxBadge, img, isToggling, hasActivePush, name, togglePush };
-    return { img, hasActivePush, name }
+    return { img, hasActivePush, name, computedBgColor }
   }
-})
+
+});
+
+
 </script>
 
 <template>
-  <div class="header">
+  <div class="header" :style="{ background: computedBgColor }">
     <Toolbar>
       <template #start>
         <!-- <router-link to="/inbox/"> -->
@@ -139,7 +152,6 @@ export default defineComponent({
 
 <style scoped>
 .header {
-  background: linear-gradient(90deg, #195B78 0%, #287F8F 100%);
   padding: 1.5rem;
   position: fixed;
   top: 0;
