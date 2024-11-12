@@ -429,7 +429,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
         <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.order?.isTerminated">
           <div><Chip
               label="Terminated"
-              class="text-sm"
+              class="bg-red-500 text-sm"
           /></div>
           <span>credit contract terminated</span>
           <Button class="md:ml-auto" severity="secondary" label="Revoke Rights"
