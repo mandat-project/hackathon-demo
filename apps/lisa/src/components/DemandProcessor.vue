@@ -33,7 +33,7 @@
               <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
             <Button class="step-button"
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
-                    @click="fetchProcessedData()">Show Data</Button>
+                    @click="processDataDialogBox()">Show Data</Button>
           </div>
           <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class="ml-2">
             <Chip v-if="currentState === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm "/>
@@ -44,14 +44,14 @@
             <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
             <Button class="step-button"
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
-                    @click="fetchProcessedData()" severity="secondary">Show Data</Button>
+                    @click="processDataDialogBox()" severity="secondary">Show Data</Button>
           </div>
         </div>
         <div class="grid pt-2 pb-2">
 <!-- on Pending the elements should be disable          -->
           <div class="col-6">
             <FloatLabel>
-              <InputText id="amount" type="number" :disabled="currentState === STATES.DataSuccessfullyProvided" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate" class="w-full" />
+              <InputText id="amount" type="number" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate" class="w-full" />
               <label for="username">Annual Percentage rate in %</label>
             </FloatLabel>
           </div>
@@ -59,7 +59,7 @@
             <!--          <span>Loan terms:</span>
                       <Dropdown class="w-full"  v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>-->
             <FloatLabel class="w-full">
-              <Dropdown  v-model="selectedLoanTerm" :disabled="currentState === STATES.DataSuccessfullyProvided" :options="loanTerms" optionLabel="label" placeholder="Select loan term" class="w-full" />
+              <Dropdown  v-model="selectedLoanTerm" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :options="loanTerms" optionLabel="label" placeholder="Select loan term" class="w-full" />
               <label for="dd-city">Loan terms</label>
             </FloatLabel>
           </div>
@@ -67,7 +67,7 @@
         <Button v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder" severity="danger"
                 class="step-button text-0" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
         </Button>
-        <Button v-else class="step-button" :disabled="!isAccessRequestGranted || isOfferCreated"
+        <Button v-else class="step-button" :disabled="(!isAccessRequestGranted || isOfferCreated) && !(currentState === STATES.DataSuccessfullyProvided)"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
 
 <!--        <div class="dropdown-container">
@@ -252,6 +252,21 @@
       </div>
     </div>
   </div>-->
+  <Dialog v-model:visible="visible" modal header="Requested business assessment data" :style="{ width: '55rem' }">
+    <BusinessData v-if="businessDataFetched" :store="state.businessAssessmentStore" />
+    <div class="py-4">
+      <div class="flex justify-content-end gap-2" v-if="(currentState === STATES.OfferAccepted) || (currentState === STATES.Terminated)">
+        <Button type="button" label="Close" severity="secondary" @click="visible = false"></Button>
+      </div>
+      <div v-else class="flex justify-content-end gap-2">
+        <Button type="button" label="Accept provided Data" @click="visible = false"></Button>
+        <Button type="button" label="Request New Data" severity="secondary"
+                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
+                @click="requestCreationOfData();visible = false">Request New Data</Button>
+        <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -295,6 +310,7 @@ const {session} = useSolidSession();
 let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
+const visible = ref(false);
 const loanTerms = [
   {label: "6 months", value: "0.5"},
   {label: "12 months", value: "1"},
@@ -753,7 +769,6 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
 
 async function createOfferResource(demand: string, dataAccessRequest: string) {
   const businessAssessmentRegistrations = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, session);
-
   const body = `
           @prefix : <#>.
           @prefix credit: <${CREDIT()}> .
@@ -798,6 +813,12 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
     summary: "Offer created successfully",
     life: 5000,
   });
+  setTimeout(()=>{
+    offerAccessRequests.value.forEach(function (offerAccessRequest) {
+      handleAuthorizationRequest(offerAccessRequest)
+    });
+  },5000);
+
 }
 
 async function requestAccessBeingSet(resource: string, forAgent: string) {
@@ -889,7 +910,10 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
       "_self"
   );
 }
-
+function processDataDialogBox(){
+  visible.value = true;
+  fetchProcessedData()
+}
 async function handleAuthorizationRequestRedirect(
     businessResourceURI: string,
     accessRequestURI: string
