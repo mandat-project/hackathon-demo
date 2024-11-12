@@ -77,7 +77,7 @@ const isLoggedIn = computed(() => {
 });
 
 enum STATES {
-  DEMANDS = 'DEMANDS',
+  DEMANDS = 'Demands',
   OfferAccepted = 'OfferAccepted',
   Terminated = 'Terminated',
 }

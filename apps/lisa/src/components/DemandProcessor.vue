@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-4" v-show="currentState === currentDemandState" >
+  <div class="pb-4" v-show="tabState === currentDemandState" >
     <Card class="pb-4">
       <template #content>
         <div class="grid">
@@ -433,6 +433,23 @@ enum STATES {
   NoOperation = 'NoOperation'
 }
 
+enum TAB_STATE {
+  Demands= "Demands",
+  OfferAccepted = 'OfferAccepted',
+  Terminated = 'Terminated',
+}
+
+const tabState = computed( ()=>{
+  if( currentState.value === STATES.Terminated){
+    return TAB_STATE.Terminated;
+  }
+  if( currentState.value === STATES.OfferAccepted){
+    return TAB_STATE.OfferAccepted;
+  }
+  else{
+    return TAB_STATE.Demands;
+  }
+})
 
 const currentState = computed(() =>{
   if (accessRequestUri.value === undefined && !isOfferCreated.value) {
