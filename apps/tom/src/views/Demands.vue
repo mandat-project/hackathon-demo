@@ -8,6 +8,7 @@ import {
   orderShapeTreeUri,
   tax
 } from "@/constants/solid-urls";
+import router from "@/router";
 import {Demand} from "@/types/Demand";
 import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
 import {PageHeadline, HorizontalLine} from "@shared/components";
@@ -27,10 +28,13 @@ import {
   XSD,
 } from "@shared/solid";
 import {fetchStoreOf, getContainerUris} from "@shared/utils";
+import {toRef, watchThrottled} from "@vueuse/core";
 import {Literal, NamedNode, Store, Writer} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, watch} from "vue";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const toast = useToast();
 const {session} = useSolidSession();
 const {memberOf, storage, authAgent} = useSolidProfile();
@@ -38,6 +42,14 @@ const appMemory = useCache();
 const { isLoggedIn } = useIsLoggedIn();
 
 const props = defineProps<{ type?: 'all' | 'pending' | 'active'; }>();
+
+const highlightAmountValue = toRef<number | null>(() => {
+  const value = route.query.amount;
+  if (!value) { return null; }
+  const amountNumber = Number(value);
+  if (isNaN(amountNumber)) { return null; }
+  return amountNumber;
+});
 
 const demands = ref<Demand[]>([]);
 const sortedDemands = computed<Demand[]>(() => {
@@ -60,11 +72,11 @@ const sortedDemands = computed<Demand[]>(() => {
     if (accessRequestOfB && !accessRequestOfA) { return 1; }
 
     if (a.order && b.order) {
-      if (a.order.isTerminated && !b.order.isTerminated) { return -1; }
-      if (b.order.isTerminated && !a.order.isTerminated) { return 1; }
+      if (a.order.isTerminated && !b.order.isTerminated) { return 1; }
+      if (b.order.isTerminated && !a.order.isTerminated) { return -1; }
     }
 
-    return 0;
+    return b.amount - a.amount;
   });
 });
 const displayedDemands = computed<Demand[]>(() => {
@@ -82,6 +94,22 @@ watch(storage, () => {
   if (!storage.value) return;
   loadCreditDemands();
 }, {immediate:true});
+
+watchThrottled(
+    displayedDemands,
+    () => {
+      if (!highlightAmountValue.value || displayedDemands.value.length < 5) {
+        return;
+      }
+
+      const highlightElement = document.querySelector<HTMLElement>(`.amount-${highlightAmountValue.value}`);
+      if (!highlightElement) {
+        return;
+      }
+
+      highlightElement.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    },
+  { throttle: 1_000 },)
 
 async function loadCreditDemands() {
   isLoading.value = true;
@@ -141,7 +169,6 @@ async function loadCreditDemands() {
             demand.id,
             accessRequestURI
         ).then(() => {
-          demands.value = [];
           loadCreditDemands();
         });
       }
@@ -241,7 +268,6 @@ async function postDocumentCreationDemand(documentCreationDemandURI: string) {
   });
 }
 
-
 async function fillItemStoresIntoStore(itemUris: string[], store: Store) {
   const itemStores: Store[] = await Promise.all(
       itemUris.map((item) => fetchStoreOf(item, session))
@@ -289,7 +315,6 @@ async function handleAuthorizationRequestRedirect(
       .then(() => delete appMemory[accessRequestURI]);
 }
 
-
 async function createDemand(demandContainerUris: string[], payload: string) {
   return await createResource(demandContainerUris[0], payload, session)
       .catch((err) => {
@@ -304,7 +329,7 @@ async function createDemand(demandContainerUris: string[], payload: string) {
       .then((res) => getLocationHeader(res));
 }
 
-const createOrder = async (offerId?: string) => {
+const createOrder = async (amount: number, offerId?: string) => {
   if (!offerId) { return; }
 
   const payload = `\
@@ -329,6 +354,12 @@ const createOrder = async (offerId?: string) => {
           summary: "Order created sucessfully",
           life: 5000,
         });
+      })
+      .then(() => {
+        // Don't wait to be finished before rerouting. It's the same component, so it will just update the
+        // view and the demands.
+        loadCreditDemands();
+        router.push({name:'services', query: { amount }});
       });
 };
 
@@ -352,7 +383,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
   <ProgressBar v-show="isLoading" mode="indeterminate" style="height: 2px" />
 
   <div role="list" v-if="displayedDemands" class="flex flex-column gap-3 py-0 px-3">
-    <Card role="listitem" v-for="demand in displayedDemands" :key="demand.id">
+    <Card :class="{'bg-yellow-100' : highlightAmountValue === demand.amount, ['amount-'+demand.amount]: true }" role="listitem" v-for="demand in displayedDemands" :key="demand.id">
       <template #title>
         <a class="font-normal text-black-alpha-90 no-underline" :href="demand.providerWebID">{{ demand.providerName }}</a>
       </template>
@@ -382,7 +413,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
           /></div>
           <span>interest rate %: {{demand.offer.interestRate}} duration: {{ demand.offer.duration }}</span>
           <Button class="md:ml-auto" severity="primary" label="Accept Offer"
-                  @click="createOrder(demand.offer?.id)" />
+                  @click="createOrder(demand.amount, demand.offer?.id)" />
         </div>
 
         <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.documentCreationDemand && !demand.offer">

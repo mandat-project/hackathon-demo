@@ -1,5 +1,5 @@
 <template>
-  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
+  <DacklHeaderBar app-name="Easy Loan" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
   <div class="px-4 pt-3 bg-gradient-blue">
     <TabList class="mt-4" @item-change="tabListItemChange" :model="tabMenu" :active="routeName" />
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import {HeaderBar, TabItemType, TabList} from "@shared/components";
+import {DacklHeaderBar, TabItemType, TabList} from "@shared/components";
 import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
@@ -48,6 +48,7 @@ import {computed, ref, watch} from "vue";
 import {useRoute} from "vue-router";
 import router from "./router";
 
+const appLogo = require('@/assets/logo.svg');
 const route = useRoute()
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);

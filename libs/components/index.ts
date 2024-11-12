@@ -3,6 +3,7 @@ import AuthAppHeaderBar from './src/AuthAppHeaderBar.vue';
 import CheckMarkSvg from './src/CheckMarkSvg.vue';
 import DateFormatted from './src/DateFormatted.vue';
 import HeaderBar from './src/HeaderBar.vue';
+import DacklHeaderBar from './src/DacklHeaderBar.vue';
 import HorizontalLine from "./src/HorizontalLine.vue";
 import LDN from './src/LDN.vue';
 import LDNs from './src/LDNs.vue';
@@ -12,12 +13,14 @@ import PageHeadline from "./src/PageHeadline.vue";
 import SignUpButton from './src/SignUpButton.vue';
 import SmeCard from "./src/SmeCard.vue";
 import SmeCardHeadline from "./src/SmeCardHeadline.vue";
-import {TabItemType} from './src/tabs/TabItemType';
 import TabList from './src/tabs/TabList.vue';
 import DacklTextInput from './src/DacklTextInput.vue';
 
+export * from './src/tabs/TabItemType';
+
 export {
     HeaderBar,
+    DacklHeaderBar,
     AuthAppHeaderBar,
     LoginButton,
     LogoutButton,
@@ -27,7 +30,6 @@ export {
     LDNs,
     AccessRequestCallback,
     CheckMarkSvg,
-    TabItemType,
     TabList,
     HorizontalLine,
     SmeCard,
