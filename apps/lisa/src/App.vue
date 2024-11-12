@@ -48,7 +48,7 @@ const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
 });
 
-const backgroundColor = ref("rgba(65, 132, 153, 0.2)");
+const backgroundColor = ref("rgba(237, 240, 243, 1)");
 
 // re-use Solid session
 router.isReady().then(restoreSession)

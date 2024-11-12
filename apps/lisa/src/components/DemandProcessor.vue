@@ -1,10 +1,7 @@
 <template>
-  <div class="px-3 pb-4" v-show="currentState === currentDemandState">
+  <div class="pb-4" v-show="currentState === currentDemandState" >
     <Card class="pb-4">
       <template #content>
-        <h2> Sate => {{ currentState}}</h2>
-        <h2> Current Demand Sate => {{ currentDemandState}}</h2>
-        <h2> Prop value => {{ props.demandState}}</h2>
         <div class="grid">
           <div class="col-6">
             <span>Applicant</span>
@@ -915,152 +912,160 @@ async function handleAuthorizationRequestRedirect(
 </script>
 
 <style>
-.container {
-  display: flex;
-  border-radius: 0.5rem;
-  box-shadow: 0px 1px 6px 0px rgba(44, 51, 53, 0.06), 0px 1px 24px 0px rgba(44, 51, 53, 0.09);
-  overflow: hidden;
-  margin-left: 1rem;
-  margin-right: 2rem;
-}
-
-.content-left {
-  flex: 1;
-  background-color: white;
-  padding: 1.5rem;
-}
-
-.content-right {
-  width: 21rem;
-  background-color: rgba(208, 222, 227, 1);
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.p-stepper-number {
-  &.step-inactive {
-    background-color: rgb(200, 200, 200);
+.p-card {
+  .p-card-content {
+    padding: 0;
+  }
+  .p-card-body {
+    padding-top:0px;
   }
 }
-
-.p-stepper-title {
-  font-family: "Noto Sans Display", Arial, sans-serif;
-  font-weight: 500;
-  font-size: 1rem;
-  color: rgba(0, 0, 0, 1);
-
-  &.step-inactive {
-    color: rgba(0, 0, 0, 0.6);
-  }
-}
-
-.dropdown-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.p-dropdown-panel {
-  /* causes known bug: https://github.com/primefaces/primevue/issues/4043 */
-  /* display: none; */
-}
-
-.step-button {
-  color:black;
-  width: fit-content;
-  font-weight: bold;
-  border: none;
-  margin-left: 0.5rem;
-
-  &:hover {
-    background-color: rgba(65, 132, 153, 0.2);
+  .container {
+    display: flex;
+    border-radius: 0.5rem;
+    box-shadow: 0px 1px 6px 0px rgba(44, 51, 53, 0.06), 0px 1px 24px 0px rgba(44, 51, 53, 0.09);
+    overflow: hidden;
+    margin-left: 1rem;
+    margin-right: 2rem;
   }
 
-  &:disabled {
-    color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-.button-next {
-  color: rgba(0, 0, 0, 0.9);
-  font-weight: 500;
-  min-width: 4rem;
-  background: rgba(153, 232, 39, 1);
-  border-radius: 4px;
-  box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
-  &:hover {
-    outline-color: rgba(32, 151, 12, 0.1);
-  }
-}
-
-.button-back {
-  color: rgba(0, 0, 0, 0.9);
-  font-weight: 500;
-  min-width: 4rem;
-  background: rgba(246, 247, 249, 1);
-  border-radius: 4px;
-  box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
-
-  &:hover {
-    outline-color: rgba(0, 0, 0, 0.15);
-  }
-}
-
-.refresh-container {
-  display: none;
-  position: relative;
-
-  Button {
-    position: absolute;
-    top: 0;
-    right: -0.5rem;
-    z-index: 1;
-  }
-}
-
-.content-right-side {
-  width: 100%;
-
-  .amount-label {
-    text-align: right;
-
+  .content-left {
+    flex: 1;
+    background-color: white;
+    padding: 1.5rem;
   }
 
-  .amount-value {
-    font-size: 2rem;
+  .content-right {
+    width: 21rem;
+    background-color: rgba(208, 222, 227, 1);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .p-stepper-number {
+    &.step-inactive {
+      background-color: rgb(200, 200, 200);
+    }
+  }
+
+  .p-stepper-title {
+    font-family: "Noto Sans Display", Arial, sans-serif;
     font-weight: 500;
+    font-size: 1rem;
     color: rgba(0, 0, 0, 1);
-    text-align: right;
+
+    &.step-inactive {
+      color: rgba(0, 0, 0, 0.6);
+    }
   }
-}
 
-.demand {
-  display: flex;
-  justify-content: flex-end;
-
-  a {
+  .dropdown-container {
     display: flex;
     align-items: center;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    color: rgba(0, 0, 0, 0.9);
+    gap: 0.5rem;
+    margin-left: 0.5rem;
+    margin-bottom: 0.5rem;
   }
-}
 
-p {
-  margin: 0;
-}
+  .p-dropdown-panel {
+    /* causes known bug: https://github.com/primefaces/primevue/issues/4043 */
+    /* display: none; */
+  }
 
-a {
-  color: white;
-}
+  .step-button {
+    color:black;
+    width: fit-content;
+    font-weight: bold;
+    border: none;
+    margin-left: 0.5rem;
 
-hr {
-  border: 1px solid var(--surface-d);
-}
+    &:hover {
+      background-color: rgba(65, 132, 153, 0.2);
+    }
+
+    &:disabled {
+      color: rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  .button-next {
+    color: rgba(0, 0, 0, 0.9);
+    font-weight: 500;
+    min-width: 4rem;
+    background: rgba(153, 232, 39, 1);
+    border-radius: 4px;
+    box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
+    &:hover {
+      outline-color: rgba(32, 151, 12, 0.1);
+    }
+  }
+
+  .button-back {
+    color: rgba(0, 0, 0, 0.9);
+    font-weight: 500;
+    min-width: 4rem;
+    background: rgba(246, 247, 249, 1);
+    border-radius: 4px;
+    box-shadow: 0px 1px 4px 0px rgba(44, 51, 53, 0.07), 0px 2px 3px 0px rgba(44, 51, 53, 0.06), 0px 2px 1px 0px rgba(44, 51, 53, 0.12), 0px 1px 0px 0px rgba(3, 59, 74, 0.46);
+
+    &:hover {
+      outline-color: rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .refresh-container {
+    display: none;
+    position: relative;
+
+    Button {
+      position: absolute;
+      top: 0;
+      right: -0.5rem;
+      z-index: 1;
+    }
+  }
+
+  .content-right-side {
+    width: 100%;
+
+    .amount-label {
+      text-align: right;
+
+    }
+
+    .amount-value {
+      font-size: 2rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 1);
+      text-align: right;
+    }
+  }
+
+  .demand {
+    display: flex;
+    justify-content: flex-end;
+
+    a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.9);
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: white;
+  }
+
+  hr {
+    border: 1px solid var(--surface-d);
+  }
 </style>

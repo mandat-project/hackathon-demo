@@ -4,10 +4,9 @@
     <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
       @click="fetchDemandUris(memberOf)" />
   </h1>-->
+  <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background-color: rgba(237, 240, 243, 1)" />
 
-  <div class="grid">
-
-      <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background-color: rgba(65, 132, 153, 0.2);" />
+  <div class="grid" style="padding-left:160px; padding-right:160px">
     <h1>{{activeTab}}</h1>
     <ul class="col-12 flex flex-column gap-4" style="background-color:white">
 <!--    <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />-->
@@ -15,7 +14,7 @@
         <div class="w-full" v-if="index === 0"></div>
         <Suspense timeout="0">
           <!-- main content -->
-          <li>
+          <li >
             <DemandProcessor :demandUri="demandUri" :demandState="activeTab"/>
           </li>
           <!-- loading state -->
@@ -50,6 +49,9 @@
       background-color: rgba(255, 255, 255, 0.1);
     }
   }
+}
+.tab:not(.active){
+  background-color: #033B4A26;
 }
 </style>
 
