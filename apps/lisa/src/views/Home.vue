@@ -1,12 +1,7 @@
 <template>
-<!--  <h1 class="header col-12 flex align-items-center gap-2">
-    Credit Demands
-    <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-      @click="fetchDemandUris(memberOf)" />
-  </h1>-->
   <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background-color: rgba(237, 240, 243, 1)" />
 
-  <div class="grid" style="padding-left:160px; padding-right:160px">
+  <div class="grid px-1 sm:px-8" >
     <h1>{{activeTab}}</h1>
     <div class="col-12 flex flex-column gap-4" style="background-color:white">
     <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
@@ -63,6 +58,7 @@ import { computed, ref, watch } from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
 import {TabItemType, TabList} from "@shared/components";
 import DemandSkeleton from "@/components/DemandSkeleton.vue";
+import {TAB_STATE} from "@/enums/tabsState";
 
 
 const toast = useToast();
@@ -77,20 +73,14 @@ const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf.value) || (session.webId && memberOf.value && session.rdp) ? true : false)
 });
 
-enum STATES {
-  DEMANDS = 'Demands',
-  OfferAccepted = 'OfferAccepted',
-  Terminated = 'Terminated',
-}
-
 const tabMenu = ref<TabItemType[]>([
-  { id: STATES.DEMANDS, label: 'Demands' },
-  { id: STATES.OfferAccepted, label: 'Active Loans' },
-  { id: STATES.Terminated, label: 'Terminated' },
+  { id: TAB_STATE.Demands, label: 'Demands' },
+  { id: TAB_STATE.OfferAccepted, label: 'Active Loans' },
+  { id: TAB_STATE.Terminated, label: 'Terminated' },
 ]);
-let activeTab = ref(STATES.DEMANDS);
+let activeTab = ref(TAB_STATE.Demands);
 
-function tabListItemChange(itemId: STATES) {
+function tabListItemChange(itemId: TAB_STATE) {
   console.log(itemId);
   activeTab.value = itemId;
   console.log('Active tab',activeTab);

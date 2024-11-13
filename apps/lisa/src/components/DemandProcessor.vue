@@ -1,10 +1,10 @@
 <template>
-  <div class="pb-4" v-show="tabState === currentDemandState" >
-    <Card class="pb-4">
+  <div v-show="tabState === currentDemandState" >
+    <Card>
       <template #content>
         <div class="grid">
           <div class="col-12" v-if ="currentState === STATES.Terminated" >
-            <Chip label="Terminated" class=" text-color text-sm " style="background-color:rgba(255, 255, 255, 1); border: 1px solid rgba(155, 178, 186, 1)"/>
+            <Chip label="Terminated" class="text-color text-sm" style="background-color:rgba(255, 255, 255, 1); border: 1px solid rgba(155, 178, 186, 1)"/>
           </div>
           <div class="col-6">
             <span>Applicant</span>
@@ -46,9 +46,9 @@
             <Chip v-else-if ="currentState === STATES.Terminated" label="Terminated" class=" text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
             <Chip v-else label="Offer Accepted" class="text-sm ml-2" style="background-color:rgba(32, 151, 12, 1); color:white"/>
             <div class="ml-2">
-              <h5>Business Assessemnent data</h5>
-              <p class="text-xs pb-2">Requested Data</p>
-              <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
+              <h5>Business assessment data</h5>
+              <p class="text-xs pb-2">Requested Data:</p>
+              <p class="pb-4 text-sm font-medium">{{selectedShapeTree.label}}</p>
             </div>
             <Button class="step-button"
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
@@ -56,33 +56,14 @@
           </div>
         </div>
         <div class="grid pt-2 pb-2">
-<!-- on Pending the elements should be disable          -->
-<!--          <div class="flex flex-column md:flex-row mt-3">
-            <DacklTextInput type="number" class="w-full md:w-auto mt-2" label="Enter amount" v-model="enteredAmount" />
-
-            <div class="dropdown relative mt-2 md:mt-0 md:mx-3">
-              <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
-              <Dropdown class="w-full h-3.75rem md:w-auto pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
-            </div>
-          </div>-->
-
-
           <div class="col-6 pl-0">
             <DacklTextInput type="number" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :maxFractionDigits="2" class="w-full md:w-auto mt-2" label="Annual Percentage rate in %" v-model="enteredAnnualPercentageRate"/>
-<!--            <FloatLabel>
-              <InputText id="amount" type="number" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate" class="w-full" />
-              <label for="username">Annual Percentage rate in %</label>
-            </FloatLabel>-->
           </div>
           <div class="col-6">
             <div class="dropdown relative w-full ml-2">
               <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute w-full" for="currencyDropdown">Loan terms</label>
               <Dropdown :disabled="!(currentState === STATES.DataSuccessfullyProvided)"  class="w-full h-3.75rem pt-4 mt-1 mb-2 control-shadow" id="loanTermDropDown" v-model="selectedLoanTerm" :options="loanTerms" option-label="label" />
             </div>
-<!--            <FloatLabel class="w-full">
-              <Dropdown  v-model="selectedLoanTerm" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :options="loanTerms" optionLabel="label" placeholder="Select loan term" class="w-full" />
-              <label for="dd-city">Loan terms</label>
-            </FloatLabel>-->
           </div>
         </div>
         <Button v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder" severity="danger"
@@ -90,189 +71,9 @@
         </Button>
         <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="(!isAccessRequestGranted || isOfferCreated || currentState === STATES.PendingDataRequest) && !(currentState === STATES.DataSuccessfullyProvided)"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
-
-<!--        <div class="dropdown-container">
-          <span>Annual percentage rate %:</span>
-          <InputNumber id="amount" type="number" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate"/>
-        </div>
-        <div class="dropdown-container">
-          <span>Loan terms:</span>
-          <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>
-        </div>-->
-
       </template>
     </Card>
   </div>
-<!--  <div class="container">
-
-    <div class="content-left">
-      <div class="refresh-container">
-        <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only" @click="refreshState()"/>
-      </div>
-      <Stepper orientation="vertical" v-model:active-step="activeStep">
-        &lt;!&ndash; Stepper 1 &ndash;&gt;
-        <StepperPanel>
-          <template #header="{ index, clickCallback }">
-            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
-              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
-              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
-                {{ `Request business assessment data from ${demanderName}` }}
-              </span>
-            </button>
-          </template>
-          <template #content="{ nextCallback }">
-            <div class="flex flex-column">
-              <div class="dropdown-container">
-                <span>Select additional Data to Request:</span>
-                <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label" placeholder="Request Data"/>
-              </div>
-              <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-                      @click="requestAccessToData()">Request Data</Button>
-            </div>
-            <div class="flex p-2">
-              <Button class="button-next" label="Next" @click="nextCallback" />
-            </div>
-          </template>
-        </StepperPanel>
-        &lt;!&ndash; Stepper 2 &ndash;&gt;
-        <StepperPanel>
-          <template #header="{ index, clickCallback }">
-            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
-              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
-              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
-                {{ `Fetch processed business assessment data from ${demanderName}` }}
-              </span>
-            </button>
-          </template>
-          <template #content="{ prevCallback, nextCallback }">
-            <div class="flex flex-column">
-              <Button class="step-button"
-                      v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
-                      @click="fetchProcessedData()">Fetch Processed Data</Button>
-            </div>
-            <BusinessData v-if="businessDataFetched" :store="state.businessAssessmentStore" />
-            <div class="flex p-2 gap-2">
-              <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-              <Button class="button-next" label="Next" @click="nextCallback" />
-            </div>
-          </template>
-        </StepperPanel>
-        &lt;!&ndash; Stepper 3 &ndash;&gt;
-        <StepperPanel>
-          <template #header="{ index, clickCallback }">
-            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
-              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
-              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
-                {{ `Request creation of new business assessment data from ${demanderName}` }}
-              </span>
-            </button>
-          </template>
-          <template #content="{ prevCallback, nextCallback }">
-            <div class="flex flex-column">
-              <Button class="step-button"
-                      v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
-                      @click="requestCreationOfData()">Request New Data</Button>
-            </div>
-            <div class="flex p-2 gap-2">
-              <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-              <Button class="button-next" label="Next" @click="nextCallback" />
-            </div>
-          </template>
-        </StepperPanel>
-        &lt;!&ndash; Stepper 4 &ndash;&gt;
-        <StepperPanel>
-          <template #header="{ index, clickCallback }">
-            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
-              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
-              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
-                {{ `Create an offer for ${demanderName}` }}
-              </span>
-            </button>
-          </template>
-          <template #content="{ prevCallback, nextCallback}">
-            <div class="flex flex-column">
-              <div class="dropdown-container">
-                <span>Annual percentage rate %:</span>
-                <InputNumber id="amount" type="number" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate"/>
-              </div>
-              <div class="dropdown-container">
-                <span>Loan terms:</span>
-                <Dropdown v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>
-              </div>
-              <Button class="step-button" :disabled="!isAccessRequestGranted || isOfferCreated"
-                      @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer</Button>
-              <span class="offerAcceptedStatus" v-if="hasOrderForAnyOfferForThisDemand">
-                &check; Offer accepted
-              </span>
-              <span class="offerAcceptedStatus" v-if="!hasOrderForAnyOfferForThisDemand && isOfferCreated">
-                <span v-if="offerAccessRequests.length > 0 && !offerIsAccessible.some(response => response === 'true')">
-                  &lt;!&ndash; Make offer accessible &ndash;&gt;
-                  <span v-for="offerAccessRequest in offerAccessRequests" :key="offerAccessRequest">
-                    <Button type="submit" class="step-button"
-                            @click="handleAuthorizationRequest(offerAccessRequest)"> Grant  {{ demanderName }} access to offer
-                    </Button>
-                  </span>
-                </span>
-                <span v-else>
-                  &#9749; Waiting for response
-                </span>
-              </span>
-            </div>
-            <div class="flex p-2">
-                <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-                <Button class="button-next" label="Next" @click="nextCallback" />
-            </div>
-          </template>
-        </StepperPanel>
-        &lt;!&ndash; Stepper 5 &ndash;&gt;
-        <StepperPanel>
-          <template #header="{ index, clickCallback }">
-            <button id="pv_id_8_1_header_action" class="p-stepper-action" role="tab" aria-controls="pv_id_8_1_content" data-pc-section="action" @click="clickCallback">
-              <span :class="['p-stepper-number', { 'step-inactive': index < activeStep }]" data-pc-section="number">{{ index + 1 }}</span>
-              <span :class="['p-stepper-title', { 'step-inactive': index < activeStep }]" data-pc-section="title">
-                {{ `Termination of business relation` }}
-              </span>
-            </button>
-          </template>
-          <template #content="{ prevCallback  }">
-            <div class="flex flex-column">
-              <Button v-bind:disabled="!(hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder)"
-                      class="step-button" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
-              </Button>
-              <span v-if="hasTerminatedOrder"> ❌ Credit contract terminated!</span>
-            </div>
-            <div class="flex p-2 gap-2">
-              <Button class="button-back" label="Back" severity="secondary" @click="prevCallback" />
-            </div>
-          </template>
-        </StepperPanel>
-
-      </Stepper>
-
-      <ul class="flex flex-column gap-2">
-        <li class="flex align-items-center gap-2">
-        </li>
-        <li class="flex align-items-center gap-2">
-        </li>
-      </ul>
-    </div>
-
-    <div class="content-right">
-      <div class="content-right-side">
-        <p class="amount-label">Amount</p>
-        <p class="amount-value">{{ amount }} {{ currency }}</p>
-      </div>
-
-      <div class="demand">
-        <a :href="props.demandUri">
-          Demand
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0504 10L7 3.97107L8.13615 3L14 10L8.13615 17L7 16.0289L12.0504 10Z" fill="black" fill-opacity="0.9"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>-->
   <Dialog v-model:visible="isDialogVisible" modal header="Requested business assessment data" :style="{ width: '55rem' }">
     <div v-if="!businessDataFetched">
       <Skeleton width="100%" height="300px" ></Skeleton>
@@ -322,10 +123,16 @@ import {AxiosResponse} from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, reactive, Ref, ref, watch} from 'vue';
-import LoanCard from "@/components/LoanCard.vue";
 import Card from "primevue/card";
-import FloatLabel from 'primevue/floatlabel';
 import {DacklTextInput} from "@shared/components";
+import {STATES} from "@/enums/states";
+import {TAB_STATE} from "@/enums/tabsState";
+import {
+  businessAssessmentTree,
+  documentCreationDemandShapeTreeUri,
+  offerShapeTreeUri,
+  orderShapeTreeUri
+} from "@/constatns/solid-urls";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
@@ -348,22 +155,18 @@ const loanTerms = [
 
 const selectedShapeTree = ref({
   label: "Business Assessment 2023",
-  value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"
+  value: businessAssessmentTree
 });
 const shapeTrees = [
   {
     label: "Business Assessment 2022",
-    value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"
+    value: businessAssessmentTree
   },
   {
     label: "Business Assessment 2023",
-    value: "https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#businessAssessmentTree"
+    value: businessAssessmentTree
   }
 ];
-
-const orderShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree';
-const offerShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree';
-const documentCreationDemandShapeTreeUri = 'https://solid.aifb.kit.edu/shapes/mandat/document.tree#documentCreationDemandTree';
 
 const state = reactive({
   demandStore: new Store(),
@@ -403,7 +206,6 @@ async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag?:R
 }
 
 function refreshState() {
-  setActiveProcessStep();
   state.demandStore = new Store()
   state.offerStore = new Store()
   state.orderStore = new Store()
@@ -418,7 +220,6 @@ const isAccessRequestGranted = computed(() => state.demandStore.getQuads(props.d
 const amount = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
 const currency = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
 const demanderUri = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
-let activeStep = computed(() => setActiveProcessStep());
 let currentDemandState= ref('Demand');
 // DEMANDER
 watch(() => demanderUri.value,
@@ -431,7 +232,6 @@ watch(() => demanderUri.value,
 )
 watch(()=> props.demandState,()=> {
   currentDemandState.value = props.demandState;
-  console.log("DemandStae is updated");
 }, {immediate:true});
 const demanderName = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
 const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
@@ -442,7 +242,6 @@ const orderStoreFilledFlag = ref(false)
 const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
 
-const dataNeeded = computed(() => accessRequestUri.value !== undefined || isOfferCreated)
 await fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag)
 watch(() => offersForDemand.value, () => fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag));
 
@@ -464,23 +263,9 @@ watch(() => offerAccessRequests.value,
       })
     }, {immediate: true}
 )
-
-enum STATES {
-  DataNeeded = 'DataNeeded',
-  PendingDataRequest = 'PendingDataRequest',
-  DataSuccessfullyProvided = 'DataSuccessfullyProvided',
-  WaitingForResponse = 'WaitingForResponse',
-  OfferAccepted = 'OfferAccepted',
-  Terminated = 'Terminated',
-  NoOperation = 'NoOperation'
-}
-
-enum TAB_STATE {
-  Demands= "Demands",
-  OfferAccepted = 'OfferAccepted',
-  Terminated = 'Terminated',
-}
-
+/**
+ * TabState will be used to determine the state of the tab.
+ */
 const tabState = computed( ()=>{
   if( currentState.value === STATES.Terminated){
     return TAB_STATE.Terminated;
@@ -492,6 +277,10 @@ const tabState = computed( ()=>{
     return TAB_STATE.Demands;
   }
 })
+
+/**
+ * CurrentState will be used to determine the state of the demand and the offer.
+*/
 
 const currentState = computed(() =>{
   if (accessRequestUri.value === undefined && !isOfferCreated.value) {
@@ -536,26 +325,6 @@ watch(() => orderStoreFilledFlag.value == true, () => {
   const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), null, null).map(subject => subject.value);
   hasTerminatedOrder.value = acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
-
-function setActiveProcessStep(): number {
-  let step = 0;
-  if (accessRequestUri.value === undefined && !isOfferCreated.value) {
-    step = 0;
-  }
-  if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
-    step = 1;
-  }
-  if (isAccessRequestGranted.value && offerAccessRequests.value.length > 0) {
-    step = 3;
-  }
-  if(hasOrderForAnyOfferForThisDemand.value){
-    step = 4;
-  }
-  return step;
-
-}
-
-
 
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
@@ -926,7 +695,6 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 }
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
-  console.log(inspectedAccessRequestURI);
   window.open(
       `${authAgent.value}?uri=${encodeURIComponent(
           inspectedAccessRequestURI
