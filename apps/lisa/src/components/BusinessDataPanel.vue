@@ -21,17 +21,7 @@ if (props.store) {
 <template>
   <div class="card bg-gray-50 border-round" style="background: rgba(232, 236, 239, 0.7); padding:0.5rem">
     <p style="font-size:14px; color:rgba(0, 0, 0, 0.7)">Annual Percentage rate in %</p>
-
-      <p class="m-0">
-
-        {{ displayText }}
-      </p>
-<!--
-    <Message severity="success">Looks good: Automatic processing returned positive!</Message>
--->
-<!--      <template #footer>
-        <Message severity="success" :closable="false">Looks good: Automatic processing returned positive!</Message>
-      </template>-->
+    <p class="m-0">{{ displayText }} </p>
   </div>
   <div class="success-message border-round">
     <p>Looks good: Automatic processing returned positive!

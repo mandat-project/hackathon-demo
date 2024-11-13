@@ -8,15 +8,15 @@
 
   <div class="grid" style="padding-left:160px; padding-right:160px">
     <h1>{{activeTab}}</h1>
-    <ul class="col-12 flex flex-column gap-4" style="background-color:white">
+    <div class="col-12 flex flex-column gap-4" style="background-color:white">
     <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
         <div class="w-full" v-if="index === 0"></div>
         <Suspense timeout="0">
           <!-- main content -->
-          <li >
+
             <DemandProcessor :demandUri="demandUri" :demandState="activeTab"/>
-          </li>
+
           <!-- loading state -->
           <template #fallback>
             <div>
@@ -25,7 +25,7 @@
           </template>
         </Suspense>
       </template>
-    </ul>
+    </div>
   </div>
   <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase"
     data-ribbon="GitHub" title="GitHub">GitHub</a>

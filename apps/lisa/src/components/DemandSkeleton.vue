@@ -7,8 +7,8 @@
           <Skeleton width="10rem" class="mb-2"></Skeleton>
         </div>
         <div class="col-6">
-          <Skeleton width="10rem" class="mb-2"></Skeleton>
           <Skeleton width="5rem" class="mb-2"></Skeleton>
+          <Skeleton width="10rem" class="mb-2"></Skeleton>
         </div>
       </div>
       <Skeleton width="100%" height="150px"></Skeleton>

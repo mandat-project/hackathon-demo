@@ -3,6 +3,9 @@
     <Card class="pb-4">
       <template #content>
         <div class="grid">
+          <div class="col-12" v-if ="currentState === STATES.Terminated" >
+            <Chip label="Terminated" class=" text-color text-sm " style="background-color:rgba(255, 255, 255, 1); border: 1px solid rgba(155, 178, 186, 1)"/>
+          </div>
           <div class="col-6">
             <span>Applicant</span>
             <h2>{{demanderName}}</h2>
@@ -12,23 +15,21 @@
             <h2>{{ amount }} - {{ currency }}</h2>
           </div>
         </div>
-        <div class="bg-gray-50 border-round m-2 p-4">
-          <div v-if="currentState === STATES.DataNeeded" class="ml-2">
-            <Chip label="Data needed" class="text-0 text-sm " style="background-color:red"/>
-            <div class="dropdown-container w-full mt-5">
-              <!--        <span>Business Assessemnent data</span>
-                      <Dropdown v-model="selectedYear" class="w-full" :options="assessmentYear" optionLabel="label" placeholder="Select loan term"/>-->
-              <FloatLabel class="w-full">
-                <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label"  class="w-full" />
-                <label>Business Assessemnent data</label>
-              </FloatLabel>
-            </div>
-            <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
-                    @click="requestAccessToData()">Request Data</Button>
+        <div class="bg-gray-50 border-round-2xl p-2">
+          <div class=" grid gap-2 ml-2 py-2" v-if="currentState === STATES.DataNeeded">
+              <Chip label="Data needed" class="text-0 text-sm ml-2" style="background-color: rgba(222, 26, 6, 1);"/>
+              <div class="dropdown-container w-full mt-5">
+                <FloatLabel class="w-full">
+                  <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label"  class="w-full" />
+                  <label>Business Assessemnent data</label>
+                </FloatLabel>
+              </div>
+              <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
+                      @click="requestAccessToData()">Request Data</Button>
           </div>
-          <div v-else-if="currentState === STATES.PendingDataRequest || currentState === STATES.DataSuccessfullyProvided" class="ml-2">
-            <Chip label="Pending Data Request" v-if="currentState === STATES.PendingDataRequest" class=" text-color text-sm " style="background-color:#FFCEA3"/>
-            <Chip label="Data successfully provided" v-else class=" text-color text-sm "/>
+          <div v-else-if="currentState === STATES.PendingDataRequest || currentState === STATES.DataSuccessfullyProvided" class="gap-2 ml-2 py-2">
+            <Chip label="Pending Data Request" v-if="currentState === STATES.PendingDataRequest" class=" text-color text-sm ml-2" style="background-color:rgba(255, 206, 163, 1)"/>
+            <Chip label="Data successfully provided" v-else class=" text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
               <h5>Business Assessemnent data</h5>
               <p class="text-xs pb-2">Requested Data</p>
               <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
@@ -36,13 +37,15 @@
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
                     @click="processDataDialogBox()">Show Data</Button>
           </div>
-          <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class="ml-2">
-            <Chip v-if="currentState === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm "/>
-            <Chip v-else-if ="currentState === STATES.Terminated" label="Terminated" class=" text-color text-sm "/>
-            <Chip v-else label="Offer Accepted" class=" text-color text-sm "/>
-            <h5>Business Assessemnent data</h5>
-            <p class="text-xs pb-2">Requested Data</p>
-            <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
+          <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class=" gap-2 ml-2 py-2">
+            <Chip v-if="currentState === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm ml-2" style="background-color:rgba(255, 206, 163, 1)"/>
+            <Chip v-else-if ="currentState === STATES.Terminated" label="Terminated" class=" text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
+            <Chip v-else label="Offer Accepted" class="text-sm ml-2" style="background-color:rgba(32, 151, 12, 1); color:white"/>
+            <div class="ml-2">
+              <h5>Business Assessemnent data</h5>
+              <p class="text-xs pb-2">Requested Data</p>
+              <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
+            </div>
             <Button class="step-button"
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
                     @click="processDataDialogBox()" severity="secondary">Show Data</Button>
@@ -253,18 +256,22 @@
       </div>
     </div>
   </div>-->
-  <Dialog v-model:visible="visible" modal header="Requested business assessment data" :style="{ width: '55rem' }">
+  <Dialog v-model:visible="isDialogVisible" modal header="Requested business assessment data" :style="{ width: '55rem' }">
+    <div v-if="!businessDataFetched">
+      <Skeleton width="100%" height="300px" ></Skeleton>
+      <Skeleton width="100%" height="50px" class="mb-5 mt-2"></Skeleton>
+    </div>
     <BusinessData v-if="businessDataFetched" :store="state.businessAssessmentStore" />
-    <div class="py-4">
+    <div class="py-4" v-if="businessDataFetched">
       <div class="flex justify-content-end gap-2" v-if="(currentState === STATES.OfferAccepted) || (currentState === STATES.Terminated)">
-        <Button type="button" label="Close" severity="secondary" @click="visible = false"></Button>
+        <Button type="button" label="Close" severity="secondary" @click="isDialogVisible = false"></Button>
       </div>
       <div v-else class="flex justify-content-end gap-2">
-        <Button type="button" label="Accept provided Data" @click="visible = false"></Button>
+        <Button type="button" label="Accept provided Data" @click="isDialogVisible = false"></Button>
         <Button type="button" label="Request New Data" severity="secondary"
                 v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
-                @click="requestCreationOfData();visible = false">Request New Data</Button>
-        <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                @click="requestCreationOfData()">Request New Data</Button>
+        <Button type="button" label="Cancel" severity="secondary" @click="isDialogVisible = false"></Button>
       </div>
     </div>
   </Dialog>
@@ -311,7 +318,7 @@ const {session} = useSolidSession();
 let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
-const visible = ref(false);
+const isDialogVisible = ref(false);
 const loanTerms = [
   {label: "6 months", value: "0.5"},
   {label: "12 months", value: "1"},
@@ -487,7 +494,6 @@ const currentState = computed(() =>{
   if(hasTerminatedOrder.value){
     return STATES.Terminated;
   }
-
   return STATES.NoOperation;
 });
 // ORDER
@@ -647,6 +653,7 @@ async function requestAccessToData() {
 }
 
 async function requestCreationOfData() {
+  isDialogVisible.value = false
   const documentCreationDemandBody = `\
       @prefix schema: <${SCHEMA()}> .
       @prefix credit: <${CREDIT()}> .
@@ -912,7 +919,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
   );
 }
 function processDataDialogBox(){
-  visible.value = true;
+  isDialogVisible.value = true;
   fetchProcessedData()
 }
 async function handleAuthorizationRequestRedirect(

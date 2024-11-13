@@ -75,7 +75,9 @@ body {
   font-weight: 400;
   color: var(--text-color);
 }
-
+h1 {
+  font-family: var(--font-family-serif);
+}
 ul,
 ol {
   list-style: none;
