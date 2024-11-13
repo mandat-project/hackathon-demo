@@ -9,7 +9,7 @@
   <div class="grid" style="padding-left:160px; padding-right:160px">
     <h1>{{activeTab}}</h1>
     <ul class="col-12 flex flex-column gap-4" style="background-color:white">
-<!--    <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />-->
+    <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
         <div class="w-full" v-if="index === 0"></div>
         <Suspense timeout="0">
@@ -20,7 +20,7 @@
           <!-- loading state -->
           <template #fallback>
             <div>
-              Loading demand ...
+              <DemandSkeleton></DemandSkeleton>
             </div>
           </template>
         </Suspense>
@@ -62,6 +62,7 @@ import { getResource, LDP, parseToN3, getDataRegistrationContainers } from "@sha
 import { computed, ref, watch } from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
 import {TabItemType, TabList} from "@shared/components";
+import DemandSkeleton from "@/components/DemandSkeleton.vue";
 
 
 const toast = useToast();

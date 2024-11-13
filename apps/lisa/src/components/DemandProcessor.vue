@@ -9,7 +9,8 @@
           </div>
           <div class="col-6">
             <span>Amount</span>
-            <h2>{{ amount }} - {{ currency }}</h2></div>
+            <h2>{{ amount }} - {{ currency }}</h2>
+          </div>
         </div>
         <div class="bg-gray-50 border-round m-2 p-4">
           <div v-if="currentState === STATES.DataNeeded" class="ml-2">
