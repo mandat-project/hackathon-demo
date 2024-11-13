@@ -15,24 +15,28 @@
             <h2>{{ amount }} - {{ currency }}</h2>
           </div>
         </div>
-        <div class="bg-gray-50 border-round-2xl p-2">
-          <div class=" grid gap-2 ml-2 py-2" v-if="currentState === STATES.DataNeeded">
+        <div class="border-round-2xl p-2" style="background-color:rgba(246, 247, 249, 1);">
+          <div class=" grid gap-3 ml-2 py-2" v-if="currentState === STATES.DataNeeded">
               <Chip label="Data needed" class="text-0 text-sm ml-2" style="background-color: rgba(222, 26, 6, 1);"/>
-              <div class="dropdown-container w-full mt-5">
-                <FloatLabel class="w-full">
-                  <Dropdown v-model="selectedShapeTree" :options="shapeTrees" optionLabel="label"  class="w-full" />
-                  <label>Business Assessemnent data</label>
-                </FloatLabel>
+            <div class="w-full ml-2">
+              <p class="font-medium" >Business Assessment data</p>
+            </div>
+
+              <div class="dropdown relative w-full ml-2">
+                  <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute w-full" for="currencyDropdown">Select data</label>
+                  <Dropdown class="w-full h-3.75rem pt-4 mt-1 mb-2 control-shadow" v-model="selectedShapeTree" :options="shapeTrees" option-label="label" />
               </div>
               <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                       @click="requestAccessToData()">Request Data</Button>
           </div>
           <div v-else-if="currentState === STATES.PendingDataRequest || currentState === STATES.DataSuccessfullyProvided" class="gap-2 ml-2 py-2">
             <Chip label="Pending Data Request" v-if="currentState === STATES.PendingDataRequest" class=" text-color text-sm ml-2" style="background-color:rgba(255, 206, 163, 1)"/>
-            <Chip label="Data successfully provided" v-else class=" text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
+            <Chip label="Data successfully provided" v-else class="text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
+            <div class="ml-2">
               <h5>Business Assessemnent data</h5>
               <p class="text-xs pb-2">Requested Data</p>
-              <p class="pb-4 text-sm">{{selectedShapeTree.label}}</p>
+              <p class="pb-4 text-sm font-medium">{{selectedShapeTree.label}}</p>
+            </div>
             <Button class="step-button"
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
                     @click="processDataDialogBox()">Show Data</Button>
@@ -53,25 +57,38 @@
         </div>
         <div class="grid pt-2 pb-2">
 <!-- on Pending the elements should be disable          -->
-          <div class="col-6">
-            <FloatLabel>
+<!--          <div class="flex flex-column md:flex-row mt-3">
+            <DacklTextInput type="number" class="w-full md:w-auto mt-2" label="Enter amount" v-model="enteredAmount" />
+
+            <div class="dropdown relative mt-2 md:mt-0 md:mx-3">
+              <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute" for="currencyDropdown">Currency</label>
+              <Dropdown class="w-full h-3.75rem md:w-auto pt-4 mt-1 control-shadow" id="currencyDropdown" v-model="selectedCurrency" :options="currencies" option-value="value" option-label="label" />
+            </div>
+          </div>-->
+
+
+          <div class="col-6 pl-0">
+            <DacklTextInput type="number" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :maxFractionDigits="2" class="w-full md:w-auto mt-2" label="Annual Percentage rate in %" v-model="enteredAnnualPercentageRate"/>
+<!--            <FloatLabel>
               <InputText id="amount" type="number" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :maxFractionDigits="2" v-model="enteredAnnualPercentageRate" class="w-full" />
               <label for="username">Annual Percentage rate in %</label>
-            </FloatLabel>
+            </FloatLabel>-->
           </div>
           <div class="col-6">
-            <!--          <span>Loan terms:</span>
-                      <Dropdown class="w-full"  v-model="selectedLoanTerm" :options="loanTerms" optionLabel="label" placeholder="Select loan term"/>-->
-            <FloatLabel class="w-full">
+            <div class="dropdown relative w-full ml-2">
+              <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute w-full" for="currencyDropdown">Loan terms</label>
+              <Dropdown :disabled="!(currentState === STATES.DataSuccessfullyProvided)"  class="w-full h-3.75rem pt-4 mt-1 mb-2 control-shadow" id="loanTermDropDown" v-model="selectedLoanTerm" :options="loanTerms" option-label="label" />
+            </div>
+<!--            <FloatLabel class="w-full">
               <Dropdown  v-model="selectedLoanTerm" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :options="loanTerms" optionLabel="label" placeholder="Select loan term" class="w-full" />
               <label for="dd-city">Loan terms</label>
-            </FloatLabel>
+            </FloatLabel>-->
           </div>
         </div>
         <Button v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder" severity="danger"
                 class="step-button text-0" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
         </Button>
-        <Button v-else class="step-button" :disabled="(!isAccessRequestGranted || isOfferCreated) && !(currentState === STATES.DataSuccessfullyProvided)"
+        <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="(!isAccessRequestGranted || isOfferCreated || currentState === STATES.PendingDataRequest) && !(currentState === STATES.DataSuccessfullyProvided)"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
 
 <!--        <div class="dropdown-container">
@@ -308,6 +325,7 @@ import {computed, reactive, Ref, ref, watch} from 'vue';
 import LoanCard from "@/components/LoanCard.vue";
 import Card from "primevue/card";
 import FloatLabel from 'primevue/floatlabel';
+import {DacklTextInput} from "@shared/components";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
@@ -968,6 +986,13 @@ async function handleAuthorizationRequestRedirect(
   .p-card-body {
     padding-top:0px;
   }
+}
+
+
+
+.p-disabled{
+  background-color: rgba(237, 240, 243, 1); /* Change to your desired color */
+  cursor: not-allowed; /* Optional: Change cursor style */
 }
   .container {
     display: flex;
