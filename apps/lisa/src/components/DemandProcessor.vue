@@ -4,7 +4,7 @@
       <template #content>
         <div class="grid">
           <div class="col-12" v-if ="currentState === STATES.Terminated" >
-            <Chip label="Terminated" class="text-color text-sm" style="background-color:rgba(255, 255, 255, 1); border: 1px solid rgba(155, 178, 186, 1)"/>
+            <StatusChip :status="STATES.Terminated"></StatusChip>
           </div>
           <div class="col-6">
             <span>Applicant</span>
@@ -17,21 +17,20 @@
         </div>
         <div class="border-round-2xl p-2" style="background-color:rgba(246, 247, 249, 1);">
           <div class=" grid gap-3 ml-2 py-2" v-if="currentState === STATES.DataNeeded">
-              <Chip label="Data needed" class="text-0 text-sm ml-2" style="background-color: rgba(222, 26, 6, 1);"/>
+            <StatusChip :status="STATES.DataNeeded"></StatusChip>
             <div class="w-full ml-2">
               <p class="font-medium" >Business Assessment data</p>
             </div>
 
               <div class="dropdown relative w-full ml-2">
-                  <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute w-full" for="currencyDropdown">Select data</label>
+                  <label class="z-1 pt-2.5 pl-2 text-sm text-black-alpha-70 absolute w-full">Select data</label>
                   <Dropdown class="w-full h-3.75rem pt-4 mt-1 mb-2 control-shadow" v-model="selectedShapeTree" :options="shapeTrees" option-label="label" />
               </div>
               <Button class="step-button" v-bind:disabled="accessRequestUri !== undefined || isOfferCreated"
                       @click="requestAccessToData()">Request Data</Button>
           </div>
           <div v-else-if="currentState === STATES.PendingDataRequest || currentState === STATES.DataSuccessfullyProvided" class="gap-2 ml-2 py-2">
-            <Chip label="Pending Data Request" v-if="currentState === STATES.PendingDataRequest" class=" text-color text-sm ml-2" style="background-color:rgba(255, 206, 163, 1)"/>
-            <Chip label="Data successfully provided" v-else class="text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
+            <StatusChip :status="currentState"></StatusChip>
             <div class="ml-2">
               <h5>Business Assessemnent data</h5>
               <p class="text-xs pb-2">Requested Data</p>
@@ -42,9 +41,7 @@
                     @click="processDataDialogBox()">Show Data</Button>
           </div>
           <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class=" gap-2 ml-2 py-2">
-            <Chip v-if="currentState === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm ml-2" style="background-color:rgba(255, 206, 163, 1)"/>
-            <Chip v-else-if ="currentState === STATES.Terminated" label="Terminated" class=" text-color text-sm ml-2" style="background-color:rgba(255, 255, 255, 1)"/>
-            <Chip v-else label="Offer Accepted" class="text-sm ml-2" style="background-color:rgba(32, 151, 12, 1); color:white"/>
+            <StatusChip :status="currentState" v-if="currentState !== STATES.Terminated"></StatusChip>
             <div class="ml-2">
               <h5>Business assessment data</h5>
               <p class="text-xs pb-2">Requested Data:</p>
@@ -133,6 +130,7 @@ import {
   offerShapeTreeUri,
   orderShapeTreeUri
 } from "@/constatns/solid-urls";
+import StatusChip from "/src/components/StatusChip.vue";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
