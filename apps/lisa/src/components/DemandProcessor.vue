@@ -171,7 +171,7 @@
 </template>
 
 <script setup lang="ts">
-import BusinessData from "/src/components/BusinessDataPanel.vue";
+import BusinessData from "@/components/BusinessDataPanel.vue";
 import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
 import {
   ACL,

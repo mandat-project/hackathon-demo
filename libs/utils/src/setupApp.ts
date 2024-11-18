@@ -32,9 +32,9 @@ import StepperPanel from "primevue/stepperpanel";
 import TabMenu from "primevue/tabmenu";
 import Textarea from "primevue/textarea";
 import Toast from "primevue/toast";
-import ToastService from "primevue/toastservice";
 import Toolbar from "primevue/toolbar";
 import Tooltip from "primevue/tooltip";
+import ToastService from "primevue/toastservice";
 import {App} from "vue";
 import {Router} from "vue-router";
 
