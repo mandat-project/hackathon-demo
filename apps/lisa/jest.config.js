@@ -1,6 +1,7 @@
 module.exports = {
     testEnvironment: 'jsdom',
-    verbose: true,
+    verbose: false,
+  setupFilesAfterEnv: ['<rootDir>/../../jest-setup.ts'],
     transform: {
         '^.+\\.vue$': '@vue/vue3-jest',
         '^.+\\.jsx?$': 'babel-jest',
