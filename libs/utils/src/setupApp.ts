@@ -37,6 +37,7 @@ import Toolbar from "primevue/toolbar";
 import Tooltip from "primevue/tooltip";
 import {App} from "vue";
 import {Router} from "vue-router";
+import DialogService from 'primevue/dialogservice';
 
 export const setupApp = (app: App<Element>, router?: Router): void => {
     if (router) { app.use(router); }
@@ -44,6 +45,7 @@ export const setupApp = (app: App<Element>, router?: Router): void => {
     app.use(PrimeVue, {ripple: true});
     app.use(ToastService);
     app.use(ConfirmationService);
+    app.use(DialogService);
 
     app.component("Button", Button);
     app.component("Toolbar", Toolbar);

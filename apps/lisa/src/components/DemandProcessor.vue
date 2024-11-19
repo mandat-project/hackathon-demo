@@ -131,12 +131,19 @@ import {
   orderShapeTreeUri
 } from "@/constatns/solid-urls";
 import StatusChip from "/src/components/StatusChip.vue";
+import {
+  documentCreationDemandBody,
+  getAccessBeingSet,
+  getAccessBeingSetBody, getCreateOfferResourceBody,
+  getDataBody, getDocumentCreationDemandBody
+} from "@/constatns/request-access";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
 const toast = useToast();
 const appMemory = useCache();
 const {session} = useSolidSession();
+
 
 let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
@@ -362,60 +369,8 @@ async function patchBusinessResourceToHaveAccessRequest(businessResource: string
 }
 
 async function requestAccessToData() {
-  const accessRequestBody = `@prefix interop: <${INTEROP()}> .
-    @prefix ldp: <${LDP()}> .
-    @prefix skos: <${SKOS()}> .
-    @prefix credit: <${CREDIT()}> .
-    @prefix xsd: <${XSD()}> .
-    @prefix acl: <${ACL()}> .
-    @prefix gdprp: <${GDPRP()}> .
-    @prefix rdfs: <${RDFS()}> .
 
-    # This could be hosted at the profle document of the application or social agent or at a
-    # central location (e.g. together with the shapes/shapetress) for "standardized" access needs
-    <#bwaAccessNeed>
-      a interop:AccessNeed ;
-      interop:accessMode acl:Read ;
-      interop:registeredShapeTree <${selectedShapeTree.value.value}> ;
-      interop:accessNecessity interop:accessRequired .
-
-    <#bwaAccessNeedGroup>
-      a interop:AccessNeedGroup ;
-      interop:hasAccessDescriptionSet <#bwaAccessDescriptionSet> ;
-      interop:accessNecessity interop:accessRequired ;
-      interop:accessScenario interop:sharedAccess ;
-      interop:authenticatesAs interop:SocialAgent ;
-      interop:hasAccessNeed <#bwaAccessNeed> .
-
-    <#bwaAccessDescriptionSet>
-      a interop:AccessDescriptionSet ;
-      interop:usesLanguage "de"^^xsd:language .
-
-    # This is hosted at the profile document of the agent or application
-    <#bwaAccessNeedGroupDescription>
-      a interop:AccessNeedGroupDescription ;
-      interop:inAccessDescriptionSet <#bwaAccessDescriptionSet> ;
-      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
-      skos:prefLabel "Access business analyses (Group)"@en ;
-      skos:definition "The bank needs to know your business analyses in order to prepare a suitable loan offer for you"@en .
-
-    <#bwaAccessNeedDescription>
-      a interop:AccessNeedDescription ;
-      interop:inAccessDescriptionSet <#bwaAccessDescriptionSet> ;
-      interop:hasAccessNeed <#bwaAccessNeed> ;
-      skos:prefLabel "Access business analyses"@en ;
-      skos:definition "The bank needs to know your business analyses in order to prepare a suitable loan offer for you"@en .
-
-    # Goes into the access inbox of sme
-    <#bwaAccessRequest>
-      a interop:AccessRequest ;
-      gdprp:purposeForProcessing gdprp:contractualObligations ;
-      interop:fromSocialAgent <${memberOf.value}> ;
-      interop:toSocialAgent  <${demanderUri.value}> ;
-      interop:hasAccessNeedGroup <#bwaAccessNeedGroup> ;
-
-      rdfs:seeAlso <${props.demandUri}>.`;
-
+  const accessRequestBody = getDataBody(props.demandUri,demanderUri.value, selectedShapeTree.value.value, memberOf.value);
   const accessRequestUri = await createResource(demanderAccessInboxUri!.value!, accessRequestBody, session)
       .catch((err) => {
         toast.add({
@@ -439,7 +394,8 @@ async function requestAccessToData() {
 
 async function requestCreationOfData() {
   isDialogVisible.value = false
-  const documentCreationDemandBody = `\
+  const documentCreationDemandBody = getDocumentCreationDemandBody(memberOf.value,props.demandUri,selectedShapeTree.value.value);
+/*  `\
       @prefix schema: <${SCHEMA()}> .
       @prefix credit: <${CREDIT()}> .
       @prefix interop: <${INTEROP()}> .
@@ -448,7 +404,7 @@ async function requestCreationOfData() {
       credit:derivedFromDemand <${props.demandUri}> ;
       interop:registeredShapeTree <${selectedShapeTree.value.value}> .
       <${memberOf.value}> schema:seeks <> .
-    `;
+    `;*/
   const documentCreationDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentCreationDemandShapeTreeUri, session);
   const documentCreationDemandURI = await createResource(documentCreationDemandContainerUris[0], documentCreationDemandBody, session)
       .catch((err) => {
@@ -562,7 +518,19 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
 
 async function createOfferResource(demand: string, dataAccessRequest: string) {
   const businessAssessmentRegistrations = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, session);
-  const body = `
+  const derivedFromData = businessAssessmentRegistrations.map(r => "<" + r + ">").join(", ");
+  const body = getCreateOfferResourceBody(
+      demand,
+      derivedFromData,
+      dataAccessRequest,
+      memberOf.value,
+      demanderUri.value,
+      amount.value,
+      currency.value,
+      enteredAnnualPercentageRate.value,
+      selectedLoanTerm.value.value
+  );
+ /* const body = `
           @prefix : <#>.
           @prefix credit: <${CREDIT()}> .
           @prefix schema: <${SCHEMA()}> .
@@ -583,7 +551,7 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
             <#duration>
               a schema:QuantitativeValue;
               schema:value "${selectedLoanTerm.value.value} years".
-            `
+            `*/
   const offerLocation = await createResourceInAnyRegistrationOfShape(memberOf.value!, offerShapeTreeUri, body, session)
       .catch((err) => {
         toast.add({
@@ -615,7 +583,9 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
 }
 
 async function requestAccessBeingSet(resource: string, forAgent: string) {
-  const body = `@prefix interop: <${INTEROP()}> .
+  const body = getAccessBeingSetBody(memberOf.value, forAgent, props.demandUri, resource);
+
+ /* const body = `@prefix interop: <${INTEROP()}> .
     @prefix ldp: <${LDP()}> .
     @prefix skos: <${SKOS()}> .
     @prefix credit: <${CREDIT()}> .
@@ -677,7 +647,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 
     <#accessDescriptionSet>
       a interop:AccessDescriptionSet ;
-      interop:usesLanguage "de"^^xsd:language .`;
+      interop:usesLanguage "de"^^xsd:language .`;*/
 
   return createResource(accessInbox.value, body, session)
       .catch((err) => {
