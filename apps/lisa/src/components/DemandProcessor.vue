@@ -96,23 +96,18 @@
 import BusinessData from "/src/components/BusinessDataPanel.vue";
 import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
 import {
-  ACL,
   createResource,
   createResourceInAnyRegistrationOfShape,
   CREDIT,
   FOAF,
-  GDPRP,
   getContainerItems,
   getDataRegistrationContainers,
   getLocationHeader,
   getResource,
   INTEROP,
-  LDP,
   parseToN3,
   putResource,
-  RDFS,
   SCHEMA,
-  SKOS,
   VCARD,
   XSD
 } from '@shared/solid';
@@ -132,11 +127,11 @@ import {
 } from "@/constatns/solid-urls";
 import StatusChip from "/src/components/StatusChip.vue";
 import {
-  documentCreationDemandBody,
-  getAccessBeingSet,
-  getAccessBeingSetBody, getCreateOfferResourceBody,
-  getDataBody, getDocumentCreationDemandBody
-} from "@/constatns/request-access";
+  getAccessBeingSetBody,
+  getCreateOfferResourceBody,
+  getDataBody,
+  getDocumentCreationDemandBody
+} from "@/service/request-access";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()

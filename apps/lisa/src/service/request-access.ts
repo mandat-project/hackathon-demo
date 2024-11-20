@@ -1,8 +1,4 @@
 import {ACL, CREDIT, GDPRP, INTEROP, LDP, RDFS, SCHEMA, SKOS, XSD} from '@shared/solid';
-import {useSolidProfile} from '@shared/composables';
-
-const { memberOf} = useSolidProfile();
-
 
 const prefix =`@prefix interop: <${INTEROP()}> .
     @prefix ldp: <${LDP()}> .
@@ -15,6 +11,7 @@ const prefix =`@prefix interop: <${INTEROP()}> .
 `;
 
 export const getDataBody = (demandUri: string,demanderUri:  string, selectedShapeTreeValue: string, memberOfValue:string) => {
+    console.log("** memberValueOf fromSolid **", memberOfValue);
 
     return prefix + `
 
@@ -67,7 +64,6 @@ export const getDataBody = (demandUri: string,demanderUri:  string, selectedShap
 
 
 export const getAccessBeingSetBody = (memberOf:string, forAgent:string, demandUri:string, resource:string) =>{
-
     return prefix + `
 
     <#accessRequest>
@@ -126,16 +122,18 @@ export const getAccessBeingSetBody = (memberOf:string, forAgent:string, demandUr
       interop:usesLanguage "de"^^xsd:language .`;
 }
 
-export const getDocumentCreationDemandBody = (membersOf:string, demandUri:string, selectedShapeTree: string) =>  `\
+export const getDocumentCreationDemandBody = (memberOf:string, demandUri:string, selectedShapeTree: string) => {
+    return `\
       @prefix schema: <${SCHEMA()}> .
       @prefix credit: <${CREDIT()}> .
       @prefix interop: <${INTEROP()}> .
       <> a schema:Demand ;
-      interop:fromSocialAgent <${membersOf}> ;
+      interop:fromSocialAgent <${memberOf}> ;
       credit:derivedFromDemand <${demandUri}> ;
       interop:registeredShapeTree <${selectedShapeTree}> .
       <${memberOf}> schema:seeks <> .
     `;
+}
 
 export const getCreateOfferResourceBody = (
     demand: string,
@@ -146,7 +144,8 @@ export const getCreateOfferResourceBody = (
     amount: string,
     currency: string,
     annualPercentageRate: string,
-    selectedLongTerm: string) => `
+    selectedLongTerm: string) => {
+    return `
           @prefix : <#>.
           @prefix credit: <${CREDIT()}> .
           @prefix schema: <${SCHEMA()}> .
@@ -168,3 +167,4 @@ export const getCreateOfferResourceBody = (
               a schema:QuantitativeValue;
               schema:value "${selectedLongTerm} years".
             `;
+}
