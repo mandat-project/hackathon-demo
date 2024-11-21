@@ -37,7 +37,7 @@
               <p class="pb-4 text-sm font-medium">{{selectedShapeTree.label}}</p>
             </div>
             <Button class="step-button"
-                    v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
+                    v-bind:disabled="isDialogShowDataBtnDisabled"
                     @click="processDataDialogBox()">Show Data</Button>
           </div>
           <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class=" gap-2 ml-2 py-2">
@@ -63,14 +63,16 @@
             </div>
           </div>
         </div>
-        <Button v-if="hasOrderForAnyOfferForThisDemand && !hasTerminatedOrder" severity="danger"
+        <Button v-if="isTerminateBtnVisible" severity="danger"
                 class="step-button text-0" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
         </Button>
-        <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="(!isAccessRequestGranted || isOfferCreated || currentState === STATES.PendingDataRequest) && !(currentState === STATES.DataSuccessfullyProvided)"
+        <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="isCreateOfferBtnDisabled"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
       </template>
     </Card>
   </div>
+
+
   <Dialog v-model:visible="isDialogVisible" modal header="Requested business assessment data" :style="{ width: '55rem' }">
     <div v-if="!businessDataFetched">
       <Skeleton width="100%" height="300px" ></Skeleton>
@@ -78,13 +80,13 @@
     </div>
     <BusinessData v-if="businessDataFetched" :store="state.businessAssessmentStore" />
     <div class="py-4" v-if="businessDataFetched">
-      <div class="flex justify-content-end gap-2" v-if="(currentState === STATES.OfferAccepted) || (currentState === STATES.Terminated)">
+      <div class="flex justify-content-end gap-2" v-if="isDialogCloseBtnVisible">
         <Button type="button" label="Close" severity="secondary" @click="isDialogVisible = false"></Button>
       </div>
       <div v-else class="flex justify-content-end gap-2">
         <Button type="button" label="Accept provided Data" @click="isDialogVisible = false"></Button>
         <Button type="button" label="Request New Data" severity="secondary"
-                v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
+                v-bind:disabled="isDialogRequestNewDataBtnDisabled"
                 @click="requestCreationOfData()">Request New Data</Button>
         <Button type="button" label="Cancel" severity="secondary" @click="isDialogVisible = false"></Button>
       </div>
@@ -325,7 +327,15 @@ watch(() => orderStoreFilledFlag.value == true, () => {
   const terminatedOrders = state.orderStore.getSubjects(CREDIT("isTerminated"), null, null).map(subject => subject.value);
   hasTerminatedOrder.value = acceptedOrders.some(acceptedOrder => terminatedOrders.includes(acceptedOrder));
 });
+/*
+* UI Computed Values
+* */
+const isTerminateBtnVisible = computed(()=> hasOrderForAnyOfferForThisDemand.value && !hasTerminatedOrder.value);
+const isCreateOfferBtnDisabled = computed(() => (!isAccessRequestGranted.value || isOfferCreated || currentState.value === STATES.PendingDataRequest) && !(currentState.value === STATES.DataSuccessfullyProvided));
 
+const isDialogCloseBtnVisible = computed(() => ((currentState.value === STATES.OfferAccepted) || (currentState.value === STATES.Terminated)));
+const isDialogShowDataBtnDisabled = computed(() => (!isAccessRequestGranted.value || isAccessRequestGranted.value === 'false'));
+const isDialogRequestNewDataBtnDisabled = computed(() => (!isAccessRequestGranted.value || isAccessRequestGranted.value === 'false'));
 async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
   const items = await getContainerItems(businessAssessmentUri[0], session);
