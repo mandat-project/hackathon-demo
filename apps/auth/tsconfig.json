@@ -7,11 +7,9 @@
       "dom.iterable",
       "scripthost"
     ],
-    "resolveJsonModule": true
-  },
-  "paths": {
-    "@/*": [
-      "./src/*"
+    "resolveJsonModule": true,
+    "types": [
+      "webpack-env", "jest",
     ]
   },
   "paths": {

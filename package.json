@@ -6,6 +6,7 @@
     "serve": "lerna run serve",
     "build": "lerna run build",
     "lint": "lerna run lint",
+    "test": "lerna run test",
     "auth:build": "lerna run build --scope auth",
     "auth:lint": "lerna run lint --scope auth",
     "auth:serve": "lerna run serve --scope auth",

@@ -376,9 +376,14 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
 </script>
 
 <template>
-  <PageHeadline v-if="type === 'pending'">Current Loan Demands <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" /></PageHeadline>
-  <PageHeadline v-if="type === 'active'">Active Loans <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" /></PageHeadline>
-  <PageHeadline v-if="type === 'all'">Loans <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" /></PageHeadline>
+  <PageHeadline class="gap-2 flex align-items-center">
+    <span v-if="type === 'pending'">Current Loan Demands</span>
+    <span v-if="type === 'active'">Active Loans</span>
+    <span v-if="type === 'all'">Loans</span>
+    <Badge class="relative -top-1rem bg-gray-100" :value="displayedDemands.length" />
+    <Button icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
+            @click="loadCreditDemands" />
+  </PageHeadline>
 
   <ProgressBar v-show="isLoading" mode="indeterminate" style="height: 2px" />
 
@@ -429,7 +434,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
         <div class="flex flex-column md:flex-row gap-2 md:align-items-center" v-else-if="demand.order?.isTerminated">
           <div><Chip
               label="Terminated"
-              class="text-sm"
+              class="bg-red-500 text-white text-sm"
           /></div>
           <span>credit contract terminated</span>
           <Button class="md:ml-auto" severity="secondary" label="Revoke Rights"
