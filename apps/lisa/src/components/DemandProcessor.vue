@@ -173,6 +173,7 @@ const state = reactive({
   demanderStore: new Store(),
   businessAssessmentStore : new Store()
 });
+const emit = defineEmits(["LoanType"])
 
 async function fetchStoreOf(uri: string): Promise<Store> {
   return getResource(uri, session)
@@ -279,25 +280,31 @@ const tabState = computed( ()=>{
 /**
  * CurrentState will be used to determine the state of the demand and the offer.
 */
+const isDataReady = ref(false);
+setTimeout(() => {
+  isDataReady.value = true;
+}, 1500);
 
 const currentState = computed(() =>{
-  if (accessRequestUri.value === undefined && !isOfferCreated.value) {
-    return STATES.DataNeeded;
-  }
-  if(!isAccessRequestGranted.value || isAccessRequestGranted.value === 'false'){
-    return STATES.PendingDataRequest;
-  }
-  if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
-    return STATES.DataSuccessfullyProvided;
-  }
-  if(hasOrderForAnyOfferForThisDemand.value && !hasTerminatedOrder.value){
-    return STATES.OfferAccepted
-  }
-  if(!(offerAccessRequests.value.length > 0 && !offerIsAccessible.value.some(response => response === 'true')) && !hasTerminatedOrder.value){
-    return STATES.WaitingForResponse;
-  }
-  if(hasTerminatedOrder.value){
-    return STATES.Terminated;
+  if(isDataReady.value){
+    if (accessRequestUri.value === undefined && !isOfferCreated.value) {
+      return STATES.DataNeeded;
+    }
+    if(!isAccessRequestGranted.value || isAccessRequestGranted.value === 'false'){
+      return STATES.PendingDataRequest;
+    }
+    if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
+      return STATES.DataSuccessfullyProvided;
+    }
+    if(hasOrderForAnyOfferForThisDemand.value && !hasTerminatedOrder.value){
+      return STATES.OfferAccepted;
+    }
+    if(hasTerminatedOrder.value){
+      return STATES.Terminated;
+    }
+    if(!(offerAccessRequests.value.length > 0 && !offerIsAccessible.value.some(response => response === 'true')) && !hasTerminatedOrder.value){
+      return STATES.WaitingForResponse;
+    }
   }
   return STATES.NoOperation;
 });
@@ -742,6 +749,20 @@ async function handleAuthorizationRequestRedirect(
       })
       .then(() => delete appMemory[accessRequestURI]);
 }
+watch(()=> currentState.value, ()=> {
+    if(currentState.value !== STATES.NoOperation){
+      if(currentState.value === STATES.Terminated){
+        emit("LoanType",TAB_STATE.Terminated);
+      }
+      else if(currentState.value === STATES.OfferAccepted){
+        emit("LoanType",TAB_STATE.OfferAccepted);
+      }
+      else{
+        emit("LoanType",TAB_STATE.Demands);
+      }
+    }
+    }, {immediate:true}
+);
 </script>
 
 <style>
