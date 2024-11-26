@@ -25,19 +25,26 @@ export default defineComponent({
     webId: String,
     appLogo: String,
     appName: String,
+    backgroundColor : {
+      type: String,
+      default: '', // Default color if not provided
+    }
   },
-  setup() {
+  setup(props) {
+    const computedBgColor = computed(() => {
+      return props.backgroundColor || 'linear-gradient(90deg, #195B78 0%, #287F8F 100%)'; // Default color if bgColor is not provided
+    });
 
     const {hasActivePush} =
         useServiceWorkerNotifications();
     const {name, img} = useSolidProfile();
-    return {img, hasActivePush, name}
+    return {img, hasActivePush, name, computedBgColor}
   }
 })
 </script>
 
 <template>
-  <div class="bg-gradient-blue p-4 absolute top-0 left-0 right-0 z-2 background">
+  <div class=" p-4 absolute top-0 left-0 right-0 z-2 " :style="{ background: computedBgColor }">
     <Toolbar>
       <template #start>
         <img class="h-2rem w-2rem" v-if="appLogo" :src="appLogo" :alt="appName"/>

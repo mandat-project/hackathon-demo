@@ -40,7 +40,6 @@ export default defineComponent({
 
     // Computed property to determine the background color
     const computedBgColor = computed(() => {
-      console.log('bgColor',props.backgroundColor);
       return props.backgroundColor || 'linear-gradient(90deg, #195B78 0%, #287F8F 100%)'; // Default color if bgColor is not provided
     });
 

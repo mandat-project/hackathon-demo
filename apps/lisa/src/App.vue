@@ -1,6 +1,6 @@
 <template>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="backgroundColor" />
+  <DacklHeaderBar app-name="Big Bank Service" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="backgroundColor" />
 
   <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
@@ -33,12 +33,13 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { HeaderBar } from "@shared/components";
+import {DacklHeaderBar, HeaderBar} from "@shared/components";
 import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
 import Toast from "primevue/toast";
 import router from "./router";
 import Card from "primevue/card";
 
+const appLogo = require('@/assets/logo.svg');
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => (isOpen.value = hasUpdatedAvailable.value));
