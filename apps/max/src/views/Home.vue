@@ -17,6 +17,7 @@ import {
 import { useSolidProfile, useSolidSession} from "@shared/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
+import Divider from 'primevue/divider';
 
 const toast = useToast();
 const {session} = useSolidSession();
@@ -117,15 +118,30 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 
 <template>
   <div class="grid">
-    <div class="col lg:col-9 lg:col-offset-2">
-      <ul v-if="isLoggedIn">
-        <Card style="width: 80%; margin-bottom: 1rem;" v-for="([uri, store], index) of documentCreationDemands" :key="index">
-          <template #title>Request #{{ index }}: {{ uri }}</template>
-          <template #content>
-            <p>From: {{ getObject(store!, INTEROP('fromSocialAgent')) }}</p>
-            <p>Requested Data : {{ getObject(store!, INTEROP('registeredShapeTree')) }} </p>
-            <Button @click="processDocumentCreationDemand(uri)">Provide requested Data</Button>
-          </template>
+    <div class="col lg:col-12 wrapper">
+      <h1 class="heading">Client Requests</h1>
+      <ul v-if="isLoggedIn" class="pb-2">
+        <Card class="mb-4" v-for="([uri, store], index) of documentCreationDemands" :key="index">
+          <template #title><div class="col-12 block">Request #{{ index + 1 }}:</div></template>
+            <template #content>
+              <div class="grid">
+                <div class="col-12 text-sm block word-break"> <a :href="uri" target="_blank" class="font-bold">Documents Demands</a></div>
+                <div class="col-12 sm:col-6 block word-break pt-4">
+                    <span class="text-black-alpha-70 text-xs">From: </span>
+                    <a :href="getObject(store!, INTEROP('fromSocialAgent'))" target="_blank" class="font-bold text-sm">
+                      {{ getObject(store!, INTEROP('fromSocialAgent')) }}
+                    </a>
+                </div>
+                <div class="col-12 sm:col-6 block word-break pt-4">
+                  <span class="text-black-alpha-70 text-xs">Requested Data : </span>
+                  <a :href="getObject(store!, INTEROP('registeredShapeTree'))" target="_blank" class="text-sm font-bold">{{ getObject(store!, INTEROP('registeredShapeTree')).split('#')?.[1] }}</a></div>
+                <Divider />
+              </div>
+              <div class="col-12 text-right">
+                <Button @click="processDocumentCreationDemand(uri)" class="mr-0 sm:mr-3 w-full sm:w-auto text-center inline-block	">Provide requested Data</Button>
+                <Button severity="secondary" class="w-full sm:w-auto inline-block	mt-2 sm:mt-0">Delete Request</Button>
+              </div>
+            </template>
         </Card>
       </ul>
     </div>
@@ -136,8 +152,23 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 <style scoped>
 .grid {
   margin: 5px;
+  .wrapper {
+    width: -webkit-fill-available;
+    .heading{
+      color: #007577;
+    }
+    ul{
+      padding-left:0px;
+      .word-break{
+        word-wrap: break-word;
+      }
+    }
+  }
 }
 
+.p-card-content{
+  padding:0px;
+}
 .p-inputgroup {
   padding-bottom: 0;
 }
