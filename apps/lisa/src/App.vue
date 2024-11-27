@@ -5,9 +5,9 @@
   <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
   </div>
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
+  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;height:100px" >
     <template #content>
-      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
+      <p style="text-align: center;line-height:100px">401 Unauthenticated : Login using the button in the top-right corner!</p>
     </template>
   </Card>
 
