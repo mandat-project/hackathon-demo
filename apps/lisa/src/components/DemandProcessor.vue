@@ -127,7 +127,7 @@ import {
   offerShapeTreeUri,
   orderShapeTreeUri
 } from "@/constatns/solid-urls";
-import StatusChip from "/src/components/StatusChip.vue";
+import StatusChip from "@/components/StatusChip.vue";
 import {
   getAccessBeingSetBody,
   getCreateOfferResourceBody,
