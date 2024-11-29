@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Store, Writer } from 'n3';
-import { ref } from 'vue';
+import {Store, Writer} from 'n3';
+import {ref} from 'vue';
 
 const props = defineProps({
   store: Store

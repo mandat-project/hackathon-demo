@@ -133,7 +133,7 @@ import {
   getCreateOfferResourceBody,
   getDataBody,
   getDocumentCreationDemandBody
-} from "@/service/request-access";
+} from "@/utils/request-access";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
