@@ -1,9 +1,9 @@
 <template>
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-  <HeaderBar :isLoggedIn="isLoggedIn" :webId="session.webId" />
+  <DacklHeaderBar app-name="Tax Service" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="bg-gradient-blue" />
 
-  <div v-if="isLoggedIn && session.rdp !== ''" class="m-0 lg:m-5">
+  <div v-if="isLoggedIn && session.rdp !== ''" class="m-5">
     <router-view />
   </div>
 
@@ -30,10 +30,11 @@
 import { computed, ref, watch } from "vue";
 import Toast from "primevue/toast";
 import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
-import { HeaderBar } from "@shared/components";
+import {DacklHeaderBar, HeaderBar} from "@shared/components";
 import router from "./router";
 import Card from "primevue/card";
 
+const appLogo = require('@/assets/logo.png');
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();
 const isOpen = ref(false);
 watch(hasUpdatedAvailable, () => {

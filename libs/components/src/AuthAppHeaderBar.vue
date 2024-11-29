@@ -22,7 +22,7 @@ export default defineComponent({
     const {hasActivePush} =
         useServiceWorkerNotifications();
     const {name, img} = useSolidProfile();
-    const appName = 'Authentication App'
+    const appName = 'Authorization App'
     return {img, hasActivePush, appName, name}
   }
 })

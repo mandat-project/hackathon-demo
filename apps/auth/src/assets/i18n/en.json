@@ -64,7 +64,7 @@
     "grantees": "Grantees:",
     "groups": "Access Need Groups:",
     "dataAuthorizations": "Data Authorizations",
-    "revokeGroup": "Revoke Authorizations in this group",
+    "revokeGroup": "Revoke all Authorizations in this group",
     "loadingData": "Loading Data Authorization",
     "error": {
       "accessRequest": "Could not get access request!",
@@ -106,7 +106,7 @@
     "registration": "Data Registrations:",
     "instances": "Authorized Instances:",
     "accessMode": "Access Mode:",
-    "revoke": "Revoke this authorization",
+    "revoke": "Revoke only this authorization",
     "error": {
       "dataAuthorization": "Could not get data authorization!",
       "grantee": "Could not get grantee!",

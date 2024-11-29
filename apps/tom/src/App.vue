@@ -1,5 +1,5 @@
 <template>
-  <DacklHeaderBar app-name="Easy Loan" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" />
+  <DacklHeaderBar app-name="Easy Loan" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="bg-gradient-blue" />
 
   <div class="px-4 pt-3 bg-gradient-blue">
     <TabList class="mt-4" @item-change="tabListItemChange" :model="tabMenu" :active="routeName" />
