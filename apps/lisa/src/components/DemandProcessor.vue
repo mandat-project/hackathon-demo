@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import BusinessData from "/src/components/BusinessDataPanel.vue";
+import BusinessData from "@/components/BusinessDataPanel.vue";
 import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
 import {
   ACL,
@@ -130,7 +130,7 @@ import {
   offerShapeTreeUri,
   orderShapeTreeUri
 } from "@/constatns/solid-urls";
-import StatusChip from "/src/components/StatusChip.vue";
+import StatusChip from "@/components/StatusChip.vue";
 
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()

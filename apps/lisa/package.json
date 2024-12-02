@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "jest"
+    "test": "jest"
   },
   "vuePlugins": {
     "resolveFrom": "../../"
@@ -17,7 +17,11 @@
     "@vue/vue3-jest": "^29.2.6",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^29.7.0",
+    "@babel/preset-typescript": "^7.26.0",
+    "@types/jest": "^29.5.14",
+
+    "ts-jest": "^29.2.5"
   },
   "dependencies": {
     "github-fork-ribbon-css": "^0.2.3"

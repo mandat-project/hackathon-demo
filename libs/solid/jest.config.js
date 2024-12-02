@@ -18,8 +18,7 @@ module.exports = {
       'vue',
     ],
     moduleNameMapper: {
-      '^@/(.*)$': '<rootDir>/src/$1',
-      '^@shared/(.*)$': '<rootDir>/../../libs/$1',
+      '^@shared/(.*)$': '<rootDir>/../$1',
     },
     coveragePathIgnorePatterns: [
       '/node_modules/',

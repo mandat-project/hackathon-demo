@@ -1,19 +1,37 @@
 module.exports = {
-    testEnvironment: "jsdom",
+    testEnvironment: 'jsdom',
+    verbose: false,
+  setupFilesAfterEnv: ['<rootDir>/../../jest-setup.ts'],
     transform: {
-        "^.+\\.vue$": "@vue/vue3-jest",
-        "^.+\\js$": "babel-jest",
+        '^.+\\.vue$': '@vue/vue3-jest',
+        '^.+\\.jsx?$': 'babel-jest',
+        '^.+\\.tsx?$': [
+            'ts-jest',
+            {},
+        ],
     },
-    testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$",
-    moduleFileExtensions: ["vue", "js"],
+    testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
+    moduleFileExtensions: [
+        'js',
+        'ts',
+        'vue',
+    ],
     moduleNameMapper: {
-        "^@/(.*)$": "<rootDir>/src/$1",
+        '^@/(.*)$': '<rootDir>/src/$1',
+        '^@shared/(.*)$': '<rootDir>/../../libs/$1',
     },
-    coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
-    coverageReporters: ["text", "json-summary"],
-    // Fix in order for vue-test-utils to work with Jest 29
-    // https://test-utils.vuejs.org/migration/#test-runners-upgrade-notes
+    coveragePathIgnorePatterns: [
+        '/node_modules/',
+        '/tests/',
+    ],
+    coverageReporters: [
+        'text',
+        'json-summary',
+    ],
     testEnvironmentOptions: {
-        customExportConditions: ["node", "node-addons"],
+        customExportConditions: [
+            'node',
+            'node-addons',
+        ],
     },
 }

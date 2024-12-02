@@ -1,4 +1,9 @@
 {
   "name": "@shared/components",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+  }
 }

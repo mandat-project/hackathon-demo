@@ -2,5 +2,16 @@
   "extends": "../../ts.base-config.json",
   "include": [
     "**/*.ts"
-  ]
+  ],
+  "compilerOptions": {
+    "types": [
+      "webpack-env", "jest"
+    ],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  }
 }

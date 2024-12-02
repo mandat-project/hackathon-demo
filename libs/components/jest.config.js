@@ -1,8 +1,7 @@
 module.exports = {
   testEnvironment: 'jsdom',
   verbose: false,
-  setupFilesAfterEnv: ['<rootDir>/../../jest-setup.ts'],
-    
+
   transform: {
     '^.+\\.vue$': '@vue/vue3-jest',
     '^.+\\.jsx?$': 'babel-jest',
@@ -28,7 +27,7 @@ module.exports = {
     coverageReporters: [
       'text',
       'json-summary',
-    ],
+  ],
     testEnvironmentOptions: {
       customExportConditions: [
         'node',
