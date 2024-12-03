@@ -1,9 +1,9 @@
-const {defineConfig} = require('@vue/cli-service')
-const {vueBaseConfig} = require("../../vue.base-config");
+const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
-  ...vueBaseConfig,
-  outputDir: '../../dist/auth',
+  transpileDependencies: true,
+  lintOnSave: false,
+  outputDir: "../../dist/auth",
   devServer: {
-    port: 8084
-  }
-})
+    port: 8084,
+  },
+});

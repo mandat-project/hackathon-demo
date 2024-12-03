@@ -10,8 +10,8 @@ import {
 } from "@/constants/solid-urls";
 import router from "@/router";
 import {Demand} from "@/types/Demand";
-import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
-import {PageHeadline, HorizontalLine} from "@shared/components";
+import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
+import {PageHeadline, HorizontalLine} from "hackathon-demo/libs/components";
 import {
   createResource,
   CREDIT,
@@ -26,8 +26,8 @@ import {
   SCHEMA,
   VCARD,
   XSD,
-} from "@shared/solid";
-import {fetchStoreOf, getContainerUris} from "@shared/utils";
+} from "hackathon-demo/libs/solid";
+import {fetchStoreOf, getContainerUris} from "hackathon-demo/libs/utils";
 import {toRef, watchThrottled} from "@vueuse/core";
 import {Literal, NamedNode, Store, Writer} from "n3";
 import {useToast} from "primevue/usetoast";

@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * Concat the RDF namespace identified by the prefix used as function name
  * with the RDF thing identifier as function parameter,

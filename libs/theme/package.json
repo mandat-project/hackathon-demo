@@ -1,8 +1,11 @@
 {
   "name": "@shared/theme",
   "version": "1.0.0",
-  "main": "src/datev-theme/theme.scss",
   "scripts": {
-    "build": "sass --update src/datev-theme/theme.scss:src/datev-themes/theme.css"
-  }
+    "build": "sass --update src/datev-theme/theme.scss:dist/theme.css"
+  },
+  "exports": {
+    "./theme.css": "./dist/theme.css"
+  },
+  "files": ["dist"]
 }

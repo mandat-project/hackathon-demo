@@ -1,4 +1,5 @@
-import {useSolidProfile, useSolidSession} from "@shared/composables";
+import {useSolidProfile} from "./useSolidProfile";
+import {useSolidSession} from "./useSolidSession";
 import {
     ACL,
     AUTH,
@@ -23,8 +24,8 @@ import {
     Session,
     SKOS,
     XSD
-} from "@shared/solid";
-import {wait} from "@shared/utils";
+} from "hackathon-demo/libs/solid";
+import {wait} from "hackathon-demo/libs/utils";
 import {DataFactory, NamedNode, Store, Writer} from "n3";
 import {computed, reactive, ref, watch} from "vue";
 

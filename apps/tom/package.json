@@ -1,5 +1,5 @@
 {
-  "name": "tom",
+  "name": "@apps/tom",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,6 +23,7 @@
     "ts-jest": "^29.2.5"
   },
   "dependencies": {
-    "github-fork-ribbon-css": "^0.2.3"
+    "github-fork-ribbon-css": "^0.2.3",
+    "hackathon-demo": "github:mandat-project/hackathon-demo#353-extract-auth-app"
   }
 }

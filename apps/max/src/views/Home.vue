@@ -13,8 +13,8 @@ import {
   RDF,
   SCHEMA,
   XSD
-} from "@shared/solid";
-import { useSolidProfile, useSolidSession} from "@shared/composables";
+} from "hackathon-demo/libs/solid";
+import { useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Divider from 'primevue/divider';

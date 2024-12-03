@@ -39,8 +39,8 @@
 </template>
 
 <script lang="ts" setup>
-import {DacklHeaderBar, TabItemType, TabList} from "@shared/components";
-import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
+import {DacklHeaderBar, TabItemType, TabList} from "hackathon-demo/libs/components";
+import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Toast from "primevue/toast";

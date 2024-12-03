@@ -4,10 +4,10 @@ import {bank, creditDemandShapeTreeUri} from "@/constants/solid-urls";
 import router from "@/router";
 import {Advertisement} from "@/types/Advertisement";
 import {toAdvertisementName} from "@/utils/toAdvertisementName";
-import {CheckMarkSvg, HorizontalLine, PageHeadline, SmeCard, SmeCardHeadline, DacklTextInput} from "@shared/components";
-import {useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
-import {AD, createResource, CREDIT, getLocationHeader, INTEROP, LDP, RDFS, SCHEMA, VCARD,} from "@shared/solid";
-import {fetchStoreOf, getContainerUris} from "@shared/utils";
+import {CheckMarkSvg, HorizontalLine, PageHeadline, SmeCard, SmeCardHeadline, DacklTextInput} from "hackathon-demo/libs/components";
+import {useIsLoggedIn, useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
+import {AD, createResource, CREDIT, getLocationHeader, INTEROP, LDP, RDFS, SCHEMA, VCARD,} from "hackathon-demo/libs/solid";
+import {fetchStoreOf, getContainerUris} from "hackathon-demo/libs/utils";
 import {Store} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, shallowRef, watch} from "vue";
@@ -24,7 +24,7 @@ const currencies = [
 const mapOfAdShapeTrees = new Map();
 
 const selectedCurrency = ref<'EUR' | 'USD'>('EUR');
-const enteredAmount = ref(0);
+const enteredAmount = ref('0');
 
 const listedAdvertisements = shallowRef<string[]>([])
 const advertisements = shallowRef<Advertisement[]>([]);

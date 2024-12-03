@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { Session } from "@shared/solid";
+import { Session } from "hackathon-demo/libs/solid";
 import { AxiosRequestConfig } from "axios";
 
 class RdpCapableSession extends Session {

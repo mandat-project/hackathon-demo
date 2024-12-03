@@ -1,4 +1,4 @@
-import {AS, createResource, getResource, LDP, parseToN3, PUSH, RDF} from "@shared/solid";
+import {AS, createResource, getResource, LDP, parseToN3, PUSH, RDF} from "hackathon-demo/libs/solid";
 import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
 import {useSolidSession} from "./useSolidSession";
 import {WebPushSubscription} from "./webPushSubscription";

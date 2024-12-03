@@ -94,7 +94,7 @@
 
 <script setup lang="ts">
 import BusinessData from "@/components/BusinessDataPanel.vue";
-import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
+import {useCache, useSolidProfile, useSolidSession} from 'hackathon-demo/libs/composables';
 import {
   ACL,
   createResource,
@@ -115,13 +115,13 @@ import {
   SKOS,
   VCARD,
   XSD
-} from '@shared/solid';
+} from 'hackathon-demo/libs/solid';
 import {AxiosResponse} from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, reactive, Ref, ref, watch} from 'vue';
 import Card from "primevue/card";
-import {DacklTextInput} from "@shared/components";
+import {DacklTextInput} from "hackathon-demo/libs/components";
 import {STATES} from "@/enums/states";
 import {TAB_STATE} from "@/enums/tabsState";
 import {

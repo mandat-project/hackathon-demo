@@ -33,8 +33,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import {DacklHeaderBar, HeaderBar} from "@shared/components";
-import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
+import {DacklHeaderBar} from "hackathon-demo/libs/components";
+import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "hackathon-demo/libs/composables";
 import Toast from "primevue/toast";
 import router from "./router";
 import Card from "primevue/card";

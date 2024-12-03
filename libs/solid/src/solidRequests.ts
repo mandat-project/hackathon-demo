@@ -1,9 +1,7 @@
-"use strict";
-
 import {AxiosHeaders, AxiosResponse} from "axios";
 import {Parser, Prefixes, Quad, Store} from "n3";
 import {LDP} from "./namespaces";
-import {Session} from "./solid-oidc-client-browser";
+import {Session} from "./solid-oidc-client-browser/Session";
 
 export interface ParsedN3 {
   store: Store;

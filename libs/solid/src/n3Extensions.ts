@@ -1,5 +1,3 @@
-"use strict";
-
 import {BlankNode, BlankTriple, Prefixes, Quad, Quad_Object, Store, Term, Writer,} from "n3";
 import {RDF} from "./namespaces";
 

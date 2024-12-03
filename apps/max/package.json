@@ -1,5 +1,5 @@
 {
-  "name": "max",
+  "name": "@apps/max",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,17 +13,17 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.24.3",
+    "@babel/preset-typescript": "^7.26.0",
+    "@types/jest": "^29.5.14",
     "@vue/test-utils": "^2.4.5",
     "@vue/vue3-jest": "^29.2.6",
     "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "@babel/preset-typescript": "^7.26.0",
-    "@types/jest": "^29.5.14",
-
     "ts-jest": "^29.2.5"
   },
   "dependencies": {
-    "github-fork-ribbon-css": "^0.2.3"
+    "github-fork-ribbon-css": "^0.2.3",
+    "hackathon-demo": "github:mandat-project/hackathon-demo#353-extract-auth-app"
   }
 }

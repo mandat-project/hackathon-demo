@@ -1,4 +1,4 @@
-import {getResource, parseToN3, Session} from "@shared/solid";
+import {getResource, parseToN3, Session} from "hackathon-demo/libs/solid";
 import {Store} from "n3";
 
 export async function fetchStoreOf(uri: string, session: Session): Promise<Store> {

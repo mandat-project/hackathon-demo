@@ -5,7 +5,12 @@
         <div class="mb-3">
           <Chip
             :label="status"
-            :class="{'bg-green-300': status === 'Active', 'bg-red-500': status === 'Revoked', 'text-white': status === 'Revoked', 'text-sm': true}"
+            :class="{
+              'bg-green-300': status === 'Active',
+              'bg-red-500': status === 'Revoked',
+              'text-white': status === 'Revoked',
+              'text-sm': true,
+            }"
           />
         </div>
         {{ $t("accessReceipt.authorization") }}
@@ -15,8 +20,14 @@
         <div class="grid">
           <!-- <div class="accessRequest" v-for="request in requests" :key="request"> -->
           <div class="col-12">
-            <div class="text-black-alpha-60">{{ $t("accessReceipt.provided") }} </div>
-            <DateFormatted :datetimeString="date" v-for="date in provisionDates" :key="date" />
+            <div class="text-black-alpha-60">
+              {{ $t("accessReceipt.provided") }}
+            </div>
+            <DateFormatted
+              :datetimeString="date"
+              v-for="date in provisionDates"
+              :key="date"
+            />
           </div>
           <div class="col-12 md:col">
             <div class="text-black-alpha-60">
@@ -39,31 +50,44 @@
             </a>
           </div>
           <div class="col-12">
-            <Accordion v-if="accessAuthorizations.length" value="0" class="surface-50 border-round">
-            <AccordionTab>
-              <template #header>
-                {{ $t("accessReceipt.accessAuthorizations") }}
-              </template>
-              <div v-for="accessAuthorization in accessAuthorizations" :key="accessAuthorization">
-                <Suspense>
-                  <AccessAuthorization :resourceURI="accessAuthorization"
-                                       :accessAuthzContainer="accessAuthzContainer"
-                                       :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
-                                       :receipRevokationTrigger="isWaitingForAccessAuthorizations"
-                                       @updatedAccessAuthorization="updateAccessAuthorization"
-                                       @isEmptyAuthorization="addToEmpty"
-                                       />
-                  <template #fallback>
-                                <span>
-                                    {{ $t("accessReceipt.loading") }} {{
-                                    accessAuthorization.split("/")[accessAuthorization.split("/").length - 1]
-                                  }}
-                                </span>
-                  </template>
-                </Suspense>
-              </div>
-            </AccordionTab>
-          </Accordion>
+            <Accordion
+              v-if="accessAuthorizations.length"
+              value="0"
+              class="surface-50 border-round"
+            >
+              <AccordionTab>
+                <template #header>
+                  {{ $t("accessReceipt.accessAuthorizations") }}
+                </template>
+                <div
+                  v-for="accessAuthorization in accessAuthorizations"
+                  :key="accessAuthorization"
+                >
+                  <Suspense>
+                    <AccessAuthorization
+                      :resourceURI="accessAuthorization"
+                      :accessAuthzContainer="accessAuthzContainer"
+                      :accessAuthzArchiveContainer="accessAuthzArchiveContainer"
+                      :receipRevokationTrigger="
+                        isWaitingForAccessAuthorizations
+                      "
+                      @updatedAccessAuthorization="updateAccessAuthorization"
+                      @isEmptyAuthorization="addToEmpty"
+                    />
+                    <template #fallback>
+                      <span>
+                        {{ $t("accessReceipt.loading") }}
+                        {{
+                          accessAuthorization.split("/")[
+                            accessAuthorization.split("/").length - 1
+                          ]
+                        }}
+                      </span>
+                    </template>
+                  </Suspense>
+                </div>
+              </AccordionTab>
+            </Accordion>
           </div>
         </div>
       </template>
@@ -77,8 +101,13 @@
   class="p-button-warning">
   Freeze
 </Button> -->
-          <Button @click="revokeRights" type="button" severity="primary" class="w-full justify-content-center sm:w-auto"
-                  :disabled="isWaitingForAccessAuthorizations">
+          <Button
+            @click="revokeRights"
+            type="button"
+            severity="primary"
+            class="w-full justify-content-center sm:w-auto"
+            :disabled="isWaitingForAccessAuthorizations"
+          >
             Revoke All
           </Button>
         </div>
@@ -89,28 +118,44 @@
 
 <script setup lang="ts">
 import AccessAuthorization from "@/components/receipts/AccessAuthorization";
-import {DateFormatted} from "@shared/components";
-import {useSolidSession} from "@shared/composables";
-import {AUTH, GDPRP, getResource, INTEROP, parseToN3, patchResource, RDF,} from "@shared/solid";
-import {NamedNode, Store} from "n3";
-import {useToast} from "primevue/usetoast";
-import {computed, reactive, ref, watch} from "vue";
-import {useI18n} from "vue-i18n";
+import { DateFormatted } from "hackathon-demo/libs/components";
+import { useSolidSession } from "hackathon-demo/libs/composables";
+import {
+  AUTH,
+  GDPRP,
+  getResource,
+  INTEROP,
+  parseToN3,
+  patchResource,
+  RDF,
+} from "hackathon-demo/libs/solid";
+import { NamedNode, Store } from "n3";
+import { useToast } from "primevue/usetoast";
+import { computed, reactive, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 
-const props = defineProps(["informationResourceURI", "accessAuthzContainer", "redirect", "accessAuthzArchiveContainer"]);
-const emit = defineEmits(["isReceiptForRequests"])
+const props = defineProps([
+  "informationResourceURI",
+  "accessAuthzContainer",
+  "redirect",
+  "accessAuthzArchiveContainer",
+]);
+const emit = defineEmits(["isReceiptForRequests"]);
 
-const {session} = useSolidSession();
+const { session } = useSolidSession();
 const toast = useToast();
 const { t } = useI18n();
 
 const state = reactive({
   informationResourceStore: new Store(),
-  accessRequestStore: new Store()
+  accessRequestStore: new Store(),
 });
 
 // get data
-state.informationResourceStore = await getResource(props.informationResourceURI, session)
+state.informationResourceStore = await getResource(
+  props.informationResourceURI,
+  session
+)
   .catch((err) => {
     toast.add({
       severity: "error",
@@ -126,19 +171,37 @@ state.informationResourceStore = await getResource(props.informationResourceURI,
 
 // compute properties to display
 
-
 // // because we get the information resource URI, we need to find the Access Receipt URI, in theory there could be many,
 // // but we only consider the first access receipt in an information resource. Not perfect, but makes it easier right now.
 // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
-const accessReceipt = state.informationResourceStore.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)[0]
+const accessReceipt = state.informationResourceStore
+  .getSubjects(RDF("type"), INTEROP("AccessReceipt"), null)
+  .map((t) => t.value)[0];
 
-const provisionDates = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("providedAt"), null).map(t => t.value))
-const accessRequests = computed(() => state.informationResourceStore.getObjects(accessReceipt, AUTH("hasAccessRequest"), null).map(t => t.value))
-const accessAuthorizations = computed(() => state.informationResourceStore.getObjects(accessReceipt, INTEROP("hasAccessAuthorization"), null).map(t => t.value))
+const provisionDates = computed(() =>
+  state.informationResourceStore
+    .getObjects(accessReceipt, INTEROP("providedAt"), null)
+    .map((t) => t.value)
+);
+const accessRequests = computed(() =>
+  state.informationResourceStore
+    .getObjects(accessReceipt, AUTH("hasAccessRequest"), null)
+    .map((t) => t.value)
+);
+const accessAuthorizations = computed(() =>
+  state.informationResourceStore
+    .getObjects(accessReceipt, INTEROP("hasAccessAuthorization"), null)
+    .map((t) => t.value)
+);
 
 const isRevokedOrDenied = computed(() => !nonEmptyAuthorizations.value.length);
-const status = computed<'Active' | 'Revoked' | 'Denied'>(() => isRevokedOrDenied.value ? accessAuthorizations.value.length > 0 ? 'Revoked' : 'Denied' : 'Active');
-
+const status = computed<"Active" | "Revoked" | "Denied">(() =>
+  isRevokedOrDenied.value
+    ? accessAuthorizations.value.length > 0
+      ? "Revoked"
+      : "Denied"
+    : "Active"
+);
 
 // get access request data
 
@@ -156,43 +219,58 @@ state.accessRequestStore = await getResource(accessRequests.value[0], session)
   .then((txt) => parseToN3(txt, accessRequests.value[0]))
   .then((parsedN3) => (state.accessRequestStore = parsedN3.store));
 
-const purpose = computed(() => state.accessRequestStore.getObjects(null, GDPRP("purposeForProcessing"), null)[0]?.value);
+const purpose = computed(
+  () =>
+    state.accessRequestStore.getObjects(
+      null,
+      GDPRP("purposeForProcessing"),
+      null
+    )[0]?.value
+);
 
 // check which Access Request this Access Receipt belongs to and notify the parent component, e.g. for filtering.
-watch(() => accessRequests.value,
+watch(
+  () => accessRequests.value,
   () => {
     if (accessRequests.value.length > 0) {
-      emit("isReceiptForRequests", accessRequests.value)
+      emit("isReceiptForRequests", accessRequests.value);
     }
-  }, {immediate: true})
+  },
+  { immediate: true }
+);
 
 //
 // revoke access
 //
 
-
 // keep track of which children access authorizations are alreay revoked
-const emptyAuthorizations = ref([] as string[])
+const emptyAuthorizations = ref([] as string[]);
 
 // when a child access authorization emits event that it is empty, i.e. revoked
 function addToEmpty(emptyAuth: string) {
-  emptyAuthorizations.value.push(emptyAuth)
+  emptyAuthorizations.value.push(emptyAuth);
 }
 
 // keep track of which children access authorizations did not yet revoked rights
 // to keep track if this access receipt is revoked yet
-const nonEmptyAuthorizations = computed(() => accessAuthorizations.value.filter(auth => !emptyAuthorizations.value.includes(auth)))
-
+const nonEmptyAuthorizations = computed(() =>
+  accessAuthorizations.value.filter(
+    (auth) => !emptyAuthorizations.value.includes(auth)
+  )
+);
 
 // a quick and dirty wrapper for type-saftey
-type replacedAuthorizationWrapper = { newAuthorization: string, oldAuthorization: string }
+type replacedAuthorizationWrapper = {
+  newAuthorization: string;
+  oldAuthorization: string;
+};
 /**
  * ensure synchronous operations
  * idea: disable children while running
  */
-const isWaitingForAccessAuthorizations = ref(false)
+const isWaitingForAccessAuthorizations = ref(false);
 // keep track of which children access authorizations already revoked rights
-const replacedAccessAuthorizations = ref([] as replacedAuthorizationWrapper[])
+const replacedAccessAuthorizations = ref([] as replacedAuthorizationWrapper[]);
 
 /**
  * Trigger children access authorizations to revoke rights,
@@ -201,15 +279,18 @@ const replacedAccessAuthorizations = ref([] as replacedAuthorizationWrapper[])
  */
 async function revokeRights() {
   // trigger access authorizations to revoke rights
-  isWaitingForAccessAuthorizations.value = true // use this as trigger
+  isWaitingForAccessAuthorizations.value = true; // use this as trigger
   // wait on all the not yet empty (i.e. revoked) access authorizations
-  while (replacedAccessAuthorizations.value.length !== nonEmptyAuthorizations.value.length) {
+  while (
+    replacedAccessAuthorizations.value.length !==
+    nonEmptyAuthorizations.value.length
+  ) {
     console.log("Waiting for access authorizations to be revoked ...");
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
   // then removeAccessAuthroizations
-  await updateAccessReceipt(replacedAccessAuthorizations.value)
-  isWaitingForAccessAuthorizations.value = false
+  await updateAccessReceipt(replacedAccessAuthorizations.value);
+  isWaitingForAccessAuthorizations.value = false;
 
   if (props.redirect) {
     window.open(
@@ -228,15 +309,22 @@ async function revokeRights() {
  * @param newAuthorization
  * @param oldAuthorization
  */
-async function updateAccessAuthorization(newAuthorization: string, oldAuthorization: string) {
-  replacedAccessAuthorizations.value.push({newAuthorization, oldAuthorization})
+async function updateAccessAuthorization(
+  newAuthorization: string,
+  oldAuthorization: string
+) {
+  replacedAccessAuthorizations.value.push({
+    newAuthorization,
+    oldAuthorization,
+  });
   // if this component is waiting, do nothing, we will handle this in batch
   if (isWaitingForAccessAuthorizations.value) {
-    return
+    return;
   }
   // else, just remove this one data authorization from the event
-  await updateAccessReceipt([{newAuthorization, oldAuthorization}])
-    .then(() => replacedAccessAuthorizations.value.length = 0) // reset replaced, because otherwise old URIs are in cache
+  await updateAccessReceipt([{ newAuthorization, oldAuthorization }]).then(
+    () => (replacedAccessAuthorizations.value.length = 0)
+  ); // reset replaced, because otherwise old URIs are in cache
 
   if (props.redirect) {
     window.open(
@@ -252,7 +340,9 @@ async function updateAccessAuthorization(newAuthorization: string, oldAuthorizat
  * Update the access receipt, replace the access authorizations as queued up in the list
  * @param replacedAuthorization
  */
-async function updateAccessReceipt(replacedAuthorization: replacedAuthorizationWrapper[]) {
+async function updateAccessReceipt(
+  replacedAuthorization: replacedAuthorizationWrapper[]
+) {
   for (const pairAuthorization of replacedAuthorization) {
     const patchBody = `
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
@@ -260,14 +350,20 @@ async function updateAccessReceipt(replacedAuthorization: replacedAuthorizationW
 
 _:rename a solid:InsertDeletePatch;
     solid:where {
-        ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
+        ?receipt interop:hasAccessAuthorization <${
+          pairAuthorization.oldAuthorization
+        }> .
     } ;
     solid:inserts {
-        ?receipt interop:hasAccessAuthorization <${pairAuthorization.newAuthorization}> .
+        ?receipt interop:hasAccessAuthorization <${
+          pairAuthorization.newAuthorization
+        }> .
     } ;
     solid:deletes {
-        ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
-    } .`
+        ?receipt interop:hasAccessAuthorization <${
+          pairAuthorization.oldAuthorization
+        }> .
+    } .`;
     await patchResource(props.informationResourceURI, patchBody, session)
       .then(() =>
         toast.add({
@@ -276,23 +372,30 @@ _:rename a solid:InsertDeletePatch;
           life: 5000,
         })
       )
-      .catch(
-        (err) => {
-          toast.add({
-            severity: "error",
-            summary: t("accessReceipt.error.patchReceipt"),
-            detail: err,
-            life: 5000,
-          });
-          throw new Error(err);
-        }
-      );
-    state.informationResourceStore.removeQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.oldAuthorization))
-    state.informationResourceStore.addQuad(new NamedNode(accessReceipt), new NamedNode(INTEROP("hasAccessAuthorization")), new NamedNode(pairAuthorization.newAuthorization))
+      .catch((err) => {
+        toast.add({
+          severity: "error",
+          summary: t("accessReceipt.error.patchReceipt"),
+          detail: err,
+          life: 5000,
+        });
+        throw new Error(err);
+      });
+    state.informationResourceStore.removeQuad(
+      new NamedNode(accessReceipt),
+      new NamedNode(INTEROP("hasAccessAuthorization")),
+      new NamedNode(pairAuthorization.oldAuthorization)
+    );
+    state.informationResourceStore.addQuad(
+      new NamedNode(accessReceipt),
+      new NamedNode(INTEROP("hasAccessAuthorization")),
+      new NamedNode(pairAuthorization.newAuthorization)
+    );
   }
-  state.informationResourceStore = new Store(state.informationResourceStore.getQuads(null, null, null, null))
+  state.informationResourceStore = new Store(
+    state.informationResourceStore.getQuads(null, null, null, null)
+  );
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

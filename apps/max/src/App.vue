@@ -29,8 +29,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import Toast from "primevue/toast";
-import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
-import {DacklHeaderBar, HeaderBar} from "@shared/components";
+import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "hackathon-demo/libs/composables";
+import {DacklHeaderBar, HeaderBar} from "hackathon-demo/libs/components";
 import router from "./router";
 import Card from "primevue/card";
 

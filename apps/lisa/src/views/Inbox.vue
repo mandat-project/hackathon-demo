@@ -12,5 +12,5 @@
 
 <script setup lang="ts">
 import router from "@/router";
-import {LDNs} from "@shared/components";
+import {LDNs} from "hackathon-demo/libs/components";
 </script>

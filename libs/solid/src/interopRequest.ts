@@ -1,5 +1,7 @@
-import { createResource, getResource, INTEROP, parseToN3, Session } from "@shared/solid";
 import { Store } from "n3";
+import {INTEROP} from "./namespaces";
+import {Session} from "./solid-oidc-client-browser/Session";
+import {createResource, getResource, parseToN3} from "./solidRequests";
 
 export type AccessNeed = {
   uri: string;

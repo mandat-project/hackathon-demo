@@ -5,8 +5,9 @@
   "scripts": {
     "serve": "lerna run serve",
     "build": "lerna run build",
-    "lint": "lerna run lint",
     "test": "lerna run test",
+    "lint": "lerna run lint",
+    "postinstall": "lerna run postinstall",
     "auth:build": "lerna run build --scope auth",
     "auth:lint": "lerna run lint --scope auth",
     "auth:serve": "lerna run serve --scope auth",
@@ -21,6 +22,13 @@
     "tom:build": "lerna run build --scope tom",
     "tom:lint": "lerna run lint --scope tom",
     "tom:serve": "lerna run serve --scope tom"
+  },
+  "exports": {
+    "./libs/components": "./libs/components",
+    "./libs/composables": "./libs/composables",
+    "./libs/solid": "./libs/solid",
+    "./libs/theme/theme.css": "./libs/theme/dist/theme.css",
+    "./libs/utils": "./libs/utils"
   },
   "dependencies": {
     "@vueuse/components": "^11.1.0",

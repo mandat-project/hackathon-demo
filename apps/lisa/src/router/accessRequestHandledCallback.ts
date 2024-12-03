@@ -1,4 +1,4 @@
-import { useCache } from "@shared/composables";
+import { useCache } from "hackathon-demo/libs/composables";
 import router from ".";
 
 export default function onResult(

@@ -1,4 +1,4 @@
-import {getDataRegistrationContainers, Session} from "@shared/solid";
+import {getDataRegistrationContainers, Session} from "hackathon-demo/libs/solid";
 
 export async function getContainerUris(webId: string, shapeTreeUri: string, session: Session): Promise<string[]> {
     return await getDataRegistrationContainers(

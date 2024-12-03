@@ -9,7 +9,7 @@ import {
   VCARD,
   ORG,
   MANDAT,
-} from "@shared/solid";
+} from "hackathon-demo/libs/solid";
 import { Store } from "n3";
 
 const { session } = useSolidSession();
