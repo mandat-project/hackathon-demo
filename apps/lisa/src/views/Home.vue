@@ -3,7 +3,7 @@
 
   <div class="grid px-1 sm:px-8" >
     <h1 v-if="activeTab === TAB_STATE.OfferAccepted">Active Loans <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
-                                                                              @click="fetchDemandUris(memberOf)" /></h1>
+                                                                               @click="fetchDemandUris(memberOf)" /></h1>
     <h1 v-else >{{activeTab}} <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
                                           @click="fetchDemandUris(memberOf)" /></h1>
 
@@ -14,7 +14,7 @@
         <Suspense timeout="0">
           <!-- main content -->
 
-          <DemandProcessor :demandUri="demandUri" :demandState="activeTab" @LoanType="loanTypeToHandle"/>
+          <DemandProcessor :demandUri="demandUri" :demandState="activeTab"/>
 
           <!-- loading state -->
           <template #fallback>
@@ -24,26 +24,7 @@
           </template>
         </Suspense>
       </template>
-      <card style="height:320px" v-if="isCardVisible && !isLoading">
-        <template #content>
-          <div class="content">
-            <div v-if="activeTab === TAB_STATE.Demands">
-              <h3> No Current Demands</h3>
-              <p>There are no demands at the moment.</p>
-              <p>Please check your Active Loans section for granted offers..</p>
-            </div>
-            <div v-if="activeTab === TAB_STATE.OfferAccepted">
-              <h3>No Active Loans</h3>
-              <p>There are no active loans at the moment.</p>
-              <p>Please check your Terminated section for terminated loans.</p>
-            </div>
-            <div v-if="activeTab === TAB_STATE.Terminated">
-              <h3>No terminated loans.</h3>
-              <p>There are no terminated loans at the moment.</p>
-            </div>
-          </div>
-        </template>
-      </card>
+      <NoDataFound :activeTab="activeTab" v-if="!isLoading"></NoDataFound>
     </div>
   </div>
   <a class="github-fork-ribbon right-bottom fixed" href="https://github.com/DATEV-Research/Solid-B2B-showcase"
@@ -72,14 +53,6 @@
 .tab:not(.active){
   background-color: #033B4A26;
 }
-.content {
-  display: flex;           /* establish flex container */
-  flex-direction: column;  /* make main axis vertical */
-  justify-content: center; /* center items vertically, in this case */
-  align-items: center;     /* center items horizontally, in this case */
-  height: 300px;
-  text-align: center;
-}
 </style>
 
 <script setup lang="ts">
@@ -91,6 +64,7 @@ import DemandProcessor from "../components/DemandProcessor.vue";
 import {TabItemType, TabList} from "@shared/components";
 import DemandSkeleton from "@/components/DemandSkeleton.vue";
 import {TAB_STATE} from "@/enums/tabsState";
+import NoDataFound from "@/components/NoDataFound.vue";
 
 
 const toast = useToast();
@@ -103,14 +77,6 @@ const demandUris = ref<string[]>([]);
 const { memberOf } = useSolidProfile()
 const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf.value) || (session.webId && memberOf.value && session.rdp) ? true : false)
-});
-
-let totalDemands = ref(0);
-let totalActiveLoans = ref(0);
-let totalTerminated = ref(0);
-
-const isCardVisible = computed(() => {
-  return (totalDemands.value ===0 && activeTab.value === TAB_STATE.Demands) || (totalActiveLoans.value ===0 && activeTab.value === TAB_STATE.OfferAccepted) || (totalTerminated.value ===0 && activeTab.value === TAB_STATE.Terminated);
 });
 
 const tabMenu = ref<TabItemType[]>([
@@ -126,18 +92,6 @@ function tabListItemChange(itemId: TAB_STATE) {
 // refetch demandUris on login
 watch(() => isLoggedIn.value, (isLoggedIn) => isLoggedIn ? fetchDemandUris(((memberOf.value) ? memberOf.value : session.webId!)) : {}, { immediate: true });
 
-
-function loanTypeToHandle(request: string) {
-  if(request === TAB_STATE.Demands ){
-    totalDemands.value = totalDemands.value +1;
-  }
-  else if(request === TAB_STATE.OfferAccepted ){
-    totalActiveLoans.value = totalActiveLoans.value +1;
-  }
-  else if(request === TAB_STATE.Terminated ){
-    totalTerminated.value = totalTerminated.value +1;
-  }
-}
 // discovers all containers including demands and add their contents (demands) to demandUris
 async function fetchDemandUris(webId: string): Promise<void> {
 

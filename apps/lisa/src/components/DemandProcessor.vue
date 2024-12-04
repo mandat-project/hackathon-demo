@@ -1,5 +1,5 @@
 <template>
-  <div v-show="tabState === currentDemandState" >
+  <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation">
     <Card>
       <template #content>
         <div class="grid">
@@ -135,11 +135,13 @@ import {
   getDocumentCreationDemandBody
 } from "@/utils/request-access";
 
+import { storeDemands } from "@/utils/demands-data";
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
 const toast = useToast();
 const appMemory = useCache();
 const {session} = useSolidSession();
+
 
 
 let businessDataFetched = ref(false);
@@ -278,7 +280,7 @@ const tabState = computed( ()=>{
   else{
     return TAB_STATE.Demands;
   }
-})
+});
 
 /**
  * CurrentState will be used to determine the state of the demand and the offer.
@@ -292,6 +294,7 @@ const currentState = computed(() =>{
     return STATES.PendingDataRequest;
   }
   if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
+    console.log('amount',amount.value, props.demandUri);
     return STATES.DataSuccessfullyProvided;
   }
   if(hasOrderForAnyOfferForThisDemand.value && !hasTerminatedOrder.value){
@@ -305,6 +308,7 @@ const currentState = computed(() =>{
   }
   return STATES.NoOperation;
 });
+
 // ORDER
 // meh. this imposes unnecessary requests and memory, should be application wide, but it works and I dont care at this point anymore.
 watch(() => offersForDemand.value,
@@ -717,6 +721,18 @@ async function handleAuthorizationRequestRedirect(
       })
       .then(() => delete appMemory[accessRequestURI]);
 }
+setTimeout(()=>{
+  const id = props.demandUri.slice(props.demandUri.lastIndexOf('/')+1);
+  const data:demandData ={
+    "id": id,
+    "name": demanderName.value,
+    "status": currentState.value,
+    "amount": amount.value,
+    "tab": tabState.value
+  };
+
+  storeDemands(data);
+},1000);
 </script>
 
 <style>
