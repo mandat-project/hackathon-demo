@@ -3,5 +3,16 @@
   "include": [
     "**/*.ts",
     "**/*.vue"
-  ]
+  ],
+  "compilerOptions": {
+    "types": [
+      "webpack-env", "dom", "es2017", "jest"
+    ],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  }
 }
