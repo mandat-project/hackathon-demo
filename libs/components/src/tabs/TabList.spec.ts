@@ -2,9 +2,6 @@ import TabItem from "@/tabs/TabItem.vue";
 import TabList from "@/tabs/TabList.vue";
 import { mount } from "@vue/test-utils";
 import { TabItemType } from "./TabItemType";
-// TODO: somehow I can not directly import Vue Components :/
-// const TabItem = require("./TabItem.vue").default;
-// const TabList = require("./TabList.vue").default;
 
 describe("TabList", () => {
   const mockModel: TabItemType[] = [

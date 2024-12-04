@@ -51,6 +51,8 @@ const isLoggedIn = computed(() => {
   );
 });
 
+console.log(appLogo);
+
 // re-use Solid session
 router.isReady().then(restoreSession);
 </script>

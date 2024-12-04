@@ -1,5 +1,5 @@
 import {useCache} from "hackathon-demo/libs/composables";
-import router from ".";
+import router from "@/router";
 
 export default function onResult(
   accessRequestUri: string,

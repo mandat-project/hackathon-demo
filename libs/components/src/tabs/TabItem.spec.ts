@@ -1,9 +1,6 @@
 import TabItem from "@/tabs/TabItem.vue";
 import { mount } from "@vue/test-utils";
 
-// TODO: somehow I can not directly import Vue Components :/
-// const TabItem = require("./TabItem.vue").default;
-
 describe("TabItem", () => {
   it("should render correctly when not active", () => {
     const result = mount(TabItem, {
