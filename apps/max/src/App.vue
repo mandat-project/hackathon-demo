@@ -1,7 +1,7 @@
 <template>
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
-  <DacklHeaderBar app-name="Tax Service" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="bg-gradient-blue" />
+  <DacklHeaderBar app-name="Tax Service" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="backgroundColor" />
 
   <div v-if="isLoggedIn && session.rdp !== ''" class="m-5">
     <router-view />
@@ -46,6 +46,7 @@ const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
 })
 
+const backgroundColor = ref("linear-gradient(90deg, #8532a8, #3b82f6)");
 // re-use Solid session
 router.isReady().then(restoreSession)
 

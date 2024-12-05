@@ -1,5 +1,5 @@
 <template>
-  <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background-color: rgba(237, 240, 243, 1)" />
+  <TabList class="mt-2 pl-4 w-full" @item-change="tabListItemChange" :model="tabMenu" :active="activeTab" style="background:linear-gradient(90deg, #2e399e 0%, #00c6ff 100%)"/>
 
   <div class="grid px-1 sm:px-8" >
     <h1 v-if="activeTab === TAB_STATE.OfferAccepted">Active Loans <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
