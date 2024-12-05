@@ -1,18 +1,19 @@
 import { computed, ref, watch } from "vue";
+import type {RdpCapableSession} from "./rdpCapableSession";
 import { useSolidSession } from "./useSolidSession";
 import {
-  getResource,
-  INTEROP,
-  LDP,
-  parseToN3,
-  SPACE,
-  VCARD,
-  ORG,
-  MANDAT,
+    getResource,
+    INTEROP,
+    LDP,
+    parseToN3,
+    SPACE,
+    VCARD,
+    ORG,
+    MANDAT,
 } from "hackathon-demo/libs/solid";
 import { Store } from "n3";
 
-const { session } = useSolidSession();
+let session!: RdpCapableSession;
 
 const name = ref("");
 const img = ref("");
@@ -24,7 +25,7 @@ const memberOf = ref("");
 const hasOrgRDP = ref("");
 
 watch(
-  () => session.webId,
+  () => session?.webId,
   async () => {
     const webId = session.webId as string;
     let store = new Store();
@@ -92,6 +93,10 @@ watch(
 );
 
 export const useSolidProfile = () => {
+if (!session) {
+    const { session: sessionRef } = useSolidSession();
+    session = sessionRef;
+}
   return {
     name,
     img,

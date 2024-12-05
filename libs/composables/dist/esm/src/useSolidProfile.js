@@ -2,7 +2,7 @@ import { ref, watch } from "vue";
 import { useSolidSession } from "./useSolidSession";
 import { getResource, INTEROP, LDP, parseToN3, SPACE, VCARD, ORG, MANDAT, } from "hackathon-demo/libs/solid";
 import { Store } from "n3";
-const { session } = useSolidSession();
+let session;
 const name = ref("");
 const img = ref("");
 const inbox = ref("");
@@ -11,7 +11,7 @@ const authAgent = ref("");
 const accessInbox = ref("");
 const memberOf = ref("");
 const hasOrgRDP = ref("");
-watch(() => session.webId, async () => {
+watch(() => session?.webId, async () => {
     const webId = session.webId;
     let store = new Store();
     if (session.webId !== undefined) {
@@ -62,6 +62,10 @@ watch(() => session.webId, async () => {
     }
 });
 export const useSolidProfile = () => {
+    if (!session) {
+        const { session: sessionRef } = useSolidSession();
+        session = sessionRef;
+    }
     return {
         name,
         img,

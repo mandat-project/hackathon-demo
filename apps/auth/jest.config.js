@@ -1,7 +1,7 @@
 module.exports = {
   testEnvironment: "jsdom",
   verbose: false,
-  setupFilesAfterEnv: ["<rootDir>/../../jest-setup.ts"],
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.ts"],
   transform: {
     "^.+\\.vue$": "@vue/vue3-jest",
     "^.+\\.svg": "<rootDir>/scripts/jest-string-transformer.js",

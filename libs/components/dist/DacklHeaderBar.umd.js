@@ -1859,7 +1859,7 @@ class RdpCapableSession extends Session_Session {
         return this.rdp_;
     }
 }
-const session = (0,external_vue_.reactive)(new RdpCapableSession(""));
+let session;
 async function restoreSession() {
     await session.handleRedirectFromLogin();
 }
@@ -1875,6 +1875,19 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
+    console.log("useSolidSession");
+    if (!session) {
+        console.log("No Session instance");
+        const injectable = (0,external_vue_.inject)('useSolidSession:RdpCapableSession');
+        if (injectable) {
+            console.log("Got Injectable Session instance");
+            session = injectable;
+        }
+        else {
+            console.log("Create Rdp Session instance");
+            session = (0,external_vue_.reactive)(new RdpCapableSession(""));
+        }
+    }
     return {
         session,
         restoreSession,

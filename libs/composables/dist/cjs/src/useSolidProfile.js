@@ -5,7 +5,7 @@ const vue_1 = require("vue");
 const useSolidSession_1 = require("./useSolidSession");
 const solid_1 = require("hackathon-demo/libs/solid");
 const n3_1 = require("n3");
-const { session } = (0, useSolidSession_1.useSolidSession)();
+let session;
 const name = (0, vue_1.ref)("");
 const img = (0, vue_1.ref)("");
 const inbox = (0, vue_1.ref)("");
@@ -14,7 +14,7 @@ const authAgent = (0, vue_1.ref)("");
 const accessInbox = (0, vue_1.ref)("");
 const memberOf = (0, vue_1.ref)("");
 const hasOrgRDP = (0, vue_1.ref)("");
-(0, vue_1.watch)(() => session.webId, async () => {
+(0, vue_1.watch)(() => session?.webId, async () => {
     const webId = session.webId;
     let store = new n3_1.Store();
     if (session.webId !== undefined) {
@@ -65,6 +65,10 @@ const hasOrgRDP = (0, vue_1.ref)("");
     }
 });
 const useSolidProfile = () => {
+    if (!session) {
+        const { session: sessionRef } = (0, useSolidSession_1.useSolidSession)();
+        session = sessionRef;
+    }
     return {
         name,
         img,

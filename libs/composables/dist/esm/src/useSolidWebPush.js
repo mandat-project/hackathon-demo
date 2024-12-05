@@ -1,8 +1,9 @@
 import { AS, createResource, getResource, LDP, parseToN3, PUSH, RDF } from "hackathon-demo/libs/solid";
 import { useServiceWorkerNotifications } from "./useServiceWorkerNotifications";
 import { useSolidSession } from "./useSolidSession";
-const { unsubscribeFromPush, subscribeToPush } = useServiceWorkerNotifications();
-const { session } = useSolidSession();
+let unsubscribeFromPush;
+let subscribeToPush;
+let session;
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -66,6 +67,14 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, session);
 };
 export const useSolidWebPush = () => {
+    if (!session) {
+        session = useSolidSession().session;
+    }
+    if (!unsubscribeFromPush && !subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
+        unsubscribeFromPush = unsubscribeFromPushFunc;
+        subscribeToPush = subscribeToPushFunc;
+    }
     return {
         subscribeForResource,
         unsubscribeFromResource

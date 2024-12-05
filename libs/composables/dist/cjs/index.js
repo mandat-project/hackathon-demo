@@ -14,6 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RdpCapableSession = void 0;
 __exportStar(require("./src/useCache"), exports);
 __exportStar(require("./src/useServiceWorkerNotifications"), exports);
 __exportStar(require("./src/useServiceWorkerUpdate"), exports);
@@ -24,3 +25,5 @@ __exportStar(require("./src/useSolidSession"), exports);
 __exportStar(require("./src/useSolidWebPush"), exports);
 __exportStar(require("./src/webPushSubscription"), exports);
 __exportStar(require("./src/useIsLoggedIn"), exports);
+var rdpCapableSession_1 = require("./src/rdpCapableSession");
+Object.defineProperty(exports, "RdpCapableSession", { enumerable: true, get: function () { return rdpCapableSession_1.RdpCapableSession; } });

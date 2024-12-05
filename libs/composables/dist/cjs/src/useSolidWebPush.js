@@ -4,8 +4,9 @@ exports.useSolidWebPush = void 0;
 const solid_1 = require("hackathon-demo/libs/solid");
 const useServiceWorkerNotifications_1 = require("./useServiceWorkerNotifications");
 const useSolidSession_1 = require("./useSolidSession");
-const { unsubscribeFromPush, subscribeToPush } = (0, useServiceWorkerNotifications_1.useServiceWorkerNotifications)();
-const { session } = (0, useSolidSession_1.useSolidSession)();
+let unsubscribeFromPush;
+let subscribeToPush;
+let session;
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -69,6 +70,14 @@ const unsubscribeFromResource = async (uri) => {
     return (0, solid_1.createResource)(inbox, solidWebPushUnSub, session);
 };
 const useSolidWebPush = () => {
+    if (!session) {
+        session = (0, useSolidSession_1.useSolidSession)().session;
+    }
+    if (!unsubscribeFromPush && !subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = (0, useServiceWorkerNotifications_1.useServiceWorkerNotifications)();
+        unsubscribeFromPush = unsubscribeFromPushFunc;
+        subscribeToPush = subscribeToPushFunc;
+    }
     return {
         subscribeForResource,
         unsubscribeFromResource

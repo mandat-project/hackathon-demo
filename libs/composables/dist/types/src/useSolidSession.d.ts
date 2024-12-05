@@ -1,12 +1,4 @@
-import { Session } from "hackathon-demo/libs/solid";
-import { AxiosRequestConfig } from "axios";
-declare class RdpCapableSession extends Session {
-    private rdp_;
-    constructor(rdp: string);
-    authFetch(config: AxiosRequestConfig<any>, dpopPayload?: any): Promise<import("axios").AxiosResponse<any, any>>;
-    updateSessionWithRDP(rdp: string): void;
-    get rdp(): string | undefined;
-}
+import { RdpCapableSession } from "./rdpCapableSession";
 interface IuseSolidSessoin {
     session: RdpCapableSession;
     restoreSession: () => Promise<void>;
