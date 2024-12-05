@@ -46,7 +46,7 @@ const isLoggedIn = computed(() => {
   return ((session.webId && !memberOf) || (session.webId && memberOf && session.rdp) ? true : false)
 })
 
-const backgroundColor = ref("linear-gradient(90deg, #8532a8, #3b82f6)");
+const backgroundColor = ref("linear-gradient(90deg, #6d0d85, #c76dde)");
 // re-use Solid session
 router.isReady().then(restoreSession)
 
