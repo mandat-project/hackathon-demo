@@ -6,7 +6,7 @@
             <img class="max-w-full" :src="toAdvertisementImage(ad)" :alt="toAdvertisementName(ad)">
           </div>
           <div class="col-8">
-            <h2><a :href="ad" target="_blank">{{ toAdvertisementName(ad) }} *</a></h2>
+            <h2><a :href="ad" target="_blank" class="no-underline">{{ toAdvertisementName(ad) }} *</a></h2>
           </div>
         </div>
     </template>
