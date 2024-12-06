@@ -11,7 +11,7 @@
 return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 959:
+/***/ 219:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25,7 +25,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".header-container[data-v-5dab557c]{background-image:linear-gradient(to right,var(--shared-auth-app-header-bar-background-color-from,var(--surface-100)),var(--shared-auth-app-header-bar-background-color-to,var(--surface-100)))}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".header-container[data-v-e9537548]{background-image:linear-gradient(to right,var(--shared-auth-app-header-bar-background-color-from,var(--surface-100)),var(--shared-auth-app-header-bar-background-color-to,var(--surface-100)))}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -177,19 +177,19 @@ exports.A = (sfc, props) => {
 
 /***/ }),
 
-/***/ 220:
+/***/ 132:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(959);
+var content = __webpack_require__(219);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("7aab2c0c", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("292d1bb8", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -609,9 +609,9 @@ if (typeof window !== 'undefined') {
 
 // EXTERNAL MODULE: external "vue"
 var external_vue_ = __webpack_require__(380);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=template&id=5dab557c&scoped=true&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=template&id=e9537548&scoped=true&ts=true
 
-const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-5dab557c"), n = n(), (0,external_vue_.popScopeId)(), n);
+const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-e9537548"), n = n(), (0,external_vue_.popScopeId)(), n);
 const _hoisted_1 = { class: "header-container shadow-2 p-4 fixed top-0 left-0 right-0 z-2" };
 const _hoisted_2 = ["src", "alt"];
 const _hoisted_3 = {
@@ -684,7 +684,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=template&id=5dab557c&scoped=true&ts=true
+;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=template&id=e9537548&scoped=true&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useCache.js
 const cache = {};
@@ -763,7 +763,7 @@ const unsubscribeFromPush = async () => {
     hasActivePush.value = false;
     return sub.toJSON();
 };
-const useServiceWorkerNotifications_useServiceWorkerNotifications = () => {
+const useServiceWorkerNotifications = () => {
     return {
         askForNotificationPermission,
         subscribeToPush,
@@ -1900,7 +1900,7 @@ class RdpCapableSession extends Session_Session {
 ;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
 
 
-let session;
+const session = (0,external_vue_.reactive)(new RdpCapableSession(""));
 async function restoreSession() {
     await session.handleRedirectFromLogin();
 }
@@ -1916,7 +1916,6 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
-    session ??= (0,external_vue_.inject)('useSolidSession:RdpCapableSession', () => (0,external_vue_.reactive)(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,
@@ -1928,7 +1927,7 @@ const useSolidSession_useSolidSession = () => {
 
 
 
-let useSolidProfile_session;
+const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
 const useSolidProfile_name = (0,external_vue_.ref)("");
 const img = (0,external_vue_.ref)("");
 const inbox = (0,external_vue_.ref)("");
@@ -1937,7 +1936,7 @@ const authAgent = (0,external_vue_.ref)("");
 const accessInbox = (0,external_vue_.ref)("");
 const memberOf = (0,external_vue_.ref)("");
 const hasOrgRDP = (0,external_vue_.ref)("");
-(0,external_vue_.watch)(() => useSolidProfile_session?.webId, async () => {
+(0,external_vue_.watch)(() => useSolidProfile_session.webId, async () => {
     const webId = useSolidProfile_session.webId;
     let store = new external_n3_.Store();
     if (useSolidProfile_session.webId !== undefined) {
@@ -1988,10 +1987,6 @@ const hasOrgRDP = (0,external_vue_.ref)("");
     }
 });
 const useSolidProfile_useSolidProfile = () => {
-    if (!useSolidProfile_session) {
-        const { session: sessionRef } = useSolidSession_useSolidSession();
-        useSolidProfile_session = sessionRef;
-    }
     return {
         name: useSolidProfile_name,
         img,
@@ -2008,9 +2003,8 @@ const useSolidProfile_useSolidProfile = () => {
 
 
 
-let useSolidWebPush_unsubscribeFromPush;
-let useSolidWebPush_subscribeToPush;
-let useSolidWebPush_session;
+const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
+const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -2074,14 +2068,6 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
 };
 const useSolidWebPush = () => {
-    if (!useSolidWebPush_session) {
-        useSolidWebPush_session = useSolidSession().session;
-    }
-    if (!useSolidWebPush_unsubscribeFromPush && !useSolidWebPush_subscribeToPush) {
-        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
-        useSolidWebPush_unsubscribeFromPush = unsubscribeFromPushFunc;
-        useSolidWebPush_subscribeToPush = subscribeToPushFunc;
-    }
     return {
         subscribeForResource,
         unsubscribeFromResource
@@ -4179,7 +4165,7 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
         appLogo: String,
     },
     setup() {
-        const { hasActivePush } = useServiceWorkerNotifications_useServiceWorkerNotifications();
+        const { hasActivePush } = useServiceWorkerNotifications();
         const { name, img } = useSolidProfile_useSolidProfile();
         const appName = "Authorization App";
         return { img, hasActivePush, appName, name };
@@ -4188,9 +4174,9 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
 
 ;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=5dab557c&scoped=true&lang=css
-var AuthAppHeaderBarvue_type_style_index_0_id_5dab557c_scoped_true_lang_css = __webpack_require__(220);
-;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=5dab557c&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=e9537548&scoped=true&lang=css
+var AuthAppHeaderBarvue_type_style_index_0_id_e9537548_scoped_true_lang_css = __webpack_require__(132);
+;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=e9537548&scoped=true&lang=css
 
 ;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue
 
@@ -4200,7 +4186,7 @@ var AuthAppHeaderBarvue_type_style_index_0_id_5dab557c_scoped_true_lang_css = __
 ;
 
 
-const AuthAppHeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(AuthAppHeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-5dab557c"]])
+const AuthAppHeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(AuthAppHeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-e9537548"]])
 
 /* harmony default export */ var AuthAppHeaderBar = (AuthAppHeaderBar_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/entry-lib.js

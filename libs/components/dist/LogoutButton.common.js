@@ -217,7 +217,7 @@ const unsubscribeFromPush = async () => {
     hasActivePush.value = false;
     return sub.toJSON();
 };
-const useServiceWorkerNotifications_useServiceWorkerNotifications = () => {
+const useServiceWorkerNotifications = () => {
     return {
         askForNotificationPermission,
         subscribeToPush,
@@ -1354,7 +1354,7 @@ class RdpCapableSession extends Session_Session {
 ;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
 
 
-let session;
+const session = (0,external_vue_namespaceObject.reactive)(new RdpCapableSession(""));
 async function restoreSession() {
     await session.handleRedirectFromLogin();
 }
@@ -1370,7 +1370,6 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
-    session ??= (0,external_vue_namespaceObject.inject)('useSolidSession:RdpCapableSession', () => (0,external_vue_namespaceObject.reactive)(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,
@@ -1382,7 +1381,7 @@ const useSolidSession_useSolidSession = () => {
 
 
 
-let useSolidProfile_session;
+const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
 const useSolidProfile_name = (0,external_vue_namespaceObject.ref)("");
 const img = (0,external_vue_namespaceObject.ref)("");
 const inbox = (0,external_vue_namespaceObject.ref)("");
@@ -1391,7 +1390,7 @@ const authAgent = (0,external_vue_namespaceObject.ref)("");
 const accessInbox = (0,external_vue_namespaceObject.ref)("");
 const memberOf = (0,external_vue_namespaceObject.ref)("");
 const hasOrgRDP = (0,external_vue_namespaceObject.ref)("");
-(0,external_vue_namespaceObject.watch)(() => useSolidProfile_session?.webId, async () => {
+(0,external_vue_namespaceObject.watch)(() => useSolidProfile_session.webId, async () => {
     const webId = useSolidProfile_session.webId;
     let store = new external_n3_namespaceObject.Store();
     if (useSolidProfile_session.webId !== undefined) {
@@ -1442,10 +1441,6 @@ const hasOrgRDP = (0,external_vue_namespaceObject.ref)("");
     }
 });
 const useSolidProfile_useSolidProfile = () => {
-    if (!useSolidProfile_session) {
-        const { session: sessionRef } = useSolidSession();
-        useSolidProfile_session = sessionRef;
-    }
     return {
         name: useSolidProfile_name,
         img,
@@ -1462,9 +1457,8 @@ const useSolidProfile_useSolidProfile = () => {
 
 
 
-let useSolidWebPush_unsubscribeFromPush;
-let useSolidWebPush_subscribeToPush;
-let useSolidWebPush_session;
+const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
+const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -1528,14 +1522,6 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
 };
 const useSolidWebPush = () => {
-    if (!useSolidWebPush_session) {
-        useSolidWebPush_session = useSolidSession().session;
-    }
-    if (!useSolidWebPush_unsubscribeFromPush && !useSolidWebPush_subscribeToPush) {
-        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
-        useSolidWebPush_unsubscribeFromPush = unsubscribeFromPushFunc;
-        useSolidWebPush_subscribeToPush = subscribeToPushFunc;
-    }
     return {
         subscribeForResource,
         unsubscribeFromResource

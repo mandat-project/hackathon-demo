@@ -10,8 +10,9 @@ import {
 } from "@/constants/solid-urls";
 import router from "@/router";
 import {Demand} from "@/types/Demand";
+import {toRef, watchThrottled} from "@vueuse/core";
+import {HorizontalLine, PageHeadline} from "hackathon-demo/libs/components";
 import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
-import {PageHeadline, HorizontalLine} from "hackathon-demo/libs/components";
 import {
   createResource,
   CREDIT,
@@ -28,7 +29,6 @@ import {
   XSD,
 } from "hackathon-demo/libs/solid";
 import {fetchStoreOf, getContainerUris} from "hackathon-demo/libs/utils";
-import {toRef, watchThrottled} from "@vueuse/core";
 import {Literal, NamedNode, Store, Writer} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, watch} from "vue";
@@ -364,12 +364,20 @@ const createOrder = async (amount: number, offerId?: string) => {
 };
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
+  const authAppURI = authAgent.value;
+  const requestUri = encodeURIComponent(inspectedAccessRequestURI);
+  const redirectUri = encodeURIComponent(window.location.origin + "/accessRequestHandled");
+  const cssTheme = encodeURIComponent(window.location.origin + "/auth.css");
+
+  const queries = {
+    uri: requestUri,
+    app_redirect: redirectUri,
+    css: cssTheme,
+  };
+  const redirectUrl = `${authAppURI}?${Object.entries(queries).map(group => group.join("=")).join("&")}`;
+
   window.open(
-      `${authAgent.value}?uri=${encodeURIComponent(
-          inspectedAccessRequestURI
-      )}&app_redirect=${encodeURIComponent(
-          window.location.origin + "/accessRequestHandled"
-      )}`,
+      redirectUrl,
       "_self"
   );
 }
