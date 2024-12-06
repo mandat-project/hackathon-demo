@@ -19,10 +19,7 @@ async function restoreSession() {
    ```
  */
 const useSolidSession = () => {
-    session ??= (0, vue_1.inject)('useSolidSession:RdpCapableSession', () => {
-        // console.debug("Create Rdp Session instance");
-        return (0, vue_1.reactive)(new rdpCapableSession_1.RdpCapableSession(""));
-    }, true);
+    session ??= (0, vue_1.inject)('useSolidSession:RdpCapableSession', () => (0, vue_1.reactive)(new rdpCapableSession_1.RdpCapableSession("")), true);
     return {
         session,
         restoreSession,

@@ -31,16 +31,13 @@
 </template>
 
 <script setup lang="ts">
-import { AuthAppHeaderBar } from "hackathon-demo/libs/components";
-import {
-  useSolidProfile,
-  useSolidSession,
-} from "hackathon-demo/libs/composables";
+import appLogo from "@/assets/logo.svg";
+import {AuthAppHeaderBar} from "hackathon-demo/libs/components";
+import {useSolidProfile, useSolidSession,} from "hackathon-demo/libs/composables";
 import Card from "primevue/card";
 import Toast from "primevue/toast";
-import { computed } from "vue";
+import {computed} from "vue";
 import router from "./router";
-import appLogo from "@/assets/logo.svg";
 
 const { session, restoreSession } = useSolidSession();
 const { memberOf } = useSolidProfile();
@@ -51,10 +48,8 @@ const isLoggedIn = computed(() => {
   );
 });
 
-console.log(appLogo);
-
 // re-use Solid session
-router.isReady().then(restoreSession);
+router.isReady().then(() => restoreSession());
 </script>
 
 <style>

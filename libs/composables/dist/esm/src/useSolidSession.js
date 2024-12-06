@@ -16,10 +16,7 @@ async function restoreSession() {
    ```
  */
 export const useSolidSession = () => {
-    session ??= inject('useSolidSession:RdpCapableSession', () => {
-        // console.debug("Create Rdp Session instance");
-        return reactive(new RdpCapableSession(""));
-    }, true);
+    session ??= inject('useSolidSession:RdpCapableSession', () => reactive(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,

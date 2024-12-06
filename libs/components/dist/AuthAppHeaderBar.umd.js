@@ -11,6 +11,27 @@
 return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 959:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(758);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(935);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+// Imports
+
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, ".header-container[data-v-5dab557c]{background-image:linear-gradient(to right,var(--shared-auth-app-header-bar-background-color-from,var(--surface-100)),var(--shared-auth-app-header-bar-background-color-to,var(--surface-100)))}", ""]);
+// Exports
+/* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
 /***/ 166:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -153,6 +174,22 @@ exports.A = (sfc, props) => {
     return target;
 };
 
+
+/***/ }),
+
+/***/ 220:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(959);
+if(content.__esModule) content = content.default;
+if(typeof content === 'string') content = [[module.id, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var add = (__webpack_require__(825)/* ["default"] */ .A)
+var update = add("7aab2c0c", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -572,9 +609,10 @@ if (typeof window !== 'undefined') {
 
 // EXTERNAL MODULE: external "vue"
 var external_vue_ = __webpack_require__(380);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=template&id=538c992f&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=template&id=5dab557c&scoped=true&ts=true
 
-const _hoisted_1 = { class: "surface-100 shadow-2 p-4 fixed top-0 left-0 right-0 z-2 background" };
+const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-5dab557c"), n = n(), (0,external_vue_.popScopeId)(), n);
+const _hoisted_1 = { class: "header-container shadow-2 p-4 fixed top-0 left-0 right-0 z-2" };
 const _hoisted_2 = ["src", "alt"];
 const _hoisted_3 = {
     href: "/",
@@ -587,7 +625,7 @@ const _hoisted_7 = {
     key: 1,
     class: "pi pi-user"
 };
-const _hoisted_8 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("div", { class: "h-5rem" }, null, -1);
+const _hoisted_8 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("div", { class: "h-5rem" }, null, -1));
 function render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Avatar = (0,external_vue_.resolveComponent)("Avatar");
     const _component_LoginButton = (0,external_vue_.resolveComponent)("LoginButton");
@@ -646,7 +684,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=template&id=538c992f&ts=true
+;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=template&id=5dab557c&scoped=true&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useCache.js
 const cache = {};
@@ -725,7 +763,7 @@ const unsubscribeFromPush = async () => {
     hasActivePush.value = false;
     return sub.toJSON();
 };
-const useServiceWorkerNotifications = () => {
+const useServiceWorkerNotifications_useServiceWorkerNotifications = () => {
     return {
         askForNotificationPermission,
         subscribeToPush,
@@ -1413,10 +1451,13 @@ function _checkResponseStatus(response) {
 }
 /**
  *
- * @param uri: the URI to strip from its fragment #
+ * @param uri the URI to strip from its fragment #
  * @return substring of the uri prior to fragment #
  */
 function _stripFragment(uri) {
+    if (typeof uri !== "string") {
+        return "";
+    }
     const indexOfFragment = uri.indexOf("#");
     if (indexOfFragment !== -1) {
         uri = uri.substring(0, indexOfFragment);
@@ -1821,8 +1862,7 @@ function getResourceAsStore(uri, session) {
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
-
+;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/rdpCapableSession.js
 
 class RdpCapableSession extends Session_Session {
     rdp_;
@@ -1856,6 +1896,10 @@ class RdpCapableSession extends Session_Session {
         return this.rdp_;
     }
 }
+
+;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
+
+
 let session;
 async function restoreSession() {
     await session.handleRedirectFromLogin();
@@ -1872,19 +1916,7 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
-    console.log("useSolidSession");
-    if (!session) {
-        console.log("No Session instance");
-        const injectable = (0,external_vue_.inject)('useSolidSession:RdpCapableSession');
-        if (injectable) {
-            console.log("Got Injectable Session instance");
-            session = injectable;
-        }
-        else {
-            console.log("Create Rdp Session instance");
-            session = (0,external_vue_.reactive)(new RdpCapableSession(""));
-        }
-    }
+    session ??= (0,external_vue_.inject)('useSolidSession:RdpCapableSession', () => (0,external_vue_.reactive)(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,
@@ -1896,7 +1928,7 @@ const useSolidSession_useSolidSession = () => {
 
 
 
-const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
+let useSolidProfile_session;
 const useSolidProfile_name = (0,external_vue_.ref)("");
 const img = (0,external_vue_.ref)("");
 const inbox = (0,external_vue_.ref)("");
@@ -1905,7 +1937,7 @@ const authAgent = (0,external_vue_.ref)("");
 const accessInbox = (0,external_vue_.ref)("");
 const memberOf = (0,external_vue_.ref)("");
 const hasOrgRDP = (0,external_vue_.ref)("");
-(0,external_vue_.watch)(() => useSolidProfile_session.webId, async () => {
+(0,external_vue_.watch)(() => useSolidProfile_session?.webId, async () => {
     const webId = useSolidProfile_session.webId;
     let store = new external_n3_.Store();
     if (useSolidProfile_session.webId !== undefined) {
@@ -1956,6 +1988,10 @@ const hasOrgRDP = (0,external_vue_.ref)("");
     }
 });
 const useSolidProfile_useSolidProfile = () => {
+    if (!useSolidProfile_session) {
+        const { session: sessionRef } = useSolidSession_useSolidSession();
+        useSolidProfile_session = sessionRef;
+    }
     return {
         name: useSolidProfile_name,
         img,
@@ -1972,8 +2008,9 @@ const useSolidProfile_useSolidProfile = () => {
 
 
 
-const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
-const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
+let useSolidWebPush_unsubscribeFromPush;
+let useSolidWebPush_subscribeToPush;
+let useSolidWebPush_session;
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -2037,6 +2074,14 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
 };
 const useSolidWebPush = () => {
+    if (!useSolidWebPush_session) {
+        useSolidWebPush_session = useSolidSession().session;
+    }
+    if (!useSolidWebPush_unsubscribeFromPush && !useSolidWebPush_subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
+        useSolidWebPush_unsubscribeFromPush = unsubscribeFromPushFunc;
+        useSolidWebPush_subscribeToPush = subscribeToPushFunc;
+    }
     return {
         subscribeForResource,
         unsubscribeFromResource
@@ -2064,6 +2109,7 @@ const useIsLoggedIn = () => {
 
 
 // export * from './src/useSolidWallet';
+
 
 
 
@@ -3840,8 +3886,8 @@ var BadgeDirective = BaseBadgeDirective.extend('badge', {
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=b7d0728a&scoped=true&ts=true
 
-const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-b7d0728a"), n = n(), (0,external_vue_.popScopeId)(), n);
-const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
+const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-b7d0728a"), n = n(), (0,external_vue_.popScopeId)(), n);
+const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -4133,7 +4179,7 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
         appLogo: String,
     },
     setup() {
-        const { hasActivePush } = useServiceWorkerNotifications();
+        const { hasActivePush } = useServiceWorkerNotifications_useServiceWorkerNotifications();
         const { name, img } = useSolidProfile_useSolidProfile();
         const appName = "Authorization App";
         return { img, hasActivePush, appName, name };
@@ -4142,13 +4188,19 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
 
 ;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=script&lang=ts
  
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=5dab557c&scoped=true&lang=css
+var AuthAppHeaderBarvue_type_style_index_0_id_5dab557c_scoped_true_lang_css = __webpack_require__(220);
+;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=5dab557c&scoped=true&lang=css
+
 ;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue
 
 
 
 
 ;
-const AuthAppHeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(AuthAppHeaderBarvue_type_script_lang_ts, [['render',render]])
+
+
+const AuthAppHeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(AuthAppHeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-5dab557c"]])
 
 /* harmony default export */ var AuthAppHeaderBar = (AuthAppHeaderBar_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/entry-lib.js

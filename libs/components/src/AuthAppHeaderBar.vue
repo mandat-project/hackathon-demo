@@ -1,10 +1,7 @@
 <script lang="ts">
-import {
-  useServiceWorkerNotifications,
-  useSolidProfile,
-} from "hackathon-demo/libs/composables";
+import {useServiceWorkerNotifications, useSolidProfile,} from "hackathon-demo/libs/composables";
 import BadgeDirective from "primevue/badgedirective";
-import { defineComponent } from "vue";
+import {defineComponent} from "vue";
 import LoginButton from "./LoginButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 
@@ -32,9 +29,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
-    class="surface-100 shadow-2 p-4 fixed top-0 left-0 right-0 z-2 background"
-  >
+  <div class="header-container shadow-2 p-4 fixed top-0 left-0 right-0 z-2">
     <Toolbar>
       <template #start>
         <img v-if="appLogo" :src="appLogo" :alt="appName" />
@@ -65,4 +60,12 @@ export default defineComponent({
   <div class="h-5rem" />
 </template>
 
-<style scoped></style>
+<style scoped>
+.header-container {
+  background-image: linear-gradient(
+    to right,
+    var(--shared-auth-app-header-bar-background-color-from, var(--surface-100)),
+    var(--shared-auth-app-header-bar-background-color-to, var(--surface-100))
+  );
+}
+</style>
