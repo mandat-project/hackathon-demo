@@ -34,7 +34,7 @@ if (props.store) {
 
 <style scoped>
 .success-message{
-  padding:1rem;
+  padding:0 1rem 0 1rem;
   margin-top:1rem;
   border:2px solid rgba(32, 151, 12, 1);
   background-color:rgba(230, 252, 197, 1);

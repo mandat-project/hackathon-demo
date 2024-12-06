@@ -2,6 +2,7 @@
   <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation">
     <Card>
       <template #content>
+        <div class="card-container">
         <div class="grid">
           <div class="col-12" v-if ="currentState === STATES.Terminated" >
             <StatusChip :status="STATES.Terminated"></StatusChip>
@@ -68,6 +69,7 @@
         </Button>
         <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="isCreateOfferBtnDisabled"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
+        </div>
       </template>
     </Card>
   </div>
@@ -92,6 +94,7 @@
       </div>
     </div>
   </Dialog>
+  <LoadingDialog :isVisible="isLoadingDialogVisible"></LoadingDialog>
 </template>
 
 <script setup lang="ts">
@@ -118,7 +121,7 @@ import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, reactive, Ref, ref, watch} from 'vue';
 import Card from "primevue/card";
-import {DacklTextInput} from "@shared/components";
+import {DacklTextInput, LoadingDialog} from "@shared/components";
 import {STATES} from "@/enums/states";
 import {TAB_STATE} from "@/enums/tabsState";
 import {
@@ -148,6 +151,7 @@ let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
 const isDialogVisible = ref(false);
+const isLoadingDialogVisible = ref(false);
 const loanTerms = [
   {label: "6 months", value: "0.5"},
   {label: "12 months", value: "1"},
@@ -515,6 +519,7 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
 }
 
 async function createOfferResource(demand: string, dataAccessRequest: string) {
+  isLoadingDialogVisible.value =true;
   const businessAssessmentRegistrations = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, session);
   const derivedFromData = businessAssessmentRegistrations.map(r => "<" + r + ">").join(", ");
   const body = getCreateOfferResourceBody(
@@ -530,6 +535,7 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
   );
   const offerLocation = await createResourceInAnyRegistrationOfShape(memberOf.value!, offerShapeTreeUri, body, session)
       .catch((err) => {
+        isLoadingDialogVisible.value = false;
         toast.add({
           severity: "error",
           summary: "Error on create offer!",
@@ -574,6 +580,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 }
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
+  isLoadingDialogVisible.value =false;
   window.open(
       `${authAgent.value}?uri=${encodeURIComponent(
           inspectedAccessRequestURI
@@ -637,16 +644,13 @@ setTimeout(()=>{
 },1000);
 </script>
 
-<style>
-.p-card {
-  .p-card-content {
-    padding: 0;
-  }
-  .p-card-body {
-    padding-top:0px;
-  }
+<style scoped>
+.p-component :deep(.p-card-body){
+  padding-top:0px
 }
-
+.p-component :deep(.p-card-content ){
+  padding-top:0px
+}
 
 
 .p-disabled{

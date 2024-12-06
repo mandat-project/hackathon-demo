@@ -18,7 +18,7 @@ watch(()=> props.status,()=> {
 }, {immediate:true});
 </script>
 
-<style>
+<style scoped>
 .offer-accepted{
   background-color:rgba(32, 151, 12, 1);
   color:white;

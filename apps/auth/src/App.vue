@@ -5,17 +5,13 @@
     <router-view />
   </main>
 
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;">
-    <template #content>
-      <p style="text-align: center;">{{ $t("error.401-unauthenticated") }}</p>
-    </template>
-  </Card>
+  <UnauthenticatedCard v-else/>
 
   <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
 </template>
 
 <script setup lang="ts">
-import {AuthAppHeaderBar} from "@shared/components";
+import {AuthAppHeaderBar, UnauthenticatedCard} from "@shared/components";
 import {useSolidProfile, useSolidSession} from "@shared/composables";
 import Card from "primevue/card";
 import Toast from "primevue/toast";

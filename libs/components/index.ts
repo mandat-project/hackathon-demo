@@ -15,6 +15,8 @@ import SmeCard from "./src/SmeCard.vue";
 import SmeCardHeadline from "./src/SmeCardHeadline.vue";
 import TabList from './src/tabs/TabList.vue';
 import DacklTextInput from './src/DacklTextInput.vue';
+import UnauthenticatedCard from "./src/UnauthenticatedCard.vue";
+import LoadingDialog from "./src/LoadingDialog.vue";
 
 export * from './src/tabs/TabItemType';
 
@@ -36,4 +38,6 @@ export {
     PageHeadline,
     SmeCardHeadline,
     DacklTextInput,
+    UnauthenticatedCard,
+    LoadingDialog
 };
