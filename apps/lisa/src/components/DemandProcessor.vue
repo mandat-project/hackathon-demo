@@ -404,16 +404,6 @@ async function requestAccessToData() {
 async function requestCreationOfData() {
   isDialogVisible.value = false
   const documentCreationDemandBody = getDocumentCreationDemandBody(memberOf.value,props.demandUri,selectedShapeTree.value.value);
-/*  `\
-      @prefix schema: <${SCHEMA()}> .
-      @prefix credit: <${CREDIT()}> .
-      @prefix interop: <${INTEROP()}> .
-      <> a schema:Demand ;
-      interop:fromSocialAgent <${memberOf.value}> ;
-      credit:derivedFromDemand <${props.demandUri}> ;
-      interop:registeredShapeTree <${selectedShapeTree.value.value}> .
-      <${memberOf.value}> schema:seeks <> .
-    `;*/
   const documentCreationDemandContainerUris = await getDataRegistrationContainers(demanderUri.value!, documentCreationDemandShapeTreeUri, session);
   const documentCreationDemandURI = await createResource(documentCreationDemandContainerUris[0], documentCreationDemandBody, session)
       .catch((err) => {
@@ -539,28 +529,6 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
       enteredAnnualPercentageRate.value,
       selectedLoanTerm.value.value
   );
- /* const body = `
-          @prefix : <#>.
-          @prefix credit: <${CREDIT()}> .
-          @prefix schema: <${SCHEMA()}> .
-          <> a credit:Offer;
-            schema:itemOffered <#credit>;
-            schema:availability schema:InStock;
-            credit:derivedFromDemand <${demand}> ;
-            credit:derivedFromData ${businessAssessmentRegistrations.map(r => "<" + r + ">").join(", ")} ;
-            credit:hasUnderlyingRequest <${dataAccessRequest}> .
-          <${memberOf.value}> schema:offers <>  .
-          <${demanderUri.value}> schema:seeks <>  .
-          <#credit>
-                  a schema:LoanOrCredit ;
-                  schema:amount "${amount.value}";
-                  schema:currency "${currency.value}";
-                  schema:annualPercentageRate "${enteredAnnualPercentageRate.value}";
-                  schema:loanTerm <#duration>.
-            <#duration>
-              a schema:QuantitativeValue;
-              schema:value "${selectedLoanTerm.value.value} years".
-            `*/
   const offerLocation = await createResourceInAnyRegistrationOfShape(memberOf.value!, offerShapeTreeUri, body, session)
       .catch((err) => {
         toast.add({
@@ -593,71 +561,6 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
 
 async function requestAccessBeingSet(resource: string, forAgent: string) {
   const body = getAccessBeingSetBody(memberOf.value, forAgent, props.demandUri, resource);
-
- /* const body = `@prefix interop: <${INTEROP()}> .
-    @prefix ldp: <${LDP()}> .
-    @prefix skos: <${SKOS()}> .
-    @prefix credit: <${CREDIT()}> .
-    @prefix xsd: <${XSD()}> .
-    @prefix acl: <${ACL()}> .
-    @prefix gdprp: <${GDPRP()}> .
-    @prefix rdfs: <${RDFS()}> .
-
-    <#accessRequest>
-      a interop:AccessRequest ;
-      gdprp:purposeForProcessing gdprp:contractualObligations ;
-      interop:fromSocialAgent <${memberOf.value}> ;
-      interop:toSocialAgent  <${memberOf.value}> ;
-      interop:forSocialAgent <${forAgent}> ;
-      interop:hasAccessNeedGroup <#accessNeedGroup> ;
-      rdfs:seeAlso <${props.demandUri}>.
-
-    <#accessNeedGroupDescription>
-      a interop:AccessNeedGroupDescription ;
-      interop:inAccessDescriptionSet <#accessDescriptionSet> ;
-      interop:hasAccessNeedGroup <#accessNeedGroup> ;
-      skos:prefLabel "Zugriff Offer und Order container"@de ;
-      skos:definition "Gib das Angebot frei."@de .
-
-    <#accessNeedGroup>
-      a interop:AccessNeedGroup ;
-      interop:hasAccessDescriptionSet <#accessDescriptionSet> ;
-      interop:accessNecessity interop:accessRequired ;
-      interop:accessScenario interop:sharedAccess ;
-      interop:authenticatesAs interop:SocialAgent ;
-      interop:hasAccessNeed <#accessNeed>, <#accessNeed2> .
-
-    <#accessNeedDescription>
-      a interop:AccessNeedDescription ;
-      interop:inAccessDescriptionSet <#accessNeedGroupDescription> ;
-      interop:hasAccessNeed <#accessNeed> ;
-      skos:prefLabel "Zugriff Offer"@de ;
-      skos:definition "Gib das Angebot frei."@de .
-
-    <#accessNeed>
-      a interop:AccessNeed ;
-      interop:accessMode acl:Read ;
-      interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOfferTree> ;
-      interop:hasDataInstance <${resource}> ;
-      interop:accessNecessity interop:accessRequired .
-
-    <#accessNeedDescription2>
-      a interop:AccessNeedDescription ;
-      interop:inAccessDescriptionSet <#accessNeedGroupDescription> ;
-      interop:hasAccessNeed <#accessNeed2> ;
-      skos:prefLabel "Zugriff Order"@de ;
-      skos:definition "Gib den Order Container frei."@de .
-
-    <#accessNeed2>
-      a interop:AccessNeed ;
-      interop:accessMode acl:Append ;
-      interop:registeredShapeTree <https://solid.aifb.kit.edu/shapes/mandat/credit.tree#creditOrderTree> ;
-      interop:accessNecessity interop:accessRequired .
-
-    <#accessDescriptionSet>
-      a interop:AccessDescriptionSet ;
-      interop:usesLanguage "de"^^xsd:language .`;*/
-
   return createResource(accessInbox.value, body, session)
       .catch((err) => {
         toast.add({
