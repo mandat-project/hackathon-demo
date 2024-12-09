@@ -1,6 +1,7 @@
 <template>
-  <Dialog v-model:visible="isVisible" modal header="Redirecting to the AuthApp" center style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto">
-    <p style="margin-bottom: 2rem">Please wait. You will be redirecting to the AuthApp...</p>
+  <Dialog :visible="props.isVisible" center header="Redirecting to the AuthApp" modal
+          class="w-auto mt-4 mx-auto block">
+    <p class="mb-5 mt-0">Please wait. You will be redirecting to the AuthApp...</p>
   </Dialog>
 </template>
 <style scoped>
@@ -10,14 +11,5 @@
 }
 </style>
 <script setup lang="ts">
-
-import {ref, watch} from "vue";
-
-const isVisible = ref(false);
-
 const props = defineProps<{ isVisible: boolean }>();
-
-watch(()=> props.isVisible,()=> {
-  isVisible.value = props.isVisible;
-}, {immediate:true});
 </script>
