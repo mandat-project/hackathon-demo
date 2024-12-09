@@ -294,7 +294,6 @@ const currentState = computed(() =>{
     return STATES.PendingDataRequest;
   }
   if (accessRequestUri.value !== undefined && offerAccessRequests.value.length === 0) {
-    console.log('amount',amount.value, props.demandUri);
     return STATES.DataSuccessfullyProvided;
   }
   if(hasOrderForAnyOfferForThisDemand.value && !hasTerminatedOrder.value){
