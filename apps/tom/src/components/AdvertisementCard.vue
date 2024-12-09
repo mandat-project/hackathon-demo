@@ -9,6 +9,7 @@
             <h2><a :href="ad" target="_blank" class="no-underline">{{ toAdvertisementName(ad) }} *</a></h2>
           </div>
         </div>
+      <HorizontalLine class="mt-0"/>
     </template>
     <template #footer>
       <Button @click="emit('adClick', ad)" class="w-full justify-content-center">Find Provider</Button>
@@ -18,6 +19,7 @@
 <script setup lang="ts">
 import {toAdvertisementImage} from "@/utils/toAdvertisementImage";
 import {toAdvertisementName} from "@/utils/toAdvertisementName";
+import {HorizontalLine} from "@shared/components";
 
 const props = defineProps<{ ad: string }>();
 const emit = defineEmits<{

@@ -333,11 +333,11 @@ async function createDemand(demandContainerUris: string[], payload: string) {
                       <p class="my-2 text-sm">{{ad.comment}}</p>
                     </div>
                   </header>
-                  <HorizontalLine class="mt-0"/>
+                  <HorizontalLine class="mt-0 mx-4"/>
                 </template>
                 <template #content>
 
-                  <div class="grid">
+                  <div class="grid mx-2">
                     <div class="col-12 md:col-3">
                       <p class="my-0 text-xs text-black-alpha-70">Lowest interest rate: </p>
                       <p class="my-0 text-xl font-semibold">{{ad.lowestInterestRate}} %</p>
@@ -350,7 +350,7 @@ async function createDemand(demandContainerUris: string[], payload: string) {
                       <p class="my-0 text-xs text-black-alpha-70">Contact advertiser at:</p>
                       <a class="my-0 text-xl font-semibold" :href="ad.inbox">advertiser</a>
                     </div>
-                    <div class="col-12 md:col-3 align-content-end">
+                    <div class="col-12 md:col-3 flex justify-content-end">
                       <Button class="w-full md:w-auto" @click="chosedAdvertiser(ad, index)" icon="pi pi-check">
                         Select&nbsp;
                         <span class="md:hidden">Provider</span>
@@ -416,3 +416,9 @@ async function createDemand(demandContainerUris: string[], payload: string) {
   </div>
 </template>
 
+<style scoped>
+
+.p-stepper :deep(.p-stepper-nav) {
+  width:40rem;
+}
+</style>

@@ -56,7 +56,7 @@ export default defineComponent({
         <a v-if="webId" :href="webId"
            class="no-tap-highlight no-underline text-900 gap-2 flex align-items-center justify-content-end">
           <span class="white-space-nowrap overflow-hidden text-overflow-ellipsis hidden sm:inline w-5 md:w-auto">{{ name }}</span>
-          <Avatar v-if="isLoggedIn" shape="circle" class="border-1">
+          <Avatar v-if="isLoggedIn" shape="circle" class="border-1 mx-1">
             <img v-if="img" :src="img"/>
             <i v-else class="pi pi-user"/>
           </Avatar>

@@ -111,7 +111,7 @@
     </template>
   </Card>
 
-  <ConfirmDialog :group="'accessRequest-' + informationResourceURI" />
+  <ConfirmDialog :group="'accessRequest-' + informationResourceURI" style="width:40rem" />
 </template>
 
 <script setup lang="ts">

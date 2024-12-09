@@ -47,7 +47,7 @@
               <p class="text-xs pb-2">Requested Data:</p>
               <p class="pb-4 text-sm font-medium">{{selectedShapeTree.label}}</p>
             </div>
-            <Button class="step-button"
+            <Button type="button" class="step-button"
                     v-bind:disabled="!isAccessRequestGranted || isAccessRequestGranted === 'false'"
                     @click="processDataDialogBox()" severity="secondary">Show Data</Button>
           </div>
