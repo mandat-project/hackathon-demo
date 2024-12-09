@@ -8,6 +8,7 @@ module.exports = {
     "^.+\\.jsx?$": "babel-jest",
     "^.+\\.tsx?$": ["ts-jest", {}],
   },
+  transformIgnorePatterns: ["node_modules/(?!hackathon-demo)/"],
   testMatch: [
     "<rootDir>/src/**/*.spec.ts",
     "<rootDir>/tests/unit/**/*.ts",
@@ -16,8 +17,10 @@ module.exports = {
   moduleFileExtensions: ["js", "ts", "vue"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-    "^@shared/(.*)$": "<rootDir>/../../libs/$1",
-    "^hackathon-demo/libs/(.*)$": "<rootDir>/../../libs/$1",
+    // You can use these path aliases inside a monorepo or if you've checked out all the libs
+    // on your machine. This allows you to test features that are not pushed, yet.
+    // "^@shared/(.*)$": "<rootDir>/../../libs/$1",
+    // "^hackathon-demo/libs/(.*)$": "<rootDir>/../../libs/$1",
   },
   coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
   coverageReporters: ["text", "json-summary"],
