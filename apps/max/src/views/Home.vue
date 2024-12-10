@@ -119,7 +119,7 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
 <template>
   <div class="grid">
     <div class="col lg:col-12 wrapper">
-      <h1 class="heading">Client Requests</h1>
+      <h1 class="text-petrol-650 px-3 font-normal text-4xl md:text-6xl gap-2 flex align-items-center">Client Requests</h1>
       <ul v-if="isLoggedIn" class="pb-2">
         <Card class="mb-4" v-for="([uri, store], index) of documentCreationDemands" :key="index">
           <template #title><div class="col-12 block">Request #{{ index + 1 }}:</div></template>
@@ -154,9 +154,6 @@ function getObject(store: Store, quad1: string, quad2?: Quad): string {
   margin: 5px;
   .wrapper {
     width: -webkit-fill-available;
-    .heading{
-      color: #007577;
-    }
     ul{
       padding-left:0px;
       .word-break{

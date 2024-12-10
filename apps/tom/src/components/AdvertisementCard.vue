@@ -1,8 +1,8 @@
 <template>
   <Card>
     <template #content>
-      <div class="grid">
-          <div class="md:col-4 p-2 bg-bluegray-50 flex justify-content-center">
+      <div class="grid m-0">
+          <div class="md:col-4 p-2 bg-bluegray-50 flex justify-content-center"  style="width: 112px; height: 112px;">
             <img class="max-w-full" :src="toAdvertisementImage(ad)" :alt="toAdvertisementName(ad)">
           </div>
           <div class="col-8">
@@ -27,3 +27,12 @@ const emit = defineEmits<{
 }>();
 
 </script>
+<style scoped>
+.p-card :deep(.p-card-content) {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.p-card :deep(.p-card-footer) {
+  padding-top: 0;
+}
+</style>

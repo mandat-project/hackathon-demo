@@ -321,9 +321,9 @@ async function createDemand(demandContainerUris: string[], payload: string) {
             <p class="break-all">{{ chosenAdvertisement }}</p>
             <HorizontalLine/>
             <div role="list" v-if="advertisements" class="flex flex-column gap-3 p-0">
-              <Card role="listitem" v-for="(ad, index) in advertisements" :key="ad.id">
+              <Card role="listitem" class="consumer-credit p-4" v-for="(ad, index) in advertisements" :key="ad.id">
                 <template #header>
-                  <header class="flex gap-4 m-4">
+                  <header class="flex gap-4">
                     <div class="w-6rem h-6rem p-3 bg-bluegray-50 flex justify-content-center align-items-center">
                       <a class="" :href="ad.inbox"><img :src="ad.creatorIconURI" class="max-w-full"></a>
                     </div>
@@ -333,11 +333,11 @@ async function createDemand(demandContainerUris: string[], payload: string) {
                       <p class="my-2 text-sm">{{ad.comment}}</p>
                     </div>
                   </header>
-                  <HorizontalLine class="mt-0 mx-4"/>
+                  <HorizontalLine class="mt-0"/>
                 </template>
                 <template #content>
 
-                  <div class="grid mx-2">
+                  <div class="grid">
                     <div class="col-12 md:col-3">
                       <p class="my-0 text-xs text-black-alpha-70">Lowest interest rate: </p>
                       <p class="my-0 text-xl font-semibold">{{ad.lowestInterestRate}} %</p>
@@ -420,5 +420,11 @@ async function createDemand(demandContainerUris: string[], payload: string) {
 
 .p-stepper :deep(.p-stepper-nav) {
   width:40rem;
+}
+.consumer-credit :deep(.p-card-body){
+  padding:0;
+}
+.consumer-credit :deep(.p-card-content){
+  padding:0;
 }
 </style>

@@ -479,4 +479,11 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
 .-top-1rem {
   top: -1rem;
 }
+ .p-card :deep(.p-card-content) {
+   padding-top: 0;
+   padding-bottom: 0;
+ }
+.p-card :deep(.p-card-footer) {
+  padding-top: 0;
+}
 </style>

@@ -2,7 +2,7 @@
   <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation">
     <Card>
       <template #content>
-        <div class="grid">
+        <div class="grid pt-0">
           <div class="col-12" v-if ="currentState === STATES.Terminated" >
             <StatusChip :status="STATES.Terminated"></StatusChip>
           </div>
@@ -15,8 +15,8 @@
             <h2>{{ amount }} - {{ currency }}</h2>
           </div>
         </div>
-        <div class="border-round-2xl p-2" style="background-color:rgba(246, 247, 249, 1);">
-          <div class=" grid gap-3 ml-2 py-2" v-if="currentState === STATES.DataNeeded">
+        <div class="border-round-2xl p-4 ml-2" style="background-color:rgba(246, 247, 249, 1);">
+          <div class=" grid gap-3 pt-0" v-if="currentState === STATES.DataNeeded">
             <StatusChip :status="STATES.DataNeeded"></StatusChip>
             <div class="w-full ml-2">
               <p class="font-medium" >Business Assessment data</p>
@@ -53,7 +53,7 @@
           </div>
         </div>
         <div class="grid pt-2 pb-2">
-          <div class="col-6 pl-0">
+          <div class="col-6">
             <DacklTextInput type="number" :disabled="!(currentState === STATES.DataSuccessfullyProvided)" :maxFractionDigits="2" class="w-full md:w-auto mt-2" label="Annual Percentage rate in %" v-model="enteredAnnualPercentageRate"/>
           </div>
           <div class="col-6">
@@ -64,7 +64,7 @@
           </div>
         </div>
         <Button v-if="isTerminateBtnVisible" severity="danger"
-                class="step-button text-0" @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
+                class="step-button text-0 " @click="SetTerminationFlagInOrder(offersForDemand)">Terminate business relation
         </Button>
         <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="isCreateOfferBtnDisabled"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
@@ -642,9 +642,6 @@ setTimeout(()=>{
   .p-card-content {
     padding: 0;
   }
-  .p-card-body {
-    padding-top:0px;
-  }
 }
 
 
@@ -712,7 +709,7 @@ setTimeout(()=>{
     width: fit-content;
     font-weight: bold;
     border: none;
-    margin-left: 0.5rem;
+    margin-left: 0.75rem;
 
     &:hover {
       background-color: rgba(65, 132, 153, 0.2);
