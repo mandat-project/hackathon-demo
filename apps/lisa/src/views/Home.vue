@@ -53,6 +53,14 @@
 .tab:not(.active){
   background-color: #033B4A26;
 }
+.tab-list :deep(.tab){
+  background-color:#CBD5DA;
+  text-color:black;
+}
+.tab-list :deep(.tab_content){
+  color:black;
+}
+
 </style>
 
 <script setup lang="ts">
