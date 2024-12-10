@@ -11,6 +11,9 @@ module.exports = {
     ],
   },
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
+  moduleNameMapper: {
+    "^hackathon-demo/libs/(.*)$": "<rootDir>/../$1",
+  },
   moduleFileExtensions: [
       'js',
       'ts',

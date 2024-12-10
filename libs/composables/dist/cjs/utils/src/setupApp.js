@@ -41,6 +41,7 @@ const toast_1 = __importDefault(require("primevue/toast"));
 const toolbar_1 = __importDefault(require("primevue/toolbar"));
 const tooltip_1 = __importDefault(require("primevue/tooltip"));
 const toastservice_1 = __importDefault(require("primevue/toastservice"));
+const dialogservice_1 = __importDefault(require("primevue/dialogservice"));
 const setupApp = (app, router) => {
     if (router) {
         app.use(router);
@@ -48,6 +49,7 @@ const setupApp = (app, router) => {
     app.use(config_1.default, { ripple: true });
     app.use(toastservice_1.default);
     app.use(confirmationservice_1.default);
+    app.use(dialogservice_1.default);
     app.component("Button", button_1.default);
     app.component("Toolbar", toolbar_1.default);
     app.component("Avatar", avatar_1.default);

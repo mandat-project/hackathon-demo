@@ -23,7 +23,6 @@
     "ts-jest": "^29.0.0"
   },
   "dependencies": {
-    "github-fork-ribbon-css": "^0.2.3",
-    "hackathon-demo": "github:mandat-project/hackathon-demo#market"
+    "github-fork-ribbon-css": "^0.2.3"
   }
 }

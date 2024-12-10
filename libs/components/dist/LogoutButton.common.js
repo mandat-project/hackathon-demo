@@ -2,157 +2,66 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 433:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ 1:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-var __webpack_unused_export__;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   RdpCapableSession: function() { return /* binding */ RdpCapableSession; }
+/* harmony export */ });
+/* harmony import */ var hackathon_demo_libs_solid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(822);
 
-__webpack_unused_export__ = ({ value: true });
-// runtime helper for setting properties on components
-// in a tree-shakable way
-exports.A = (sfc, props) => {
-    const target = sfc.__vccOpts || sfc;
-    for (const [key, val] of props) {
-        target[key] = val;
+class RdpCapableSession extends hackathon_demo_libs_solid__WEBPACK_IMPORTED_MODULE_0__.Session {
+    rdp_;
+    constructor(rdp) {
+        super();
+        if (rdp !== "") {
+            this.updateSessionWithRDP(rdp);
+        }
     }
-    return target;
-};
-
-
-/***/ })
-
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	!function() {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = function(exports, definition) {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/publicPath */
-/******/ 	!function() {
-/******/ 		__webpack_require__.p = "";
-/******/ 	}();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "default": function() { return /* binding */ entry_lib; }
-});
-
-;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/setPublicPath.js
-/* eslint-disable no-var */
-// This file is imported into lib/wc client bundles.
-
-if (typeof window !== 'undefined') {
-  var currentScript = window.document.currentScript
-  if (false) { var getCurrentScript; }
-
-  var src = currentScript && currentScript.src.match(/(.+\/)[^/]+\.js(\?.*)?$/)
-  if (src) {
-    __webpack_require__.p = src[1] // eslint-disable-line
-  }
+    async authFetch(config, dpopPayload) {
+        const requestedURL = new URL(config.url);
+        if (this.rdp_ !== undefined && this.rdp_ !== "") {
+            const requestURL = new URL(config.url);
+            requestURL.searchParams.set("host", requestURL.host);
+            requestURL.host = new URL(this.rdp_).host;
+            config.url = requestURL.toString();
+        }
+        if (!dpopPayload) {
+            dpopPayload = {
+                htu: `${requestedURL.protocol}//${requestedURL.host}${requestedURL.pathname}`, // ! adjust to `${requestURL.protocol}//${requestURL.host}${requestURL.pathname}`
+                htm: config.method,
+                // ! ptu: requestedURL.toString(),
+            };
+        }
+        return super.authFetch(config, dpopPayload);
+    }
+    updateSessionWithRDP(rdp) {
+        this.rdp_ = rdp;
+    }
+    get rdp() {
+        return this.rdp_;
+    }
 }
 
-// Indicate to webpack that this file can be concatenated
-/* harmony default export */ var setPublicPath = (null);
 
-;// CONCATENATED MODULE: external "vue"
-var external_vue_namespaceObject = require("vue");
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=79d8ba55&ts=true
+/***/ }),
 
-const _hoisted_1 = /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("svg", {
-    xmlns: "http://www.w3.org/2000/svg",
-    width: "20",
-    height: "20",
-    fill: "none",
-    viewBox: "0 0 20 20"
-}, [
-    /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("path", {
-        fill: "#003D66",
-        "fill-opacity": ".9",
-        d: "M13 5v3H5v4h8v3l5.25-5L13 5Z"
-    }),
-    /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("path", {
-        fill: "#61C7F2",
-        d: "M14 7.333 16.8 10 14 12.667V11H6V9h8V7.333Z"
-    }),
-    /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("path", {
-        fill: "#3B3B3B",
-        "fill-opacity": ".9",
-        d: "M2 3V1H1v18h1V3Z"
-    })
-], -1);
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-    const _component_Button = (0,external_vue_namespaceObject.resolveComponent)("Button");
-    return ((0,external_vue_namespaceObject.openBlock)(), (0,external_vue_namespaceObject.createElementBlock)("div", {
-        class: "logout-button",
-        onClick: _cache[0] || (_cache[0] = ($event) => (_ctx.session.logout()))
-    }, [
-        (0,external_vue_namespaceObject.renderSlot)(_ctx.$slots, "default", {}, () => [
-            (0,external_vue_namespaceObject.createVNode)(_component_Button, { class: "p-button-text p-button-rounded ml-1" }, {
-                default: (0,external_vue_namespaceObject.withCtx)(() => [
-                    _hoisted_1
-                ]),
-                _: 1
-            })
-        ])
-    ]));
-}
+/***/ 607:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
-;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=79d8ba55&ts=true
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useCache.js
-const cache = {};
-const useCache = () => cache;
-
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerNotifications.js
-
-const hasActivePush = (0,external_vue_namespaceObject.ref)(false);
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.useServiceWorkerNotifications = exports.askForNotificationPermission = void 0;
+const vue_1 = __webpack_require__(622);
+const hasActivePush = (0, vue_1.ref)(false);
 /** ask the user for permission to display notifications */
 const askForNotificationPermission = async () => {
     const status = await Notification.requestPermission();
     console.log("### PWA  \t| Notification permission status:", status);
     return status;
 };
+exports.askForNotificationPermission = askForNotificationPermission;
 /**
  * We should perform this check whenever the user accesses our app
  * because subscription objects may change during their lifetime.
@@ -219,16 +128,26 @@ const unsubscribeFromPush = async () => {
 };
 const useServiceWorkerNotifications = () => {
     return {
-        askForNotificationPermission,
+        askForNotificationPermission: exports.askForNotificationPermission,
         subscribeToPush,
         unsubscribeFromPush,
         hasActivePush,
     };
 };
+exports.useServiceWorkerNotifications = useServiceWorkerNotifications;
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerUpdate.js
 
-const hasUpdatedAvailable = (0,external_vue_namespaceObject.ref)(false);
+/***/ }),
+
+/***/ 794:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var __webpack_unused_export__;
+
+__webpack_unused_export__ = ({ value: true });
+__webpack_unused_export__ = void 0;
+const vue_1 = __webpack_require__(622);
+const hasUpdatedAvailable = (0, vue_1.ref)(false);
 let registration;
 // Store the SW registration so we can send it a message
 // We use `updateExists` to control whatever alert, toast, dialog, etc we want to use
@@ -268,52 +187,285 @@ const useServiceWorkerUpdate = () => {
         refreshApp,
     };
 };
+__webpack_unused_export__ = useServiceWorkerUpdate;
 
-;// CONCATENATED MODULE: external "n3"
-var external_n3_namespaceObject = require("n3");
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/namespaces.js
-/**
- * Concat the RDF namespace identified by the prefix used as function name
- * with the RDF thing identifier as function parameter,
- * e.g. FOAF("knows") resovles to "http://xmlns.com/foaf/0.1/knows"
- * @param namespace uri of the namesapce
- * @returns function which takes a parameter of RDF thing identifier as string
- */
-function Namespace(namespace) {
-    return (thing) => thing ? namespace.concat(thing) : namespace;
+
+/***/ }),
+
+/***/ 840:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var __webpack_unused_export__;
+
+__webpack_unused_export__ = ({ value: true });
+__webpack_unused_export__ = void 0;
+const solid_1 = __webpack_require__(822);
+const n3_1 = __webpack_require__(61);
+const vue_1 = __webpack_require__(622);
+const useSolidSession_1 = __webpack_require__(865);
+let session;
+const name = (0, vue_1.ref)("");
+const img = (0, vue_1.ref)("");
+const inbox = (0, vue_1.ref)("");
+const storage = (0, vue_1.ref)("");
+const authAgent = (0, vue_1.ref)("");
+const accessInbox = (0, vue_1.ref)("");
+const memberOf = (0, vue_1.ref)("");
+const hasOrgRDP = (0, vue_1.ref)("");
+const useSolidProfile = () => {
+    if (!session) {
+        const { session: sessionRef } = (0, useSolidSession_1.useSolidSession)();
+        session = sessionRef;
+    }
+    (0, vue_1.watch)(() => session.webId, async () => {
+        const webId = session.webId;
+        let store = new n3_1.Store();
+        if (session.webId !== undefined) {
+            store = await (0, solid_1.getResource)(webId)
+                .then((resp) => resp.data)
+                .then((respText) => (0, solid_1.parseToN3)(respText, webId))
+                .then((parsedN3) => parsedN3.store);
+        }
+        let query = store.getObjects(webId, (0, solid_1.VCARD)("hasPhoto"), null);
+        img.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, (0, solid_1.VCARD)("fn"), null);
+        name.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, (0, solid_1.LDP)("inbox"), null);
+        inbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, (0, solid_1.SPACE)("storage"), null);
+        storage.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, (0, solid_1.INTEROP)("hasAuthorizationAgent"), null);
+        authAgent.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, (0, solid_1.INTEROP)("hasAccessInbox"), null);
+        accessInbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, (0, solid_1.ORG)("memberOf"), null);
+        const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
+        if (uncheckedMemberOf !== "") {
+            let storeOrg = new n3_1.Store();
+            storeOrg = await (0, solid_1.getResource)(uncheckedMemberOf)
+                .then((resp) => resp.data)
+                .then((respText) => (0, solid_1.parseToN3)(respText, uncheckedMemberOf))
+                .then((parsedN3) => parsedN3.store);
+            const isMember = storeOrg.getQuads(uncheckedMemberOf, (0, solid_1.ORG)("hasMember"), webId, null).length > 0;
+            if (isMember) {
+                memberOf.value = uncheckedMemberOf;
+                query = storeOrg.getObjects(uncheckedMemberOf, (0, solid_1.MANDAT)("hasRightsDelegationProxy"), null);
+                hasOrgRDP.value = query.length > 0 ? query[0].value : "";
+                session.updateSessionWithRDP(hasOrgRDP.value);
+                // and also overwrite fields from org profile
+                query = storeOrg.getObjects(memberOf.value, (0, solid_1.VCARD)("fn"), null);
+                name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+                query = storeOrg.getObjects(memberOf.value, (0, solid_1.LDP)("inbox"), null);
+                inbox.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, (0, solid_1.SPACE)("storage"), null);
+                storage.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, (0, solid_1.INTEROP)("hasAuthorizationAgent"), null);
+                authAgent.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, (0, solid_1.INTEROP)("hasAccessInbox"), null);
+                accessInbox.value = query.length > 0 ? query[0].value : "";
+            }
+        }
+    });
+    return {
+        name, img, inbox, storage, authAgent, accessInbox, memberOf, hasOrgRDP,
+    };
+};
+__webpack_unused_export__ = useSolidProfile;
+
+
+/***/ }),
+
+/***/ 865:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.useSolidSession = void 0;
+const vue_1 = __webpack_require__(622);
+const rdpCapableSession_1 = __webpack_require__(1);
+let session;
+async function restoreSession() {
+    await session.handleRedirectFromLogin();
 }
-// Namespaces as functions where their parameter is the RDF thing identifier => concat, e.g. FOAF("knows") resolves to "http://xmlns.com/foaf/0.1/knows"
-const FOAF = Namespace("http://xmlns.com/foaf/0.1/");
-const DCT = Namespace("http://purl.org/dc/terms/");
-const namespaces_RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-const RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#");
-const WDT = Namespace("http://www.wikidata.org/prop/direct/");
-const WD = Namespace("http://www.wikidata.org/entity/");
-const namespaces_LDP = Namespace("http://www.w3.org/ns/ldp#");
-const ACL = Namespace("http://www.w3.org/ns/auth/acl#");
-const AUTH = Namespace("http://www.example.org/vocab/datev/auth#");
-const namespaces_AS = Namespace("https://www.w3.org/ns/activitystreams#");
-const XSD = Namespace("http://www.w3.org/2001/XMLSchema#");
-const ETHON = Namespace("http://ethon.consensys.net/");
-const PDGR = Namespace("http://purl.org/pedigree#");
-const LDCV = Namespace("http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#");
-const WILD = Namespace("http://purl.org/wild/vocab#");
-const VCARD = Namespace("http://www.w3.org/2006/vcard/ns#");
-const GDPRP = Namespace("https://solid.ti.rw.fau.de/public/ns/gdpr-purposes#");
-const namespaces_PUSH = Namespace("https://purl.org/solid-web-push/vocab#");
-const SEC = Namespace("https://w3id.org/security#");
-const SPACE = Namespace("http://www.w3.org/ns/pim/space#");
-const SVCS = Namespace("https://purl.org/solid-vc/credentialStatus#");
-const CREDIT = Namespace("http://example.org/vocab/datev/credit#");
-const SCHEMA = Namespace("http://schema.org/");
-const namespaces_INTEROP = Namespace("http://www.w3.org/ns/solid/interop#");
-const SKOS = Namespace("http://www.w3.org/2004/02/skos/core#");
-const ORG = Namespace("http://www.w3.org/ns/org#");
-const MANDAT = Namespace("https://solid.aifb.kit.edu/vocab/mandat/");
-const AD = Namespace("https://www.example.org/advertisement/");
-const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#");
+/**
+ * Auto-re-login / and handle redirect after login
+ *
+ * Use in App.vue like this
+ * ```ts
+    // plain (without any routing framework)
+    restoreSession()
+    // but if you use a router, make sure it is ready
+    router.isReady().then(restoreSession)
+   ```
+ */
+const useSolidSession = () => {
+    session ??= (0, vue_1.inject)('useSolidSession:RdpCapableSession', () => (0, vue_1.reactive)(new rdpCapableSession_1.RdpCapableSession("")), true);
+    return {
+        session,
+        restoreSession,
+    };
+};
+exports.useSolidSession = useSolidSession;
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/n3Extensions.js
+
+/***/ }),
+
+/***/ 475:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+var __webpack_unused_export__;
+
+__webpack_unused_export__ = ({ value: true });
+__webpack_unused_export__ = void 0;
+const solid_1 = __webpack_require__(822);
+const useServiceWorkerNotifications_1 = __webpack_require__(607);
+const useSolidSession_1 = __webpack_require__(865);
+let unsubscribeFromPush;
+let subscribeToPush;
+let session;
+// hardcoding for my demo
+const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
+// usually this should expect the resource to sub to, then check their .meta and so on...
+const _getSolidWebPushDetails = async () => {
+    const { store } = await (0, solid_1.getResource)(solidWebPushProfile)
+        .then((resp) => resp.data)
+        .then((txt) => (0, solid_1.parseToN3)(txt, solidWebPushProfile));
+    const service = store.getSubjects((0, solid_1.AS)("Service"), null, null)[0];
+    const inbox = store.getObjects(service, (0, solid_1.LDP)("inbox"), null)[0].value;
+    const vapidPublicKey = store.getObjects(service, (0, solid_1.PUSH)("vapidPublicKey"), null)[0].value;
+    return { inbox, vapidPublicKey };
+};
+const _createSubscriptionOnResource = (uri, details) => {
+    return `
+@prefix rdf: <${(0, solid_1.RDF)()}> .
+@prefix as: <${(0, solid_1.AS)()}> .
+@prefix push: <${(0, solid_1.PUSH)()}> .
+<#sub> a as:Follow;
+    as:actor <${session.webId}>;
+    as:object <${uri}>;
+    push:endpoint "${details.endpoint}";
+    # expirationTime: null # undefined
+    push:keys [
+            push:auth "${details.keys.auth}";
+			      push:p256dh "${details.keys.p256dh}"
+		    ].    
+    `;
+};
+const _createUnsubscriptionFromResource = (uri, details) => {
+    return `
+@prefix rdf: <${(0, solid_1.RDF)()}> .
+@prefix as: <${(0, solid_1.AS)()}> .
+@prefix push: <${(0, solid_1.PUSH)()}> .
+<#unsub> a as:Undo;
+    as:actor <${session.webId}>;
+    as:object [
+            a as:Follow;
+            as:actor <${session.webId}>;
+            as:object <${uri}>;
+            push:endpoint "${details.endpoint}";
+            # expirationTime: null # undefined
+            push:keys [
+                    push:auth "${details.keys.auth}";
+		        	      push:p256dh "${details.keys.p256dh}"
+		                  ]
+              ].    
+    `;
+};
+const subscribeForResource = async (uri) => {
+    const { inbox, vapidPublicKey } = await _getSolidWebPushDetails();
+    const sub = await subscribeToPush(vapidPublicKey);
+    const solidWebPushSub = _createSubscriptionOnResource(uri, sub);
+    console.log(solidWebPushSub);
+    return (0, solid_1.createResource)(inbox, solidWebPushSub, session);
+};
+const unsubscribeFromResource = async (uri) => {
+    const { inbox } = await _getSolidWebPushDetails();
+    const sub_old = await unsubscribeFromPush();
+    const solidWebPushUnSub = _createUnsubscriptionFromResource(uri, sub_old);
+    console.log(solidWebPushUnSub);
+    return (0, solid_1.createResource)(inbox, solidWebPushUnSub, session);
+};
+const useSolidWebPush = () => {
+    if (!session) {
+        session = (0, useSolidSession_1.useSolidSession)().session;
+    }
+    if (!unsubscribeFromPush && !subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = (0, useServiceWorkerNotifications_1.useServiceWorkerNotifications)();
+        unsubscribeFromPush = unsubscribeFromPushFunc;
+        subscribeToPush = subscribeToPushFunc;
+    }
+    return {
+        subscribeForResource,
+        unsubscribeFromResource
+    };
+};
+__webpack_unused_export__ = useSolidWebPush;
+
+
+/***/ }),
+
+/***/ 822:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  ACL: function() { return /* reexport */ namespaces/* ACL */.Nd; },
+  AD: function() { return /* reexport */ namespaces.AD; },
+  AS: function() { return /* reexport */ namespaces.AS; },
+  AUTH: function() { return /* reexport */ namespaces/* AUTH */.J$; },
+  CREDIT: function() { return /* reexport */ namespaces/* CREDIT */.iE; },
+  DCT: function() { return /* reexport */ namespaces/* DCT */.st; },
+  ETHON: function() { return /* reexport */ namespaces/* ETHON */.D7; },
+  FOAF: function() { return /* reexport */ namespaces/* FOAF */.NG; },
+  GDPRP: function() { return /* reexport */ namespaces/* GDPRP */.AH; },
+  INTEROP: function() { return /* reexport */ namespaces/* INTEROP */.Iq; },
+  LDCV: function() { return /* reexport */ namespaces/* LDCV */.mi; },
+  LDP: function() { return /* reexport */ namespaces/* LDP */.h9; },
+  MANDAT: function() { return /* reexport */ namespaces/* MANDAT */.UP; },
+  ORG: function() { return /* reexport */ namespaces/* ORG */.xE; },
+  PDGR: function() { return /* reexport */ namespaces/* PDGR */.Cg; },
+  PUSH: function() { return /* reexport */ namespaces/* PUSH */.LB; },
+  RDF: function() { return /* reexport */ namespaces/* RDF */.Xc; },
+  RDFS: function() { return /* reexport */ namespaces/* RDFS */.kl; },
+  SCHEMA: function() { return /* reexport */ namespaces/* SCHEMA */.yx; },
+  SEC: function() { return /* reexport */ namespaces/* SEC */.yv; },
+  SHAPETREE: function() { return /* reexport */ namespaces/* SHAPETREE */.E4; },
+  SKOS: function() { return /* reexport */ namespaces/* SKOS */.z1; },
+  SPACE: function() { return /* reexport */ namespaces/* SPACE */.t6; },
+  SVCS: function() { return /* reexport */ namespaces/* SVCS */.oO; },
+  Session: function() { return /* reexport */ Session; },
+  VCARD: function() { return /* reexport */ namespaces/* VCARD */.dn; },
+  WD: function() { return /* reexport */ namespaces.WD; },
+  WDT: function() { return /* reexport */ namespaces/* WDT */.SH; },
+  WILD: function() { return /* reexport */ namespaces/* WILD */.T7; },
+  XSD: function() { return /* reexport */ namespaces/* XSD */.YH; },
+  __esModule: function() { return /* reexport */ namespaces/* __esModule */.BJ; },
+  canonicaliseTerm: function() { return /* reexport */ canonicaliseTerm; },
+  createContainer: function() { return /* reexport */ createContainer; },
+  createResource: function() { return /* reexport */ createResource; },
+  createResourceInAnyRegistrationOfShape: function() { return /* reexport */ createResourceInAnyRegistrationOfShape; },
+  deleteResource: function() { return /* reexport */ deleteResource; },
+  getAclResourceUri: function() { return /* reexport */ getAclResourceUri; },
+  getContainerItems: function() { return /* reexport */ getContainerItems; },
+  getDataRegistrationContainers: function() { return /* reexport */ getDataRegistrationContainers; },
+  getLinkHeader: function() { return /* reexport */ getLinkHeader; },
+  getLocationHeader: function() { return /* reexport */ getLocationHeader; },
+  getResource: function() { return /* reexport */ getResource; },
+  parseToN3: function() { return /* reexport */ parseToN3; },
+  patchResource: function() { return /* reexport */ patchResource; },
+  postResource: function() { return /* reexport */ postResource; },
+  putResource: function() { return /* reexport */ putResource; },
+  toTTL: function() { return /* reexport */ toTTL; }
+});
+
+// EXTERNAL MODULE: external "n3"
+var external_n3_ = __webpack_require__(61);
+// EXTERNAL MODULE: ../solid/src/namespaces.ts
+var namespaces = __webpack_require__(760);
+;// CONCATENATED MODULE: ../solid/src/n3Extensions.ts
 
 
 /**
@@ -350,7 +502,7 @@ const _removeDoubles = (arr) => {
  */
 const _findLists = (n3Store) => {
     const listMapping = {};
-    const endOfLists = n3Store.getQuads(null, RDF("rest"), RDF("nil"), null);
+    const endOfLists = n3Store.getQuads(null, (0,namespaces/* RDF */.Xc)("rest"), (0,namespaces/* RDF */.Xc)("nil"), null);
     endOfLists.forEach((quad) => {
         let items = [];
         let quads = [];
@@ -362,10 +514,10 @@ const _findLists = (n3Store) => {
             const currentQuad = prevQuads[0];
             currentBN = currentQuad.subject.value;
             // get upstream list items
-            itemQuads = n3Store.getQuads(currentQuad.subject, RDF("first"), null, null);
+            itemQuads = n3Store.getQuads(currentQuad.subject, (0,namespaces/* RDF */.Xc)("first"), null, null);
             quads = itemQuads.concat(quads);
             items = itemQuads.map((quad) => quad.object).concat(items);
-            prevQuads = n3Store.getQuads(null, RDF("rest"), currentQuad.subject, null);
+            prevQuads = n3Store.getQuads(null, (0,namespaces/* RDF */.Xc)("rest"), currentQuad.subject, null);
             // end when no prior item
         }
         listMapping[`${currentBN}`] = [items, quads];
@@ -405,7 +557,7 @@ const _serialiseBlankNode = (bn, blankNodes, listMapping, n3Store, n3Writer) => 
                 obj = _serialiseBlankNode(obj, blankNodes, listMapping, n3Store, n3Writer);
             }
         }
-        return new Quad(bquad.subject, bquad.predicate, obj, bquad.graph);
+        return new external_n3_.Quad(bquad.subject, bquad.predicate, obj, bquad.graph);
     });
     const battr = [];
     bquads_serial.forEach(bquad => {
@@ -423,9 +575,9 @@ const _serialiseBlankNode = (bn, blankNodes, listMapping, n3Store, n3Writer) => 
  * @returns string
  */
 const toTTL = (n3Store, n3Prefixes, baseIRI) => {
-    n3Store = new Store(n3Store.getQuads(null, null, null, null));
+    n3Store = new external_n3_.Store(n3Store.getQuads(null, null, null, null));
     let result = "";
-    const n3Writer = new Writer({
+    const n3Writer = new external_n3_.Writer({
         baseIRI: baseIRI,
         prefixes: n3Prefixes,
     });
@@ -433,7 +585,7 @@ const toTTL = (n3Store, n3Prefixes, baseIRI) => {
     const listMapping = _findLists(n3Store);
     Object.entries(listMapping).forEach(entry => {
         // uniquely referenced list head
-        if (n3Store.countQuads(null, null, new BlankNode(entry[0]), null) !== 1) {
+        if (n3Store.countQuads(null, null, new external_n3_.BlankNode(entry[0]), null) !== 1) {
             delete listMapping[entry[0]]; // remove non unique list, or  dangling list from mapping
         }
     });
@@ -517,9 +669,10 @@ const toTTL = (n3Store, n3Prefixes, baseIRI) => {
 
 ;// CONCATENATED MODULE: external "axios"
 var external_axios_namespaceObject = require("axios");
+var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_namespaceObject);
 ;// CONCATENATED MODULE: external "jose"
 var external_jose_namespaceObject = require("jose");
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestDynamicClientRegistration.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/requestDynamicClientRegistration.ts
 
 /**
  * When the client does not have a webid profile document, use this.
@@ -539,7 +692,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
         subject_type: "public",
     };
     // register
-    return external_axios_namespaceObject({
+    return external_axios_default()({
         url: registration_endpoint,
         method: "post",
         data: client_registration_request_body,
@@ -547,7 +700,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestAccessToken.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/requestAccessToken.ts
 
 
 /**
@@ -578,7 +731,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
         jwk: jwk_public_key,
     })
         .sign(key_pair.privateKey);
-    return external_axios_namespaceObject({
+    return external_axios_default()({
         url: token_endpoint,
         method: "post",
         headers: {
@@ -597,7 +750,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.ts
 
 
 
@@ -614,7 +767,7 @@ const redirectForLogin = async (idp, redirect_uri) => {
     // RFC 9207 iss check: remember the identity provider (idp) / issuer (iss)
     sessionStorage.setItem("idp", idp);
     // lookup openid configuration of idp
-    const openid_configuration = (await external_axios_namespaceObject.get(`${idp}/.well-known/openid-configuration`)).data;
+    const openid_configuration = (await external_axios_default().get(`${idp}/.well-known/openid-configuration`)).data;
     // remember token endpoint
     sessionStorage.setItem("token_endpoint", openid_configuration["token_endpoint"]);
     const registration_endpoint = openid_configuration["registration_endpoint"];
@@ -729,7 +882,7 @@ const onIncomingRedirect = async () => {
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/RefreshTokenGrant.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/RefreshTokenGrant.ts
 
 
 const renewTokens = async () => {
@@ -777,7 +930,7 @@ const requestFreshTokens = async (refresh_token, client_id, client_secret, token
         jwk: jwk_public_key,
     })
         .sign(key_pair.privateKey);
-    return external_axios_namespaceObject({
+    return external_axios_default()({
         url: token_endpoint,
         method: "post",
         headers: {
@@ -793,12 +946,12 @@ const requestFreshTokens = async (refresh_token, client_id, client_secret, token
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/Session.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/Session.ts
 
 
 
 
-class Session_Session {
+class Session {
     tokenInformation;
     isActive_ = false;
     webId_ = undefined;
@@ -871,7 +1024,7 @@ class Session_Session {
             headers["authorization"] = `DPoP ${this.tokenInformation.access_token}`;
         }
         config.headers = headers;
-        return external_axios_namespaceObject(config);
+        return external_axios_default()(config);
     }
     get isActive() {
         return this.isActive_;
@@ -881,7 +1034,7 @@ class Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solidRequests.js
+;// CONCATENATED MODULE: ../solid/src/solidRequests.ts
 
 
 
@@ -936,9 +1089,9 @@ function _stripUriFromStartAndEndParentheses(uri) {
  * @param baseIRI string
  * @return Promise ParsedN3
  */
-async function solidRequests_parseToN3(text, baseIRI) {
-    const store = new external_n3_namespaceObject.Store();
-    const parser = new external_n3_namespaceObject.Parser({
+async function parseToN3(text, baseIRI) {
+    const store = new external_n3_.Store();
+    const parser = new external_n3_.Parser({
         baseIRI: _stripFragment(baseIRI),
         blankNodePrefix: "",
     }); // { blankNodePrefix: 'any' } does not have the effect I thought
@@ -962,10 +1115,10 @@ async function solidRequests_parseToN3(text, baseIRI) {
  * @param headers: OPTIONAL - headers to set manually (e.g. `Accept` or `baseIRI`), `content-type` is set by default to `text/turtle`.
  * @return Promise string of the response text/turtle
  */
-async function solidRequests_getResource(uri, session, headers) {
+async function getResource(uri, session, headers) {
     console.log("### SoLiD\t| GET\n" + uri);
     if (session === undefined)
-        session = new Session_Session();
+        session = new Session();
     if (!headers)
         headers = {};
     headers["Accept"] = headers["Accept"]
@@ -1012,14 +1165,14 @@ async function postResource(uri, body, session, headers) {
  * @param session: OPTIONAL - session.axiosFetch function to use, e.g. session.authFetch of a solid session
  * @return Promise Response
  */
-async function solidRequests_createResource(locationURI, body, session, headers) {
+async function createResource(locationURI, body, session, headers) {
     console.log("### SoLiD\t| CREATE RESOURCE AT\n" + locationURI);
     if (!headers)
         headers = {};
     headers["Content-type"] = headers["Content-type"]
         ? headers["Content-type"]
         : "text/turtle";
-    headers["Link"] = `<${LDP("Resource")}>; rel="type"`;
+    headers["Link"] = `<${(0,namespaces/* LDP */.h9)("Resource")}>; rel="type"`;
     return postResource(locationURI, body, session, headers);
 }
 /**
@@ -1036,7 +1189,7 @@ async function createContainer(locationURI, name, session) {
     console.log("### SoLiD\t| CREATE CONTAINER\n" + locationURI + name + "/");
     const body = undefined;
     return postResource(locationURI, body, session, {
-        Link: `<${LDP("BasicContainer")}>; rel="type"`,
+        Link: `<${(0,namespaces/* LDP */.h9)("BasicContainer")}>; rel="type"`,
         Slug: name,
     });
 }
@@ -1045,7 +1198,7 @@ async function createContainer(locationURI, name, session) {
  * @param resp string location header
  */
 function getLocationHeader(resp) {
-    if (!(resp.headers instanceof AxiosHeaders && resp.headers.has("Location"))) {
+    if (!(resp.headers instanceof external_axios_namespaceObject.AxiosHeaders && resp.headers.has("Location"))) {
         throw new Error(`Location Header at \`${resp.request.url}\` not set.`);
     }
     let loc = resp.headers.get("Location");
@@ -1067,11 +1220,11 @@ function getLocationHeader(resp) {
  */
 async function getContainerItems(uri, session) {
     console.log("### SoLiD\t| GET CONTAINER ITEMS\n" + uri);
-    return solidRequests_getResource(uri, session)
+    return getResource(uri, session)
         .then((resp) => resp.data)
-        .then((txt) => solidRequests_parseToN3(txt, uri))
+        .then((txt) => parseToN3(txt, uri))
         .then((parsedN3) => parsedN3.store)
-        .then((store) => store.getObjects(uri, LDP("contains"), null).map((obj) => obj.value));
+        .then((store) => store.getObjects(uri, (0,namespaces/* LDP */.h9)("contains"), null).map((obj) => obj.value));
 }
 /**
  * Send a session.axiosFetch request: PUT, uri, async providing `text/turtle`
@@ -1090,7 +1243,7 @@ async function putResource(uri, body, session, headers) {
     headers["Content-type"] = headers["Content-type"]
         ? headers["Content-type"]
         : "text/turtle";
-    headers["Link"] = `<${LDP("Resource")}>; rel="type"`;
+    headers["Link"] = `<${(0,namespaces/* LDP */.h9)("Resource")}>; rel="type"`;
     return session
         .authFetch({
         url: uri,
@@ -1210,7 +1363,7 @@ async function getLinkHeader(uri, session) {
         .authFetch({ url: uri, method: "HEAD" })
         .then(_checkResponseStatus)
         .then((resp) => {
-        if (!(resp.headers instanceof AxiosHeaders && resp.headers.has("Link"))) {
+        if (!(resp.headers instanceof external_axios_namespaceObject.AxiosHeaders && resp.headers.has("Link"))) {
             throw new Error(`Link Header at \`${resp.request.url}\` not set.`);
         }
         const linkHeader = resp.headers.get("Link");
@@ -1237,7 +1390,7 @@ async function getAclResourceUri(uri, session) {
     });
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/interopRequest.js
+;// CONCATENATED MODULE: ../solid/src/interopRequest.ts
 
 
 
@@ -1272,27 +1425,27 @@ function getRegistrySet(webId, session) {
     if (session === undefined)
         session = new Session();
     return getResourceAsStore(webId, session).then((store) => store
-        .getObjects(null, INTEROP("hasRegistrySet"), null)
+        .getObjects(null, (0,namespaces/* INTEROP */.Iq)("hasRegistrySet"), null)
         .map((term) => term.value));
 }
 function getDataRegistry(registrySetUri, session) {
     if (session === undefined)
         session = new Session();
     return getResourceAsStore(registrySetUri, session).then((store) => store
-        .getObjects(null, INTEROP("hasDataRegistry"), null)
+        .getObjects(null, (0,namespaces/* INTEROP */.Iq)("hasDataRegistry"), null)
         .map((term) => term.value));
 }
 async function getDataRegistrations(dataRegistryUri, session) {
     if (session === undefined)
         session = new Session();
     return getResourceAsStore(dataRegistryUri, session).then((store) => store
-        .getObjects(null, INTEROP("hasDataRegistration"), null)
+        .getObjects(null, (0,namespaces/* INTEROP */.Iq)("hasDataRegistration"), null)
         .map((term) => term.value));
 }
 function getRegisteredShapeTree(dataRegistrationUri, session) {
     if (session === undefined)
         session = new Session();
-    return getResourceAsStore(dataRegistrationUri, session).then((store) => store.getObjects(null, INTEROP("registeredShapeTree"), null)[0].value);
+    return getResourceAsStore(dataRegistrationUri, session).then((store) => store.getObjects(null, (0,namespaces/* INTEROP */.Iq)("registeredShapeTree"), null)[0].value);
 }
 async function filterDataRegistrationUrisByShapeTreeUri(dataRegistrationUri, shapeTreeUri, session) {
     if (session === undefined)
@@ -1309,226 +1462,256 @@ function getResourceAsStore(uri, session) {
         .then((parsedN3) => parsedN3.store);
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/index.js
+;// CONCATENATED MODULE: ../solid/index.ts
 
 
 
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/rdpCapableSession.js
 
-class RdpCapableSession extends Session_Session {
-    rdp_;
-    constructor(rdp) {
-        super();
-        if (rdp !== "") {
-            this.updateSessionWithRDP(rdp);
-        }
-    }
-    async authFetch(config, dpopPayload) {
-        const requestedURL = new URL(config.url);
-        if (this.rdp_ !== undefined && this.rdp_ !== "") {
-            const requestURL = new URL(config.url);
-            requestURL.searchParams.set("host", requestURL.host);
-            requestURL.host = new URL(this.rdp_).host;
-            config.url = requestURL.toString();
-        }
-        if (!dpopPayload) {
-            dpopPayload = {
-                htu: `${requestedURL.protocol}//${requestedURL.host}${requestedURL.pathname}`, // ! adjust to `${requestURL.protocol}//${requestURL.host}${requestURL.pathname}`
-                htm: config.method,
-                // ! ptu: requestedURL.toString(),
-            };
-        }
-        return super.authFetch(config, dpopPayload);
-    }
-    updateSessionWithRDP(rdp) {
-        this.rdp_ = rdp;
-    }
-    get rdp() {
-        return this.rdp_;
-    }
-}
+/***/ }),
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
+/***/ 760:
+/***/ (function(__unused_webpack_module, exports) {
 
 
-const session = (0,external_vue_namespaceObject.reactive)(new RdpCapableSession(""));
-async function restoreSession() {
-    await session.handleRedirectFromLogin();
-}
+Object.defineProperty(exports, "BJ", ({ value: true }));
+exports.E4 = exports.AD = exports.UP = exports.xE = exports.z1 = exports.Iq = exports.yx = exports.iE = exports.oO = exports.t6 = exports.yv = exports.LB = exports.AH = exports.dn = exports.T7 = exports.mi = exports.Cg = exports.D7 = exports.YH = exports.AS = exports.J$ = exports.Nd = exports.h9 = exports.WD = exports.SH = exports.kl = exports.Xc = exports.st = exports.NG = void 0;
 /**
- * Auto-re-login / and handle redirect after login
- *
- * Use in App.vue like this
- * ```ts
-    // plain (without any routing framework)
-    restoreSession()
-    // but if you use a router, make sure it is ready
-    router.isReady().then(restoreSession)
-   ```
+ * Concat the RDF namespace identified by the prefix used as function name
+ * with the RDF thing identifier as function parameter,
+ * e.g. FOAF("knows") resovles to "http://xmlns.com/foaf/0.1/knows"
+ * @param namespace uri of the namesapce
+ * @returns function which takes a parameter of RDF thing identifier as string
  */
-const useSolidSession_useSolidSession = () => {
-    return {
-        session,
-        restoreSession,
-    };
+function Namespace(namespace) {
+    return (thing) => thing ? namespace.concat(thing) : namespace;
+}
+// Namespaces as functions where their parameter is the RDF thing identifier => concat, e.g. FOAF("knows") resolves to "http://xmlns.com/foaf/0.1/knows"
+exports.NG = Namespace("http://xmlns.com/foaf/0.1/");
+exports.st = Namespace("http://purl.org/dc/terms/");
+exports.Xc = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+exports.kl = Namespace("http://www.w3.org/2000/01/rdf-schema#");
+exports.SH = Namespace("http://www.wikidata.org/prop/direct/");
+exports.WD = Namespace("http://www.wikidata.org/entity/");
+exports.h9 = Namespace("http://www.w3.org/ns/ldp#");
+exports.Nd = Namespace("http://www.w3.org/ns/auth/acl#");
+exports.J$ = Namespace("http://www.example.org/vocab/datev/auth#");
+exports.AS = Namespace("https://www.w3.org/ns/activitystreams#");
+exports.YH = Namespace("http://www.w3.org/2001/XMLSchema#");
+exports.D7 = Namespace("http://ethon.consensys.net/");
+exports.Cg = Namespace("http://purl.org/pedigree#");
+exports.mi = Namespace("http://people.aifb.kit.edu/co1683/2019/ld-chain/vocab#");
+exports.T7 = Namespace("http://purl.org/wild/vocab#");
+exports.dn = Namespace("http://www.w3.org/2006/vcard/ns#");
+exports.AH = Namespace("https://solid.ti.rw.fau.de/public/ns/gdpr-purposes#");
+exports.LB = Namespace("https://purl.org/solid-web-push/vocab#");
+exports.yv = Namespace("https://w3id.org/security#");
+exports.t6 = Namespace("http://www.w3.org/ns/pim/space#");
+exports.oO = Namespace("https://purl.org/solid-vc/credentialStatus#");
+exports.iE = Namespace("http://example.org/vocab/datev/credit#");
+exports.yx = Namespace("http://schema.org/");
+exports.Iq = Namespace("http://www.w3.org/ns/solid/interop#");
+exports.z1 = Namespace("http://www.w3.org/2004/02/skos/core#");
+exports.xE = Namespace("http://www.w3.org/ns/org#");
+exports.UP = Namespace("https://solid.aifb.kit.edu/vocab/mandat/");
+exports.AD = Namespace("https://www.example.org/advertisement/");
+exports.E4 = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#");
+
+
+/***/ }),
+
+/***/ 433:
+/***/ (function(__unused_webpack_module, exports) {
+
+var __webpack_unused_export__;
+
+__webpack_unused_export__ = ({ value: true });
+// runtime helper for setting properties on components
+// in a tree-shakable way
+exports.A = (sfc, props) => {
+    const target = sfc.__vccOpts || sfc;
+    for (const [key, val] of props) {
+        target[key] = val;
+    }
+    return target;
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidProfile.js
 
+/***/ }),
 
+/***/ 61:
+/***/ (function(module) {
 
+module.exports = require("n3");
 
-const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
-const useSolidProfile_name = (0,external_vue_namespaceObject.ref)("");
-const img = (0,external_vue_namespaceObject.ref)("");
-const inbox = (0,external_vue_namespaceObject.ref)("");
-const storage = (0,external_vue_namespaceObject.ref)("");
-const authAgent = (0,external_vue_namespaceObject.ref)("");
-const accessInbox = (0,external_vue_namespaceObject.ref)("");
-const memberOf = (0,external_vue_namespaceObject.ref)("");
-const hasOrgRDP = (0,external_vue_namespaceObject.ref)("");
-(0,external_vue_namespaceObject.watch)(() => useSolidProfile_session.webId, async () => {
-    const webId = useSolidProfile_session.webId;
-    let store = new external_n3_namespaceObject.Store();
-    if (useSolidProfile_session.webId !== undefined) {
-        store = await solidRequests_getResource(webId)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, webId))
-            .then((parsedN3) => parsedN3.store);
-    }
-    let query = store.getObjects(webId, VCARD("hasPhoto"), null);
-    img.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, VCARD("fn"), null);
-    useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_LDP("inbox"), null);
-    inbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, SPACE("storage"), null);
-    storage.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAuthorizationAgent"), null);
-    authAgent.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAccessInbox"), null);
-    accessInbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, ORG("memberOf"), null);
-    const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
-    if (uncheckedMemberOf !== "") {
-        let storeOrg = new external_n3_namespaceObject.Store();
-        storeOrg = await solidRequests_getResource(uncheckedMemberOf)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
-            .then((parsedN3) => parsedN3.store);
-        const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null)
-            .length > 0;
-        if (isMember) {
-            memberOf.value = uncheckedMemberOf;
-            query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
-            hasOrgRDP.value = query.length > 0 ? query[0].value : "";
-            useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
-            // and also overwrite fields from org profile
-            query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
-            useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
-            query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
-            inbox.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
-            storage.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAuthorizationAgent"), null);
-            authAgent.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAccessInbox"), null);
-            accessInbox.value = query.length > 0 ? query[0].value : "";
-        }
-    }
+/***/ }),
+
+/***/ 622:
+/***/ (function(module) {
+
+module.exports = require("vue");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	!function() {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = function(module) {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				function() { return module['default']; } :
+/******/ 				function() { return module; };
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	!function() {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = function(exports, definition) {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	!function() {
+/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	!function() {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = function(exports) {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	}();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	!function() {
+/******/ 		__webpack_require__.p = "";
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": function() { return /* binding */ entry_lib; }
 });
-const useSolidProfile_useSolidProfile = () => {
-    return {
-        name: useSolidProfile_name,
-        img,
-        inbox,
-        storage,
-        authAgent,
-        accessInbox,
-        memberOf,
-        hasOrgRDP,
-    };
-};
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidWebPush.js
+;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/setPublicPath.js
+/* eslint-disable no-var */
+// This file is imported into lib/wc client bundles.
 
+if (typeof window !== 'undefined') {
+  var currentScript = window.document.currentScript
+  if (false) { var getCurrentScript; }
 
+  var src = currentScript && currentScript.src.match(/(.+\/)[^/]+\.js(\?.*)?$/)
+  if (src) {
+    __webpack_require__.p = src[1] // eslint-disable-line
+  }
+}
 
-const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
-const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
-// hardcoding for my demo
-const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
-// usually this should expect the resource to sub to, then check their .meta and so on...
-const _getSolidWebPushDetails = async () => {
-    const { store } = await getResource(solidWebPushProfile)
-        .then((resp) => resp.data)
-        .then((txt) => parseToN3(txt, solidWebPushProfile));
-    const service = store.getSubjects(AS("Service"), null, null)[0];
-    const inbox = store.getObjects(service, LDP("inbox"), null)[0].value;
-    const vapidPublicKey = store.getObjects(service, PUSH("vapidPublicKey"), null)[0].value;
-    return { inbox, vapidPublicKey };
-};
-const _createSubscriptionOnResource = (uri, details) => {
-    return `
-@prefix rdf: <${RDF()}> .
-@prefix as: <${AS()}> .
-@prefix push: <${PUSH()}> .
-<#sub> a as:Follow;
-    as:actor <${useSolidWebPush_session.webId}>;
-    as:object <${uri}>;
-    push:endpoint "${details.endpoint}";
-    # expirationTime: null # undefined
-    push:keys [
-            push:auth "${details.keys.auth}";
-			      push:p256dh "${details.keys.p256dh}"
-		    ].    
-    `;
-};
-const _createUnsubscriptionFromResource = (uri, details) => {
-    return `
-@prefix rdf: <${RDF()}> .
-@prefix as: <${AS()}> .
-@prefix push: <${PUSH()}> .
-<#unsub> a as:Undo;
-    as:actor <${useSolidWebPush_session.webId}>;
-    as:object [
-            a as:Follow;
-            as:actor <${useSolidWebPush_session.webId}>;
-            as:object <${uri}>;
-            push:endpoint "${details.endpoint}";
-            # expirationTime: null # undefined
-            push:keys [
-                    push:auth "${details.keys.auth}";
-		        	      push:p256dh "${details.keys.p256dh}"
-		                  ]
-              ].    
-    `;
-};
-const subscribeForResource = async (uri) => {
-    const { inbox, vapidPublicKey } = await _getSolidWebPushDetails();
-    const sub = await useSolidWebPush_subscribeToPush(vapidPublicKey);
-    const solidWebPushSub = _createSubscriptionOnResource(uri, sub);
-    console.log(solidWebPushSub);
-    return createResource(inbox, solidWebPushSub, useSolidWebPush_session);
-};
-const unsubscribeFromResource = async (uri) => {
-    const { inbox } = await _getSolidWebPushDetails();
-    const sub_old = await useSolidWebPush_unsubscribeFromPush();
-    const solidWebPushUnSub = _createUnsubscriptionFromResource(uri, sub_old);
-    console.log(solidWebPushUnSub);
-    return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
-};
-const useSolidWebPush = () => {
-    return {
-        subscribeForResource,
-        unsubscribeFromResource
-    };
-};
+// Indicate to webpack that this file can be concatenated
+/* harmony default export */ var setPublicPath = (null);
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useIsLoggedIn.js
+// EXTERNAL MODULE: external "vue"
+var external_vue_ = __webpack_require__(622);
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=79d8ba55&ts=true
+
+const _hoisted_1 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    width: "20",
+    height: "20",
+    fill: "none",
+    viewBox: "0 0 20 20"
+}, [
+    /*#__PURE__*/ (0,external_vue_.createElementVNode)("path", {
+        fill: "#003D66",
+        "fill-opacity": ".9",
+        d: "M13 5v3H5v4h8v3l5.25-5L13 5Z"
+    }),
+    /*#__PURE__*/ (0,external_vue_.createElementVNode)("path", {
+        fill: "#61C7F2",
+        d: "M14 7.333 16.8 10 14 12.667V11H6V9h8V7.333Z"
+    }),
+    /*#__PURE__*/ (0,external_vue_.createElementVNode)("path", {
+        fill: "#3B3B3B",
+        "fill-opacity": ".9",
+        d: "M2 3V1H1v18h1V3Z"
+    })
+], -1);
+function render(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_Button = (0,external_vue_.resolveComponent)("Button");
+    return ((0,external_vue_.openBlock)(), (0,external_vue_.createElementBlock)("div", {
+        class: "logout-button",
+        onClick: _cache[0] || (_cache[0] = ($event) => (_ctx.session.logout()))
+    }, [
+        (0,external_vue_.renderSlot)(_ctx.$slots, "default", {}, () => [
+            (0,external_vue_.createVNode)(_component_Button, { class: "p-button-text p-button-rounded ml-1" }, {
+                default: (0,external_vue_.withCtx)(() => [
+                    _hoisted_1
+                ]),
+                _: 1
+            })
+        ])
+    ]));
+}
+
+;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=79d8ba55&ts=true
+
+;// CONCATENATED MODULE: ../composables/src/useCache.ts
+const cache = {};
+const useCache = () => cache;
+
+// EXTERNAL MODULE: ../composables/src/useServiceWorkerNotifications.ts
+var useServiceWorkerNotifications = __webpack_require__(607);
+// EXTERNAL MODULE: ../composables/src/useServiceWorkerUpdate.ts
+var useServiceWorkerUpdate = __webpack_require__(794);
+// EXTERNAL MODULE: ../composables/src/useSolidProfile.ts
+var src_useSolidProfile = __webpack_require__(840);
+// EXTERNAL MODULE: ../composables/src/useSolidSession.ts
+var src_useSolidSession = __webpack_require__(865);
+// EXTERNAL MODULE: ../composables/src/useSolidWebPush.ts
+var useSolidWebPush = __webpack_require__(475);
+;// CONCATENATED MODULE: ../composables/src/useIsLoggedIn.ts
 
 
 
@@ -1541,7 +1724,9 @@ const useIsLoggedIn = () => {
     return { isLoggedIn };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/index.js
+// EXTERNAL MODULE: ../composables/src/rdpCapableSession.ts
+var rdpCapableSession = __webpack_require__(1);
+;// CONCATENATED MODULE: ../composables/index.ts
 
 
 
@@ -1557,10 +1742,10 @@ const useIsLoggedIn = () => {
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=script&lang=ts
 
 
-/* harmony default export */ var LogoutButtonvue_type_script_lang_ts = ((0,external_vue_namespaceObject.defineComponent)({
+/* harmony default export */ var LogoutButtonvue_type_script_lang_ts = ((0,external_vue_.defineComponent)({
     name: "LoginButton",
     setup() {
-        const { session } = useSolidSession_useSolidSession();
+        const { session } = (0,src_useSolidSession.useSolidSession)();
         return { session };
     },
 }));

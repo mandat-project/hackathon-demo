@@ -19,7 +19,10 @@
     "paths": {
       "@/*": [
         "src/*"
-      ]
+      ],
+      "hackathon-demo/libs/*": [
+        "../*"
+      ],
     },
     "lib": [
       "esnext",

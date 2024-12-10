@@ -1,7 +1,7 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 48:
+/***/ 232:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15,7 +15,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".header-container[data-v-e9537548]{background-image:linear-gradient(to right,var(--shared-auth-app-header-bar-background-color-from,var(--surface-100)),var(--shared-auth-app-header-bar-background-color-to,var(--surface-100)))}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".header-container[data-v-5dab557c]{background-image:linear-gradient(to right,var(--shared-auth-app-header-bar-background-color-from,var(--surface-100)),var(--shared-auth-app-header-bar-background-color-to,var(--surface-100)))}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -147,6 +147,82 @@ module.exports = function (i) {
 
 /***/ }),
 
+/***/ 719:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.renewTokens = void 0;
+const jose_1 = __webpack_require__(553);
+const axios_1 = __importDefault(__webpack_require__(148));
+const renewTokens = async () => {
+    const client_id = sessionStorage.getItem("client_id");
+    const client_secret = sessionStorage.getItem("client_secret");
+    const refresh_token = sessionStorage.getItem("refresh_token");
+    const token_endpoint = sessionStorage.getItem("token_endpoint");
+    if (!client_id || !client_secret || !refresh_token || !token_endpoint) {
+        // we can not restore the old session
+        throw new Error("Cannot renew tokens");
+    }
+    // RFC 9449 DPoP
+    const key_pair = await (0, jose_1.generateKeyPair)("ES256");
+    const token_response = (await requestFreshTokens(refresh_token, client_id, client_secret, token_endpoint, key_pair)).data;
+    return {
+        ...token_response,
+        dpop_key_pair: key_pair,
+    };
+};
+exports.renewTokens = renewTokens;
+/**
+ * Request an dpop-bound access token from a token endpoint using a refresh token
+ * @param authorization_code
+ * @param pkce_code_verifier
+ * @param redirect_uri
+ * @param client_id
+ * @param client_secret
+ * @param token_endpoint
+ * @param key_pair
+ * @returns
+ */
+const requestFreshTokens = async (refresh_token, client_id, client_secret, token_endpoint, key_pair) => {
+    // prepare public key to bind access token to
+    const jwk_public_key = await (0, jose_1.exportJWK)(key_pair.publicKey);
+    jwk_public_key.alg = "ES256";
+    // sign the access token request DPoP token
+    const dpop = await new jose_1.SignJWT({
+        htu: token_endpoint,
+        htm: "POST",
+    })
+        .setIssuedAt()
+        .setJti(window.crypto.randomUUID())
+        .setProtectedHeader({
+        alg: "ES256",
+        typ: "dpop+jwt",
+        jwk: jwk_public_key,
+    })
+        .sign(key_pair.privateKey);
+    return (0, axios_1.default)({
+        url: token_endpoint,
+        method: "post",
+        headers: {
+            authorization: `Basic ${btoa(`${client_id}:${client_secret}`)}`,
+            dpop,
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: refresh_token,
+        }),
+    });
+};
+
+
+/***/ }),
+
 /***/ 433:
 /***/ (function(__unused_webpack_module, exports) {
 
@@ -167,19 +243,19 @@ exports.A = (sfc, props) => {
 
 /***/ }),
 
-/***/ 208:
+/***/ 448:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(48);
+var content = __webpack_require__(232);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("2bdebf23", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("89bf0dea", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -463,6 +539,22 @@ function applyToTag (styleElement, obj) {
 }
 
 
+/***/ }),
+
+/***/ 148:
+/***/ (function(module) {
+
+"use strict";
+module.exports = require("axios");
+
+/***/ }),
+
+/***/ 553:
+/***/ (function(module) {
+
+"use strict";
+module.exports = require("jose");
+
 /***/ })
 
 /******/ 	});
@@ -485,7 +577,7 @@ function applyToTag (styleElement, obj) {
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -567,9 +659,9 @@ if (typeof window !== 'undefined') {
 
 ;// CONCATENATED MODULE: external "vue"
 var external_vue_namespaceObject = require("vue");
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=template&id=e9537548&scoped=true&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=template&id=5dab557c&scoped=true&ts=true
 
-const _withScopeId = n => ((0,external_vue_namespaceObject.pushScopeId)("data-v-e9537548"), n = n(), (0,external_vue_namespaceObject.popScopeId)(), n);
+const _withScopeId = n => ((0,external_vue_namespaceObject.pushScopeId)("data-v-5dab557c"), n = n(), (0,external_vue_namespaceObject.popScopeId)(), n);
 const _hoisted_1 = { class: "header-container shadow-2 p-4 fixed top-0 left-0 right-0 z-2" };
 const _hoisted_2 = ["src", "alt"];
 const _hoisted_3 = {
@@ -642,13 +734,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=template&id=e9537548&scoped=true&ts=true
+;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=template&id=5dab557c&scoped=true&ts=true
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useCache.js
+;// CONCATENATED MODULE: ../composables/src/useCache.ts
 const cache = {};
 const useCache = () => cache;
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerNotifications.js
+;// CONCATENATED MODULE: ../composables/src/useServiceWorkerNotifications.ts
 
 const hasActivePush = (0,external_vue_namespaceObject.ref)(false);
 /** ask the user for permission to display notifications */
@@ -721,7 +813,7 @@ const unsubscribeFromPush = async () => {
     hasActivePush.value = false;
     return sub.toJSON();
 };
-const useServiceWorkerNotifications = () => {
+const useServiceWorkerNotifications_useServiceWorkerNotifications = () => {
     return {
         askForNotificationPermission,
         subscribeToPush,
@@ -730,7 +822,7 @@ const useServiceWorkerNotifications = () => {
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerUpdate.js
+;// CONCATENATED MODULE: ../composables/src/useServiceWorkerUpdate.ts
 
 const hasUpdatedAvailable = (0,external_vue_namespaceObject.ref)(false);
 let registration;
@@ -775,7 +867,7 @@ const useServiceWorkerUpdate = () => {
 
 ;// CONCATENATED MODULE: external "n3"
 var external_n3_namespaceObject = require("n3");
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/namespaces.js
+;// CONCATENATED MODULE: ../solid/src/namespaces.ts
 /**
  * Concat the RDF namespace identified by the prefix used as function name
  * with the RDF thing identifier as function parameter,
@@ -817,7 +909,7 @@ const MANDAT = Namespace("https://solid.aifb.kit.edu/vocab/mandat/");
 const AD = Namespace("https://www.example.org/advertisement/");
 const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#");
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/n3Extensions.js
+;// CONCATENATED MODULE: ../solid/src/n3Extensions.ts
 
 
 /**
@@ -1019,11 +1111,12 @@ const toTTL = (n3Store, n3Prefixes, baseIRI) => {
 
   */
 
-;// CONCATENATED MODULE: external "axios"
-var external_axios_namespaceObject = require("axios");
-;// CONCATENATED MODULE: external "jose"
-var external_jose_namespaceObject = require("jose");
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestDynamicClientRegistration.js
+// EXTERNAL MODULE: external "axios"
+var external_axios_ = __webpack_require__(148);
+var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_);
+// EXTERNAL MODULE: external "jose"
+var external_jose_ = __webpack_require__(553);
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/requestDynamicClientRegistration.ts
 
 /**
  * When the client does not have a webid profile document, use this.
@@ -1043,7 +1136,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
         subject_type: "public",
     };
     // register
-    return external_axios_namespaceObject({
+    return external_axios_default()({
         url: registration_endpoint,
         method: "post",
         data: client_registration_request_body,
@@ -1051,7 +1144,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestAccessToken.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/requestAccessToken.ts
 
 
 /**
@@ -1067,10 +1160,10 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
  */
 const requestAccessToken = async (authorization_code, pkce_code_verifier, redirect_uri, client_id, client_secret, token_endpoint, key_pair) => {
     // prepare public key to bind access token to
-    const jwk_public_key = await (0,external_jose_namespaceObject.exportJWK)(key_pair.publicKey);
+    const jwk_public_key = await (0,external_jose_.exportJWK)(key_pair.publicKey);
     jwk_public_key.alg = "ES256";
     // sign the access token request DPoP token
-    const dpop = await new external_jose_namespaceObject.SignJWT({
+    const dpop = await new external_jose_.SignJWT({
         htu: token_endpoint,
         htm: "POST",
     })
@@ -1082,7 +1175,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
         jwk: jwk_public_key,
     })
         .sign(key_pair.privateKey);
-    return external_axios_namespaceObject({
+    return external_axios_default()({
         url: token_endpoint,
         method: "post",
         headers: {
@@ -1101,7 +1194,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.ts
 
 
 
@@ -1118,7 +1211,7 @@ const redirectForLogin = async (idp, redirect_uri) => {
     // RFC 9207 iss check: remember the identity provider (idp) / issuer (iss)
     sessionStorage.setItem("idp", idp);
     // lookup openid configuration of idp
-    const openid_configuration = (await external_axios_namespaceObject.get(`${idp}/.well-known/openid-configuration`)).data;
+    const openid_configuration = (await external_axios_default().get(`${idp}/.well-known/openid-configuration`)).data;
     // remember token endpoint
     sessionStorage.setItem("token_endpoint", openid_configuration["token_endpoint"]);
     const registration_endpoint = openid_configuration["registration_endpoint"];
@@ -1212,7 +1305,7 @@ const onIncomingRedirect = async () => {
         throw new Error("Access Token Request preparation - Could not find in sessionStorage: token_endpoint");
     }
     // RFC 9449 DPoP
-    const key_pair = await (0,external_jose_namespaceObject.generateKeyPair)("ES256");
+    const key_pair = await (0,external_jose_.generateKeyPair)("ES256");
     // get access token
     const token_response = (await requestAccessToken(authorization_code, pkce_code_verifier, url.toString(), client_id, client_secret, token_endpoint, key_pair)).data;
     // TODO double check if I need to check token for ISS = IDP
@@ -1233,71 +1326,9 @@ const onIncomingRedirect = async () => {
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/RefreshTokenGrant.js
-
-
-const renewTokens = async () => {
-    const client_id = sessionStorage.getItem("client_id");
-    const client_secret = sessionStorage.getItem("client_secret");
-    const refresh_token = sessionStorage.getItem("refresh_token");
-    const token_endpoint = sessionStorage.getItem("token_endpoint");
-    if (!client_id || !client_secret || !refresh_token || !token_endpoint) {
-        // we can not restore the old session
-        throw new Error("Cannot renew tokens");
-    }
-    // RFC 9449 DPoP
-    const key_pair = await (0,external_jose_namespaceObject.generateKeyPair)("ES256");
-    const token_response = (await requestFreshTokens(refresh_token, client_id, client_secret, token_endpoint, key_pair)).data;
-    return {
-        ...token_response,
-        dpop_key_pair: key_pair,
-    };
-};
-/**
- * Request an dpop-bound access token from a token endpoint using a refresh token
- * @param authorization_code
- * @param pkce_code_verifier
- * @param redirect_uri
- * @param client_id
- * @param client_secret
- * @param token_endpoint
- * @param key_pair
- * @returns
- */
-const requestFreshTokens = async (refresh_token, client_id, client_secret, token_endpoint, key_pair) => {
-    // prepare public key to bind access token to
-    const jwk_public_key = await (0,external_jose_namespaceObject.exportJWK)(key_pair.publicKey);
-    jwk_public_key.alg = "ES256";
-    // sign the access token request DPoP token
-    const dpop = await new external_jose_namespaceObject.SignJWT({
-        htu: token_endpoint,
-        htm: "POST",
-    })
-        .setIssuedAt()
-        .setJti(window.crypto.randomUUID())
-        .setProtectedHeader({
-        alg: "ES256",
-        typ: "dpop+jwt",
-        jwk: jwk_public_key,
-    })
-        .sign(key_pair.privateKey);
-    return external_axios_namespaceObject({
-        url: token_endpoint,
-        method: "post",
-        headers: {
-            authorization: `Basic ${btoa(`${client_id}:${client_secret}`)}`,
-            dpop,
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
-        data: new URLSearchParams({
-            grant_type: "refresh_token",
-            refresh_token: refresh_token,
-        }),
-    });
-};
-
-
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/Session.js
+// EXTERNAL MODULE: ../solid/src/solid-oidc-client-browser/RefreshTokenGrant.ts
+var RefreshTokenGrant = __webpack_require__(719);
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/Session.ts
 
 
 
@@ -1322,7 +1353,7 @@ class Session_Session {
         return onIncomingRedirect().then(async (sessionInfo) => {
             if (!sessionInfo) {
                 // try refresh
-                sessionInfo = await renewTokens().catch((_) => {
+                sessionInfo = await (0,RefreshTokenGrant.renewTokens)().catch((_) => {
                     return undefined;
                 });
             }
@@ -1333,15 +1364,15 @@ class Session_Session {
             // we got a sessionInfo
             this.tokenInformation = sessionInfo;
             this.isActive_ = true;
-            this.webId_ = (0,external_jose_namespaceObject.decodeJwt)(this.tokenInformation.access_token)["webid"];
+            this.webId_ = (0,external_jose_.decodeJwt)(this.tokenInformation.access_token)["webid"];
         });
     }
     async createSignedDPoPToken(payload) {
         if (this.tokenInformation == undefined) {
             throw new Error("Session not established.");
         }
-        const jwk_public_key = await (0,external_jose_namespaceObject.exportJWK)(this.tokenInformation.dpop_key_pair.publicKey);
-        return new external_jose_namespaceObject.SignJWT(payload)
+        const jwk_public_key = await (0,external_jose_.exportJWK)(this.tokenInformation.dpop_key_pair.publicKey);
+        return new external_jose_.SignJWT(payload)
             .setIssuedAt()
             .setJti(window.crypto.randomUUID())
             .setProtectedHeader({
@@ -1375,7 +1406,7 @@ class Session_Session {
             headers["authorization"] = `DPoP ${this.tokenInformation.access_token}`;
         }
         config.headers = headers;
-        return external_axios_namespaceObject(config);
+        return external_axios_default()(config);
     }
     get isActive() {
         return this.isActive_;
@@ -1385,7 +1416,7 @@ class Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solidRequests.js
+;// CONCATENATED MODULE: ../solid/src/solidRequests.ts
 
 
 
@@ -1741,7 +1772,7 @@ async function getAclResourceUri(uri, session) {
     });
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/interopRequest.js
+;// CONCATENATED MODULE: ../solid/src/interopRequest.ts
 
 
 
@@ -1813,14 +1844,14 @@ function getResourceAsStore(uri, session) {
         .then((parsedN3) => parsedN3.store);
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/index.js
+;// CONCATENATED MODULE: ../solid/index.ts
 
 
 
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/rdpCapableSession.js
+;// CONCATENATED MODULE: ../composables/src/rdpCapableSession.ts
 
 class RdpCapableSession extends Session_Session {
     rdp_;
@@ -1855,10 +1886,10 @@ class RdpCapableSession extends Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
+;// CONCATENATED MODULE: ../composables/src/useSolidSession.ts
 
 
-const session = (0,external_vue_namespaceObject.reactive)(new RdpCapableSession(""));
+let session;
 async function restoreSession() {
     await session.handleRedirectFromLogin();
 }
@@ -1874,18 +1905,19 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
+    session ??= (0,external_vue_namespaceObject.inject)('useSolidSession:RdpCapableSession', () => (0,external_vue_namespaceObject.reactive)(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidProfile.js
+;// CONCATENATED MODULE: ../composables/src/useSolidProfile.ts
 
 
 
 
-const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
+let useSolidProfile_session;
 const useSolidProfile_name = (0,external_vue_namespaceObject.ref)("");
 const img = (0,external_vue_namespaceObject.ref)("");
 const inbox = (0,external_vue_namespaceObject.ref)("");
@@ -1894,75 +1926,72 @@ const authAgent = (0,external_vue_namespaceObject.ref)("");
 const accessInbox = (0,external_vue_namespaceObject.ref)("");
 const memberOf = (0,external_vue_namespaceObject.ref)("");
 const hasOrgRDP = (0,external_vue_namespaceObject.ref)("");
-(0,external_vue_namespaceObject.watch)(() => useSolidProfile_session.webId, async () => {
-    const webId = useSolidProfile_session.webId;
-    let store = new external_n3_namespaceObject.Store();
-    if (useSolidProfile_session.webId !== undefined) {
-        store = await solidRequests_getResource(webId)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, webId))
-            .then((parsedN3) => parsedN3.store);
-    }
-    let query = store.getObjects(webId, VCARD("hasPhoto"), null);
-    img.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, VCARD("fn"), null);
-    useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_LDP("inbox"), null);
-    inbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, SPACE("storage"), null);
-    storage.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAuthorizationAgent"), null);
-    authAgent.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAccessInbox"), null);
-    accessInbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, ORG("memberOf"), null);
-    const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
-    if (uncheckedMemberOf !== "") {
-        let storeOrg = new external_n3_namespaceObject.Store();
-        storeOrg = await solidRequests_getResource(uncheckedMemberOf)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
-            .then((parsedN3) => parsedN3.store);
-        const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null)
-            .length > 0;
-        if (isMember) {
-            memberOf.value = uncheckedMemberOf;
-            query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
-            hasOrgRDP.value = query.length > 0 ? query[0].value : "";
-            useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
-            // and also overwrite fields from org profile
-            query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
-            useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
-            query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
-            inbox.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
-            storage.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAuthorizationAgent"), null);
-            authAgent.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAccessInbox"), null);
-            accessInbox.value = query.length > 0 ? query[0].value : "";
-        }
-    }
-});
 const useSolidProfile_useSolidProfile = () => {
+    if (!useSolidProfile_session) {
+        const { session: sessionRef } = useSolidSession_useSolidSession();
+        useSolidProfile_session = sessionRef;
+    }
+    (0,external_vue_namespaceObject.watch)(() => useSolidProfile_session.webId, async () => {
+        const webId = useSolidProfile_session.webId;
+        let store = new external_n3_namespaceObject.Store();
+        if (useSolidProfile_session.webId !== undefined) {
+            store = await solidRequests_getResource(webId)
+                .then((resp) => resp.data)
+                .then((respText) => solidRequests_parseToN3(respText, webId))
+                .then((parsedN3) => parsedN3.store);
+        }
+        let query = store.getObjects(webId, VCARD("hasPhoto"), null);
+        img.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, VCARD("fn"), null);
+        useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_LDP("inbox"), null);
+        inbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, SPACE("storage"), null);
+        storage.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_INTEROP("hasAuthorizationAgent"), null);
+        authAgent.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_INTEROP("hasAccessInbox"), null);
+        accessInbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, ORG("memberOf"), null);
+        const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
+        if (uncheckedMemberOf !== "") {
+            let storeOrg = new external_n3_namespaceObject.Store();
+            storeOrg = await solidRequests_getResource(uncheckedMemberOf)
+                .then((resp) => resp.data)
+                .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
+                .then((parsedN3) => parsedN3.store);
+            const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null).length > 0;
+            if (isMember) {
+                memberOf.value = uncheckedMemberOf;
+                query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
+                hasOrgRDP.value = query.length > 0 ? query[0].value : "";
+                useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
+                // and also overwrite fields from org profile
+                query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
+                useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+                query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
+                inbox.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
+                storage.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAuthorizationAgent"), null);
+                authAgent.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAccessInbox"), null);
+                accessInbox.value = query.length > 0 ? query[0].value : "";
+            }
+        }
+    });
     return {
-        name: useSolidProfile_name,
-        img,
-        inbox,
-        storage,
-        authAgent,
-        accessInbox,
-        memberOf,
-        hasOrgRDP,
+        name: useSolidProfile_name, img, inbox, storage, authAgent, accessInbox, memberOf, hasOrgRDP,
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidWebPush.js
+;// CONCATENATED MODULE: ../composables/src/useSolidWebPush.ts
 
 
 
-const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
-const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
+let useSolidWebPush_unsubscribeFromPush;
+let useSolidWebPush_subscribeToPush;
+let useSolidWebPush_session;
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -2026,13 +2055,21 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
 };
 const useSolidWebPush = () => {
+    if (!useSolidWebPush_session) {
+        useSolidWebPush_session = useSolidSession().session;
+    }
+    if (!useSolidWebPush_unsubscribeFromPush && !useSolidWebPush_subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
+        useSolidWebPush_unsubscribeFromPush = unsubscribeFromPushFunc;
+        useSolidWebPush_subscribeToPush = subscribeToPushFunc;
+    }
     return {
         subscribeForResource,
         unsubscribeFromResource
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useIsLoggedIn.js
+;// CONCATENATED MODULE: ../composables/src/useIsLoggedIn.ts
 
 
 
@@ -2045,7 +2082,7 @@ const useIsLoggedIn = () => {
     return { isLoggedIn };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/index.js
+;// CONCATENATED MODULE: ../composables/index.ts
 
 
 
@@ -4123,7 +4160,7 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
         appLogo: String,
     },
     setup() {
-        const { hasActivePush } = useServiceWorkerNotifications();
+        const { hasActivePush } = useServiceWorkerNotifications_useServiceWorkerNotifications();
         const { name, img } = useSolidProfile_useSolidProfile();
         const appName = "Authorization App";
         return { img, hasActivePush, appName, name };
@@ -4132,9 +4169,9 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
 
 ;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-12.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=e9537548&scoped=true&lang=css
-var AuthAppHeaderBarvue_type_style_index_0_id_e9537548_scoped_true_lang_css = __webpack_require__(208);
-;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=e9537548&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-12.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=5dab557c&scoped=true&lang=css
+var AuthAppHeaderBarvue_type_style_index_0_id_5dab557c_scoped_true_lang_css = __webpack_require__(448);
+;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue?vue&type=style&index=0&id=5dab557c&scoped=true&lang=css
 
 ;// CONCATENATED MODULE: ./src/AuthAppHeaderBar.vue
 
@@ -4144,7 +4181,7 @@ var AuthAppHeaderBarvue_type_style_index_0_id_e9537548_scoped_true_lang_css = __
 ;
 
 
-const AuthAppHeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(AuthAppHeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-e9537548"]])
+const AuthAppHeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(AuthAppHeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-5dab557c"]])
 
 /* harmony default export */ var AuthAppHeaderBar = (AuthAppHeaderBar_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/entry-lib.js

@@ -35,6 +35,7 @@ import Toast from "primevue/toast";
 import Toolbar from "primevue/toolbar";
 import Tooltip from "primevue/tooltip";
 import ToastService from "primevue/toastservice";
+import DialogService from 'primevue/dialogservice';
 export const setupApp = (app, router) => {
     if (router) {
         app.use(router);
@@ -42,6 +43,7 @@ export const setupApp = (app, router) => {
     app.use(PrimeVue, { ripple: true });
     app.use(ToastService);
     app.use(ConfirmationService);
+    app.use(DialogService);
     app.component("Button", Button);
     app.component("Toolbar", Toolbar);
     app.component("Avatar", Avatar);

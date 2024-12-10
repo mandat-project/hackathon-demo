@@ -1,24 +1,42 @@
 {
-  "extends": "../../ts.base-config.json",
   "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": [
+      "webpack-env", "jest"
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "hackathon-demo/libs/*": [
+        "../../libs/*"
+      ]
+    },
     "lib": [
       "esnext",
       "dom",
       "dom.iterable",
       "scripthost"
-    ],
-    "types": [
-      "webpack-env", "jest"
-    ]
-  },
-  "paths": {
-    "@/*": [
-      "./src/*"
     ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.js",
-    "**/*.vue"
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

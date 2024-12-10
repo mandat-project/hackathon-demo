@@ -651,11 +651,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
 
 ;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=89e3dede&ts=true
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useCache.js
+;// CONCATENATED MODULE: ../composables/src/useCache.ts
 const cache = {};
 const useCache = () => cache;
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerNotifications.js
+;// CONCATENATED MODULE: ../composables/src/useServiceWorkerNotifications.ts
 
 const hasActivePush = (0,external_vue_.ref)(false);
 /** ask the user for permission to display notifications */
@@ -728,7 +728,7 @@ const unsubscribeFromPush = async () => {
     hasActivePush.value = false;
     return sub.toJSON();
 };
-const useServiceWorkerNotifications = () => {
+const useServiceWorkerNotifications_useServiceWorkerNotifications = () => {
     return {
         askForNotificationPermission,
         subscribeToPush,
@@ -737,7 +737,7 @@ const useServiceWorkerNotifications = () => {
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerUpdate.js
+;// CONCATENATED MODULE: ../composables/src/useServiceWorkerUpdate.ts
 
 const hasUpdatedAvailable = (0,external_vue_.ref)(false);
 let registration;
@@ -782,7 +782,7 @@ const useServiceWorkerUpdate = () => {
 
 // EXTERNAL MODULE: external "n3"
 var external_n3_ = __webpack_require__(907);
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/namespaces.js
+;// CONCATENATED MODULE: ../solid/src/namespaces.ts
 /**
  * Concat the RDF namespace identified by the prefix used as function name
  * with the RDF thing identifier as function parameter,
@@ -824,7 +824,7 @@ const MANDAT = Namespace("https://solid.aifb.kit.edu/vocab/mandat/");
 const AD = Namespace("https://www.example.org/advertisement/");
 const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#");
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/n3Extensions.js
+;// CONCATENATED MODULE: ../solid/src/n3Extensions.ts
 
 
 /**
@@ -1028,9 +1028,10 @@ const toTTL = (n3Store, n3Prefixes, baseIRI) => {
 
 // EXTERNAL MODULE: external "axios"
 var external_axios_ = __webpack_require__(742);
+var external_axios_default = /*#__PURE__*/__webpack_require__.n(external_axios_);
 // EXTERNAL MODULE: external "jose"
 var external_jose_ = __webpack_require__(603);
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestDynamicClientRegistration.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/requestDynamicClientRegistration.ts
 
 /**
  * When the client does not have a webid profile document, use this.
@@ -1050,7 +1051,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
         subject_type: "public",
     };
     // register
-    return external_axios_({
+    return external_axios_default()({
         url: registration_endpoint,
         method: "post",
         data: client_registration_request_body,
@@ -1058,7 +1059,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestAccessToken.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/requestAccessToken.ts
 
 
 /**
@@ -1089,7 +1090,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
         jwk: jwk_public_key,
     })
         .sign(key_pair.privateKey);
-    return external_axios_({
+    return external_axios_default()({
         url: token_endpoint,
         method: "post",
         headers: {
@@ -1108,7 +1109,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.ts
 
 
 
@@ -1125,7 +1126,7 @@ const redirectForLogin = async (idp, redirect_uri) => {
     // RFC 9207 iss check: remember the identity provider (idp) / issuer (iss)
     sessionStorage.setItem("idp", idp);
     // lookup openid configuration of idp
-    const openid_configuration = (await external_axios_.get(`${idp}/.well-known/openid-configuration`)).data;
+    const openid_configuration = (await external_axios_default().get(`${idp}/.well-known/openid-configuration`)).data;
     // remember token endpoint
     sessionStorage.setItem("token_endpoint", openid_configuration["token_endpoint"]);
     const registration_endpoint = openid_configuration["registration_endpoint"];
@@ -1240,7 +1241,7 @@ const onIncomingRedirect = async () => {
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/RefreshTokenGrant.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/RefreshTokenGrant.ts
 
 
 const renewTokens = async () => {
@@ -1288,7 +1289,7 @@ const requestFreshTokens = async (refresh_token, client_id, client_secret, token
         jwk: jwk_public_key,
     })
         .sign(key_pair.privateKey);
-    return external_axios_({
+    return external_axios_default()({
         url: token_endpoint,
         method: "post",
         headers: {
@@ -1304,7 +1305,7 @@ const requestFreshTokens = async (refresh_token, client_id, client_secret, token
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/Session.js
+;// CONCATENATED MODULE: ../solid/src/solid-oidc-client-browser/Session.ts
 
 
 
@@ -1382,7 +1383,7 @@ class Session_Session {
             headers["authorization"] = `DPoP ${this.tokenInformation.access_token}`;
         }
         config.headers = headers;
-        return external_axios_(config);
+        return external_axios_default()(config);
     }
     get isActive() {
         return this.isActive_;
@@ -1392,7 +1393,7 @@ class Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solidRequests.js
+;// CONCATENATED MODULE: ../solid/src/solidRequests.ts
 
 
 
@@ -1748,7 +1749,7 @@ async function getAclResourceUri(uri, session) {
     });
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/interopRequest.js
+;// CONCATENATED MODULE: ../solid/src/interopRequest.ts
 
 
 
@@ -1820,14 +1821,14 @@ function getResourceAsStore(uri, session) {
         .then((parsedN3) => parsedN3.store);
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/index.js
+;// CONCATENATED MODULE: ../solid/index.ts
 
 
 
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/rdpCapableSession.js
+;// CONCATENATED MODULE: ../composables/src/rdpCapableSession.ts
 
 class RdpCapableSession extends Session_Session {
     rdp_;
@@ -1862,10 +1863,10 @@ class RdpCapableSession extends Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
+;// CONCATENATED MODULE: ../composables/src/useSolidSession.ts
 
 
-const session = (0,external_vue_.reactive)(new RdpCapableSession(""));
+let session;
 async function restoreSession() {
     await session.handleRedirectFromLogin();
 }
@@ -1881,18 +1882,19 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
+    session ??= (0,external_vue_.inject)('useSolidSession:RdpCapableSession', () => (0,external_vue_.reactive)(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidProfile.js
+;// CONCATENATED MODULE: ../composables/src/useSolidProfile.ts
 
 
 
 
-const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
+let useSolidProfile_session;
 const useSolidProfile_name = (0,external_vue_.ref)("");
 const img = (0,external_vue_.ref)("");
 const inbox = (0,external_vue_.ref)("");
@@ -1901,75 +1903,72 @@ const authAgent = (0,external_vue_.ref)("");
 const accessInbox = (0,external_vue_.ref)("");
 const memberOf = (0,external_vue_.ref)("");
 const hasOrgRDP = (0,external_vue_.ref)("");
-(0,external_vue_.watch)(() => useSolidProfile_session.webId, async () => {
-    const webId = useSolidProfile_session.webId;
-    let store = new external_n3_.Store();
-    if (useSolidProfile_session.webId !== undefined) {
-        store = await solidRequests_getResource(webId)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, webId))
-            .then((parsedN3) => parsedN3.store);
-    }
-    let query = store.getObjects(webId, VCARD("hasPhoto"), null);
-    img.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, VCARD("fn"), null);
-    useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_LDP("inbox"), null);
-    inbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, SPACE("storage"), null);
-    storage.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAuthorizationAgent"), null);
-    authAgent.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAccessInbox"), null);
-    accessInbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, ORG("memberOf"), null);
-    const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
-    if (uncheckedMemberOf !== "") {
-        let storeOrg = new external_n3_.Store();
-        storeOrg = await solidRequests_getResource(uncheckedMemberOf)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
-            .then((parsedN3) => parsedN3.store);
-        const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null)
-            .length > 0;
-        if (isMember) {
-            memberOf.value = uncheckedMemberOf;
-            query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
-            hasOrgRDP.value = query.length > 0 ? query[0].value : "";
-            useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
-            // and also overwrite fields from org profile
-            query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
-            useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
-            query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
-            inbox.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
-            storage.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAuthorizationAgent"), null);
-            authAgent.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAccessInbox"), null);
-            accessInbox.value = query.length > 0 ? query[0].value : "";
-        }
-    }
-});
 const useSolidProfile_useSolidProfile = () => {
+    if (!useSolidProfile_session) {
+        const { session: sessionRef } = useSolidSession_useSolidSession();
+        useSolidProfile_session = sessionRef;
+    }
+    (0,external_vue_.watch)(() => useSolidProfile_session.webId, async () => {
+        const webId = useSolidProfile_session.webId;
+        let store = new external_n3_.Store();
+        if (useSolidProfile_session.webId !== undefined) {
+            store = await solidRequests_getResource(webId)
+                .then((resp) => resp.data)
+                .then((respText) => solidRequests_parseToN3(respText, webId))
+                .then((parsedN3) => parsedN3.store);
+        }
+        let query = store.getObjects(webId, VCARD("hasPhoto"), null);
+        img.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, VCARD("fn"), null);
+        useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_LDP("inbox"), null);
+        inbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, SPACE("storage"), null);
+        storage.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_INTEROP("hasAuthorizationAgent"), null);
+        authAgent.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_INTEROP("hasAccessInbox"), null);
+        accessInbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, ORG("memberOf"), null);
+        const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
+        if (uncheckedMemberOf !== "") {
+            let storeOrg = new external_n3_.Store();
+            storeOrg = await solidRequests_getResource(uncheckedMemberOf)
+                .then((resp) => resp.data)
+                .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
+                .then((parsedN3) => parsedN3.store);
+            const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null).length > 0;
+            if (isMember) {
+                memberOf.value = uncheckedMemberOf;
+                query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
+                hasOrgRDP.value = query.length > 0 ? query[0].value : "";
+                useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
+                // and also overwrite fields from org profile
+                query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
+                useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+                query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
+                inbox.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
+                storage.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAuthorizationAgent"), null);
+                authAgent.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAccessInbox"), null);
+                accessInbox.value = query.length > 0 ? query[0].value : "";
+            }
+        }
+    });
     return {
-        name: useSolidProfile_name,
-        img,
-        inbox,
-        storage,
-        authAgent,
-        accessInbox,
-        memberOf,
-        hasOrgRDP,
+        name: useSolidProfile_name, img, inbox, storage, authAgent, accessInbox, memberOf, hasOrgRDP,
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidWebPush.js
+;// CONCATENATED MODULE: ../composables/src/useSolidWebPush.ts
 
 
 
-const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
-const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
+let useSolidWebPush_unsubscribeFromPush;
+let useSolidWebPush_subscribeToPush;
+let useSolidWebPush_session;
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -2033,13 +2032,21 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
 };
 const useSolidWebPush = () => {
+    if (!useSolidWebPush_session) {
+        useSolidWebPush_session = useSolidSession().session;
+    }
+    if (!useSolidWebPush_unsubscribeFromPush && !useSolidWebPush_subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
+        useSolidWebPush_unsubscribeFromPush = unsubscribeFromPushFunc;
+        useSolidWebPush_subscribeToPush = subscribeToPushFunc;
+    }
     return {
         subscribeForResource,
         unsubscribeFromResource
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useIsLoggedIn.js
+;// CONCATENATED MODULE: ../composables/src/useIsLoggedIn.ts
 
 
 
@@ -2052,7 +2059,7 @@ const useIsLoggedIn = () => {
     return { isLoggedIn };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/index.js
+;// CONCATENATED MODULE: ../composables/index.ts
 
 
 
@@ -4139,7 +4146,7 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
             return (props.backgroundColor ||
                 "linear-gradient(90deg, #195B78 0%, #287F8F 100%)"); // Default color if bgColor is not provided
         });
-        const { hasActivePush } = useServiceWorkerNotifications();
+        const { hasActivePush } = useServiceWorkerNotifications_useServiceWorkerNotifications();
         const { name, img } = useSolidProfile_useSolidProfile();
         return { img, hasActivePush, name, computedBgColor };
     },

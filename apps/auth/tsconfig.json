@@ -20,6 +20,9 @@
     "paths": {
       "@/*": [
         "src/*"
+      ],
+      "hackathon-demo/libs/*": [
+        "../../libs/*"
       ]
     },
     "lib": [
