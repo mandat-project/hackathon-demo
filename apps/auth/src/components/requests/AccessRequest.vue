@@ -4,7 +4,7 @@
       {{ $t("accessRequest.title") }}
     </template>
     <template #content>
-      <div class="grid">
+      <div class="grid m-0">
         <div class="col-12 md:col">
           <div class="text-black-alpha-60">
             {{ $t("accessRequest.purpose") }}
@@ -116,20 +116,23 @@
 
 <script setup lang="ts">
 import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
-import { useSolidSession } from "@shared/composables";
+import {useSolidSession} from "@shared/composables";
 import {
+  AUTH,
+  createResource,
+  FOAF,
+  GDPRP,
+  getLocationHeader,
   getResource,
+  INTEROP,
   parseToN3,
   RDF,
-  INTEROP,
-  XSD,
-  GDPRP,
-  createResource,
-  AUTH, getLocationHeader, FOAF, RDFS
+  RDFS,
+  XSD
 } from "@shared/solid";
-import { Store } from "n3";
-import { useToast } from "primevue/usetoast";
-import { computed, reactive, ref } from "vue";
+import {Store} from "n3";
+import {useToast} from "primevue/usetoast";
+import {computed, reactive, ref} from "vue";
 import {useConfirm} from "primevue/useconfirm";
 import {useI18n} from "vue-i18n";
 
@@ -364,6 +367,7 @@ function confirmGrantWithAccessReceipt(): void {
     message: t('accessRequest.confirmDialog.message'),
     header: t('accessRequest.confirmDialog.header'),
     rejectLabel: t('accessRequest.confirmDialog.cancel'),
+    rejectClass: 'p-button-secondary',
     acceptLabel: t('accessRequest.confirmDialog.authorize'),
     accept: () => {
       // TODO add authorizations from groups and data-authorizations
@@ -382,6 +386,7 @@ function confirmDeclineWithAccessReceipt(): void {
     header: t('accessRequest.declineDialog.header'),
     acceptClass: 'p-button-danger',
     rejectLabel: t('accessRequest.declineDialog.cancel'),
+    rejectClass: 'p-button-secondary',
     acceptLabel: t('accessRequest.declineDialog.decline'),
     accept: () => {
       declineWithAccessReceipt();
