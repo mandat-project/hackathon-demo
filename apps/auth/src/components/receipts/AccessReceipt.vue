@@ -118,6 +118,7 @@
 
 <script setup lang="ts">
 import AccessAuthorization from "@/components/receipts/AccessAuthorization";
+import { DateFormatted } from "@datev-research/mandat-shared-components";
 import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import {
   AUTH,

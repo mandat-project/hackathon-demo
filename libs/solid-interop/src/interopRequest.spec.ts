@@ -1,4 +1,4 @@
-import {createResourceInAnyRegistrationOfShape} from "@shared/solid";
+import {createResourceInAnyRegistrationOfShape} from "./interopRequest";
 
 describe('interopRequest', () => {
   it('Should call request method', () => {

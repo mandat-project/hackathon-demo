@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import DataAuthorization from "@/components/receipts/DataAuthorization";
+import { DateFormatted } from "@datev-research/mandat-shared-components";
 import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import {
   createResource,

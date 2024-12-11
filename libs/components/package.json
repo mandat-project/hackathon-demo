@@ -4,6 +4,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "run-p --max-parallel 5 build:*",
+    "build:Index": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name SharedComponents ./index.ts",
     "build:DateFormatted": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name DateFormatted ./src/DateFormatted.vue",
     "build:TabItem": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name TabItem ./src/tabs/TabItem.vue",
     "build:PageHeadline": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name PageHeadline ./src/PageHeadline.vue",
@@ -26,6 +27,11 @@
     "lint": "vue-cli-service lint"
   },
   "exports": {
+    ".": {
+      "require": "./dist/SharedComponents.common.js",
+      "import": "./dist/SharedComponents.common.js",
+      "browser": "./dist/SharedComponents.umd.js"
+    },
     "./DateFormatted": {
       "sfc": "./src/DateFormatted.vue",
       "require": "./dist/DateFormatted.common.js",
@@ -136,10 +142,9 @@
     }
   },
   "files": [
-    "dist",
-    "index.ts"
+    "dist"
   ],
-  "main": "index.ts",
+  "main": "./dist/SharedComponents.common.js",
   "dependencies": {
     "@datev-research/mandat-shared-composables": "^1.0.0",
     "vue": "^3.2.13"
