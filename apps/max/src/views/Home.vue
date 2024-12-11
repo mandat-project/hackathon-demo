@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import {useToast} from "primevue/usetoast";
-import {computed, ref, toRefs, watch} from "vue";
-import {Quad, Store} from 'n3';
+import {getDataRegistrationContainers} from "@datev-research/mandat-shared-solid-interop";
 import {
   createResource,
   CREDIT,
-  getDataRegistrationContainers,
   getResource,
   INTEROP,
-  LDP,
-  parseToN3,
+  LDP, parseToN3,
   RDF,
   SCHEMA,
   XSD
-} from "hackathon-demo/libs/solid";
-import { useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
+} from "@datev-research/mandat-shared-solid-requests";
+import {useToast} from "primevue/usetoast";
+import {computed, ref, toRefs, watch} from "vue";
+import {Quad, Store} from 'n3';
+import { useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Divider from 'primevue/divider';

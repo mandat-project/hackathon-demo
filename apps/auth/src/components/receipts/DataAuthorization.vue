@@ -104,18 +104,18 @@
 import {
   useSolidProfile,
   useSolidSession,
-} from "hackathon-demo/libs/composables";
+} from "@datev-research/mandat-shared-composables";
+import { getDataRegistrationContainers } from "@datev-research/mandat-shared-solid-interop";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
-  getAclResourceUri,
-  getDataRegistrationContainers,
   ACL,
-  RDF,
-  putResource,
   FOAF,
-} from "hackathon-demo/libs/solid";
+  getAclResourceUri,
+  getResource,
+  INTEROP,
+  parseToN3,
+  putResource,
+  RDF,
+} from "@datev-research/mandat-shared-solid-requests";
 import { Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, reactive, watch } from "vue";

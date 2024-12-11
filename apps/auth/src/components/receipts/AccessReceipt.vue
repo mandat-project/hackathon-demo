@@ -118,8 +118,7 @@
 
 <script setup lang="ts">
 import AccessAuthorization from "@/components/receipts/AccessAuthorization";
-import { DateFormatted } from "hackathon-demo/libs/components";
-import { useSolidSession } from "hackathon-demo/libs/composables";
+import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import {
   AUTH,
   GDPRP,
@@ -128,7 +127,7 @@ import {
   parseToN3,
   patchResource,
   RDF,
-} from "hackathon-demo/libs/solid";
+} from "@datev-research/mandat-shared-solid-requests";
 import { NamedNode, Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, reactive, ref, watch } from "vue";

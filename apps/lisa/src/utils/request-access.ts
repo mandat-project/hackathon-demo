@@ -1,4 +1,4 @@
-import {ACL, CREDIT, GDPRP, INTEROP, LDP, RDFS, SCHEMA, SKOS, XSD} from '@shared/solid';
+import {ACL, CREDIT, GDPRP, INTEROP, LDP, RDFS, SCHEMA, SKOS, XSD} from "@datev-research/mandat-shared-solid-requests";
 
 const prefix =`@prefix interop: <${INTEROP()}> .
     @prefix ldp: <${LDP()}> .

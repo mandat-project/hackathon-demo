@@ -91,20 +91,18 @@
 
 <script setup lang="ts">
 import DataAuthorization from "@/components/receipts/DataAuthorization";
-import { DateFormatted } from "hackathon-demo/libs/components";
-
-import { useSolidSession } from "hackathon-demo/libs/composables";
+import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
   createResource,
-  getLocationHeader,
-  putResource,
   deleteResource,
-  XSD,
   FOAF,
-} from "hackathon-demo/libs/solid";
+  getLocationHeader,
+  getResource,
+  INTEROP,
+  parseToN3,
+  putResource,
+  XSD,
+} from "@datev-research/mandat-shared-solid-requests";
 import { DataFactory, NamedNode, Store, Writer } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, reactive, ref, watch } from "vue";

@@ -50,23 +50,23 @@
 
 <script setup lang="ts">
 import {
-  useSolidSession,
   useSolidProfile,
-} from "hackathon-demo/libs/composables";
+  useSolidSession,
+} from "@datev-research/mandat-shared-composables";
+import { getDataRegistrationContainers } from "@datev-research/mandat-shared-solid-interop";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
-  getDataRegistrationContainers,
-  LDP,
   ACL,
   AUTH,
-  XSD,
   createResource,
-  patchResource,
   getAclResourceUri,
   getLocationHeader,
-} from "hackathon-demo/libs/solid";
+  getResource,
+  INTEROP,
+  LDP,
+  parseToN3,
+  patchResource,
+  XSD,
+} from "@datev-research/mandat-shared-solid-requests";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, ref, watch } from "vue";

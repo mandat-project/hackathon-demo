@@ -47,16 +47,16 @@ import AccessNeed from "@/components/requests/AccessNeed";
 import {
   useSolidProfile,
   useSolidSession,
-} from "hackathon-demo/libs/composables";
+} from "@datev-research/mandat-shared-composables";
 import {
-  getResource,
-  parseToN3,
-  INTEROP,
-  SKOS,
   createResource,
   getLocationHeader,
+  getResource,
+  INTEROP,
+  parseToN3,
+  SKOS,
   XSD,
-} from "hackathon-demo/libs/solid";
+} from "@datev-research/mandat-shared-solid-requests";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, reactive, ref, watch } from "vue";

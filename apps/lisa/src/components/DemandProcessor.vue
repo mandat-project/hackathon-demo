@@ -118,7 +118,7 @@ import {Literal, NamedNode, Store, Writer} from 'n3';
 import {useToast} from 'primevue/usetoast';
 import {computed, reactive, Ref, ref, watch} from 'vue';
 import Card from "primevue/card";
-import {DacklTextInput} from "hackathon-demo/libs/components";
+import {DacklTextInput} from "@datev-research/mandat-shared-components";
 import {STATES} from "@/enums/states";
 import {TAB_STATE} from "@/enums/tabsState";
 import {

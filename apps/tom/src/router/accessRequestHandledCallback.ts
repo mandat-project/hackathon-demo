@@ -1,5 +1,5 @@
-import {useCache} from "hackathon-demo/libs/composables";
 import router from "@/router";
+import {useCache} from "@datev-research/mandat-shared-composables";
 
 export default function onResult(
   accessRequestUri: string,

@@ -5,7 +5,7 @@ import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
 import ToastService from "primevue/toastservice";
 
-jest.mock("hackathon-demo/libs/components", () => ({}));
+jest.mock("@datev-research/mandat-shared-components", () => ({}));
 
 test("App should render 401 by default", async () => {
   const wrapper = mount(App, {

@@ -135,7 +135,7 @@ if (typeof window !== 'undefined') {
 
 // EXTERNAL MODULE: external "vue"
 var external_vue_ = __webpack_require__(380);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=9263962a&ts=true
 
 const _hoisted_1 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
@@ -176,7 +176,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ]));
 }
 
-;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
+;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=9263962a&ts=true
 
 ;// CONCATENATED MODULE: ../composables/dist/esm/src/useCache.js
 const cache = {};

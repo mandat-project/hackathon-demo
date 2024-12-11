@@ -18,12 +18,6 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "@typescript-eslint/no-var-requires": "warn",
     "vue/multi-word-component-names": "off",
-    "no-restricted-imports": [
-      "error",
-      {
-        patterns: ["@shared/*/*"],
-      },
-    ],
   },
   overrides: [
     {

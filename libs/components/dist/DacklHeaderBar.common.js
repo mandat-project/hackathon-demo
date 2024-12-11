@@ -1,7 +1,7 @@
 /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 31:
+/***/ 191:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -15,7 +15,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#idps[data-v-0528ca97]{display:flex;flex-direction:column}.idp[data-v-0528ca97]{margin-top:5px;margin-bottom:5px}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#idps[data-v-5039e133]{display:flex;flex-direction:column}.idp[data-v-5039e133]{margin-top:5px;margin-bottom:5px}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -146,19 +146,19 @@ exports.A = (sfc, props) => {
 
 /***/ }),
 
-/***/ 143:
+/***/ 631:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(31);
+var content = __webpack_require__(191);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("4b2b213e", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("2efbdc78", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -530,7 +530,7 @@ if (typeof window !== 'undefined') {
 
 ;// CONCATENATED MODULE: external "vue"
 var external_vue_namespaceObject = require("vue");
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=template&id=d1918b66&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=template&id=3c53c4c9&ts=true
 
 const _hoisted_1 = ["src", "alt"];
 const _hoisted_2 = {
@@ -607,7 +607,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=d1918b66&ts=true
+;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=3c53c4c9&ts=true
 
 ;// CONCATENATED MODULE: ../composables/dist/esm/src/useCache.js
 const cache = {};
@@ -3525,10 +3525,10 @@ var BadgeDirective = BaseBadgeDirective.extend('badge', {
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=0528ca97&scoped=true&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=5039e133&scoped=true&ts=true
 
-const _withScopeId = n => ((0,external_vue_namespaceObject.pushScopeId)("data-v-0528ca97"), n = n(), (0,external_vue_namespaceObject.popScopeId)(), n);
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("svg", {
+const _withScopeId = n => ((0,external_vue_namespaceObject.pushScopeId)("data-v-5039e133"), n = n(), (0,external_vue_namespaceObject.popScopeId)(), n);
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -3554,10 +3554,10 @@ const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1 = /
         d: "M8 7c0-1.74 1.253-2 2-2 .969 0 2 .701 2 2 0 .723-.602 3-2 3-1.652 0-2-2.507-2-3Zm3.944 6H8.056C6.222 13 5 14 5 16v.235A7.954 7.954 0 0 0 10 18a7.954 7.954 0 0 0 5-1.765V16c0-2-1.222-3-3.056-3Z"
     })
 ], -1));
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_2 = { id: "idps" };
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_3 = { class: "idp p-inputgroup" };
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_4 = { class: "flex justify-content-between my-4" };
-function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_2 = { id: "idps" };
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_3 = { class: "idp p-inputgroup" };
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_4 = { class: "flex justify-content-between my-4" };
+function LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Button = (0,external_vue_namespaceObject.resolveComponent)("Button");
     const _component_InputText = (0,external_vue_namespaceObject.resolveComponent)("InputText");
     const _component_Dialog = (0,external_vue_namespaceObject.resolveComponent)("Dialog");
@@ -3569,7 +3569,7 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
             (0,external_vue_namespaceObject.renderSlot)(_ctx.$slots, "default", {}, () => [
                 (0,external_vue_namespaceObject.createVNode)(_component_Button, { class: "p-button-text p-button-rounded" }, {
                     default: (0,external_vue_namespaceObject.withCtx)(() => [
-                        LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1
+                        LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_1
                     ]),
                     _: 1
                 })
@@ -3583,8 +3583,8 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
             draggable: false
         }, {
             default: (0,external_vue_namespaceObject.withCtx)(() => [
-                (0,external_vue_namespaceObject.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_2, [
-                    (0,external_vue_namespaceObject.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_3, [
+                (0,external_vue_namespaceObject.createElementVNode)("div", LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_2, [
+                    (0,external_vue_namespaceObject.createElementVNode)("div", LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_3, [
                         (0,external_vue_namespaceObject.createVNode)(_component_InputText, {
                             placeholder: "https://your.idp",
                             type: "text",
@@ -3673,7 +3673,7 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
                         _: 1
                     })
                 ]),
-                (0,external_vue_namespaceObject.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_4, [
+                (0,external_vue_namespaceObject.createElementVNode)("div", LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_4, [
                     (0,external_vue_namespaceObject.createVNode)(_component_Button, {
                         label: "Get a Pod!",
                         severity: "secondary",
@@ -3693,7 +3693,7 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=template&id=0528ca97&scoped=true&ts=true
+;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=template&id=5039e133&scoped=true&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=script&lang=ts
 
@@ -3717,9 +3717,9 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
 
 ;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-12.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=style&index=0&id=0528ca97&scoped=true&lang=css
-var LoginButtonvue_type_style_index_0_id_0528ca97_scoped_true_lang_css = __webpack_require__(143);
-;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=style&index=0&id=0528ca97&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-12.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=style&index=0&id=5039e133&scoped=true&lang=css
+var LoginButtonvue_type_style_index_0_id_5039e133_scoped_true_lang_css = __webpack_require__(631);
+;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=style&index=0&id=5039e133&scoped=true&lang=css
 
 // EXTERNAL MODULE: ../../node_modules/vue-loader/dist/exportHelper.js
 var exportHelper = __webpack_require__(433);
@@ -3731,12 +3731,12 @@ var exportHelper = __webpack_require__(433);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(LoginButtonvue_type_script_lang_ts, [['render',LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render],['__scopeId',"data-v-0528ca97"]])
+const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(LoginButtonvue_type_script_lang_ts, [['render',LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_render],['__scopeId',"data-v-5039e133"]])
 
 /* harmony default export */ var LoginButton = (__exports__);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=9263962a&ts=true
 
-const LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1 = /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("svg", {
+const LogoutButtonvue_type_template_id_9263962a_ts_true_hoisted_1 = /*#__PURE__*/ (0,external_vue_namespaceObject.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -3758,7 +3758,7 @@ const LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1 = /*#__PURE__*
         d: "M2 3V1H1v18h1V3Z"
     })
 ], -1);
-function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+function LogoutButtonvue_type_template_id_9263962a_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Button = (0,external_vue_namespaceObject.resolveComponent)("Button");
     return ((0,external_vue_namespaceObject.openBlock)(), (0,external_vue_namespaceObject.createElementBlock)("div", {
         class: "logout-button",
@@ -3767,7 +3767,7 @@ function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, 
         (0,external_vue_namespaceObject.renderSlot)(_ctx.$slots, "default", {}, () => [
             (0,external_vue_namespaceObject.createVNode)(_component_Button, { class: "p-button-text p-button-rounded ml-1" }, {
                 default: (0,external_vue_namespaceObject.withCtx)(() => [
-                    LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1
+                    LogoutButtonvue_type_template_id_9263962a_ts_true_hoisted_1
                 ]),
                 _: 1
             })
@@ -3775,7 +3775,7 @@ function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, 
     ]));
 }
 
-;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
+;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=9263962a&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=script&lang=ts
 
@@ -3796,7 +3796,7 @@ function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, 
 
 
 ;
-const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(LogoutButtonvue_type_script_lang_ts, [['render',LogoutButtonvue_type_template_id_52f3a64f_ts_true_render]])
+const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(LogoutButtonvue_type_script_lang_ts, [['render',LogoutButtonvue_type_template_id_9263962a_ts_true_render]])
 
 /* harmony default export */ var LogoutButton = (LogoutButton_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=script&lang=ts

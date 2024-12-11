@@ -23,7 +23,12 @@
     "ts-jest": "^29.0.0"
   },
   "dependencies": {
-    "github-fork-ribbon-css": "^0.2.3",
-    "hackathon-demo": "github:mandat-project/hackathon-demo#market"
+    "@datev-research/mandat-shared-components": "^1.0.0",
+    "@datev-research/mandat-shared-composables": "^1.0.0",
+    "@datev-research/mandat-shared-utils": "^1.0.0",
+    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
+    "@datev-research/mandat-shared-theme": "^1.0.0",
+    "github-fork-ribbon-css": "^0.2.3"
   }
 }

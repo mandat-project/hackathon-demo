@@ -1,6 +1,6 @@
 import CreateDemand from "@/views/CreateDemand.vue";
 import Demands from "@/views/Demands.vue";
-import {AccessRequestCallback} from "hackathon-demo/libs/components";
+import {AccessRequestCallback} from "@datev-research/mandat-shared-components";
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import onResult from "./accessRequestHandledCallback";
 

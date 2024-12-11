@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {useSolidSession} from "hackathon-demo/libs/composables";
+import {useSolidSession} from "@datev-research/mandat-shared-composables";
 import router from "../router";
 import {toRefs} from "vue";
-import {LDNs} from "hackathon-demo/libs/components";
+import {LDNs} from "@datev-research/mandat-shared-components";
 
 const {sessionInfo} = useSolidSession();
 const {isLoggedIn} = toRefs(sessionInfo);

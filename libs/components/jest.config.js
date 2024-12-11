@@ -11,7 +11,6 @@ module.exports = {
   moduleFileExtensions: ["js", "ts", "vue"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
-    "^@shared/(.*)$": "<rootDir>/../../libs/$1",
   },
   coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
   coverageReporters: ["text", "json-summary"],

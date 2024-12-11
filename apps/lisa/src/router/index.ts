@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import Home from "@/views/Home.vue";
 import Inbox from "@/views/Inbox.vue";
-import { AccessRequestCallback } from "hackathon-demo/libs/components";
+import { AccessRequestCallback } from "@datev-research/mandat-shared-components";
 import onResult from "./accessRequestHandledCallback";
 
 const routes: Array<RouteRecordRaw> = [

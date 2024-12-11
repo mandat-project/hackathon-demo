@@ -126,20 +126,20 @@
 
 <script setup lang="ts">
 import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
-import { useSolidSession } from "hackathon-demo/libs/composables";
+import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import {
+  AUTH,
+  createResource,
+  FOAF,
+  GDPRP,
+  getLocationHeader,
   getResource,
+  INTEROP,
   parseToN3,
   RDF,
-  INTEROP,
-  XSD,
-  GDPRP,
-  createResource,
-  AUTH,
-  getLocationHeader,
-  FOAF,
   RDFS,
-} from "hackathon-demo/libs/solid";
+  XSD,
+} from "@datev-research/mandat-shared-solid-requests";
 import { Store } from "n3";
 import { useToast } from "primevue/usetoast";
 import { computed, reactive, ref } from "vue";

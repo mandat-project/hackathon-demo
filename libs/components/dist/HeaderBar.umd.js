@@ -11,7 +11,7 @@
 return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 542:
+/***/ 313:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25,14 +25,14 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".header[data-v-27a60750]{background:linear-gradient(90deg,#195b78,#287f8f);padding:1.5rem;position:fixed;top:0;right:0;left:0;border:0;z-index:2}.nav-button[data-v-27a60750]{background-color:rgba(65,132,153,.2);color:rgba(0,0,0,.9);border-radius:7px;font-weight:600;line-height:1.5rem;padding:.7rem;margin:-.3rem}.p-toolbar-group-left span[data-v-27a60750]{margin-left:.5rem;max-width:59.5vw;overflow:hidden;text-overflow:ellipsis}.p-toolbar-group-left .p-avatar[data-v-27a60750]{width:2rem;height:2rem}.p-toolbar-group-left a[data-v-27a60750]{color:inherit;text-decoration:inherit}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".header[data-v-55f62584]{background:linear-gradient(90deg,#195b78,#287f8f);padding:1.5rem;position:fixed;top:0;right:0;left:0;border:0;z-index:2}.nav-button[data-v-55f62584]{background-color:rgba(65,132,153,.2);color:rgba(0,0,0,.9);border-radius:7px;font-weight:600;line-height:1.5rem;padding:.7rem;margin:-.3rem}.p-toolbar-group-left span[data-v-55f62584]{margin-left:.5rem;max-width:59.5vw;overflow:hidden;text-overflow:ellipsis}.p-toolbar-group-left .p-avatar[data-v-55f62584]{width:2rem;height:2rem}.p-toolbar-group-left a[data-v-55f62584]{color:inherit;text-decoration:inherit}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
 
 /***/ }),
 
-/***/ 574:
+/***/ 174:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46,7 +46,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#idps[data-v-0528ca97]{display:flex;flex-direction:column}.idp[data-v-0528ca97]{margin-top:5px;margin-bottom:5px}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#idps[data-v-5039e133]{display:flex;flex-direction:column}.idp[data-v-5039e133]{margin-top:5px;margin-bottom:5px}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -177,35 +177,35 @@ exports.A = (sfc, props) => {
 
 /***/ }),
 
-/***/ 763:
+/***/ 92:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(542);
+var content = __webpack_require__(313);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("5853b2e0", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("089906ed", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
-/***/ 995:
+/***/ 947:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(574);
+var content = __webpack_require__(174);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("95ef1d02", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("ce4da68e", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -609,9 +609,9 @@ if (typeof window !== 'undefined') {
 
 // EXTERNAL MODULE: external "vue"
 var external_vue_ = __webpack_require__(380);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/HeaderBar.vue?vue&type=template&id=27a60750&scoped=true&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/HeaderBar.vue?vue&type=template&id=55f62584&scoped=true&ts=true
 
-const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-27a60750"), n = n(), (0,external_vue_.popScopeId)(), n);
+const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-55f62584"), n = n(), (0,external_vue_.popScopeId)(), n);
 const _hoisted_1 = { class: "header" };
 const _hoisted_2 = { class: "flex align-items-center" };
 const _hoisted_3 = ["src"];
@@ -780,7 +780,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/HeaderBar.vue?vue&type=template&id=27a60750&scoped=true&ts=true
+;// CONCATENATED MODULE: ./src/HeaderBar.vue?vue&type=template&id=55f62584&scoped=true&ts=true
 
 ;// CONCATENATED MODULE: ../composables/dist/esm/src/useCache.js
 const cache = {};
@@ -1928,10 +1928,10 @@ const useIsLoggedIn = () => {
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=0528ca97&scoped=true&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=5039e133&scoped=true&ts=true
 
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-0528ca97"), n = n(), (0,external_vue_.popScopeId)(), n);
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-5039e133"), n = n(), (0,external_vue_.popScopeId)(), n);
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -1957,10 +1957,10 @@ const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1 = /
         d: "M8 7c0-1.74 1.253-2 2-2 .969 0 2 .701 2 2 0 .723-.602 3-2 3-1.652 0-2-2.507-2-3Zm3.944 6H8.056C6.222 13 5 14 5 16v.235A7.954 7.954 0 0 0 10 18a7.954 7.954 0 0 0 5-1.765V16c0-2-1.222-3-3.056-3Z"
     })
 ], -1));
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_2 = { id: "idps" };
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_3 = { class: "idp p-inputgroup" };
-const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_4 = { class: "flex justify-content-between my-4" };
-function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_2 = { id: "idps" };
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_3 = { class: "idp p-inputgroup" };
+const LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_4 = { class: "flex justify-content-between my-4" };
+function LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Button = (0,external_vue_.resolveComponent)("Button");
     const _component_InputText = (0,external_vue_.resolveComponent)("InputText");
     const _component_Dialog = (0,external_vue_.resolveComponent)("Dialog");
@@ -1972,7 +1972,7 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
             (0,external_vue_.renderSlot)(_ctx.$slots, "default", {}, () => [
                 (0,external_vue_.createVNode)(_component_Button, { class: "p-button-text p-button-rounded" }, {
                     default: (0,external_vue_.withCtx)(() => [
-                        LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1
+                        LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_1
                     ]),
                     _: 1
                 })
@@ -1986,8 +1986,8 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
             draggable: false
         }, {
             default: (0,external_vue_.withCtx)(() => [
-                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_2, [
-                    (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_3, [
+                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_2, [
+                    (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_3, [
                         (0,external_vue_.createVNode)(_component_InputText, {
                             placeholder: "https://your.idp",
                             type: "text",
@@ -2076,7 +2076,7 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
                         _: 1
                     })
                 ]),
-                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_4, [
+                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_hoisted_4, [
                     (0,external_vue_.createVNode)(_component_Button, {
                         label: "Get a Pod!",
                         severity: "secondary",
@@ -2096,7 +2096,7 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=template&id=0528ca97&scoped=true&ts=true
+;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=template&id=5039e133&scoped=true&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=script&lang=ts
 
@@ -2120,9 +2120,9 @@ function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ct
 
 ;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=style&index=0&id=0528ca97&scoped=true&lang=css
-var LoginButtonvue_type_style_index_0_id_0528ca97_scoped_true_lang_css = __webpack_require__(995);
-;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=style&index=0&id=0528ca97&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=style&index=0&id=5039e133&scoped=true&lang=css
+var LoginButtonvue_type_style_index_0_id_5039e133_scoped_true_lang_css = __webpack_require__(947);
+;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=style&index=0&id=5039e133&scoped=true&lang=css
 
 // EXTERNAL MODULE: ../../node_modules/vue-loader/dist/exportHelper.js
 var exportHelper = __webpack_require__(433);
@@ -2134,12 +2134,12 @@ var exportHelper = __webpack_require__(433);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(LoginButtonvue_type_script_lang_ts, [['render',LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render],['__scopeId',"data-v-0528ca97"]])
+const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(LoginButtonvue_type_script_lang_ts, [['render',LoginButtonvue_type_template_id_5039e133_scoped_true_ts_true_render],['__scopeId',"data-v-5039e133"]])
 
 /* harmony default export */ var LoginButton = (__exports__);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=9263962a&ts=true
 
-const LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
+const LogoutButtonvue_type_template_id_9263962a_ts_true_hoisted_1 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -2161,7 +2161,7 @@ const LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1 = /*#__PURE__*
         d: "M2 3V1H1v18h1V3Z"
     })
 ], -1);
-function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+function LogoutButtonvue_type_template_id_9263962a_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Button = (0,external_vue_.resolveComponent)("Button");
     return ((0,external_vue_.openBlock)(), (0,external_vue_.createElementBlock)("div", {
         class: "logout-button",
@@ -2170,7 +2170,7 @@ function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, 
         (0,external_vue_.renderSlot)(_ctx.$slots, "default", {}, () => [
             (0,external_vue_.createVNode)(_component_Button, { class: "p-button-text p-button-rounded ml-1" }, {
                 default: (0,external_vue_.withCtx)(() => [
-                    LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1
+                    LogoutButtonvue_type_template_id_9263962a_ts_true_hoisted_1
                 ]),
                 _: 1
             })
@@ -2178,7 +2178,7 @@ function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, 
     ]));
 }
 
-;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
+;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=9263962a&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=script&lang=ts
 
@@ -2199,7 +2199,7 @@ function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, 
 
 
 ;
-const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(LogoutButtonvue_type_script_lang_ts, [['render',LogoutButtonvue_type_template_id_52f3a64f_ts_true_render]])
+const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(LogoutButtonvue_type_script_lang_ts, [['render',LogoutButtonvue_type_template_id_9263962a_ts_true_render]])
 
 /* harmony default export */ var LogoutButton = (LogoutButton_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/primevue/usetoast/usetoast.esm.js
@@ -4056,9 +4056,9 @@ var BadgeDirective = BaseBadgeDirective.extend('badge', {
 
 ;// CONCATENATED MODULE: ./src/HeaderBar.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/HeaderBar.vue?vue&type=style&index=0&id=27a60750&scoped=true&lang=css
-var HeaderBarvue_type_style_index_0_id_27a60750_scoped_true_lang_css = __webpack_require__(763);
-;// CONCATENATED MODULE: ./src/HeaderBar.vue?vue&type=style&index=0&id=27a60750&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/HeaderBar.vue?vue&type=style&index=0&id=55f62584&scoped=true&lang=css
+var HeaderBarvue_type_style_index_0_id_55f62584_scoped_true_lang_css = __webpack_require__(92);
+;// CONCATENATED MODULE: ./src/HeaderBar.vue?vue&type=style&index=0&id=55f62584&scoped=true&lang=css
 
 ;// CONCATENATED MODULE: ./src/HeaderBar.vue
 
@@ -4068,7 +4068,7 @@ var HeaderBarvue_type_style_index_0_id_27a60750_scoped_true_lang_css = __webpack
 ;
 
 
-const HeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(HeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-27a60750"]])
+const HeaderBar_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(HeaderBarvue_type_script_lang_ts, [['render',render],['__scopeId',"data-v-55f62584"]])
 
 /* harmony default export */ var HeaderBar = (HeaderBar_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/entry-lib.js

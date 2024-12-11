@@ -56,12 +56,13 @@
 </style>
 
 <script setup lang="ts">
+import {getDataRegistrationContainers} from "@datev-research/mandat-shared-solid-interop";
+import {getResource, LDP, parseToN3} from "@datev-research/mandat-shared-solid-requests";
 import {useToast} from "primevue/usetoast";
-import {useSolidProfile, useSolidSession} from "hackathon-demo/libs/composables";
-import {getDataRegistrationContainers, getResource, LDP, parseToN3} from "hackathon-demo/libs/solid";
+import {useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import {computed, ref, watch} from "vue";
 import DemandProcessor from "../components/DemandProcessor.vue";
-import {TabItemType, TabList} from "hackathon-demo/libs/components";
+import {TabItemType, TabList} from "@datev-research/mandat-shared-components";
 import DemandSkeleton from "@/components/DemandSkeleton.vue";
 import {TAB_STATE} from "@/enums/tabsState";
 import NoDataFound from "@/components/NoDataFound.vue";

@@ -1,4 +1,4 @@
-import { useCache } from "hackathon-demo/libs/composables";
+import {useCache} from "@datev-research/mandat-shared-composables";
 import router from ".";
 
 export default function onResult(
