@@ -6275,7 +6275,7 @@
     border-radius: 0.3125rem;
   }
   .p-card .p-card-body {
-    padding: 1rem;
+    padding: 1.5rem;
   }
   .p-card .p-card-title {
     font-size: 1.5rem;
@@ -10734,6 +10734,10 @@ input.p-inputtext, .control-shadow {
   border: 0 none;
   border-radius: 4px;
   box-shadow: 0px 1px 0px 0px rgba(3, 59, 74, 0.46), 0px 0px 2px 0px rgba(44, 51, 53, 0.4), 0px 2px 5px 0px rgba(44, 51, 53, 0.12);
+}
+
+.bg-gradient-blue {
+  background: linear-gradient(to right, #195B78, #287F8F);
 }
 
 /*# sourceMappingURL=theme.css.map */
