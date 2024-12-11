@@ -7,7 +7,6 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "lint": "lerna run lint",
-    "postinstall": "lerna run postinstall",
     "auth:build": "lerna run build --scope @apps/auth",
     "auth:lint": "lerna run lint --scope @apps/auth",
     "auth:serve": "lerna run serve --scope @apps/auth",
