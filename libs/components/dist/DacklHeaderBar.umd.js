@@ -1,17 +1,17 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("vue"), require("n3"), require("axios"), require("jose"));
+		module.exports = factory(require("vue"), require("axios"), require("n3"), require("jose"));
 	else if(typeof define === 'function' && define.amd)
-		define(["vue", "n3", "axios", "jose"], factory);
+		define(["vue", "axios", "n3", "jose"], factory);
 	else if(typeof exports === 'object')
-		exports["DacklHeaderBar"] = factory(require("vue"), require("n3"), require("axios"), require("jose"));
+		exports["DacklHeaderBar"] = factory(require("vue"), require("axios"), require("n3"), require("jose"));
 	else
-		root["DacklHeaderBar"] = factory(root["vue"], root["n3"], root["axios"], root["jose"]);
-})((typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__380__, __WEBPACK_EXTERNAL_MODULE__907__, __WEBPACK_EXTERNAL_MODULE__742__, __WEBPACK_EXTERNAL_MODULE__603__) {
+		root["DacklHeaderBar"] = factory(root["vue"], root["axios"], root["n3"], root["jose"]);
+})((typeof self !== 'undefined' ? self : this), function(__WEBPACK_EXTERNAL_MODULE__380__, __WEBPACK_EXTERNAL_MODULE__742__, __WEBPACK_EXTERNAL_MODULE__907__, __WEBPACK_EXTERNAL_MODULE__603__) {
 return /******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 166:
+/***/ 574:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25,7 +25,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#idps[data-v-b7d0728a]{display:flex;flex-direction:column}.idp[data-v-b7d0728a]{margin-top:5px;margin-bottom:5px}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#idps[data-v-0528ca97]{display:flex;flex-direction:column}.idp[data-v-0528ca97]{margin-top:5px;margin-bottom:5px}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -156,19 +156,19 @@ exports.A = (sfc, props) => {
 
 /***/ }),
 
-/***/ 984:
+/***/ 995:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(166);
+var content = __webpack_require__(574);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("23ff7d3e", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("95ef1d02", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -572,7 +572,7 @@ if (typeof window !== 'undefined') {
 
 // EXTERNAL MODULE: external "vue"
 var external_vue_ = __webpack_require__(380);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=template&id=89e3dede&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=template&id=d1918b66&ts=true
 
 const _hoisted_1 = ["src", "alt"];
 const _hoisted_2 = {
@@ -649,13 +649,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=89e3dede&ts=true
+;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=d1918b66&ts=true
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useCache.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useCache.js
 const cache = {};
 const useCache = () => cache;
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerNotifications.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useServiceWorkerNotifications.js
 
 const hasActivePush = (0,external_vue_.ref)(false);
 /** ask the user for permission to display notifications */
@@ -728,7 +728,7 @@ const unsubscribeFromPush = async () => {
     hasActivePush.value = false;
     return sub.toJSON();
 };
-const useServiceWorkerNotifications = () => {
+const useServiceWorkerNotifications_useServiceWorkerNotifications = () => {
     return {
         askForNotificationPermission,
         subscribeToPush,
@@ -737,7 +737,7 @@ const useServiceWorkerNotifications = () => {
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useServiceWorkerUpdate.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useServiceWorkerUpdate.js
 
 const hasUpdatedAvailable = (0,external_vue_.ref)(false);
 let registration;
@@ -780,9 +780,11 @@ const useServiceWorkerUpdate = () => {
     };
 };
 
+// EXTERNAL MODULE: external "axios"
+var external_axios_ = __webpack_require__(742);
 // EXTERNAL MODULE: external "n3"
 var external_n3_ = __webpack_require__(907);
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/namespaces.js
+;// CONCATENATED MODULE: ../solid-requests/dist/esm/src/namespaces.js
 /**
  * Concat the RDF namespace identified by the prefix used as function name
  * with the RDF thing identifier as function parameter,
@@ -817,220 +819,16 @@ const SPACE = Namespace("http://www.w3.org/ns/pim/space#");
 const SVCS = Namespace("https://purl.org/solid-vc/credentialStatus#");
 const CREDIT = Namespace("http://example.org/vocab/datev/credit#");
 const SCHEMA = Namespace("http://schema.org/");
-const namespaces_INTEROP = Namespace("http://www.w3.org/ns/solid/interop#");
+const INTEROP = Namespace("http://www.w3.org/ns/solid/interop#");
 const SKOS = Namespace("http://www.w3.org/2004/02/skos/core#");
 const ORG = Namespace("http://www.w3.org/ns/org#");
 const MANDAT = Namespace("https://solid.aifb.kit.edu/vocab/mandat/");
 const AD = Namespace("https://www.example.org/advertisement/");
 const SHAPETREE = Namespace("https://solid.aifb.kit.edu/shapes/mandat/businessAssessment.tree#");
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/n3Extensions.js
-
-
-/**
- * Generate the canonical string form of a node.
- * @param term n3 term
- * @return string
- */
-function canonicaliseTerm(term) {
-    switch (term.termType) {
-        case "NamedNode":
-            return `<${term.value}>`;
-        case "BlankNode":
-            return `_:${term.value}`;
-        case "Literal":
-            return `"${term.value}"^^<${term.datatypeString}>`;
-        default: // e.g. SerialisedTerm
-            return term.value;
-    }
-}
-/**
- * From an array, remove all occurences of values that occur more than twice, e.g. [1,2,3,3] => [1,2]
- * @param arr
- * @returns
- */
-const _removeDoubles = (arr) => {
-    let arrVals = arr.map((term) => term.value);
-    arrVals = arrVals.filter((item) => arrVals.lastIndexOf(item) == arrVals.indexOf(item));
-    return arr.filter((term) => arrVals.includes(term.value));
-};
-/**
- * Find lists in an n3 store. Beginning by all rdf:nil, work upstream to retrieve all list items.
- * @param n3Store
- * @returns mapping { head of list : [items, correspondingQuads] }
- */
-const _findLists = (n3Store) => {
-    const listMapping = {};
-    const endOfLists = n3Store.getQuads(null, RDF("rest"), RDF("nil"), null);
-    endOfLists.forEach((quad) => {
-        let items = [];
-        let quads = [];
-        let itemQuads = [];
-        let prevQuads = [quad];
-        let currentBN = "";
-        while (prevQuads.length !== 0) {
-            quads = prevQuads.concat(quads);
-            const currentQuad = prevQuads[0];
-            currentBN = currentQuad.subject.value;
-            // get upstream list items
-            itemQuads = n3Store.getQuads(currentQuad.subject, RDF("first"), null, null);
-            quads = itemQuads.concat(quads);
-            items = itemQuads.map((quad) => quad.object).concat(items);
-            prevQuads = n3Store.getQuads(null, RDF("rest"), currentQuad.subject, null);
-            // end when no prior item
-        }
-        listMapping[`${currentBN}`] = [items, quads];
-    });
-    return listMapping;
-};
-const _serialiseList = (terms, listMapping, blankNodes, n3Store, n3Writer) => {
-    for (const [i, term] of terms.entries()) {
-        if (term.termType === "BlankNode") {
-            if (Object.keys(listMapping).includes(term.value)) { // list
-                const listTerms = listMapping[term.value][0];
-                console.log(listMapping);
-                const serialisation = ` ( ${_serialiseList(listTerms, listMapping, blankNodes, n3Store, n3Writer).map(canonicaliseTerm).join(" ")} ) `;
-                terms[i] = { id: serialisation, value: serialisation };
-            }
-            else { // blank node
-                if (blankNodes.includes(term)) {
-                    terms[i] = _serialiseBlankNode(term, blankNodes, listMapping, n3Store, n3Writer);
-                }
-            }
-        }
-    }
-    return terms;
-};
-const _serialiseBlankNode = (bn, blankNodes, listMapping, n3Store, n3Writer) => {
-    const bquads = n3Store.getQuads(bn, null, null, null);
-    const bquads_serial = bquads.map((bquad) => {
-        let obj = bquad.object;
-        if (obj.termType === "BlankNode") {
-            if (Object.keys(listMapping).includes(obj.value)) { // list
-                const listTerms = listMapping[obj.value][0];
-                const serialisation = ` ( ${_serialiseList(listTerms, listMapping, blankNodes, n3Store, n3Writer).map(canonicaliseTerm).join(" ")} ) `;
-                obj = { id: serialisation, value: serialisation };
-            }
-            else // blank node
-             if (blankNodes.includes(bn)) {
-                obj = _serialiseBlankNode(obj, blankNodes, listMapping, n3Store, n3Writer);
-            }
-        }
-        return new Quad(bquad.subject, bquad.predicate, obj, bquad.graph);
-    });
-    const battr = [];
-    bquads_serial.forEach(bquad => {
-        battr.push({ predicate: bquad.predicate, object: bquad.object });
-    });
-    n3Store.removeQuads(bquads);
-    return n3Writer.blank(battr);
-};
-/**
- * Prints the turtle rdf format.
- *
- * @param n3Store
- * @param n3Prefixes
- * @param baseIRI
- * @returns string
- */
-const toTTL = (n3Store, n3Prefixes, baseIRI) => {
-    n3Store = new Store(n3Store.getQuads(null, null, null, null));
-    let result = "";
-    const n3Writer = new Writer({
-        baseIRI: baseIRI,
-        prefixes: n3Prefixes,
-    });
-    // find lists
-    const listMapping = _findLists(n3Store);
-    Object.entries(listMapping).forEach(entry => {
-        // uniquely referenced list head
-        if (n3Store.countQuads(null, null, new BlankNode(entry[0]), null) !== 1) {
-            delete listMapping[entry[0]]; // remove non unique list, or  dangling list from mapping
-        }
-    });
-    // find blank nodes in lists
-    const visitedBlankNodes = [];
-    Object.entries(listMapping).forEach((entry) => {
-        n3Store.removeQuads(entry[1][1]); // remove quads since we will do manual serialisation
-        entry[1][0].forEach((term) => {
-            if (term.termType === "BlankNode")
-                visitedBlankNodes.push(term);
-        });
-    });
-    // find uniquely referenced blank nodes
-    let blankNodes = [];
-    n3Store.getObjects(null, null, null).forEach((obj) => {
-        if (obj.termType == "BlankNode") {
-            // if that is already visited during list search, we have a double.
-            if (!visitedBlankNodes.map((term) => term.value).includes(obj.value)) { // if not, unique?
-                if (n3Store.countQuads(null, null, obj, null) == 1) { // unique!
-                    blankNodes.push(obj);
-                }
-            }
-            else { // visited, add for later easy removal of doubles
-                visitedBlankNodes.push(obj);
-            }
-        }
-    });
-    // array of uniquely referenced blank nodes in graph
-    blankNodes = blankNodes.concat(_removeDoubles(visitedBlankNodes));
-    // serialise lists
-    const serialisedLists = {};
-    Object.entries(listMapping).forEach(entry => {
-        // uniquely referenced list head
-        serialisedLists[entry[0]] = _serialiseList(entry[1][0], listMapping, blankNodes, n3Store, n3Writer); // create list serialisation
-    });
-    // serialise blank nodes
-    const serialisedBlankNodes = {};
-    blankNodes.forEach(bn => {
-        serialisedBlankNodes[bn.value] = _serialiseBlankNode(bn, blankNodes, listMapping, n3Store, n3Writer);
-    });
-    // // write
-    n3Store.getQuads(null, null, null, null).forEach((quad) => {
-        if (quad.object.value in serialisedLists) {
-            n3Writer.addQuad(quad.subject, quad.predicate, n3Writer.list(serialisedLists[quad.object.value]));
-        }
-        else if (quad.object.value in serialisedBlankNodes) {
-            n3Writer.addQuad(quad.subject, quad.predicate, serialisedBlankNodes[quad.object.value]);
-        }
-        else {
-            n3Writer.addQuad(quad);
-        }
-    });
-    // n3Writer.addQuads(n3Store.getQuads(null, null, null, null))
-    n3Writer.end((error, text) => (result = text));
-    // return `# Parsed from underlying RDF graph.\n ${result}`;
-    return result;
-};
-/*
-  export function getListItems(n3Store, baseIRI) {
-    let node = n3Store
-      .getQuads(baseIRI, AS("items"), null, null)
-      .map((quad) => quad.object)[0];
-
-    let result = [];
-
-    while (node.value !== RDF("nil")) {
-      result.push(
-        n3Store
-          .getQuads(node, RDF("first"), null, null)
-          .map((quad) => quad.object)
-      );
-      node = n3Store
-        .getQuads(node, RDF("rest"), null, null)
-        .map((quad) => quad.object)[0];
-    }
-
-    return result.flat();
-  }
-
-  */
-
-// EXTERNAL MODULE: external "axios"
-var external_axios_ = __webpack_require__(742);
 // EXTERNAL MODULE: external "jose"
 var external_jose_ = __webpack_require__(603);
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestDynamicClientRegistration.js
+;// CONCATENATED MODULE: ../solid-oicd/dist/esm/src/solid-oidc-client-browser/requestDynamicClientRegistration.js
 
 /**
  * When the client does not have a webid profile document, use this.
@@ -1058,7 +856,7 @@ const requestDynamicClientRegistration = async (registration_endpoint, redirect_
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/requestAccessToken.js
+;// CONCATENATED MODULE: ../solid-oicd/dist/esm/src/solid-oidc-client-browser/requestAccessToken.js
 
 
 /**
@@ -1108,7 +906,7 @@ const requestAccessToken = async (authorization_code, pkce_code_verifier, redire
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.js
+;// CONCATENATED MODULE: ../solid-oicd/dist/esm/src/solid-oidc-client-browser/AuthorizationCodeGrantFlow.js
 
 
 
@@ -1240,7 +1038,7 @@ const onIncomingRedirect = async () => {
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/RefreshTokenGrant.js
+;// CONCATENATED MODULE: ../solid-oicd/dist/esm/src/solid-oidc-client-browser/RefreshTokenGrant.js
 
 
 const renewTokens = async () => {
@@ -1304,7 +1102,7 @@ const requestFreshTokens = async (refresh_token, client_id, client_secret, token
 };
 
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solid-oidc-client-browser/Session.js
+;// CONCATENATED MODULE: ../solid-oicd/dist/esm/src/solid-oidc-client-browser/Session.js
 
 
 
@@ -1392,7 +1190,10 @@ class Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/solidRequests.js
+;// CONCATENATED MODULE: ../solid-oicd/dist/esm/index.js
+
+
+;// CONCATENATED MODULE: ../solid-requests/dist/esm/src/solidRequests.js
 
 
 
@@ -1748,86 +1549,11 @@ async function getAclResourceUri(uri, session) {
     });
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/src/interopRequest.js
+;// CONCATENATED MODULE: ../solid-requests/dist/esm/index.js
 
 
 
-async function createResourceInAnyRegistrationOfShape(webId, shapeTreeUri, resourceBody, session) {
-    if (session === undefined)
-        session = new Session();
-    const offerContainerUris = (await getDataRegistrationContainers(webId, shapeTreeUri, session))[0];
-    return await createResource(offerContainerUris, resourceBody, session);
-}
-async function getDataRegistrationContainers(webId, shapeTreeUri, session) {
-    if (session === undefined)
-        session = new Session();
-    const registrySetUris = await getRegistrySet(webId, session);
-    const dataRegistryUris = [];
-    for (const registrySetUri of registrySetUris) {
-        dataRegistryUris.push(...(await getDataRegistry(registrySetUri, session)));
-    }
-    const dataRegistrationUris = [];
-    for (const dataRegistryUri of dataRegistryUris) {
-        dataRegistrationUris.push(...(await getDataRegistrations(dataRegistryUri, session)));
-    }
-    const dataRegistrationsOfShapeUris = [];
-    for (const dataRegistrationUri of dataRegistrationUris) {
-        const hasMatchingShape = await filterDataRegistrationUrisByShapeTreeUri(dataRegistrationUri, shapeTreeUri, session);
-        if (hasMatchingShape) {
-            dataRegistrationsOfShapeUris.push(dataRegistrationUri);
-        }
-    }
-    return dataRegistrationsOfShapeUris;
-}
-function getRegistrySet(webId, session) {
-    if (session === undefined)
-        session = new Session();
-    return getResourceAsStore(webId, session).then((store) => store
-        .getObjects(null, INTEROP("hasRegistrySet"), null)
-        .map((term) => term.value));
-}
-function getDataRegistry(registrySetUri, session) {
-    if (session === undefined)
-        session = new Session();
-    return getResourceAsStore(registrySetUri, session).then((store) => store
-        .getObjects(null, INTEROP("hasDataRegistry"), null)
-        .map((term) => term.value));
-}
-async function getDataRegistrations(dataRegistryUri, session) {
-    if (session === undefined)
-        session = new Session();
-    return getResourceAsStore(dataRegistryUri, session).then((store) => store
-        .getObjects(null, INTEROP("hasDataRegistration"), null)
-        .map((term) => term.value));
-}
-function getRegisteredShapeTree(dataRegistrationUri, session) {
-    if (session === undefined)
-        session = new Session();
-    return getResourceAsStore(dataRegistrationUri, session).then((store) => store.getObjects(null, INTEROP("registeredShapeTree"), null)[0].value);
-}
-async function filterDataRegistrationUrisByShapeTreeUri(dataRegistrationUri, shapeTreeUri, session) {
-    if (session === undefined)
-        session = new Session();
-    const dataRegistrationShapeTree = await getRegisteredShapeTree(dataRegistrationUri, session);
-    return dataRegistrationShapeTree === shapeTreeUri;
-}
-function getResourceAsStore(uri, session) {
-    if (session === undefined)
-        session = new Session();
-    return getResource(uri, session)
-        .then((resp) => resp.data)
-        .then((txt) => parseToN3(txt, uri))
-        .then((parsedN3) => parsedN3.store);
-}
-
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/solid/dist/esm/index.js
-
-
-
-
-
-
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/rdpCapableSession.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/rdpCapableSession.js
 
 class RdpCapableSession extends Session_Session {
     rdp_;
@@ -1862,10 +1588,10 @@ class RdpCapableSession extends Session_Session {
     }
 }
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidSession.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useSolidSession.js
 
 
-const session = (0,external_vue_.reactive)(new RdpCapableSession(""));
+let session;
 async function restoreSession() {
     await session.handleRedirectFromLogin();
 }
@@ -1881,18 +1607,19 @@ async function restoreSession() {
    ```
  */
 const useSolidSession_useSolidSession = () => {
+    session ??= (0,external_vue_.inject)('useSolidSession:RdpCapableSession', () => (0,external_vue_.reactive)(new RdpCapableSession("")), true);
     return {
         session,
         restoreSession,
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidProfile.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useSolidProfile.js
 
 
 
 
-const { session: useSolidProfile_session } = useSolidSession_useSolidSession();
+let useSolidProfile_session;
 const useSolidProfile_name = (0,external_vue_.ref)("");
 const img = (0,external_vue_.ref)("");
 const inbox = (0,external_vue_.ref)("");
@@ -1901,75 +1628,72 @@ const authAgent = (0,external_vue_.ref)("");
 const accessInbox = (0,external_vue_.ref)("");
 const memberOf = (0,external_vue_.ref)("");
 const hasOrgRDP = (0,external_vue_.ref)("");
-(0,external_vue_.watch)(() => useSolidProfile_session.webId, async () => {
-    const webId = useSolidProfile_session.webId;
-    let store = new external_n3_.Store();
-    if (useSolidProfile_session.webId !== undefined) {
-        store = await solidRequests_getResource(webId)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, webId))
-            .then((parsedN3) => parsedN3.store);
-    }
-    let query = store.getObjects(webId, VCARD("hasPhoto"), null);
-    img.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, VCARD("fn"), null);
-    useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_LDP("inbox"), null);
-    inbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, SPACE("storage"), null);
-    storage.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAuthorizationAgent"), null);
-    authAgent.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, namespaces_INTEROP("hasAccessInbox"), null);
-    accessInbox.value = query.length > 0 ? query[0].value : "";
-    query = store.getObjects(webId, ORG("memberOf"), null);
-    const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
-    if (uncheckedMemberOf !== "") {
-        let storeOrg = new external_n3_.Store();
-        storeOrg = await solidRequests_getResource(uncheckedMemberOf)
-            .then((resp) => resp.data)
-            .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
-            .then((parsedN3) => parsedN3.store);
-        const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null)
-            .length > 0;
-        if (isMember) {
-            memberOf.value = uncheckedMemberOf;
-            query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
-            hasOrgRDP.value = query.length > 0 ? query[0].value : "";
-            useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
-            // and also overwrite fields from org profile
-            query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
-            useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
-            query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
-            inbox.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
-            storage.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAuthorizationAgent"), null);
-            authAgent.value = query.length > 0 ? query[0].value : "";
-            query = storeOrg.getObjects(memberOf.value, namespaces_INTEROP("hasAccessInbox"), null);
-            accessInbox.value = query.length > 0 ? query[0].value : "";
-        }
-    }
-});
 const useSolidProfile_useSolidProfile = () => {
+    if (!useSolidProfile_session) {
+        const { session: sessionRef } = useSolidSession_useSolidSession();
+        useSolidProfile_session = sessionRef;
+    }
+    (0,external_vue_.watch)(() => useSolidProfile_session.webId, async () => {
+        const webId = useSolidProfile_session.webId;
+        let store = new external_n3_.Store();
+        if (useSolidProfile_session.webId !== undefined) {
+            store = await solidRequests_getResource(webId)
+                .then((resp) => resp.data)
+                .then((respText) => solidRequests_parseToN3(respText, webId))
+                .then((parsedN3) => parsedN3.store);
+        }
+        let query = store.getObjects(webId, VCARD("hasPhoto"), null);
+        img.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, VCARD("fn"), null);
+        useSolidProfile_name.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, namespaces_LDP("inbox"), null);
+        inbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, SPACE("storage"), null);
+        storage.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, INTEROP("hasAuthorizationAgent"), null);
+        authAgent.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, INTEROP("hasAccessInbox"), null);
+        accessInbox.value = query.length > 0 ? query[0].value : "";
+        query = store.getObjects(webId, ORG("memberOf"), null);
+        const uncheckedMemberOf = query.length > 0 ? query[0].value : "";
+        if (uncheckedMemberOf !== "") {
+            let storeOrg = new external_n3_.Store();
+            storeOrg = await solidRequests_getResource(uncheckedMemberOf)
+                .then((resp) => resp.data)
+                .then((respText) => solidRequests_parseToN3(respText, uncheckedMemberOf))
+                .then((parsedN3) => parsedN3.store);
+            const isMember = storeOrg.getQuads(uncheckedMemberOf, ORG("hasMember"), webId, null).length > 0;
+            if (isMember) {
+                memberOf.value = uncheckedMemberOf;
+                query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
+                hasOrgRDP.value = query.length > 0 ? query[0].value : "";
+                useSolidProfile_session.updateSessionWithRDP(hasOrgRDP.value);
+                // and also overwrite fields from org profile
+                query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
+                useSolidProfile_name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+                query = storeOrg.getObjects(memberOf.value, namespaces_LDP("inbox"), null);
+                inbox.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
+                storage.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, INTEROP("hasAuthorizationAgent"), null);
+                authAgent.value = query.length > 0 ? query[0].value : "";
+                query = storeOrg.getObjects(memberOf.value, INTEROP("hasAccessInbox"), null);
+                accessInbox.value = query.length > 0 ? query[0].value : "";
+            }
+        }
+    });
     return {
-        name: useSolidProfile_name,
-        img,
-        inbox,
-        storage,
-        authAgent,
-        accessInbox,
-        memberOf,
-        hasOrgRDP,
+        name: useSolidProfile_name, img, inbox, storage, authAgent, accessInbox, memberOf, hasOrgRDP,
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useSolidWebPush.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useSolidWebPush.js
 
 
 
-const { unsubscribeFromPush: useSolidWebPush_unsubscribeFromPush, subscribeToPush: useSolidWebPush_subscribeToPush } = useServiceWorkerNotifications();
-const { session: useSolidWebPush_session } = useSolidSession_useSolidSession();
+let useSolidWebPush_unsubscribeFromPush;
+let useSolidWebPush_subscribeToPush;
+let useSolidWebPush_session;
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
 // usually this should expect the resource to sub to, then check their .meta and so on...
@@ -2033,13 +1757,21 @@ const unsubscribeFromResource = async (uri) => {
     return createResource(inbox, solidWebPushUnSub, useSolidWebPush_session);
 };
 const useSolidWebPush = () => {
+    if (!useSolidWebPush_session) {
+        useSolidWebPush_session = useSolidSession().session;
+    }
+    if (!useSolidWebPush_unsubscribeFromPush && !useSolidWebPush_subscribeToPush) {
+        const { unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc } = useServiceWorkerNotifications();
+        useSolidWebPush_unsubscribeFromPush = unsubscribeFromPushFunc;
+        useSolidWebPush_subscribeToPush = subscribeToPushFunc;
+    }
     return {
         subscribeForResource,
         unsubscribeFromResource
     };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/src/useIsLoggedIn.js
+;// CONCATENATED MODULE: ../composables/dist/esm/src/useIsLoggedIn.js
 
 
 
@@ -2052,7 +1784,7 @@ const useIsLoggedIn = () => {
     return { isLoggedIn };
 };
 
-;// CONCATENATED MODULE: ../../node_modules/hackathon-demo/libs/composables/dist/esm/index.js
+;// CONCATENATED MODULE: ../composables/dist/esm/index.js
 
 
 
@@ -3835,10 +3567,10 @@ var BadgeDirective = BaseBadgeDirective.extend('badge', {
 
 
 
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=b7d0728a&scoped=true&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=template&id=0528ca97&scoped=true&ts=true
 
-const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-b7d0728a"), n = n(), (0,external_vue_.popScopeId)(), n);
-const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
+const _withScopeId = n => ((0,external_vue_.pushScopeId)("data-v-0528ca97"), n = n(), (0,external_vue_.popScopeId)(), n);
+const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1 = /*#__PURE__*/ _withScopeId(() => /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -3864,10 +3596,10 @@ const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_1 = /
         d: "M8 7c0-1.74 1.253-2 2-2 .969 0 2 .701 2 2 0 .723-.602 3-2 3-1.652 0-2-2.507-2-3Zm3.944 6H8.056C6.222 13 5 14 5 16v.235A7.954 7.954 0 0 0 10 18a7.954 7.954 0 0 0 5-1.765V16c0-2-1.222-3-3.056-3Z"
     })
 ], -1));
-const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_2 = { id: "idps" };
-const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_3 = { class: "idp p-inputgroup" };
-const LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_4 = { class: "flex justify-content-between my-4" };
-function LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_2 = { id: "idps" };
+const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_3 = { class: "idp p-inputgroup" };
+const LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_4 = { class: "flex justify-content-between my-4" };
+function LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Button = (0,external_vue_.resolveComponent)("Button");
     const _component_InputText = (0,external_vue_.resolveComponent)("InputText");
     const _component_Dialog = (0,external_vue_.resolveComponent)("Dialog");
@@ -3879,7 +3611,7 @@ function LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render(_ct
             (0,external_vue_.renderSlot)(_ctx.$slots, "default", {}, () => [
                 (0,external_vue_.createVNode)(_component_Button, { class: "p-button-text p-button-rounded" }, {
                     default: (0,external_vue_.withCtx)(() => [
-                        LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_1
+                        LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_1
                     ]),
                     _: 1
                 })
@@ -3893,8 +3625,8 @@ function LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render(_ct
             draggable: false
         }, {
             default: (0,external_vue_.withCtx)(() => [
-                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_2, [
-                    (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_3, [
+                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_2, [
+                    (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_3, [
                         (0,external_vue_.createVNode)(_component_InputText, {
                             placeholder: "https://your.idp",
                             type: "text",
@@ -3983,7 +3715,7 @@ function LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render(_ct
                         _: 1
                     })
                 ]),
-                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_hoisted_4, [
+                (0,external_vue_.createElementVNode)("div", LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_hoisted_4, [
                     (0,external_vue_.createVNode)(_component_Button, {
                         label: "Get a Pod!",
                         severity: "secondary",
@@ -4003,7 +3735,7 @@ function LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render(_ct
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=template&id=b7d0728a&scoped=true&ts=true
+;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=template&id=0528ca97&scoped=true&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=script&lang=ts
 
@@ -4027,9 +3759,9 @@ function LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render(_ct
 
 ;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=script&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=style&index=0&id=b7d0728a&scoped=true&lang=css
-var LoginButtonvue_type_style_index_0_id_b7d0728a_scoped_true_lang_css = __webpack_require__(984);
-;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=style&index=0&id=b7d0728a&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LoginButton.vue?vue&type=style&index=0&id=0528ca97&scoped=true&lang=css
+var LoginButtonvue_type_style_index_0_id_0528ca97_scoped_true_lang_css = __webpack_require__(995);
+;// CONCATENATED MODULE: ./src/LoginButton.vue?vue&type=style&index=0&id=0528ca97&scoped=true&lang=css
 
 // EXTERNAL MODULE: ../../node_modules/vue-loader/dist/exportHelper.js
 var exportHelper = __webpack_require__(433);
@@ -4041,12 +3773,12 @@ var exportHelper = __webpack_require__(433);
 ;
 
 
-const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(LoginButtonvue_type_script_lang_ts, [['render',LoginButtonvue_type_template_id_b7d0728a_scoped_true_ts_true_render],['__scopeId',"data-v-b7d0728a"]])
+const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(LoginButtonvue_type_script_lang_ts, [['render',LoginButtonvue_type_template_id_0528ca97_scoped_true_ts_true_render],['__scopeId',"data-v-0528ca97"]])
 
 /* harmony default export */ var LoginButton = (__exports__);
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=79d8ba55&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
 
-const LogoutButtonvue_type_template_id_79d8ba55_ts_true_hoisted_1 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
+const LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1 = /*#__PURE__*/ (0,external_vue_.createElementVNode)("svg", {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",
     height: "20",
@@ -4068,7 +3800,7 @@ const LogoutButtonvue_type_template_id_79d8ba55_ts_true_hoisted_1 = /*#__PURE__*
         d: "M2 3V1H1v18h1V3Z"
     })
 ], -1);
-function LogoutButtonvue_type_template_id_79d8ba55_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
+function LogoutButtonvue_type_template_id_52f3a64f_ts_true_render(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_Button = (0,external_vue_.resolveComponent)("Button");
     return ((0,external_vue_.openBlock)(), (0,external_vue_.createElementBlock)("div", {
         class: "logout-button",
@@ -4077,7 +3809,7 @@ function LogoutButtonvue_type_template_id_79d8ba55_ts_true_render(_ctx, _cache, 
         (0,external_vue_.renderSlot)(_ctx.$slots, "default", {}, () => [
             (0,external_vue_.createVNode)(_component_Button, { class: "p-button-text p-button-rounded ml-1" }, {
                 default: (0,external_vue_.withCtx)(() => [
-                    LogoutButtonvue_type_template_id_79d8ba55_ts_true_hoisted_1
+                    LogoutButtonvue_type_template_id_52f3a64f_ts_true_hoisted_1
                 ]),
                 _: 1
             })
@@ -4085,7 +3817,7 @@ function LogoutButtonvue_type_template_id_79d8ba55_ts_true_render(_ctx, _cache, 
     ]));
 }
 
-;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=79d8ba55&ts=true
+;// CONCATENATED MODULE: ./src/LogoutButton.vue?vue&type=template&id=52f3a64f&ts=true
 
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/LogoutButton.vue?vue&type=script&lang=ts
 
@@ -4106,7 +3838,7 @@ function LogoutButtonvue_type_template_id_79d8ba55_ts_true_render(_ctx, _cache, 
 
 
 ;
-const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(LogoutButtonvue_type_script_lang_ts, [['render',LogoutButtonvue_type_template_id_79d8ba55_ts_true_render]])
+const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(LogoutButtonvue_type_script_lang_ts, [['render',LogoutButtonvue_type_template_id_52f3a64f_ts_true_render]])
 
 /* harmony default export */ var LogoutButton = (LogoutButton_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=script&lang=ts
@@ -4139,7 +3871,7 @@ const LogoutButton_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(Logou
             return (props.backgroundColor ||
                 "linear-gradient(90deg, #195B78 0%, #287F8F 100%)"); // Default color if bgColor is not provided
         });
-        const { hasActivePush } = useServiceWorkerNotifications();
+        const { hasActivePush } = useServiceWorkerNotifications_useServiceWorkerNotifications();
         const { name, img } = useSolidProfile_useSolidProfile();
         return { img, hasActivePush, name, computedBgColor };
     },

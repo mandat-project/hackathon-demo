@@ -1,4 +1,4 @@
-import {useCache} from "hackathon-demo/libs/composables";
+import {useCache} from "./useCache";
 
 describe('useCache', () => {
     it('should be defined', () => {

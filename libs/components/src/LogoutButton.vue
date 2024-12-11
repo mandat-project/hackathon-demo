@@ -26,8 +26,8 @@
 </template>
 
 <script lang="ts">
+import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import { defineComponent } from "vue";
-import { useSolidSession } from "hackathon-demo/libs/composables";
 
 export default defineComponent({
   name: "LoginButton",

@@ -3,7 +3,7 @@ import { ref, watch } from "vue";
 import { useServiceWorkerNotifications } from "./useServiceWorkerNotifications";
 import { useSolidSession } from "./useSolidSession";
 import { useSolidProfile } from "./useSolidProfile";
-import { getContainerItems } from "hackathon-demo/libs/solid";
+import { getContainerItems } from "@datev-research/mandat-shared-solid-oidc";
 
 let socket: WebSocket;
 const { hasActivePush } = useServiceWorkerNotifications();

@@ -1,6 +1,6 @@
 {
-  "name": "@shared/components",
-  "version": "0.1.0",
+  "name": "@datev-research/mandat-shared-components",
+  "version": "1.0.0",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "run-p --max-parallel 5 build:*",
@@ -141,7 +141,7 @@
   ],
   "main": "index.ts",
   "dependencies": {
-    "hackathon-demo": "github:mandat-project/hackathon-demo#market",
+    "@datev-research/mandat-shared-composables": "^1.0.0",
     "vue": "^3.2.13"
   },
   "devDependencies": {

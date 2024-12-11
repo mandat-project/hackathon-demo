@@ -17,6 +17,11 @@
     "max:build": "lerna run build --scope @apps/max",
     "max:lint": "lerna run lint --scope @apps/max",
     "max:serve": "lerna run serve --scope @apps/max",
+
+    "libs:build": "lerna run build --scope \"@datev-research/*\"",
+    "libs:lint": "lerna run lint --scope \"@datev-research/*\"",
+    "libs:test": "lerna run test --scope \"@datev-research/*\"",
+
     "prepare": "husky",
     "start": "npm run serve",
     "tom:build": "lerna run build --scope @apps/tom",

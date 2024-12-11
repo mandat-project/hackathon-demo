@@ -15,7 +15,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-// import {useSolidInbox} from "hackathon-demo/libs/composables";
 
 export default defineComponent({
   name: "LDNs",

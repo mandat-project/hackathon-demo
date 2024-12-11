@@ -1,4 +1,13 @@
-import {getResource, INTEROP, LDP, MANDAT, ORG, parseToN3, SPACE, VCARD,} from "hackathon-demo/libs/solid";
+import {
+    getResource,
+    INTEROP,
+    LDP,
+    MANDAT,
+    ORG,
+    parseToN3,
+    SPACE,
+    VCARD
+} from "@datev-research/mandat-shared-solid-requests";
 import {Store} from "n3";
 import {ref, watch} from "vue";
 import type {RdpCapableSession} from "./rdpCapableSession";

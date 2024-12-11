@@ -1,4 +1,4 @@
-import { Session } from "hackathon-demo/libs/solid";
+import { Session } from "@datev-research/mandat-shared-solid-oidc";
 export class RdpCapableSession extends Session {
     rdp_;
     constructor(rdp) {

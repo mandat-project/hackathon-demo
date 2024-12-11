@@ -1,14 +1,13 @@
 <script lang="ts">
-import { computed, defineComponent, ref, toRefs } from "vue";
-import LoginButton from "./LoginButton.vue";
-import LogoutButton from "./LogoutButton.vue";
 import {
   useServiceWorkerNotifications,
-  // useSolidInbox,
   useSolidProfile,
   useSolidSession,
   useSolidWebPush,
-} from "hackathon-demo/libs/composables";
+} from "@datev-research/mandat-shared-composables";
+import { computed, defineComponent, ref, toRefs } from "vue";
+import LoginButton from "./LoginButton.vue";
+import LogoutButton from "./LogoutButton.vue";
 import { useToast } from "primevue/usetoast";
 import BadgeDirective from "primevue/badgedirective";
 

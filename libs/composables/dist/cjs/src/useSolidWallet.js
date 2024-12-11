@@ -3,7 +3,7 @@
 import {ref, watch} from "vue";
 import {useSolidSession} from "./useSolidSession";
 import {useSolidProfile} from "./useSolidProfile";
-import {ACL, createContainer, FOAF, getContainerItems, getResource, putResource} from "hackathon-demo/libs/solid";
+import {ACL, createContainer, FOAF, getContainerItems, getResource, putResource} from "@datev-research/mandat-shared-solid-oidc";
 
 let socket: WebSocket;
 

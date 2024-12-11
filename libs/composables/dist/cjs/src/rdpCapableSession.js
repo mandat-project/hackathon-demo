@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RdpCapableSession = void 0;
-const solid_1 = require("hackathon-demo/libs/solid");
-class RdpCapableSession extends solid_1.Session {
+const mandat_shared_solid_oidc_1 = require("@datev-research/mandat-shared-solid-oidc");
+class RdpCapableSession extends mandat_shared_solid_oidc_1.Session {
     rdp_;
     constructor(rdp) {
         super();

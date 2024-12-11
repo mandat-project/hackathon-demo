@@ -1,31 +1,21 @@
-import {useSolidProfile} from "./useSolidProfile";
-import {useSolidSession} from "./useSolidSession";
+import {getDataRegistrationContainers} from "@datev-research/mandat-shared-solid-interop";
+import {Session} from "@datev-research/mandat-shared-solid-oidc";
 import {
     ACL,
-    AUTH,
-    createContainer,
-    createResource,
-    deleteResource,
+    AUTH, createContainer,
+    createResource, deleteResource,
     FOAF,
-    GDPRP,
-    getAclResourceUri,
-    getContainerItems,
-    getDataRegistrationContainers,
-    getLocationHeader,
-    getResource,
-    INTEROP,
-    LDP,
-    ParsedN3,
-    parseToN3,
-    patchResource,
-    putResource,
+    GDPRP, getAclResourceUri, getContainerItems,
+    getLocationHeader, getResource,
+    INTEROP, LDP, ParsedN3, parseToN3, patchResource, putResource,
     RDF,
-    RDFS,
-    Session,
-    SKOS,
+    RDFS, SKOS,
     XSD
-} from "hackathon-demo/libs/solid";
-import {wait} from "hackathon-demo/libs/utils";
+} from "@datev-research/mandat-shared-solid-requests";
+import {wait} from "@datev-research/mandat-shared-utils";
+import {useSolidProfile} from "./useSolidProfile";
+import {useSolidSession} from "./useSolidSession";
+
 import {DataFactory, NamedNode, Store, Writer} from "n3";
 import {computed, reactive, ref, watch} from "vue";
 

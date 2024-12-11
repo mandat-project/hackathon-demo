@@ -1,7 +1,8 @@
+import { getDataRegistrationContainers } from "@datev-research/mandat-shared-solid-interop";
+import { ACL, AUTH, createContainer, createResource, deleteResource, FOAF, GDPRP, getAclResourceUri, getContainerItems, getLocationHeader, getResource, INTEROP, LDP, parseToN3, patchResource, putResource, RDF, RDFS, SKOS, XSD } from "@datev-research/mandat-shared-solid-requests";
+import { wait } from "@datev-research/mandat-shared-utils";
 import { useSolidProfile } from "./useSolidProfile";
 import { useSolidSession } from "./useSolidSession";
-import { ACL, AUTH, createContainer, createResource, deleteResource, FOAF, GDPRP, getAclResourceUri, getContainerItems, getDataRegistrationContainers, getLocationHeader, getResource, INTEROP, LDP, parseToN3, patchResource, putResource, RDF, RDFS, SKOS, XSD } from "hackathon-demo/libs/solid";
-import { wait } from "hackathon-demo/libs/utils";
 import { DataFactory, NamedNode, Store, Writer } from "n3";
 import { computed, reactive, ref, watch } from "vue";
 const inspectedAccessRequestURI = ref(undefined);

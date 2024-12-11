@@ -122,7 +122,7 @@
 </template>
 
 <script lang="ts">
-import { useSolidSession } from "hackathon-demo/libs/composables";
+import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({

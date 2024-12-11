@@ -1,5 +1,5 @@
 {
-  "name": "@shared/theme",
+  "name": "@datev-research/mandat-shared-theme",
   "version": "1.0.0",
   "scripts": {
     "build": "sass --update src/datev-theme/theme.scss:dist/theme.css"

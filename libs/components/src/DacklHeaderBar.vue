@@ -2,7 +2,7 @@
 import {
   useServiceWorkerNotifications,
   useSolidProfile,
-} from "hackathon-demo/libs/composables";
+} from "@datev-research/mandat-shared-composables";
 import BadgeDirective from "primevue/badgedirective";
 import { computed, defineComponent } from "vue";
 import LoginButton from "./LoginButton.vue";

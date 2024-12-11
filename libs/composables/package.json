@@ -1,5 +1,5 @@
 {
-  "name": "@shared/composables",
+  "name": "@datev-research/mandat-shared-composables",
   "version": "1.0.0",
   "scripts": {
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
@@ -22,8 +22,11 @@
     "dist"
   ],
   "dependencies": {
+    "@datev-research/mandat-shared-solid-oidc": "^1.0.0",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
+    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
+    "@datev-research/mandat-shared-utils": "^1.0.0",
     "axios": "^1.7.7",
-    "hackathon-demo": "github:mandat-project/hackathon-demo#market",
     "n3": "^1.23.1"
   },
   "devDependencies": {

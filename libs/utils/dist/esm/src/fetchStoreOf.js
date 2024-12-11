@@ -1,4 +1,4 @@
-import { getResource, parseToN3 } from "hackathon-demo/libs/solid";
+import { getResource, parseToN3 } from "@datev-research/mandat-shared-solid-requests";
 export async function fetchStoreOf(uri, session) {
     return getResource(uri, session)
         .then((resp) => resp.data)

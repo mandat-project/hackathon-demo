@@ -1,4 +1,4 @@
-import { AS, createResource, getResource, LDP, parseToN3, PUSH, RDF } from "hackathon-demo/libs/solid";
+import { AS, createResource, getResource, LDP, parseToN3, PUSH, RDF } from "@datev-research/mandat-shared-solid-requests";
 import { useServiceWorkerNotifications } from "./useServiceWorkerNotifications";
 import { useSolidSession } from "./useSolidSession";
 let unsubscribeFromPush;

@@ -7,10 +7,11 @@ exports.useAccessNeedGroup = useAccessNeedGroup;
 exports.useAccessAuthorization = useAccessAuthorization;
 exports.useAccessNeed = useAccessNeed;
 exports.useDataAuthorization = useDataAuthorization;
+const mandat_shared_solid_interop_1 = require("@datev-research/mandat-shared-solid-interop");
+const mandat_shared_solid_requests_1 = require("@datev-research/mandat-shared-solid-requests");
+const mandat_shared_utils_1 = require("@datev-research/mandat-shared-utils");
 const useSolidProfile_1 = require("./useSolidProfile");
 const useSolidSession_1 = require("./useSolidSession");
-const solid_1 = require("hackathon-demo/libs/solid");
-const utils_1 = require("hackathon-demo/libs/utils");
 const n3_1 = require("n3");
 const vue_1 = require("vue");
 const inspectedAccessRequestURI = (0, vue_1.ref)(undefined);
@@ -70,19 +71,19 @@ async function useAccessRequest(uri, redirect) {
     const store = await _fetchStoreOf(uri);
     const grantTrigger = (0, vue_1.ref)(false);
     //
-    const accessRequest = store.getSubjects((0, solid_1.RDF)("type"), (0, solid_1.INTEROP)("AccessRequest"), null).map(t => t.value)[0];
-    const purposes = store.getObjects(accessRequest, (0, solid_1.GDPRP)('purposeForProcessing'), null).map(t => t.value);
-    const fromSocialAgents = store.getObjects(accessRequest, (0, solid_1.INTEROP)("fromSocialAgent"), null).map(t => t.value);
-    const _forSocialAgentsDirect = store.getObjects(accessRequest, (0, solid_1.INTEROP)("forSocialAgent"), null).map(t => t.value);
+    const accessRequest = store.getSubjects((0, mandat_shared_solid_requests_1.RDF)("type"), (0, mandat_shared_solid_requests_1.INTEROP)("AccessRequest"), null).map(t => t.value)[0];
+    const purposes = store.getObjects(accessRequest, (0, mandat_shared_solid_requests_1.GDPRP)('purposeForProcessing'), null).map(t => t.value);
+    const fromSocialAgents = store.getObjects(accessRequest, (0, mandat_shared_solid_requests_1.INTEROP)("fromSocialAgent"), null).map(t => t.value);
+    const _forSocialAgentsDirect = store.getObjects(accessRequest, (0, mandat_shared_solid_requests_1.INTEROP)("forSocialAgent"), null).map(t => t.value);
     const forSocialAgents = _forSocialAgentsDirect.length ? _forSocialAgentsDirect : fromSocialAgents;
-    const seeAlso = store.getObjects(accessRequest, (0, solid_1.RDFS)("seeAlso"), null).map(t => t.value);
-    const accessNeedGroups = store.getObjects(accessRequest, (0, solid_1.INTEROP)("hasAccessNeedGroup"), null).map(t => t.value);
+    const seeAlso = store.getObjects(accessRequest, (0, mandat_shared_solid_requests_1.RDFS)("seeAlso"), null).map(t => t.value);
+    const accessNeedGroups = store.getObjects(accessRequest, (0, mandat_shared_solid_requests_1.INTEROP)("hasAccessNeedGroup"), null).map(t => t.value);
     //
     const senderStore = await _fetchStoreOf(fromSocialAgents[0]);
     const granteeStore = await _fetchStoreOf(forSocialAgents[0]);
     //
-    const senderName = senderStore.getObjects(null, (0, solid_1.FOAF)("name"), null)[0]?.value;
-    const granteeName = granteeStore.getObjects(null, (0, solid_1.FOAF)("name"), null)[0]?.value;
+    const senderName = senderStore.getObjects(null, (0, mandat_shared_solid_requests_1.FOAF)("name"), null)[0]?.value;
+    const granteeName = granteeStore.getObjects(null, (0, mandat_shared_solid_requests_1.FOAF)("name"), null)[0]?.value;
     //
     /**
      * @param associatedAccessReceipt
@@ -107,7 +108,7 @@ async function useAccessRequest(uri, redirect) {
             // wait until all events fired
             while (_getCreatedAccessAuthorization(uri).length !== accessNeedGroups.length) {
                 console.debug("Waiting for access receipt ...", _getRawURI(uri), _getCreatedAccessAuthorization(uri).length, accessNeedGroups.length);
-                await (0, utils_1.wait)();
+                await (0, mandat_shared_utils_1.wait)();
             }
         }
         const accessAuthorizations = overrideAccessAuthorizationsParam ?? _getCreatedAccessAuthorization(uri);
@@ -140,9 +141,9 @@ async function useAccessRequest(uri, redirect) {
     async function _createAccessReceipt(accessAuthorizations) {
         const date = new Date().toISOString();
         let payload = `
-    @prefix interop:<${(0, solid_1.INTEROP)()}> .
-    @prefix xsd:<${(0, solid_1.XSD)()}> .
-    @prefix auth:<${(0, solid_1.AUTH)()}> .
+    @prefix interop:<${(0, mandat_shared_solid_requests_1.INTEROP)()}> .
+    @prefix xsd:<${(0, mandat_shared_solid_requests_1.XSD)()}> .
+    @prefix auth:<${(0, mandat_shared_solid_requests_1.AUTH)()}> .
 
     <#${_accessReceiptLocalName}>
       a interop:AccessReceipt ;
@@ -156,14 +157,14 @@ async function useAccessRequest(uri, redirect) {
                 .join(", ")}`;
         }
         payload += ' .';
-        return (0, solid_1.createResource)(accessReceiptContainer.value, payload, session.value)
+        return (0, mandat_shared_solid_requests_1.createResource)(accessReceiptContainer.value, payload, session.value)
             .then((loc) => {
             console.info({
                 severity: "success",
                 summary: "Access Receipt created.",
                 life: 5000,
             });
-            return (0, solid_1.getLocationHeader)(loc);
+            return (0, mandat_shared_solid_requests_1.getLocationHeader)(loc);
         })
             .catch((err) => {
             console.error({
@@ -206,13 +207,13 @@ async function useAccessReceipt(uri, redirect) {
     // because we get the information resource URI, we need to find the Access Receipt URI, in theory there could be many,
     // but we only consider the first access receipt in an information resource. Not perfect, but makes it easier right now.
     // const receipt = store.value.getSubjects(RDF("type"), INTEROP("AccessReceipt"), null).map(t => t.value)
-    const accessReceipt = informationResourceStore.getSubjects((0, solid_1.RDF)("type"), (0, solid_1.INTEROP)("AccessReceipt"), null).map(t => t.value)[0];
-    const provisionDates = informationResourceStore.getObjects(accessReceipt, (0, solid_1.INTEROP)("providedAt"), null).map(t => t.value);
-    const accessRequests = informationResourceStore.getObjects(accessReceipt, (0, solid_1.AUTH)("hasAccessRequest"), null).map(t => t.value);
-    const accessAuthorizations = informationResourceStore.getObjects(accessReceipt, (0, solid_1.INTEROP)("hasAccessAuthorization"), null).map(t => t.value);
+    const accessReceipt = informationResourceStore.getSubjects((0, mandat_shared_solid_requests_1.RDF)("type"), (0, mandat_shared_solid_requests_1.INTEROP)("AccessReceipt"), null).map(t => t.value)[0];
+    const provisionDates = informationResourceStore.getObjects(accessReceipt, (0, mandat_shared_solid_requests_1.INTEROP)("providedAt"), null).map(t => t.value);
+    const accessRequests = informationResourceStore.getObjects(accessReceipt, (0, mandat_shared_solid_requests_1.AUTH)("hasAccessRequest"), null).map(t => t.value);
+    const accessAuthorizations = informationResourceStore.getObjects(accessReceipt, (0, mandat_shared_solid_requests_1.INTEROP)("hasAccessAuthorization"), null).map(t => t.value);
     // get access request data
     const accessRequestStore = await _fetchStoreOf(accessRequests[0]);
-    const purpose = accessRequestStore.getObjects(null, (0, solid_1.GDPRP)("purposeForProcessing"), null)[0]?.value;
+    const purpose = accessRequestStore.getObjects(null, (0, mandat_shared_solid_requests_1.GDPRP)("purposeForProcessing"), null)[0]?.value;
     // logic
     if (accessRequests.length > 0) {
         _addRequestsToHandled(accessRequests);
@@ -245,7 +246,7 @@ async function useAccessReceipt(uri, redirect) {
         // wait on all the not yet empty (i.e. revoked) access authorizations
         while (replacedAccessAuthorizations.value.length !== nonEmptyAuthorizations.length) {
             console.log("Waiting for access authorizations to be revoked ...");
-            await (0, utils_1.wait)();
+            await (0, mandat_shared_utils_1.wait)();
         }
         // then removeAccessAuthroizations
         await _updateAccessReceipt(replacedAccessAuthorizations.value);
@@ -282,7 +283,7 @@ async function useAccessReceipt(uri, redirect) {
         for (const pairAuthorization of replacedAuthorization) {
             const patchBody = `
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
-@prefix interop: <${(0, solid_1.INTEROP)()}>.
+@prefix interop: <${(0, mandat_shared_solid_requests_1.INTEROP)()}>.
 
 _:rename a solid:InsertDeletePatch;
     solid:where {
@@ -294,7 +295,7 @@ _:rename a solid:InsertDeletePatch;
     solid:deletes {
         ?receipt interop:hasAccessAuthorization <${pairAuthorization.oldAuthorization}> .
     } .`;
-            await (0, solid_1.patchResource)(uri, patchBody, session.value)
+            await (0, mandat_shared_solid_requests_1.patchResource)(uri, patchBody, session.value)
                 .then(() => console.info({
                 severity: "success",
                 summary: "Access Receipt updated.",
@@ -309,8 +310,8 @@ _:rename a solid:InsertDeletePatch;
                 });
                 throw new Error(err);
             });
-            informationResourceStore.removeQuad(new n3_1.NamedNode(accessReceipt), new n3_1.NamedNode((0, solid_1.INTEROP)("hasAccessAuthorization")), new n3_1.NamedNode(pairAuthorization.oldAuthorization));
-            informationResourceStore.addQuad(new n3_1.NamedNode(accessReceipt), new n3_1.NamedNode((0, solid_1.INTEROP)("hasAccessAuthorization")), new n3_1.NamedNode(pairAuthorization.newAuthorization));
+            informationResourceStore.removeQuad(new n3_1.NamedNode(accessReceipt), new n3_1.NamedNode((0, mandat_shared_solid_requests_1.INTEROP)("hasAccessAuthorization")), new n3_1.NamedNode(pairAuthorization.oldAuthorization));
+            informationResourceStore.addQuad(new n3_1.NamedNode(accessReceipt), new n3_1.NamedNode((0, mandat_shared_solid_requests_1.INTEROP)("hasAccessAuthorization")), new n3_1.NamedNode(pairAuthorization.newAuthorization));
         }
         // TODO: what does this do?
         //  informationResourceStore = new Store(informationResourceStore.getQuads(null, null, null, null))
@@ -345,7 +346,7 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
     const { memberOf } = (0, useSolidProfile_1.useSolidProfile)();
     const store = await _fetchStoreOf(uri);
     const grantTrigger = (0, vue_1.ref)(false);
-    const accessNeeds = store.getObjects(uri, (0, solid_1.INTEROP)("hasAccessNeed"), null).map(t => t.value);
+    const accessNeeds = store.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("hasAccessNeed"), null).map(t => t.value);
     /**
      * ! SPEC - data model problem:
      * The access need group only links to the access description set, but from that set, there is no link to any further description.
@@ -353,11 +354,11 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
      *
      * So, we assume that we have all knowledge we need and query the data
      */
-    const descriptionResources = store.getObjects(uri, (0, solid_1.INTEROP)('hasAccessDescriptionSet'), null).map(t => t.value);
+    const descriptionResources = store.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('hasAccessDescriptionSet'), null).map(t => t.value);
     for (const descriptionResource of descriptionResources) {
         await _fetchN3(descriptionResource).then((parsedN3) => (store.addQuads(parsedN3.store.getQuads(null, null, null, null))));
     }
-    const _sthsThatHasAccessNeedGroup = store.getSubjects((0, solid_1.INTEROP)('hasAccessNeedGroup'), uri, null).map(t => t.value);
+    const _sthsThatHasAccessNeedGroup = store.getSubjects((0, mandat_shared_solid_requests_1.INTEROP)('hasAccessNeedGroup'), uri, null).map(t => t.value);
     let prefLabels = [];
     let definitions = [];
     /**
@@ -366,11 +367,11 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
      *  domain -> interop:AccessRequest OR AccessNeedGroupDescription
      */
     for (const sth of _sthsThatHasAccessNeedGroup) {
-        const _prefLabels = store.getObjects(sth, (0, solid_1.SKOS)('prefLabel'), null).map(t => t.value);
+        const _prefLabels = store.getObjects(sth, (0, mandat_shared_solid_requests_1.SKOS)('prefLabel'), null).map(t => t.value);
         if (_prefLabels.length) {
             prefLabels = _prefLabels;
         }
-        const _definitions = store.getObjects(sth, (0, solid_1.SKOS)('definition'), null).map(t => t.value);
+        const _definitions = store.getObjects(sth, (0, mandat_shared_solid_requests_1.SKOS)('definition'), null).map(t => t.value);
         if (_definitions.length) {
             definitions = _definitions;
         }
@@ -396,7 +397,7 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
         // wait until all events fired
         while (_getCreatedDataAuthorization(uri).length !== accessNeeds.length) {
             console.debug("Waiting for data authorizations ...", _getRawURI(uri), _getCreatedDataAuthorization(uri).length, accessNeeds.length);
-            await (0, utils_1.wait)();
+            await (0, mandat_shared_utils_1.wait)();
         }
         // trigger access authorization
         const accessAuthzLocation = await _createAccessAuthorization(forSocialAgents, [..._getCreatedDataAuthorization(uri)]);
@@ -421,8 +422,8 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
         }
         const date = new Date().toISOString();
         const payload = `
-    @prefix interop:<${(0, solid_1.INTEROP)()}> .
-    @prefix xsd:<${(0, solid_1.XSD)()}> .
+    @prefix interop:<${(0, mandat_shared_solid_requests_1.INTEROP)()}> .
+    @prefix xsd:<${(0, mandat_shared_solid_requests_1.XSD)()}> .
 
     <#${accessAuthzLocalName}>
       a interop:AccessAuthorization ;
@@ -436,14 +437,14 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
             .map((t) => "<" + t + ">")
             .join(", ")} .
 `;
-        return (0, solid_1.createResource)(accessAuthzContainer.value, payload, session.value)
+        return (0, mandat_shared_solid_requests_1.createResource)(accessAuthzContainer.value, payload, session.value)
             .then((loc) => {
             console.info({
                 severity: "success",
                 summary: "Access Authorization created.",
                 life: 5000,
             });
-            return (0, solid_1.getLocationHeader)(loc);
+            return (0, mandat_shared_solid_requests_1.getLocationHeader)(loc);
         })
             .catch((err) => {
             console.error({
@@ -476,12 +477,12 @@ async function useAccessNeedGroup(uri, forSocialAgents) {
  */
 async function useAccessAuthorization(uri, redirect) {
     const resourceStore = await _fetchStoreOf(uri);
-    const grantDates = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('grantedAt'), null).map(t => t.value);
-    const grantees = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('grantee'), null).map(t => t.value);
-    const accessNeedGroups = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('hasAccessNeedGroup'), null).map(t => t.value);
-    const dataAuthorizations = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('hasDataAuthorization'), null).map(t => t.value);
+    const grantDates = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('grantedAt'), null).map(t => t.value);
+    const grantees = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('grantee'), null).map(t => t.value);
+    const accessNeedGroups = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('hasAccessNeedGroup'), null).map(t => t.value);
+    const dataAuthorizations = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('hasDataAuthorization'), null).map(t => t.value);
     const granteeStore = await _fetchStoreOf(grantees[0]);
-    const granteeName = granteeStore.getObjects(null, (0, solid_1.FOAF)("name"), null)[0]?.value;
+    const granteeName = granteeStore.getObjects(null, (0, mandat_shared_solid_requests_1.FOAF)("name"), null)[0]?.value;
     if (dataAuthorizations.length == 0) {
         _addToEmpty(uri);
     }
@@ -503,7 +504,7 @@ async function useAccessAuthorization(uri, redirect) {
         // wait on all the data authorizations
         while (revokedDataAuthorizations.value.length !== dataAuthorizations.length) {
             console.log("Waiting for data authorizations to be revoked ...");
-            await (0, utils_1.wait)();
+            await (0, mandat_shared_utils_1.wait)();
         }
         // then removeDataAuthroizations
         await _removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations);
@@ -535,14 +536,14 @@ async function useAccessAuthorization(uri, redirect) {
      */
     async function _removeDataAuthorizationsAndCreateNewAccessAuthorization(dataAuthorizations) {
         // copy authorization to archive
-        const archivedLocation = await (0, solid_1.createResource)(accessAuthzArchiveContainer.value, "", session.value)
+        const archivedLocation = await (0, mandat_shared_solid_requests_1.createResource)(accessAuthzArchiveContainer.value, "", session.value)
             .then((loc) => {
             console.info({
                 severity: "info",
                 summary: "Archived Access Authorization created.",
                 life: 5000,
             });
-            return (0, solid_1.getLocationHeader)(loc);
+            return (0, mandat_shared_solid_requests_1.getLocationHeader)(loc);
         })
             .catch((err) => {
             console.error({
@@ -561,7 +562,7 @@ async function useAccessAuthorization(uri, redirect) {
             archiveStore.addQuad(new n3_1.NamedNode(archivedLocation + "#" + accessAuthzLocale), quad.predicate, quad.object, quad.graph);
         }
         let copyBody = n3Writer.quadsToString(archiveStore.getQuads(null, null, null, null));
-        await (0, solid_1.putResource)(archivedLocation, copyBody, session.value)
+        await (0, mandat_shared_solid_requests_1.putResource)(archivedLocation, copyBody, session.value)
             .then(() => console.info({
             severity: "success",
             summary: "Archived Access Authorization updated.",
@@ -577,14 +578,14 @@ async function useAccessAuthorization(uri, redirect) {
             throw new Error(err);
         });
         // create updated authorization
-        const newLocation = await (0, solid_1.createResource)(accessAuthzContainer.value, "", session.value)
+        const newLocation = await (0, mandat_shared_solid_requests_1.createResource)(accessAuthzContainer.value, "", session.value)
             .then((loc) => {
             console.info({
                 severity: "info",
                 summary: "New Access Authorization created.",
                 life: 5000,
             });
-            return (0, solid_1.getLocationHeader)(loc);
+            return (0, mandat_shared_solid_requests_1.getLocationHeader)(loc);
         })
             .catch((err) => {
             console.error({
@@ -601,20 +602,20 @@ async function useAccessAuthorization(uri, redirect) {
             resourceStore.removeQuad(quad);
         }
         // in new resource, add replaces
-        resourceStore.addQuad(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), new n3_1.NamedNode((0, solid_1.INTEROP)("replaces")), new n3_1.NamedNode(archivedLocation + "#" + accessAuthzLocale));
+        resourceStore.addQuad(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), new n3_1.NamedNode((0, mandat_shared_solid_requests_1.INTEROP)("replaces")), new n3_1.NamedNode(archivedLocation + "#" + accessAuthzLocale));
         // in new resource, update grantedAt
-        const grantedAtQuads = resourceStore.getQuads(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), (0, solid_1.INTEROP)("grantedAt"), null, null);
+        const grantedAtQuads = resourceStore.getQuads(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), (0, mandat_shared_solid_requests_1.INTEROP)("grantedAt"), null, null);
         resourceStore.removeQuads(grantedAtQuads);
-        const dateLiteral = n3_1.DataFactory.literal(new Date().toISOString(), new n3_1.NamedNode((0, solid_1.XSD)("dateTime")));
-        resourceStore.addQuad(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), new n3_1.NamedNode((0, solid_1.INTEROP)("grantedAt")), dateLiteral);
+        const dateLiteral = n3_1.DataFactory.literal(new Date().toISOString(), new n3_1.NamedNode((0, mandat_shared_solid_requests_1.XSD)("dateTime")));
+        resourceStore.addQuad(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), new n3_1.NamedNode((0, mandat_shared_solid_requests_1.INTEROP)("grantedAt")), dateLiteral);
         // in new resource, remove link to data authorization
         for (const dataAuthorization of dataAuthorizations) {
-            resourceStore.removeQuads(resourceStore.getQuads(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), new n3_1.NamedNode((0, solid_1.INTEROP)("hasDataAuthorization")), dataAuthorization, null));
+            resourceStore.removeQuads(resourceStore.getQuads(new n3_1.NamedNode(newLocation + "#" + accessAuthzLocale), new n3_1.NamedNode((0, mandat_shared_solid_requests_1.INTEROP)("hasDataAuthorization")), dataAuthorization, null));
             // Notice: this is also the place, where you could update a data authorization, e.g. for freeze
         }
         // write to new authorization
         copyBody = n3Writer.quadsToString(resourceStore.getQuads(null, null, null, null));
-        await (0, solid_1.putResource)(newLocation, copyBody, session.value)
+        await (0, mandat_shared_solid_requests_1.putResource)(newLocation, copyBody, session.value)
             .then(() => console.info({
             severity: "success",
             summary: "New Access Authorization updated.",
@@ -630,7 +631,7 @@ async function useAccessAuthorization(uri, redirect) {
             throw new Error(err);
         });
         // delete old one
-        await (0, solid_1.deleteResource)(uri, session.value);
+        await (0, mandat_shared_solid_requests_1.deleteResource)(uri, session.value);
         // emit update
         _updateAccessAuthorization(`${newLocation}#${accessAuthzLocale}`, uri);
     }
@@ -672,9 +673,9 @@ async function useAccessNeed(uri, forSocialAgents) {
     const store = await _fetchStoreOf(uri);
     // define a 'local name', i.e. the URI fragment, for the data authorization URI
     const dataAuthzLocalName = "dataAuthorization";
-    const accessModes = store.getObjects(uri, (0, solid_1.INTEROP)("accessMode"), null).map(t => t.value);
-    const registeredShapeTrees = store.getObjects(uri, (0, solid_1.INTEROP)("registeredShapeTree"), null).map(t => t.value);
-    const dataInstances = store.getObjects(uri, (0, solid_1.INTEROP)("hasDataInstance"), null).map(t => t.value);
+    const accessModes = store.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("accessMode"), null).map(t => t.value);
+    const registeredShapeTrees = store.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("registeredShapeTree"), null).map(t => t.value);
+    const dataInstances = store.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("hasDataInstance"), null).map(t => t.value);
     const containers = (0, vue_1.ref)([]);
     /**
      * ! SPEC - data model problem:
@@ -703,7 +704,7 @@ async function useAccessNeed(uri, forSocialAgents) {
      */
     containers.value = await _checkIfMatchingDataRegistrationExists();
     async function _checkIfMatchingDataRegistrationExists() {
-        const dataRegistrations = await (0, solid_1.getDataRegistrationContainers)(`${memberOf.value}`, registeredShapeTrees[0], session.value).catch((err) => {
+        const dataRegistrations = await (0, mandat_shared_solid_interop_1.getDataRegistrationContainers)(`${memberOf.value}`, registeredShapeTrees[0], session.value).catch((err) => {
             console.error({
                 severity: "error",
                 summary: "Error on getDataRegistrationContainers!",
@@ -731,7 +732,7 @@ async function useAccessNeed(uri, forSocialAgents) {
     async function grantDataAuthorization() {
         // find registries
         for (const shapeTree of registeredShapeTrees) {
-            const dataRegistrations = await (0, solid_1.getDataRegistrationContainers)(`${memberOf.value}`, shapeTree, session.value).catch((err) => {
+            const dataRegistrations = await (0, mandat_shared_solid_interop_1.getDataRegistrationContainers)(`${memberOf.value}`, shapeTree, session.value).catch((err) => {
                 console.error({
                     severity: "error",
                     summary: "Error on getDataRegistrationContainers!",
@@ -767,11 +768,11 @@ async function useAccessNeed(uri, forSocialAgents) {
      */
     async function _createDataAuthorization(forSocialAgents, registeredShapeTrees, accessModes, registrations, instances) {
         const payload = `
-    @prefix interop:<${(0, solid_1.INTEROP)()}> .
-    @prefix ldp:<${(0, solid_1.LDP)()}> .
-    @prefix xsd:<${(0, solid_1.XSD)()}> .
-    @prefix acl:<${(0, solid_1.ACL)()}> .
-    @prefix auth:<${(0, solid_1.AUTH)()}> .
+    @prefix interop:<${(0, mandat_shared_solid_requests_1.INTEROP)()}> .
+    @prefix ldp:<${(0, mandat_shared_solid_requests_1.LDP)()}> .
+    @prefix xsd:<${(0, mandat_shared_solid_requests_1.XSD)()}> .
+    @prefix acl:<${(0, mandat_shared_solid_requests_1.ACL)()}> .
+    @prefix auth:<${(0, mandat_shared_solid_requests_1.AUTH)()}> .
 
     <#${dataAuthzLocalName}>
       a interop:DataAuthorization ;
@@ -796,14 +797,14 @@ async function useAccessNeed(uri, forSocialAgents) {
                 " ;"
             : ""}
       interop:satisfiesAccessNeed <${uri}> .`;
-        return (0, solid_1.createResource)(dataAuthzContainer.value, payload, session.value)
+        return (0, mandat_shared_solid_requests_1.createResource)(dataAuthzContainer.value, payload, session.value)
             .then((loc) => {
             console.info({
                 severity: "success",
                 summary: "Data Authorization created.",
                 life: 5000,
             });
-            return (0, solid_1.getLocationHeader)(loc);
+            return (0, mandat_shared_solid_requests_1.getLocationHeader)(loc);
         })
             .catch((err) => {
             console.error({
@@ -845,8 +846,8 @@ _:rename a solid:InsertDeletePatch;
             acl:default <.${accessTo.substring(accessTo.lastIndexOf('/'))}>;
             acl:mode ${mode.map((mode) => "<" + mode + ">").join(", ")} .
     } .`; // n3 patch may not contain blank node, so we do the next best thing, and try to generate a unique name
-        const aclURI = await (0, solid_1.getAclResourceUri)(accessTo, session.value);
-        await (0, solid_1.patchResource)(aclURI, patchBody, session.value).catch((err) => {
+        const aclURI = await (0, mandat_shared_solid_requests_1.getAclResourceUri)(accessTo, session.value);
+        await (0, mandat_shared_solid_requests_1.patchResource)(aclURI, patchBody, session.value).catch((err) => {
             console.error({
                 severity: "error",
                 summary: "Error on patch ACL!",
@@ -879,21 +880,21 @@ _:rename a solid:InsertDeletePatch;
 async function useDataAuthorization(uri) {
     const { memberOf } = (0, useSolidProfile_1.useSolidProfile)();
     const resourceStore = await _fetchStoreOf(uri);
-    const accessModes = resourceStore.getObjects(uri, (0, solid_1.INTEROP)("accessMode"), null).map(t => t.value);
-    const registeredShapeTrees = resourceStore.getObjects(uri, (0, solid_1.INTEROP)("registeredShapeTree"), null).map(t => t.value);
-    const dataInstances = resourceStore.getObjects(uri, (0, solid_1.INTEROP)("hasDataInstance"), null).map(t => t.value);
-    const dataRegistrations = resourceStore.getObjects(uri, (0, solid_1.INTEROP)("hasDataRegistration"), null).map(t => t.value);
-    const grantees = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('grantee'), null).map(t => t.value);
-    const scopes = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('scopeOfAuthorization'), null).map(t => t.value);
-    const accessNeeds = resourceStore.getObjects(uri, (0, solid_1.INTEROP)('satisfiesAccessNeed'), null).map(t => t.value);
+    const accessModes = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("accessMode"), null).map(t => t.value);
+    const registeredShapeTrees = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("registeredShapeTree"), null).map(t => t.value);
+    const dataInstances = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("hasDataInstance"), null).map(t => t.value);
+    const dataRegistrations = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)("hasDataRegistration"), null).map(t => t.value);
+    const grantees = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('grantee'), null).map(t => t.value);
+    const scopes = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('scopeOfAuthorization'), null).map(t => t.value);
+    const accessNeeds = resourceStore.getObjects(uri, (0, mandat_shared_solid_requests_1.INTEROP)('satisfiesAccessNeed'), null).map(t => t.value);
     const granteeStore = await _fetchStoreOf(grantees[0]);
-    const granteeName = granteeStore.getObjects(null, (0, solid_1.FOAF)("name"), null)[0]?.value;
+    const granteeName = granteeStore.getObjects(null, (0, mandat_shared_solid_requests_1.FOAF)("name"), null)[0]?.value;
     /**
      * Set the .acl for any resource required in this data authorization.
      */
     async function revokeDataAuthorizationRights() {
         for (const shapeTree of registeredShapeTrees) {
-            const dataRegistrations = await (0, solid_1.getDataRegistrationContainers)(`${memberOf.value}`, shapeTree, session.value).catch((err) => {
+            const dataRegistrations = await (0, mandat_shared_solid_interop_1.getDataRegistrationContainers)(`${memberOf.value}`, shapeTree, session.value).catch((err) => {
                 console.error({
                     severity: "error",
                     summary: "Error on getDataRegistrationContainers!",
@@ -923,7 +924,7 @@ async function useDataAuthorization(uri) {
      * @param modes
      */
     async function _updateAccessControlListToDelete(accessTo, agents, modes) {
-        const aclURI = await (0, solid_1.getAclResourceUri)(accessTo, session.value);
+        const aclURI = await (0, mandat_shared_solid_requests_1.getAclResourceUri)(accessTo, session.value);
         /**
          * see problems below
          */
@@ -962,23 +963,23 @@ async function useDataAuthorization(uri) {
         const aclStore = await _fetchStoreOf(aclURI);
         for (const agent of agents) {
             for (const mode of modes) {
-                const agentAuthzQuads = aclStore.getQuads(null, (0, solid_1.ACL)("agent"), agent, null)
-                    .filter(quad => (aclStore.getQuads(quad.subject, (0, solid_1.ACL)("mode"), mode, null).length == 1))
-                    .filter(quad => (aclStore.getQuads(quad.subject, (0, solid_1.ACL)("accessTo"), accessTo, null).length == 1))
-                    .filter(quad => (aclStore.getQuads(quad.subject, (0, solid_1.ACL)("default"), accessTo, null).length == 1));
+                const agentAuthzQuads = aclStore.getQuads(null, (0, mandat_shared_solid_requests_1.ACL)("agent"), agent, null)
+                    .filter(quad => (aclStore.getQuads(quad.subject, (0, mandat_shared_solid_requests_1.ACL)("mode"), mode, null).length == 1))
+                    .filter(quad => (aclStore.getQuads(quad.subject, (0, mandat_shared_solid_requests_1.ACL)("accessTo"), accessTo, null).length == 1))
+                    .filter(quad => (aclStore.getQuads(quad.subject, (0, mandat_shared_solid_requests_1.ACL)("default"), accessTo, null).length == 1));
                 aclStore.removeQuads(agentAuthzQuads);
             }
         }
         // START cleanup of authorizations where no agent is attached
-        aclStore.getSubjects((0, solid_1.RDF)("type"), (0, solid_1.ACL)("Authorization"), null)
-            .filter(subj => (aclStore.getQuads(subj, (0, solid_1.ACL)("agent"), null, null).length == 0))
-            .filter(subj => (aclStore.getQuads(subj, (0, solid_1.ACL)("agentGroup"), null, null).length == 0))
-            .filter(subj => (aclStore.getQuads(subj, (0, solid_1.ACL)("agentClass"), null, null).length == 0))
+        aclStore.getSubjects((0, mandat_shared_solid_requests_1.RDF)("type"), (0, mandat_shared_solid_requests_1.ACL)("Authorization"), null)
+            .filter(subj => (aclStore.getQuads(subj, (0, mandat_shared_solid_requests_1.ACL)("agent"), null, null).length == 0))
+            .filter(subj => (aclStore.getQuads(subj, (0, mandat_shared_solid_requests_1.ACL)("agentGroup"), null, null).length == 0))
+            .filter(subj => (aclStore.getQuads(subj, (0, mandat_shared_solid_requests_1.ACL)("agentClass"), null, null).length == 0))
             .forEach(subj => aclStore.removeQuads(aclStore.getQuads(subj, null, null, null)));
         // END cleanup
         const n3Writer = new n3_1.Writer();
         const aclBody = n3Writer.quadsToString(aclStore.getQuads(null, null, null, null));
-        await (0, solid_1.putResource)(aclURI, aclBody, session.value)
+        await (0, mandat_shared_solid_requests_1.putResource)(aclURI, aclBody, session.value)
             .then(() => console.info({
             severity: "success",
             summary: "ACL updated.",
@@ -1035,7 +1036,7 @@ async function _fetchStoreOf(uri) {
     return _fetchN3(uri).then((parsedN3) => parsedN3.store);
 }
 async function _fetchN3(uri) {
-    return (0, solid_1.getResource)(uri, session.value)
+    return (0, mandat_shared_solid_requests_1.getResource)(uri, session.value)
         .catch((err) => {
         console.error({
             severity: "error", summary: `Error on fetching: ${uri}`, detail: err, life: 5000,
@@ -1043,7 +1044,7 @@ async function _fetchN3(uri) {
         throw new Error(err);
     })
         .then((resp) => resp.data)
-        .then((txt) => (0, solid_1.parseToN3)(txt, uri));
+        .then((txt) => (0, mandat_shared_solid_requests_1.parseToN3)(txt, uri));
 }
 /**
  * Retrieve access requests from an access inbox
@@ -1056,13 +1057,13 @@ async function _useAccessRequestInformationResources(accessInbox) {
     if (inspectedAccessRequestURI.value) {
         return [_getRawURI(inspectedAccessRequestURI.value)];
     }
-    return await (0, solid_1.getContainerItems)(accessInbox, session.value);
+    return await (0, mandat_shared_solid_requests_1.getContainerItems)(accessInbox, session.value);
 }
 /**
  * get the access receipts
  */
 async function _useAccessReceiptInformationResources() {
-    return await (0, solid_1.getContainerItems)(accessReceiptContainer.value, session.value);
+    return await (0, mandat_shared_solid_requests_1.getContainerItems)(accessReceiptContainer.value, session.value);
 }
 /**
  * get the access receipt(s) of accessRequestURI
@@ -1071,7 +1072,7 @@ async function _useAccessReceiptInformationResourcesForAccessRequest(accessReque
     const accessReceiptStore = new n3_1.Store();
     const accessReceiptContainerItems = await _useAccessReceiptInformationResources();
     await _fillItemStoresIntoStore(accessReceiptContainerItems, accessReceiptStore);
-    return accessReceiptStore.getSubjects((0, solid_1.AUTH)("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
+    return accessReceiptStore.getSubjects((0, mandat_shared_solid_requests_1.AUTH)("hasAccessRequest"), accessRequestURI, null).map(subject => subject.value);
 }
 // when a child access authorization emits event that it is empty, i.e. revoked
 function _addToEmpty(emptyAuth) {
@@ -1139,8 +1140,8 @@ const useAuthorizations = (uri = "") => {
             accessAuthzContainer.value = storage.value + accessAuthzContainerName + "/";
             accessAuthzArchiveContainer.value = storage.value + accessAuthzArchiveContainerName + "/";
             accessReceiptContainer.value = storage.value + accessReceiptContainerName + "/";
-            (0, solid_1.getResource)(dataAuthzContainer.value, session.value)
-                .catch(() => (0, solid_1.createContainer)(storage.value, dataAuthzContainerName, session.value))
+            (0, mandat_shared_solid_requests_1.getResource)(dataAuthzContainer.value, session.value)
+                .catch(() => (0, mandat_shared_solid_requests_1.createContainer)(storage.value, dataAuthzContainerName, session.value))
                 .catch((err) => {
                 console.error({
                     severity: "error",
@@ -1150,8 +1151,8 @@ const useAuthorizations = (uri = "") => {
                 });
                 throw new Error(err);
             });
-            (0, solid_1.getResource)(accessAuthzContainer.value, session.value)
-                .catch(() => (0, solid_1.createContainer)(storage.value, accessAuthzContainerName, session.value))
+            (0, mandat_shared_solid_requests_1.getResource)(accessAuthzContainer.value, session.value)
+                .catch(() => (0, mandat_shared_solid_requests_1.createContainer)(storage.value, accessAuthzContainerName, session.value))
                 .catch((err) => {
                 console.error({
                     severity: "error",
@@ -1161,16 +1162,16 @@ const useAuthorizations = (uri = "") => {
                 });
                 throw new Error(err);
             });
-            (0, solid_1.getResource)(accessAuthzArchiveContainer.value, session.value)
-                .catch(() => (0, solid_1.createContainer)(storage.value, accessAuthzArchiveContainerName, session.value))
+            (0, mandat_shared_solid_requests_1.getResource)(accessAuthzArchiveContainer.value, session.value)
+                .catch(() => (0, mandat_shared_solid_requests_1.createContainer)(storage.value, accessAuthzArchiveContainerName, session.value))
                 .catch((err) => {
                 console.error({
                     severity: "error", summary: "Failed to create Access Receipt Container!", detail: err, life: 5000,
                 });
                 throw new Error(err);
             });
-            (0, solid_1.getResource)(accessReceiptContainer.value, session.value)
-                .catch(() => (0, solid_1.createContainer)(storage.value, accessReceiptContainerName, session.value))
+            (0, mandat_shared_solid_requests_1.getResource)(accessReceiptContainer.value, session.value)
+                .catch(() => (0, mandat_shared_solid_requests_1.createContainer)(storage.value, accessReceiptContainerName, session.value))
                 .catch((err) => {
                 console.error({
                     severity: "error", summary: "Failed to create Access Receipt Container!", detail: err, life: 5000,

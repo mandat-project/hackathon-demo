@@ -1,7 +1,10 @@
 <script lang="ts">
-import {useServiceWorkerNotifications, useSolidProfile,} from "hackathon-demo/libs/composables";
+import {
+  useServiceWorkerNotifications,
+  useSolidProfile,
+} from "@datev-research/mandat-shared-composables";
 import BadgeDirective from "primevue/badgedirective";
-import {defineComponent} from "vue";
+import { defineComponent } from "vue";
 import LoginButton from "./LoginButton.vue";
 import LogoutButton from "./LogoutButton.vue";
 

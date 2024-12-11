@@ -1,5 +1,5 @@
+import {Session} from "@datev-research/mandat-shared-solid-oidc";
 import {AxiosRequestConfig} from "axios";
-import {Session} from "hackathon-demo/libs/solid";
 
 export class RdpCapableSession extends Session {
     private rdp_: string | undefined;
