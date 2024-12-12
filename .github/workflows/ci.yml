@@ -48,16 +48,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Run Lint
-        run: npm run lint  # Stelle sicher, dass du ein Lint-Skript in deinem package.json hast
+        run: npm run lint
 
   build:
     runs-on: ubuntu-latest
@@ -72,14 +64,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Cache dist
         uses: actions/cache@v4
@@ -105,22 +89,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Cache dist
-        uses: actions/cache@v4
-        with:
-          path: libs/*/dist
-          key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
-          restore-keys: |
-            ${{ runner.os }}-dist-
 
       - name: Run CI Checks
         run: npm run test
