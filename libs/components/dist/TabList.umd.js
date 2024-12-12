@@ -32,7 +32,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, ".active[data-v-26d2ffac]{border-radius
 
 /***/ }),
 
-/***/ 170:
+/***/ 300:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46,7 +46,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "[role=list][data-v-15d2e0b5]{font-family:var(--font-family)}[role=listitem][data-v-15d2e0b5]{&[data-v-15d2e0b5]:first-child{border-top-left-radius:.4375rem}&[data-v-15d2e0b5]:last-child{border-top-right-radius:.4375rem}}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "[role=list][data-v-643ba093]{font-family:var(--font-family)}[role=listitem][data-v-643ba093]{&[data-v-643ba093]:first-child{border-top-left-radius:.4375rem}&[data-v-643ba093]:last-child{border-top-right-radius:.4375rem}}", ""]);
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
@@ -193,19 +193,19 @@ var update = add("49dc3fcc", content, true, {"sourceMap":false,"shadowMode":fals
 
 /***/ }),
 
-/***/ 21:
+/***/ 535:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(170);
+var content = __webpack_require__(300);
 if(content.__esModule) content = content.default;
 if(typeof content === 'string') content = [[module.id, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = (__webpack_require__(825)/* ["default"] */ .A)
-var update = add("6dee06b0", content, true, {"sourceMap":false,"shadowMode":false});
+var update = add("8250e5e4", content, true, {"sourceMap":false,"shadowMode":false});
 
 /***/ }),
 
@@ -631,7 +631,7 @@ const __exports__ = /*#__PURE__*/(0,exportHelper/* default */.A)(TabItemvue_type
 ;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-83.use[1]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/tabs/TabList.vue?vue&type=script&setup=true&lang=ts
 
 
-const TabListvue_type_script_setup_true_lang_ts_withScopeId = n => (_pushScopeId("data-v-15d2e0b5"), n = n(), _popScopeId(), n);
+const TabListvue_type_script_setup_true_lang_ts_withScopeId = n => (_pushScopeId("data-v-643ba093"), n = n(), _popScopeId(), n);
 const TabListvue_type_script_setup_true_lang_ts_hoisted_1 = {
     class: "tab-list font-medium h-4rem font-normal flex align-items-end",
     role: "list"
@@ -658,6 +658,7 @@ const TabListvue_type_script_setup_true_lang_ts_hoisted_1 = {
             return ((0,external_vue_.openBlock)(), (0,external_vue_.createElementBlock)("div", TabListvue_type_script_setup_true_lang_ts_hoisted_1, [
                 ((0,external_vue_.openBlock)(true), (0,external_vue_.createElementBlock)(external_vue_.Fragment, null, (0,external_vue_.renderList)(_ctx.model, (item) => {
                     return ((0,external_vue_.openBlock)(), (0,external_vue_.createBlock)(TabItem, {
+                        class: "px-4",
                         role: "listitem",
                         onClick: ($event) => (setActive(item)),
                         key: item.id,
@@ -672,9 +673,9 @@ const TabListvue_type_script_setup_true_lang_ts_hoisted_1 = {
 
 ;// CONCATENATED MODULE: ./src/tabs/TabList.vue?vue&type=script&setup=true&lang=ts
  
-// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/tabs/TabList.vue?vue&type=style&index=0&id=15d2e0b5&scoped=true&lang=css
-var TabListvue_type_style_index_0_id_15d2e0b5_scoped_true_lang_css = __webpack_require__(21);
-;// CONCATENATED MODULE: ./src/tabs/TabList.vue?vue&type=style&index=0&id=15d2e0b5&scoped=true&lang=css
+// EXTERNAL MODULE: ../../node_modules/vue-style-loader/index.js??clonedRuleSet-55.use[0]!../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-55.use[1]!../../node_modules/vue-loader/dist/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[2]!../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-55.use[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/tabs/TabList.vue?vue&type=style&index=0&id=643ba093&scoped=true&lang=css
+var TabListvue_type_style_index_0_id_643ba093_scoped_true_lang_css = __webpack_require__(535);
+;// CONCATENATED MODULE: ./src/tabs/TabList.vue?vue&type=style&index=0&id=643ba093&scoped=true&lang=css
 
 ;// CONCATENATED MODULE: ./src/tabs/TabList.vue
 
@@ -683,7 +684,7 @@ var TabListvue_type_style_index_0_id_15d2e0b5_scoped_true_lang_css = __webpack_r
 ;
 
 
-const TabList_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(TabListvue_type_script_setup_true_lang_ts, [['__scopeId',"data-v-15d2e0b5"]])
+const TabList_exports_ = /*#__PURE__*/(0,exportHelper/* default */.A)(TabListvue_type_script_setup_true_lang_ts, [['__scopeId',"data-v-643ba093"]])
 
 /* harmony default export */ var TabList = (TabList_exports_);
 ;// CONCATENATED MODULE: ../../node_modules/@vue/cli-service/lib/commands/build/entry-lib.js

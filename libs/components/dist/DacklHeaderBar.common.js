@@ -530,7 +530,7 @@ if (typeof window !== 'undefined') {
 
 ;// CONCATENATED MODULE: external "vue"
 var external_vue_namespaceObject = require("vue");
-;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=template&id=3c53c4c9&ts=true
+;// CONCATENATED MODULE: ../../node_modules/thread-loader/dist/cjs.js!../../node_modules/ts-loader/index.js??clonedRuleSet-40.use[1]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/DacklHeaderBar.vue?vue&type=template&id=7bb16018&ts=true
 
 const _hoisted_1 = ["src", "alt"];
 const _hoisted_2 = {
@@ -581,7 +581,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
                                 ? ((0,external_vue_namespaceObject.openBlock)(), (0,external_vue_namespaceObject.createBlock)(_component_Avatar, {
                                     key: 0,
                                     shape: "circle",
-                                    class: "border-1"
+                                    class: "border-1 mx-1"
                                 }, {
                                     default: (0,external_vue_namespaceObject.withCtx)(() => [
                                         (_ctx.img)
@@ -607,7 +607,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 64));
 }
 
-;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=3c53c4c9&ts=true
+;// CONCATENATED MODULE: ./src/DacklHeaderBar.vue?vue&type=template&id=7bb16018&ts=true
 
 ;// CONCATENATED MODULE: ../composables/dist/esm/src/useCache.js
 const cache = {};

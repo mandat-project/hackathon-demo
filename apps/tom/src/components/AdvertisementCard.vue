@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import {toAdvertisementImage} from "@/utils/toAdvertisementImage";
 import {toAdvertisementName} from "@/utils/toAdvertisementName";
-import {HorizontalLine} from "@shared/components";
+import {HorizontalLine} from "@datev-research/mandat-shared-components";
 
 const props = defineProps<{ ad: string }>();
 const emit = defineEmits<{

@@ -24,7 +24,10 @@ function setActive(item: TabItemType): void {
   <div
     class="tab-list font-medium h-4rem font-normal flex align-items-end"
     role="list"
-  >  <TabItem class="px-4" role="listitem"
+  >
+    <TabItem
+      class="px-4"
+      role="listitem"
       @click="setActive(item)"
       v-for="item in model"
       :key="item.id"

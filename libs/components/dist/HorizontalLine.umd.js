@@ -114,15 +114,15 @@ if (typeof window !== 'undefined') {
 
 // EXTERNAL MODULE: external "vue"
 var external_vue_ = __webpack_require__(380);
-;// CONCATENATED MODULE: ../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/HorizontalLine.vue?vue&type=template&id=32f188f3
+;// CONCATENATED MODULE: ../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[3]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./src/HorizontalLine.vue?vue&type=template&id=2e4b7f74
 
 
-const _hoisted_1 = { class: "my-3 border-left-none border-right-none border-top-none border-bottom-1 border-coldgray-150" }
+const _hoisted_1 = { class: "my-4 border-left-none border-right-none border-top-none border-bottom-1 border-coldgray-150" }
 
 function render(_ctx, _cache) {
   return ((0,external_vue_.openBlock)(), (0,external_vue_.createElementBlock)("hr", _hoisted_1))
 }
-;// CONCATENATED MODULE: ./src/HorizontalLine.vue?vue&type=template&id=32f188f3
+;// CONCATENATED MODULE: ./src/HorizontalLine.vue?vue&type=template&id=2e4b7f74
 
 // EXTERNAL MODULE: ../../node_modules/vue-loader/dist/exportHelper.js
 var exportHelper = __webpack_require__(433);

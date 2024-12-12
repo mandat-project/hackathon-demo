@@ -3828,12 +3828,14 @@
   .p-button {
     color: rgba(0, 0, 0, 0.9);
     background: #99E827;
-    border: none;
+    border: 0;
     padding: 0.5rem 1rem;
     font-size: 1rem;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
     border-radius: 0.3125rem;
-    outline: 4px solid transparent;
+  }
+  .p-button:not(:disabled) {
+    outline: 1px solid rgba(32, 151, 12, 0.5);
   }
   .p-button:not(:disabled):hover {
     background: #8BE10F;
@@ -3978,7 +3980,7 @@
   .p-button.p-button-secondary, .p-button-group.p-button-secondary > .p-button, .p-splitbutton.p-button-secondary > .p-button {
     color: rgba(0, 0, 0, 0.9);
     background: #F6F7F9;
-    outline: 4px solid transparent;
+    outline: 1px solid rgba(0, 0, 0, 0.15);
   }
   .p-button.p-button-secondary:not(:disabled):hover, .p-button-group.p-button-secondary > .p-button:not(:disabled):hover, .p-splitbutton.p-button-secondary > .p-button:not(:disabled):hover {
     background: #E8ECEF;
@@ -10734,10 +10736,6 @@ input.p-inputtext, .control-shadow {
   border: 0 none;
   border-radius: 4px;
   box-shadow: 0px 1px 0px 0px rgba(3, 59, 74, 0.46), 0px 0px 2px 0px rgba(44, 51, 53, 0.4), 0px 2px 5px 0px rgba(44, 51, 53, 0.12);
-}
-
-.bg-gradient-blue {
-  background: linear-gradient(to right, #195B78, #287F8F);
 }
 
 /*# sourceMappingURL=theme.css.map */

@@ -1,7 +1,9 @@
 <template>
   <section>
     <header class="w-full md:w-11 lg:w-10 xl:w-9 mx-auto mt-7">
-      <h1 class="text-petrol-650 px-3 font-normal text-4xl md:text-6xl gap-2 flex align-items-center">
+      <h1
+        class="text-petrol-650 px-3 font-normal text-4xl md:text-6xl gap-2 flex align-items-center"
+      >
         Access Manager
         <Button
           icon="pi pi-refresh"

@@ -121,12 +121,15 @@
     </template>
   </Card>
 
-  <ConfirmDialog :group="'accessRequest-' + informationResourceURI" style="width:40rem" />
+  <ConfirmDialog
+    :group="'accessRequest-' + informationResourceURI"
+    style="width: 40rem"
+  />
 </template>
 
 <script setup lang="ts">
 import AccessNeedGroup from "@/components/requests/AccessNeedGroup";
-import {useSolidSession} from "@datev-research/mandat-shared-composables";
+import { useSolidSession } from "@datev-research/mandat-shared-composables";
 import {
   AUTH,
   createResource,
@@ -413,7 +416,7 @@ function confirmGrantWithAccessReceipt(): void {
     message: t("accessRequest.confirmDialog.message"),
     header: t("accessRequest.confirmDialog.header"),
     rejectLabel: t("accessRequest.confirmDialog.cancel"),
-    rejectClass: 'p-button-secondary',
+    rejectClass: "p-button-secondary",
     acceptLabel: t("accessRequest.confirmDialog.authorize"),
     accept: () => {
       // TODO add authorizations from groups and data-authorizations
@@ -432,7 +435,7 @@ function confirmDeclineWithAccessReceipt(): void {
     header: t("accessRequest.declineDialog.header"),
     acceptClass: "p-button-danger",
     rejectLabel: t("accessRequest.declineDialog.cancel"),
-    rejectClass: 'p-button-secondary',
+    rejectClass: "p-button-secondary",
     acceptLabel: t("accessRequest.declineDialog.decline"),
     accept: () => {
       declineWithAccessReceipt();
