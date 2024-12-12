@@ -7,8 +7,8 @@ COPY .npmrc ./
 RUN npm install
 COPY . .
 RUN npm run lint && \
-    npm run test && \
-    npm run build
+    npm run build && \
+    npm run test
 
 # production stage
 FROM nginx:stable-alpine as production-stage
