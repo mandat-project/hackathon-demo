@@ -20,7 +20,7 @@ function setActive(item: TabItemType): void {
 
 <template>
   <div class="tab-list font-medium h-4rem font-normal flex align-items-end" role="list">
-    <TabItem class="px-2" role="listitem" @click="setActive(item)" v-for="item in model" :key="item.id" :item="item" :active="item.id === active" />
+    <TabItem class="px-4" role="listitem" @click="setActive(item)" v-for="item in model" :key="item.id" :item="item" :active="item.id === active" />
   </div>
 </template>
 

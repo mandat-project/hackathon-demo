@@ -291,8 +291,8 @@ async function createDemand(demandContainerUris: string[], payload: string) {
         <template #content>
           <SmeCard>
             <SmeCardHeadline>Service Type</SmeCardHeadline>
-            <ul class="list-none gap-5 p-0 flex flex-column md:flex-row">
-              <li v-for="ad of listedAdvertisements" :key="ad" class="md:col-6">
+            <ul class="list-none gap-5 p-0 flex flex-column md:flex-row justify-content-between">
+              <li v-for="ad of listedAdvertisements" :key="ad" class="w-auto flex-grow-1 flex-shrink-1 flex-basis-0">
                 <AdvertisementCard @adClick="adClick" :ad="ad"/>
               </li>
             </ul>
@@ -338,20 +338,20 @@ async function createDemand(demandContainerUris: string[], payload: string) {
                 <template #content>
 
                   <div class="grid">
-                    <div class="col-12 md:col-3">
+                    <div class="col-4 xl:col-3">
                       <p class="my-0 text-xs text-black-alpha-70">Lowest interest rate: </p>
                       <p class="my-0 text-xl font-semibold">{{ad.lowestInterestRate}} %</p>
                     </div>
-                    <div class="col-12 md:col-3">
+                    <div class="col-4 xl:col-3">
                       <p class="my-0 text-xs text-black-alpha-70">Repayment Periods (months)</p>
                       <p class="my-0 text-xl font-semibold">{{ad.minCreditPeriodMonths}} - {{ad.maxCreditPeriodMonths}}</p>
                     </div>
-                    <div class="col-12 md:col-3">
+                    <div class="col-4  xl:col-3 ">
                       <p class="my-0 text-xs text-black-alpha-70">Contact advertiser at:</p>
                       <a class="my-0 text-xl font-semibold" :href="ad.inbox">advertiser</a>
                     </div>
-                    <div class="col-12 md:col-3 flex justify-content-end">
-                      <Button class="w-full md:w-auto" @click="chosedAdvertiser(ad, index)" icon="pi pi-check">
+                    <div class="col-12 mt-2 xl:mt-0 xl:col-3 flex justify-content-end">
+                      <Button class="w-full xl:w-auto" @click="chosedAdvertiser(ad, index)" icon="pi pi-check">
                         Select&nbsp;
                         <span class="md:hidden">Provider</span>
                         <span class="hidden md:inline">{{ ad.label }}</span>

@@ -26,7 +26,7 @@ $buttonTextColor: variables.$primaryTextColor;
 
 /// Border of a button
 /// @group button
-$buttonBorder: 4px solid transparent;
+$buttonBorder: 1px solid rgba(32, 151, 12, 0.5);
 
 /// Background of a button in hover state
 /// @group button
@@ -94,7 +94,7 @@ $secondaryButtonTextColor: variables.$secondaryTextColor;
 
 /// Border of a secondary button
 /// @group button
-$secondaryButtonBorder: 4px solid transparent;
+$secondaryButtonBorder: 1px solid rgba(0, 0, 0, 0.15);
 
 /// Background of a secondary button in hover state
 /// @group button

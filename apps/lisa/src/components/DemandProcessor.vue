@@ -38,7 +38,7 @@
             </div>
             <Button class="step-button"
                     v-bind:disabled="isDialogShowDataBtnDisabled"
-                    @click="processDataDialogBox()">Show Data</Button>
+                    @click="processDataDialogBox()" severity="secondary">Show Data</Button>
           </div>
           <div v-else-if="currentState === STATES.WaitingForResponse || currentState === STATES.OfferAccepted || currentState === STATES.Terminated" class=" gap-2 ml-2 py-2">
             <StatusChip :status="currentState" v-if="currentState !== STATES.Terminated"></StatusChip>
