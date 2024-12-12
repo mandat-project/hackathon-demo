@@ -24,7 +24,6 @@ jobs:
           node-version: 20
 
       - name: Cache node_modules
-        id: cache-node-modules
         uses: actions/cache/save@v4
         with:
           path: node_modules
@@ -51,7 +50,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: ${{ steps.cache-node-modules.outputs.cache-primary-key }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run Lint
         run: npm run lint
@@ -74,10 +73,9 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: ${{ steps.cache-node-modules.outputs.cache-primary-key }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Cache dist
-        id: cache-libs-dist
         uses: actions/cache/save@v4
         with:
           path: libs/*/dist
@@ -104,13 +102,13 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: node_modules
-          key: ${{ steps.cache-node-modules.outputs.cache-primary-key }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Restore Cache dist
         uses: actions/cache/restore@v4
         with:
           path: libs/*/dist
-          key: ${{ steps.cache-libs-dist.outputs.cache-primary-key }}
+          key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
 
       - name: Run CI Checks
         run: npm run test
