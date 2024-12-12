@@ -19,7 +19,6 @@ module.exports = {
     ],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
-        '^@shared/(.*)$': '<rootDir>/../../libs/$1',
     },
     coveragePathIgnorePatterns: [
         '/node_modules/',

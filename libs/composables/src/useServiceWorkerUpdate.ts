@@ -21,17 +21,21 @@ const refreshApp = () => {
 };
 
 // Listen for our custom event from the SW registration
-'addEventListener' in document && document.addEventListener("serviceWorkerUpdated", updateAvailable, {
-    once: true,
-});
+if ('addEventListener' in document) {
+    document.addEventListener("serviceWorkerUpdated", updateAvailable, {
+        once: true,
+    });
+}
 
 let isRefreshing = false;
 // this must not be in the service worker, since it will be updated ;-)
-'serviceWorker' in navigator && navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (isRefreshing) return;
-    isRefreshing = true;
-    window.location.reload();
-});
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (isRefreshing) return;
+        isRefreshing = true;
+        window.location.reload();
+    });
+}
 
 export const useServiceWorkerUpdate = () => {
     return {

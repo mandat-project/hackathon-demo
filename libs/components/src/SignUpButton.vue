@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "SignUpButton",
@@ -17,9 +17,9 @@ export default defineComponent({
 
     const signUp = () => {
       window.open(
-          "https://solidproject.org//users/get-a-pod",
-          "SignUp",
-          `
+        "https://solidproject.org//users/get-a-pod",
+        "SignUp",
+        `
       scrollbars=yes,
       top=${(screen.height - height) / 2}, 
       left=${(screen.width - width) / 2},
@@ -29,12 +29,10 @@ export default defineComponent({
       );
       // window.close();
     };
-    return {signUp};
+    return { signUp };
   },
 });
 </script>
 
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-</style>
+<style scoped></style>

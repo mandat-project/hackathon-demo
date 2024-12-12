@@ -1,4 +1,5 @@
-import {useSolidProfile, useSolidSession} from "@shared/composables";
+import {useSolidProfile} from "./useSolidProfile";
+import {useSolidSession} from "./useSolidSession";
 import {computed} from "vue";
 
 export const useIsLoggedIn = () => {

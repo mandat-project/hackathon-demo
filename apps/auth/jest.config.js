@@ -1,38 +1,26 @@
 module.exports = {
-  testEnvironment: 'jsdom',
+  testEnvironment: "jsdom",
   verbose: false,
-  setupFilesAfterEnv: ['<rootDir>/../../jest-setup.ts'],
-
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.ts"],
   transform: {
-    '^.+\\.vue$': '@vue/vue3-jest',
-    '^.+\\.jsx?$': 'babel-jest',
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {},
-    ],
+    "^.+\\.vue$": "@vue/vue3-jest",
+    "^.+\\.svg": "<rootDir>/scripts/jest-string-transformer.js",
+    "^.+\\.jsx?$": "babel-jest",
+    "^.+\\.tsx?$": ["ts-jest", {}],
   },
-  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)$',
-  moduleFileExtensions: [
-    'js',
-    'ts',
-    'vue',
+  transformIgnorePatterns: ["node_modules/(?!hackathon-demo)/"],
+  testMatch: [
+    "<rootDir>/src/**/*.spec.ts",
+    "<rootDir>/tests/unit/**/*.ts",
+    "<rootDir>/__tests__/**/*.ts",
   ],
+  moduleFileExtensions: ["js", "ts", "vue"],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^@shared/(.*)$': '<rootDir>/../../libs/$1',
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
-  coveragePathIgnorePatterns: [
-    '/node_modules/',
-    '/tests/',
-  ],
-  coverageReporters: [
-    'text',
-    'json-summary',
-  ],
+  coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
+  coverageReporters: ["text", "json-summary"],
   testEnvironmentOptions: {
-    customExportConditions: [
-      'node',
-      'node-addons',
-    ],
+    customExportConditions: ["node", "node-addons"],
   },
-}
+};

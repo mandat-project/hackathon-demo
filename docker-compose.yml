@@ -1,0 +1,64 @@
+services:
+
+  mandat-app-auth:
+    build:
+      context: ./apps/auth
+      dockerfile: ../../Dockerfile-app
+    ports:
+      - "8084:80"
+
+  mandat-app-lisa:
+    build:
+      context: ./apps/lisa
+      dockerfile: ../../Dockerfile-app
+    ports:
+      - "8081:80"
+
+  mandat-app-max:
+    build:
+      context: ./apps/max
+      dockerfile: ../../Dockerfile-app
+    ports:
+      - "8082:80"
+
+  mandat-app-tom:
+    build:
+      context: ./apps/tom
+      dockerfile: ../../Dockerfile-app
+    ports:
+      - "8083:80"
+
+  mandat-lib-components:
+    build:
+      context: ./libs/components
+      dockerfile: ../../Dockerfile-lib
+
+  mandat-lib-composables:
+    build:
+      context: ./libs/composables
+      dockerfile: ../../Dockerfile-lib
+
+  mandat-lib-solid-interop:
+    build:
+      context: ./libs/solid-interop
+      dockerfile: ../../Dockerfile-lib
+
+  mandat-lib-solid-oidc:
+    build:
+      context: ./libs/solid-oidc
+      dockerfile: ../../Dockerfile-lib
+
+  mandat-lib-solid-requests:
+    build:
+      context: ./libs/solid-requests
+      dockerfile: ../../Dockerfile-lib
+
+  mandat-lib-theme:
+    build:
+      context: ./libs/theme
+      dockerfile: ../../Dockerfile-lib
+
+  mandat-lib-utils:
+    build:
+      context: ./libs/utils
+      dockerfile: ../../Dockerfile-lib

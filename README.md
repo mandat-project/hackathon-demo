@@ -1,5 +1,7 @@
 # MANDAT Hackathon Demo
 
+[![CI](https://github.com/mandat-project/hackathon-demo/actions/workflows/ci.yml/badge.svg?branch=market)](https://github.com/mandat-project/hackathon-demo/actions/workflows/ci.yml)
+
 In this demo, we showcase the initialisation of a business contract between the SME and the BANK in form of a credit
 grant.
 An overview of the current state is provided in Figure 1, where the starting point is indicated by step 0 "create

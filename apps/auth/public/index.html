@@ -13,5 +13,22 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script type="application/javascript">
+        ((global, doc) => {
+            const query = new Map(global.location.search.substring(1).split('&').map(str => str.split('=')));
+            const cssQuery = query.has('css') ? global.decodeURIComponent(query.get('css')) : undefined;
+
+            if (!cssQuery) { return; }
+
+            const cssId = global.btoa(cssQuery);
+            if (!doc.getElementById(cssId)) {
+                // console.log("cssQuery", cssQuery, cssId);
+                const file = doc.createElement("link");
+                file.rel = "stylesheet";
+                file.href = cssQuery;
+                doc.body.appendChild(file);
+            }
+        })(window, document);
+    </script>
   </body>
 </html>
