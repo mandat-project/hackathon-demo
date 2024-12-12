@@ -78,10 +78,12 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Cache dist
-        uses: actions/cache/save@v4
+        uses: actions/cache@v4
         with:
           path: 'libs/*/dist'
           key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
 
       - name: Run Build
         run: npm run build
