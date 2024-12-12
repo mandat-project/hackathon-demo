@@ -4,9 +4,7 @@ Dockerfile*
 docker-compose*
 .dockerignore
 .git
-.github
 .gitignore
 README.md
 LICENSE
 .vscode
-.nx

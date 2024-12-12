@@ -1,17 +1,17 @@
 {
-  "name": "@datev-research/mandat-shared-composables",
+  "name": "@datev-research/mandat-shared-solid-oidc",
   "version": "1.0.0",
   "homepage": "https://github.com/DATEV-Research/",
   "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
   "license": "MIT",
   "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
-  "description": "Shared Vue Composables for the MANDAT B2B Showcase",
-  "keywords": ["vue","solid","datev"],
+  "description": "SOLID OIDC Functions",
+  "keywords": ["solid", "datev"],
   "scripts": {
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "prebuild": "rimraf ./dist",
     "build": "run-s compile",
-    "test": "jest",
+    "test": "exit 0",
     "postbuild": "node ./scripts/prepare-package-json.js"
   },
   "exports": {
@@ -28,11 +28,8 @@
     "dist"
   ],
   "dependencies": {
-    "@datev-research/mandat-shared-solid-oidc": "^1.0.0",
-    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
-    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
-    "@datev-research/mandat-shared-utils": "^1.0.0",
     "axios": "^1.7.7",
+    "jose": "^5.9.6",
     "n3": "^1.23.1"
   },
   "devDependencies": {

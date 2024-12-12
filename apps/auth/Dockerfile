@@ -3,7 +3,7 @@ FROM node:20-alpine as build-stage
 
 WORKDIR /app
 COPY package*.json ./
-# COPY .npmrc ./
+COPY .npmrc ./
 RUN npm install
 COPY . .
 RUN npm run lint && \

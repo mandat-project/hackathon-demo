@@ -1,6 +1,12 @@
 {
   "name": "@datev-research/mandat-shared-utils",
   "version": "1.0.0",
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
+  "description": "Shared Utilities for the MANDAT B2B Showcase",
+  "keywords": ["mandat","solid","datev"],
   "scripts": {
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "prebuild": "rimraf ./dist",

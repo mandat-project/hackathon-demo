@@ -1,14 +1,18 @@
 # build stage
-FROM node:12-alpine3.12 as build-stage
+FROM node:20-alpine as build-stage
+
 WORKDIR /app
 COPY package*.json ./
+# COPY .npmrc ./
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run lint && \
+    npm run test && \
+    npm run build
 
 # production stage
 FROM nginx:stable-alpine as production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-COPY prod_nginx.conf /etc/nginx/nginx.conf
+# COPY prod_nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

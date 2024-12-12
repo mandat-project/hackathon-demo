@@ -2,6 +2,10 @@
   "name": "@apps/auth",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "repository": "github:DATEV-Research/Solid-authorization-app",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

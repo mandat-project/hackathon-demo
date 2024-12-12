@@ -3,7 +3,7 @@
 This is a monorepo library and the package.json may not include all the actual dependencies.
 
 It uses the vue-cli service to build library files for CommonJS and UMD. You can just import and use 
-`@shared/components` or for the GitHub dep `@datev-research/mandat-shared-components`.
+`@datev-research/mandat-shared-components`.
 
 ## Project setup
 ```
