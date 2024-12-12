@@ -9,7 +9,7 @@
     <router-view />
   </main>
 
-  <UnauthenticatedCard v-else/>
+  <UnauthenticatedCard v-else />
 
   <Toast
     position="bottom-right"
@@ -19,10 +19,16 @@
 
 <script setup lang="ts">
 import appLogo from "@/assets/logo.svg";
-import {AuthAppHeaderBar, UnauthenticatedCard} from "@datev-research/mandat-shared-components";
-import {useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
+import {
+  AuthAppHeaderBar,
+  UnauthenticatedCard,
+} from "@datev-research/mandat-shared-components";
+import {
+  useSolidProfile,
+  useSolidSession,
+} from "@datev-research/mandat-shared-composables";
 import Toast from "primevue/toast";
-import {computed} from "vue";
+import { computed } from "vue";
 import router from "./router";
 
 const { session, restoreSession } = useSolidSession();
