@@ -1,5 +1,5 @@
 <template>
-  <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation">
+  <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation" class="pb-4">
     <Card>
       <template #content>
         <div class="card-container">
