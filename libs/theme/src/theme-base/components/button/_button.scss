@@ -81,7 +81,9 @@
     font-size: general.$fontSize;
     transition: general.$formElementTransition;
     border-radius: general.$borderRadius;
-    outline: button.$buttonBorder;
+    &:not(:disabled){
+        outline: button.$buttonBorder;
+    }
 
     &:not(:disabled):hover {
         background: button.$buttonHoverBg;
