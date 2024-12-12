@@ -81,6 +81,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      - name: Cache dist
+        uses: actions/cache@v4
+        with:
+          path: libs/*/dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
+
       - name: Run Build
         run: npm run build
 
@@ -105,6 +113,14 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      - name: Cache dist
+        uses: actions/cache@v4
+        with:
+          path: libs/*/dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
 
       - name: Run CI Checks
         run: npm run test
