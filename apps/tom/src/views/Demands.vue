@@ -10,25 +10,21 @@ import {
 } from "@/constants/solid-urls";
 import router from "@/router";
 import {Demand} from "@/types/Demand";
-import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@shared/composables";
-import {PageHeadline, HorizontalLine} from "@shared/components";
+import {getDataRegistrationContainers} from "@datev-research/mandat-shared-solid-interop";
 import {
   createResource,
   CREDIT,
-  getContainerItems,
-  getDataRegistrationContainers,
-  getLocationHeader,
+  getContainerItems, getLocationHeader,
   getResource,
   INTEROP,
-  LDP,
-  parseToN3,
-  putResource,
+  LDP, parseToN3, putResource,
   SCHEMA,
-  VCARD,
-  XSD,
-} from "@shared/solid";
-import {fetchStoreOf, getContainerUris} from "@shared/utils";
+  VCARD, XSD
+} from "@datev-research/mandat-shared-solid-requests";
 import {toRef, watchThrottled} from "@vueuse/core";
+import {HorizontalLine, PageHeadline} from "@datev-research/mandat-shared-components";
+import {useCache, useIsLoggedIn, useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
+import {fetchStoreOf, getContainerUris} from "@datev-research/mandat-shared-utils";
 import {Literal, NamedNode, Store, Writer} from "n3";
 import {useToast} from "primevue/usetoast";
 import {computed, ref, watch} from "vue";
@@ -364,12 +360,20 @@ const createOrder = async (amount: number, offerId?: string) => {
 };
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
+  const authAppURI = authAgent.value;
+  const requestUri = encodeURIComponent(inspectedAccessRequestURI);
+  const redirectUri = encodeURIComponent(window.location.origin + "/accessRequestHandled");
+  const cssTheme = encodeURIComponent(window.location.origin + "/auth.css");
+
+  const queries = {
+    uri: requestUri,
+    app_redirect: redirectUri,
+    css: cssTheme,
+  };
+  const redirectUrl = `${authAppURI}?${Object.entries(queries).map(group => group.join("=")).join("&")}`;
+
   window.open(
-      `${authAgent.value}?uri=${encodeURIComponent(
-          inspectedAccessRequestURI
-      )}&app_redirect=${encodeURIComponent(
-          window.location.origin + "/accessRequestHandled"
-      )}`,
+      redirectUrl,
       "_self"
   );
 }

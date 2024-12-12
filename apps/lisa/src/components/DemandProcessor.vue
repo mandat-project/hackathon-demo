@@ -96,14 +96,34 @@
 
 <script setup lang="ts">
 import BusinessData from "@/components/BusinessDataPanel.vue";
-import {useCache, useSolidProfile, useSolidSession} from '@shared/composables';
+import StatusChip from "@/components/StatusChip.vue";
+import {
+  businessAssessmentTree,
+  documentCreationDemandShapeTreeUri,
+  offerShapeTreeUri,
+  orderShapeTreeUri
+} from "@/constatns/solid-urls";
+import {STATES} from "@/enums/states";
+import {TAB_STATE} from "@/enums/tabsState";
+
+import {storeDemands} from "@/utils/demands-data";
+import {
+  getAccessBeingSetBody,
+  getCreateOfferResourceBody,
+  getDataBody,
+  getDocumentCreationDemandBody
+} from "@/utils/request-access";
+import {DacklTextInput} from "@datev-research/mandat-shared-components";
+import {useCache, useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
+import {
+  createResourceInAnyRegistrationOfShape,
+  getDataRegistrationContainers
+} from "@datev-research/mandat-shared-solid-interop";
 import {
   createResource,
-  createResourceInAnyRegistrationOfShape,
   CREDIT,
   FOAF,
   getContainerItems,
-  getDataRegistrationContainers,
   getLocationHeader,
   getResource,
   INTEROP,
@@ -112,30 +132,13 @@ import {
   SCHEMA,
   VCARD,
   XSD
-} from '@shared/solid';
+} from "@datev-research/mandat-shared-solid-requests";
 import {AxiosResponse} from 'axios';
 import {Literal, NamedNode, Store, Writer} from 'n3';
+import Card from "primevue/card";
 import {useToast} from 'primevue/usetoast';
 import {computed, reactive, Ref, ref, watch} from 'vue';
-import Card from "primevue/card";
-import {DacklTextInput} from "@shared/components";
-import {STATES} from "@/enums/states";
-import {TAB_STATE} from "@/enums/tabsState";
-import {
-  businessAssessmentTree,
-  documentCreationDemandShapeTreeUri,
-  offerShapeTreeUri,
-  orderShapeTreeUri
-} from "@/constatns/solid-urls";
-import StatusChip from "@/components/StatusChip.vue";
-import {
-  getAccessBeingSetBody,
-  getCreateOfferResourceBody,
-  getDataBody,
-  getDocumentCreationDemandBody
-} from "@/utils/request-access";
 
-import { storeDemands } from "@/utils/demands-data";
 const props = defineProps<{ demandUri: string, demandState:string }>();
 const {accessInbox, authAgent, memberOf} = useSolidProfile()
 const toast = useToast();

@@ -56,10 +56,7 @@
 </template>
 
 <script lang="ts">
-import { useSolidProfile, useSolidSession } from "@shared/composables";
-import { deleteResource, getResource, postResource } from "@shared/solid";
-import { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from "axios";
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "LDN",
@@ -178,4 +175,5 @@ pre {
 .highlight {
   box-shadow: 0 0 10px 5px var(--primary-color);
 }
-</style>, AxiosRequestConfig, AxiosResponse, AxiosRequestConfig, AxiosResponse
+</style>
+, AxiosRequestConfig, AxiosResponse, AxiosRequestConfig, AxiosResponse

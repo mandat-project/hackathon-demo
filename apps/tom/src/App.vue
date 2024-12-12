@@ -1,5 +1,5 @@
 <template>
-  <DacklHeaderBar app-name="Easy Loan" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" :background-color="bg-gradient-blue" />
+  <DacklHeaderBar app-name="Easy Loan" :app-logo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" />
 
   <div class="px-4 pt-3 bg-gradient-blue">
     <TabList class="mt-4" @item-change="tabListItemChange" :model="tabMenu" :active="routeName" />
@@ -39,8 +39,8 @@
 </template>
 
 <script lang="ts" setup>
-import {DacklHeaderBar, TabItemType, TabList} from "@shared/components";
-import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@shared/composables";
+import {DacklHeaderBar, TabItemType, TabList} from "@datev-research/mandat-shared-components";
+import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import Button from "primevue/button";
 import Card from "primevue/card";
 import Toast from "primevue/toast";

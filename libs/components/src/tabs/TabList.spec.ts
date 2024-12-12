@@ -1,16 +1,15 @@
-import { mount } from '@vue/test-utils';
-import { TabItemType } from './TabItemType';
-// TODO: somehow I can not directly import Vue Components :/
-const TabItem = require("./TabItem.vue").default;
-const TabList = require("./TabList.vue").default;
+import TabItem from "@/tabs/TabItem.vue";
+import TabList from "@/tabs/TabList.vue";
+import { mount } from "@vue/test-utils";
+import { TabItemType } from "./TabItemType";
 
-describe('TabList', () => {
+describe("TabList", () => {
   const mockModel: TabItemType[] = [
-    { id: 'tab1', label: 'Tab 1' },
-    { id: 'tab2', label: 'Tab 2' },
+    { id: "tab1", label: "Tab 1" },
+    { id: "tab2", label: "Tab 2" },
   ];
 
-  it('renders all tab items', async () => {
+  it("renders all tab items", async () => {
     const wrapper = mount(TabList, {
       props: { model: mockModel },
     });
@@ -18,19 +17,22 @@ describe('TabList', () => {
     expect(wrapper.findAllComponents(TabItem)).toHaveLength(mockModel.length);
   });
 
-  it('emits itemChange event when a tab item is clicked', async () => {
+  it("emits itemChange event when a tab item is clicked", async () => {
     const wrapper = mount(TabList, {
       props: { model: mockModel },
     });
 
     const tabItem = wrapper.findAllComponents(TabItem)[0];
-    await tabItem?.trigger('click');
+    await tabItem?.trigger("click");
 
-    expect(wrapper.emitted('itemChange')).toHaveLength(1);
-    expect(wrapper.emitted('itemChange')![0][0]).toBe(mockModel[0].id);
+    expect(wrapper.emitted("itemChange")).toHaveLength(1);
+    const emitResult = wrapper.emitted("itemChange");
+    if (emitResult) {
+      expect(emitResult[0][0]).toBe(mockModel[0].id);
+    }
   });
 
-  it('sets active tab item when active prop is changed', async () => {
+  it("sets active tab item when active prop is changed", async () => {
     const wrapper = mount(TabList, {
       props: { model: mockModel, active: mockModel[0].id },
     });
@@ -41,7 +43,7 @@ describe('TabList', () => {
     expect(wrapper.vm.active).toBe(mockModel[1].id);
   });
 
-  it('renders active tab item correctly', async () => {
+  it("renders active tab item correctly", async () => {
     const wrapper = mount(TabList, {
       props: { model: mockModel, active: mockModel[0].id },
     });
