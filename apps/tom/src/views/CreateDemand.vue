@@ -301,7 +301,7 @@ async function createDemand(demandContainerUris: string[], payload: string) {
           <SmeCard>
             <SmeCardHeadline>Service Type</SmeCardHeadline>
             <ul class="list-none gap-5 p-0 flex flex-column md:flex-row">
-              <li v-for="ad of listedAdvertisements" :key="ad">
+              <li v-for="ad of listedAdvertisements" :key="ad" class="md:col-6">
                 <AdvertisementCard @adClick="adClick" :ad="ad"/>
               </li>
             </ul>

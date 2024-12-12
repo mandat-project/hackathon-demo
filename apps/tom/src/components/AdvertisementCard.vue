@@ -2,14 +2,13 @@
   <Card>
     <template #content>
       <div class="grid">
-        <div class="md:col-4 p-2 bg-bluegray-50 flex justify-content-center">
-          <img class="max-w-full" :src="toAdvertisementImage(ad)" :alt="toAdvertisementName(ad)">
+          <div class="md:col-4 p-2 bg-bluegray-50 flex justify-content-center">
+            <img class="max-w-full" :src="toAdvertisementImage(ad)" :alt="toAdvertisementName(ad)">
+          </div>
+          <div class="col-8">
+            <h2>{{ toAdvertisementName(ad) }} <a :href="ad" target="_blank" class="no-underline">*</a></h2>
+          </div>
         </div>
-        <div class="md:col-8">
-          <h3>{{ toAdvertisementName(ad) }}</h3>
-          <p class="text-black-alpha-70 break-all">{{ ad }}</p>
-        </div>
-      </div>
     </template>
     <template #footer>
       <Button @click="emit('adClick', ad)" class="w-full justify-content-center">Find Provider</Button>
