@@ -1,11 +1,31 @@
 {
   "name": "@datev-research/mandat-shared-theme",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
+  "description": "Shared Theme for the MANDAT B2B Showcase",
+  "keywords": [
+    "mandat",
+    "theme",
+    "solid",
+    "datev"
+  ],
   "scripts": {
     "build": "sass --update src/datev-theme/theme.scss:dist/theme.css"
   },
   "exports": {
     "./theme.css": "./dist/theme.css"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "sass": "^1.72.0"
+  },
+  "gitHead": "29e1f1b4cc72e7b2c2539fa737520418b7632503"
 }

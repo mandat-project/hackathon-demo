@@ -26,7 +26,7 @@ jobs:
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
-          path: node_modules
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -48,16 +48,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
+      - name: Restore Cache node_modules
+        uses: actions/cache/restore@v4
         with:
-          path: node_modules
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Run Lint
-        run: npm run lint  # Stelle sicher, dass du ein Lint-Skript in deinem package.json hast
+        run: npm run lint
 
   build:
     runs-on: ubuntu-latest
@@ -73,13 +71,17 @@ jobs:
         with:
           node-version: 20
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
+      - name: Restore Cache node_modules
+        uses: actions/cache/restore@v4
         with:
-          path: node_modules
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+
+      - name: Cache dist
+        uses: actions/cache/save@v4
+        with:
+          path: 'libs/*/dist'
+          key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
 
       - name: Run Build
         run: npm run build
@@ -87,7 +89,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs:
-      - install
+      - build
 
     steps:
       - name: Checkout code
@@ -98,13 +100,17 @@ jobs:
         with:
           node-version: 20
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
+      - name: Restore Cache node_modules
+        uses: actions/cache/restore@v4
         with:
-          path: node_modules
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+
+      - name: Restore Cache dist
+        uses: actions/cache/restore@v4
+        with:
+          path: 'libs/*/dist'
+          key: ${{ runner.os }}-dist-${{ hashFiles('libs/*/dist') }}
 
       - name: Run CI Checks
         run: npm run test

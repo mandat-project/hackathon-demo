@@ -1,7 +1,11 @@
 {
   "name": "@apps/auth",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "repository": "github:DATEV-Research/Solid-authorization-app",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,12 +14,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@datev-research/mandat-shared-components": "^1.0.0",
-    "@datev-research/mandat-shared-composables": "^1.0.0",
-    "@datev-research/mandat-shared-utils": "^1.0.0",
-    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
-    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
-    "@datev-research/mandat-shared-theme": "^1.0.0",
+    "@datev-research/mandat-shared-components": "^1.0.1",
+    "@datev-research/mandat-shared-composables": "^1.0.1",
+    "@datev-research/mandat-shared-solid-interop": "^1.0.1",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.1",
+    "@datev-research/mandat-shared-theme": "^1.0.1",
+    "@datev-research/mandat-shared-utils": "^1.0.1",
     "@vueuse/components": "^11.3.0",
     "@vueuse/core": "^11.3.0",
     "axios": "^1.7.8",

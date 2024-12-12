@@ -2,35 +2,29 @@
   "name": "hackathon-demo",
   "version": "0.0.1",
   "private": true,
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "repository": "github:DATEV-Research/Solid-B2B-showcase",
   "scripts": {
+    "start": "npm run serve",
     "serve": "lerna run serve",
     "build": "lerna run build",
     "test": "lerna run test",
     "lint": "lerna run lint",
-    "auth:build": "lerna run build --scope @apps/auth",
-    "auth:lint": "lerna run lint --scope @apps/auth",
-    "auth:serve": "lerna run serve --scope @apps/auth",
-    "lisa:build": "lerna run build --scope @apps/lisa",
-    "lisa:lint": "lerna run lint --scope @apps/lisa",
-    "lisa:serve": "lerna run serve --scope @apps/lisa",
-    "max:build": "lerna run build --scope @apps/max",
-    "max:lint": "lerna run lint --scope @apps/max",
-    "max:serve": "lerna run serve --scope @apps/max",
+
+    "version": "lerna version",
+    "publish": "lerna publish",
+
+    "apps:build": "lerna run build --scope \"@apps/*\"",
+    "apps:lint": "lerna run lint --scope \"@apps/*\"",
+    "apps:test": "lerna run test --scope \"@apps/*\"",
+
     "libs:build": "lerna run build --scope \"@datev-research/*\"",
     "libs:lint": "lerna run lint --scope \"@datev-research/*\"",
     "libs:test": "lerna run test --scope \"@datev-research/*\"",
-    "prepare": "husky",
-    "start": "npm run serve",
-    "tom:build": "lerna run build --scope @apps/tom",
-    "tom:lint": "lerna run lint --scope @apps/tom",
-    "tom:serve": "lerna run serve --scope @apps/tom"
-  },
-  "exports": {
-    "./libs/components": "./libs/components",
-    "./libs/composables": "./libs/composables",
-    "./libs/solid": "./libs/solid",
-    "./libs/theme/theme.css": "./libs/theme/dist/theme.css",
-    "./libs/utils": "./libs/utils"
+
+    "prepare": "husky"
   },
   "dependencies": {
     "@vueuse/components": "^11.1.0",

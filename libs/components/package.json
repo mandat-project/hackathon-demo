@@ -1,28 +1,22 @@
 {
   "name": "@datev-research/mandat-shared-components",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
+  "description": "Shared Vue Components for the MANDAT B2B Showcase",
+  "keywords": [
+    "vue",
+    "solid",
+    "datev"
+  ],
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "run-p --max-parallel 5 build:*",
-    "build:Index": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name SharedComponents ./index.ts",
-    "build:DateFormatted": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name DateFormatted ./src/DateFormatted.vue",
-    "build:TabItem": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name TabItem ./src/tabs/TabItem.vue",
-    "build:PageHeadline": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name PageHeadline ./src/PageHeadline.vue",
-    "build:DacklTextInput": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name DacklTextInput ./src/DacklTextInput.vue",
-    "build:DacklHeaderBar": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name DacklHeaderBar ./src/DacklHeaderBar.vue",
-    "build:SignUpButton": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name SignUpButton ./src/SignUpButton.vue",
-    "build:TabList": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name TabList ./src/tabs/TabList.vue",
-    "build:CheckMarkSvg": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name CheckMarkSvg ./src/CheckMarkSvg.vue",
-    "build:LDNs": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name LDNs ./src/LDNs.vue",
-    "build:SmeCard": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name SmeCard ./src/SmeCard.vue",
-    "build:LoginButton": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name LoginButton ./src/LoginButton.vue",
-    "build:LDN": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name LDN ./src/LDN.vue",
-    "build:AuthAppHeaderBar": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name AuthAppHeaderBar ./src/AuthAppHeaderBar.vue --verbose",
-    "build:AccessRequestCallback": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name AccessRequestCallback ./src/AccessRequestCallback.vue",
-    "build:HeaderBar": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name HeaderBar ./src/HeaderBar.vue",
-    "build:SmeCardHeadline": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name SmeCardHeadline ./src/SmeCardHeadline.vue",
-    "build:LogoutButton": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name LogoutButton ./src/LogoutButton.vue",
-    "build:HorizontalLine": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name HorizontalLine ./src/HorizontalLine.vue",
+    "build": "vue-cli-service build --target lib --formats commonjs,umd --no-clean --name SharedComponents ./index.ts",
     "test": "jest",
     "lint": "vue-cli-service lint"
   },
@@ -30,115 +24,8 @@
     ".": {
       "require": "./dist/SharedComponents.common.js",
       "import": "./dist/SharedComponents.common.js",
-      "browser": "./dist/SharedComponents.umd.js"
-    },
-    "./DateFormatted": {
-      "sfc": "./src/DateFormatted.vue",
-      "require": "./dist/DateFormatted.common.js",
-      "import": "./dist/DateFormatted.common.js",
-      "browser": "./dist/DateFormatted.umd.js"
-    },
-    "./TabItem": {
-      "sfc": "./src/tabs/TabItem.vue",
-      "require": "./dist/TabItem.common.js",
-      "import": "./dist/TabItem.common.js",
-      "browser": "./dist/TabItem.umd.js"
-    },
-    "./PageHeadline": {
-      "sfc": "./src/PageHeadline.vue",
-      "require": "./dist/PageHeadline.common.js",
-      "import": "./dist/PageHeadline.common.js",
-      "browser": "./dist/PageHeadline.umd.js"
-    },
-    "./DacklTextInput": {
-      "sfc": "./src/DacklTextInput.vue",
-      "require": "./dist/DacklTextInput.common.js",
-      "import": "./dist/DacklTextInput.common.js",
-      "browser": "./dist/DacklTextInput.umd.js"
-    },
-    "./DacklHeaderBar": {
-      "sfc": "./src/DacklHeaderBar.vue",
-      "require": "./dist/DacklHeaderBar.common.js",
-      "import": "./dist/DacklHeaderBar.common.js",
-      "browser": "./dist/DacklHeaderBar.umd.js"
-    },
-    "./SignUpButton": {
-      "sfc": "./src/SignUpButton.vue",
-      "require": "./dist/SignUpButton.common.js",
-      "import": "./dist/SignUpButton.common.js",
-      "browser": "./dist/SignUpButton.umd.js"
-    },
-    "./TabList": {
-      "sfc": "./src/tabs/TabList.vue",
-      "require": "./dist/TabList.common.js",
-      "import": "./dist/TabList.common.js",
-      "browser": "./dist/TabList.umd.js"
-    },
-    "./CheckMarkSvg": {
-      "sfc": "./src/CheckMarkSvg.vue",
-      "require": "./dist/CheckMarkSvg.common.js",
-      "import": "./dist/CheckMarkSvg.common.js",
-      "browser": "./dist/CheckMarkSvg.umd.js"
-    },
-    "./LDNs": {
-      "sfc": "./src/LDNs.vue",
-      "require": "./dist/LDNs.common.js",
-      "import": "./dist/LDNs.common.js",
-      "browser": "./dist/LDNs.umd.js"
-    },
-    "./SmeCard": {
-      "sfc": "./src/SmeCard.vue",
-      "require": "./dist/SmeCard.common.js",
-      "import": "./dist/SmeCard.common.js",
-      "browser": "./dist/SmeCard.umd.js"
-    },
-    "./LoginButton": {
-      "sfc": "./src/LoginButton.vue",
-      "require": "./dist/LoginButton.common.js",
-      "import": "./dist/LoginButton.common.js",
-      "browser": "./dist/LoginButton.umd.js"
-    },
-    "./LDN": {
-      "sfc": "./src/LDN.vue",
-      "require": "./dist/LDN.common.js",
-      "import": "./dist/LDN.common.js",
-      "browser": "./dist/LDN.umd.js"
-    },
-    "./AuthAppHeaderBar": {
-      "sfc": "./src/AuthAppHeaderBar.vue",
-      "require": "./dist/AuthAppHeaderBar.common.js",
-      "import": "./dist/AuthAppHeaderBar.common.js",
-      "browser": "./dist/AuthAppHeaderBar.umd.js"
-    },
-    "./AccessRequestCallback": {
-      "sfc": "./src/AccessRequestCallback.vue",
-      "require": "./dist/AccessRequestCallback.common.js",
-      "import": "./dist/AccessRequestCallback.common.js",
-      "browser": "./dist/AccessRequestCallback.umd.js"
-    },
-    "./HeaderBar": {
-      "sfc": "./src/HeaderBar.vue",
-      "require": "./dist/HeaderBar.common.js",
-      "import": "./dist/HeaderBar.common.js",
-      "browser": "./dist/HeaderBar.umd.js"
-    },
-    "./SmeCardHeadline": {
-      "sfc": "./src/SmeCardHeadline.vue",
-      "require": "./dist/SmeCardHeadline.common.js",
-      "import": "./dist/SmeCardHeadline.common.js",
-      "browser": "./dist/SmeCardHeadline.umd.js"
-    },
-    "./LogoutButton": {
-      "sfc": "./src/LogoutButton.vue",
-      "require": "./dist/LogoutButton.common.js",
-      "import": "./dist/LogoutButton.common.js",
-      "browser": "./dist/LogoutButton.umd.js"
-    },
-    "./HorizontalLine": {
-      "sfc": "./src/HorizontalLine.vue",
-      "require": "./dist/HorizontalLine.common.js",
-      "import": "./dist/HorizontalLine.common.js",
-      "browser": "./dist/HorizontalLine.umd.js"
+      "browser": "./dist/SharedComponents.umd.js",
+      "default": "./dist/SharedComponents.common.js"
     }
   },
   "files": [
@@ -146,12 +33,12 @@
   ],
   "main": "./dist/SharedComponents.common.js",
   "dependencies": {
-    "@datev-research/mandat-shared-composables": "^1.0.0",
+    "@datev-research/mandat-shared-composables": "^1.0.1",
     "vue": "^3.2.13"
   },
   "devDependencies": {
-    "@types/n3": "^1.21.1",
     "@types/jest": "^29.0.0",
+    "@types/n3": "^1.21.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
@@ -162,15 +49,16 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.0.3",
-    "lint-staged": "^11.1.2",
     "jest": "^29.0.0",
-    "ts-jest": "^29.0.0",
+    "lint-staged": "^11.1.2",
     "npm-run-all2": "^7.0.1",
     "prettier": "^2.4.1",
     "rimraf": "^6.0.1",
+    "ts-jest": "^29.0.0",
     "typescript": "^5.4.5"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
-  }
+  },
+  "gitHead": "29e1f1b4cc72e7b2c2539fa737520418b7632503"
 }

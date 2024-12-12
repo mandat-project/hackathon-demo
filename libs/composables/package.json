@@ -1,6 +1,19 @@
 {
   "name": "@datev-research/mandat-shared-composables",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "homepage": "https://github.com/DATEV-Research/",
+  "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
+  "description": "Shared Vue Composables for the MANDAT B2B Showcase",
+  "keywords": [
+    "vue",
+    "solid",
+    "datev"
+  ],
   "scripts": {
     "compile": "tsc -b ./tsconfig.cjs.json ./tsconfig.esm.json ./tsconfig.types.json",
     "prebuild": "rimraf ./dist",
@@ -18,24 +31,26 @@
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
   "dependencies": {
-    "@datev-research/mandat-shared-solid-oidc": "^1.0.0",
-    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
-    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
-    "@datev-research/mandat-shared-utils": "^1.0.0",
+    "@datev-research/mandat-shared-solid-interop": "^1.0.1",
+    "@datev-research/mandat-shared-solid-oidc": "^1.0.1",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.1",
+    "@datev-research/mandat-shared-utils": "^1.0.1",
     "axios": "^1.7.7",
     "n3": "^1.23.1"
   },
   "devDependencies": {
-    "@types/n3": "^1.21.1",
     "@types/jest": "^29.0.0",
+    "@types/n3": "^1.21.1",
+    "jest": "^29.0.0",
     "npm-run-all2": "^7.0.1",
     "rimraf": "^6.0.1",
-    "jest": "^29.0.0",
     "ts-jest": "^29.0.0",
     "typescript": "^5.7.2"
-  }
+  },
+  "gitHead": "29e1f1b4cc72e7b2c2539fa737520418b7632503"
 }

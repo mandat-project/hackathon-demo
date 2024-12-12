@@ -1,6 +1,6 @@
 {
   "name": "@apps/max",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -15,6 +15,7 @@
     "@babel/preset-env": "^7.24.3",
     "@babel/preset-typescript": "^7.26.0",
     "@types/jest": "^29.0.0",
+    "@vue/cli-service": "~5.0.0",
     "@vue/test-utils": "^2.4.5",
     "@vue/vue3-jest": "^29.0.0",
     "babel-jest": "^29.0.0",
@@ -23,12 +24,12 @@
     "ts-jest": "^29.0.0"
   },
   "dependencies": {
-    "@datev-research/mandat-shared-components": "^1.0.0",
-    "@datev-research/mandat-shared-composables": "^1.0.0",
-    "@datev-research/mandat-shared-utils": "^1.0.0",
-    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
-    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
-    "@datev-research/mandat-shared-theme": "^1.0.0",
+    "@datev-research/mandat-shared-components": "^1.0.1",
+    "@datev-research/mandat-shared-composables": "^1.0.1",
+    "@datev-research/mandat-shared-solid-interop": "^1.0.1",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.1",
+    "@datev-research/mandat-shared-theme": "^1.0.1",
+    "@datev-research/mandat-shared-utils": "^1.0.1",
     "github-fork-ribbon-css": "^0.2.3"
   }
 }
