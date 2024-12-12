@@ -116,7 +116,7 @@ import {
   getDataBody,
   getDocumentCreationDemandBody
 } from "@/utils/request-access";
-import {DacklTextInput} from "@datev-research/mandat-shared-components";
+import {DacklTextInput, LoadingDialog} from "@datev-research/mandat-shared-components";
 import {useCache, useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import {
   createResourceInAnyRegistrationOfShape,
