@@ -22,5 +22,8 @@
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "sass": "^1.72.0"
+  },
   "gitHead": "29e1f1b4cc72e7b2c2539fa737520418b7632503"
 }
