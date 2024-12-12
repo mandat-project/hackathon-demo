@@ -1,4 +1,4 @@
-import {useCache} from "@shared/composables";
+import {useCache} from "./useCache";
 
 describe('useCache', () => {
     it('should be defined', () => {

@@ -1,5 +1,5 @@
-import {useCache} from "@shared/composables";
-import router from ".";
+import router from "@/router";
+import {useCache} from "@datev-research/mandat-shared-composables";
 
 export default function onResult(
   accessRequestUri: string,

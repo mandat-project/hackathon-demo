@@ -1,12 +1,12 @@
-import {AS, createResource, getResource, LDP, parseToN3, PUSH, RDF} from "@shared/solid";
+import {Session} from "@datev-research/mandat-shared-solid-oidc";
+import {AS, createResource, getResource, LDP, parseToN3, PUSH, RDF} from "@datev-research/mandat-shared-solid-requests";
 import {useServiceWorkerNotifications} from "./useServiceWorkerNotifications";
 import {useSolidSession} from "./useSolidSession";
 import {WebPushSubscription} from "./webPushSubscription";
 
-const {unsubscribeFromPush, subscribeToPush} =
-    useServiceWorkerNotifications();
-
-const {session} = useSolidSession();
+let unsubscribeFromPush!: Function;
+let subscribeToPush!: Function;
+let session!: Session;
 
 // hardcoding for my demo
 const solidWebPushProfile = "https://solid.aifb.kit.edu/web-push/service";
@@ -87,6 +87,15 @@ const unsubscribeFromResource = async (uri: string) => {
 };
 
 export const useSolidWebPush = () => {
+    if (!session) {
+        session = useSolidSession().session;
+    }
+    if (!unsubscribeFromPush && !subscribeToPush) {
+        const {unsubscribeFromPush: unsubscribeFromPushFunc, subscribeToPush: subscribeToPushFunc} = useServiceWorkerNotifications();
+        unsubscribeFromPush = unsubscribeFromPushFunc;
+        subscribeToPush = subscribeToPushFunc;
+    }
+
     return {
         subscribeForResource,
         unsubscribeFromResource

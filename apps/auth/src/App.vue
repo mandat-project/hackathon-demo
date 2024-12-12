@@ -1,5 +1,9 @@
 <template>
-  <AuthAppHeaderBar :appLogo="appLogo" :isLoggedIn="isLoggedIn" :webId="session.webId" />
+  <AuthAppHeaderBar
+    :appLogo="appLogo"
+    :isLoggedIn="isLoggedIn"
+    :webId="session.webId"
+  />
 
   <main v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
@@ -7,28 +11,31 @@
 
   <UnauthenticatedCard v-else/>
 
-  <Toast position="bottom-right" :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }" />
+  <Toast
+    position="bottom-right"
+    :breakpoints="{ '420px': { width: '100%', right: '0', left: '0' } }"
+  />
 </template>
 
 <script setup lang="ts">
-import {AuthAppHeaderBar, UnauthenticatedCard} from "@shared/components";
-import {useSolidProfile, useSolidSession} from "@shared/composables";
-import Card from "primevue/card";
+import appLogo from "@/assets/logo.svg";
+import {AuthAppHeaderBar, UnauthenticatedCard} from "@datev-research/mandat-shared-components";
+import {useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import Toast from "primevue/toast";
 import {computed} from "vue";
 import router from "./router";
 
-const appLogo = require('@/assets/logo.svg');
-
 const { session, restoreSession } = useSolidSession();
-const { memberOf } = useSolidProfile()
+const { memberOf } = useSolidProfile();
 const isLoggedIn = computed(() => {
-  return (!!((session.webId && !memberOf) || (session.webId && memberOf && session.rdp)))
-})
+  return !!(
+    (session.webId && !memberOf) ||
+    (session.webId && memberOf && session.rdp)
+  );
+});
 
 // re-use Solid session
-router.isReady().then(restoreSession)
-
+router.isReady().then(() => restoreSession());
 </script>
 
 <style>

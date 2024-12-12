@@ -14,10 +14,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, watch} from "vue";
-
-import LDN from "./LDN.vue";
-// import {useSolidInbox} from "@shared/composables";
+import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "LDNs",

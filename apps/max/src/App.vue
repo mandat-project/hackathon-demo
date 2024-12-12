@@ -24,8 +24,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import Toast from "primevue/toast";
-import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@shared/composables";
-import {DacklHeaderBar, UnauthenticatedCard} from "@shared/components";
+import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@datev-research/mandat-shared-composables";
+import {DacklHeaderBar, UnauthenticatedCard} from "@datev-research/mandat-shared-components";
 import router from "./router";
 
 const appLogo = require('@/assets/logo.png');

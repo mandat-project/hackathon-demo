@@ -1,8 +1,6 @@
-import component from "*.vue";
 import CreateDemand from "@/views/CreateDemand.vue";
 import Demands from "@/views/Demands.vue";
-import Services from "@/views/Services.vue";
-import {AccessRequestCallback} from "@shared/components";
+import {AccessRequestCallback} from "@datev-research/mandat-shared-components";
 import {createRouter, createWebHistory, RouteRecordRaw} from "vue-router";
 import onResult from "./accessRequestHandledCallback";
 
