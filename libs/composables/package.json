@@ -1,10 +1,12 @@
 {
   "name": "@datev-research/mandat-shared-composables",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/DATEV-Research/",
   "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
   "license": "MIT",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
   "description": "Shared Vue Composables for the MANDAT B2B Showcase",
   "keywords": [
@@ -34,10 +36,10 @@
     "dist"
   ],
   "dependencies": {
-    "@datev-research/mandat-shared-solid-interop": "^1.0.0",
-    "@datev-research/mandat-shared-solid-oidc": "^1.0.0",
-    "@datev-research/mandat-shared-solid-requests": "^1.0.0",
-    "@datev-research/mandat-shared-utils": "^1.0.0",
+    "@datev-research/mandat-shared-solid-interop": "^1.0.1",
+    "@datev-research/mandat-shared-solid-oidc": "^1.0.1",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.1",
+    "@datev-research/mandat-shared-utils": "^1.0.1",
     "axios": "^1.7.7",
     "n3": "^1.23.1"
   },
