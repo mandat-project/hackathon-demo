@@ -7,7 +7,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
+  "repository": { "type": "git", "url": "https://github.com/DATEV-Research/Solid-B2B-showcase-libs.git" },
   "description": "Shared Utilities for the MANDAT B2B Showcase",
   "keywords": [
     "mandat",
@@ -42,7 +42,7 @@
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
     "primevue": "^3.53.0",
-    "vue": "3.4.27",
+    "vue": "~3.4.38",
     "vue-i18n": "^10.0.5",
     "vue-router": "^4.0.3"
   },

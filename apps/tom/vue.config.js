@@ -1,12 +1,12 @@
 const {defineConfig} = require('@vue/cli-service')
-const {vueBaseConfig} = require("../../vue.base-config");
+const {vueBaseConfig} = process.env.npm_package_config_monorepo ? require("../../vue.base-config") : {};
 
 
 module.exports = defineConfig({
     ...vueBaseConfig,
-    outputDir: '../../dist/tom',
+    outputDir: process.env.npm_package_config_monorepo ? '../../dist/tom' : './dist',
     devServer: {
-        port: 8083
+        port: process.env.npm_package_config_port ?? 8083
     },
     pwa: {
         workboxPluginMode: "InjectManifest",

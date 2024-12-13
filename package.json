@@ -6,6 +6,9 @@
   "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
   "license": "MIT",
   "repository": "github:DATEV-Research/Solid-B2B-showcase",
+  "config": {
+    "monorepo": true
+  },
   "scripts": {
     "start": "npm run serve",
     "preserve": "run-s libs:build",

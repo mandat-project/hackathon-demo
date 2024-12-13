@@ -7,7 +7,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": "github:DATEV-Research/Solid-B2B-showcase-libs",
+  "repository": { "type": "git", "url": "https://github.com/DATEV-Research/Solid-B2B-showcase-libs.git" },
   "description": "SOLID Interop Functions",
   "keywords": [
     "solid",

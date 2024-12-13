@@ -2,8 +2,10 @@ const { defineConfig } = require("@vue/cli-service");
 module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
-  outputDir: "../../dist/auth",
+  outputDir: process.env.npm_package_config_monorepo
+    ? "../../dist/auth"
+    : "./dist",
   devServer: {
-    port: 8084,
+    port: process.env.npm_package_config_port ?? 8084,
   },
 });
