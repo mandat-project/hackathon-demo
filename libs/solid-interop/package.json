@@ -1,6 +1,6 @@
 {
   "name": "@datev-research/mandat-shared-solid-interop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "homepage": "https://github.com/DATEV-Research/",
   "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
   "license": "MIT",
@@ -35,8 +35,8 @@
     "dist"
   ],
   "dependencies": {
-    "@datev-research/mandat-shared-solid-oidc": "^1.0.1",
-    "@datev-research/mandat-shared-solid-requests": "^1.0.1",
+    "@datev-research/mandat-shared-solid-oidc": "^1.0.2",
+    "@datev-research/mandat-shared-solid-requests": "^1.0.2",
     "axios": "^1.7.7",
     "jose": "^5.9.6",
     "n3": "^1.23.1"
@@ -50,5 +50,5 @@
     "ts-jest": "^29.0.0",
     "typescript": "^5.7.2"
   },
-  "gitHead": "29e1f1b4cc72e7b2c2539fa737520418b7632503"
+  "gitHead": "b44c8778440b2c8fe3e34a2001c9f9186a1ebd2a"
 }
