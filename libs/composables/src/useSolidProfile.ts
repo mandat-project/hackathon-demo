@@ -10,10 +10,7 @@ import {
 } from "@datev-research/mandat-shared-solid-requests";
 import {Store} from "n3";
 import {ref, watch} from "vue";
-import type {RdpCapableSession} from "./rdpCapableSession";
 import {useSolidSession} from "./useSolidSession";
-
-let session!: RdpCapableSession;
 
 const name = ref("");
 const img = ref("");
@@ -25,10 +22,7 @@ const memberOf = ref("");
 const hasOrgRDP = ref("");
 
 export const useSolidProfile = () => {
-    if (!session) {
-        const {session: sessionRef} = useSolidSession();
-        session = sessionRef;
-    }
+    const { session } = useSolidSession();
 
     watch(() => session.webId, async () => {
         const webId = session.webId as string;

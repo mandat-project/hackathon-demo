@@ -1,8 +1,8 @@
 <template>
   <AuthAppHeaderBar
-    :appLogo="appLogo"
-    :isLoggedIn="isLoggedIn"
-    :webId="session.webId"
+    :app-logo="appLogo"
+    :is-logged-in="isLoggedIn"
+    :web-id="session.webId"
   />
 
   <main v-if="isLoggedIn && session.rdp !== ''">

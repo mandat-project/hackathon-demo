@@ -8,13 +8,15 @@
   "repository": "github:DATEV-Research/Solid-B2B-showcase",
   "scripts": {
     "start": "npm run serve",
+    "preserve": "run-s libs:build",
     "serve": "lerna run serve",
     "build": "lerna run build",
     "test": "lerna run test",
     "lint": "lerna run lint",
 
     "version": "lerna version",
-    "publish": "lerna publish",
+    "prepublish": "run-s libs:build",
+    "publish": "lerna publish from-package",
 
     "apps:build": "lerna run build --scope \"@apps/*\"",
     "apps:lint": "lerna run lint --scope \"@apps/*\"",

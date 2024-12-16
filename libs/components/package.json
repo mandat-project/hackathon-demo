@@ -1,6 +1,6 @@
 {
   "name": "@datev-research/mandat-shared-components",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "homepage": "https://github.com/DATEV-Research/",
   "author": "DATEV eG <info@datev.de> (https://www.datev.de/)",
   "license": "MIT",
@@ -22,18 +22,21 @@
   },
   "exports": {
     ".": {
+      "sfc": "./index.ts",
       "require": "./dist/SharedComponents.common.js",
-      "import": "./dist/SharedComponents.common.js",
+      "import": "./index.ts",
       "browser": "./dist/SharedComponents.umd.js",
       "default": "./dist/SharedComponents.common.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "index.ts"
   ],
-  "main": "./dist/SharedComponents.common.js",
+  "main": "index.ts",
   "dependencies": {
-    "@datev-research/mandat-shared-composables": "^1.0.1",
+    "@datev-research/mandat-shared-composables": "^1.0.2",
     "vue": "^3.2.13"
   },
   "devDependencies": {
@@ -60,5 +63,5 @@
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
-  "gitHead": "29e1f1b4cc72e7b2c2539fa737520418b7632503"
+  "gitHead": "b44c8778440b2c8fe3e34a2001c9f9186a1ebd2a"
 }
