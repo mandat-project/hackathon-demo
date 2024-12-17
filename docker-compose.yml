@@ -7,23 +7,23 @@ services:
     ports:
       - "8084:80"
 
-  mandat-app-lisa:
+  mandat-app-bank:
     build:
-      context: ./apps/lisa
+      context: ./apps/bank
       dockerfile: ../../Dockerfile-app
     ports:
       - "8081:80"
 
-  mandat-app-max:
+  mandat-app-tao:
     build:
-      context: ./apps/max
+      context: ./apps/tao
       dockerfile: ../../Dockerfile-app
     ports:
       - "8082:80"
 
-  mandat-app-tom:
+  mandat-app-sme:
     build:
-      context: ./apps/tom
+      context: ./apps/sme
       dockerfile: ../../Dockerfile-app
     ports:
       - "8083:80"

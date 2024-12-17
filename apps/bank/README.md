@@ -1,4 +1,4 @@
-# hackathon-template
+# Bank-App (Lisa)
 
 ## Project setup
 

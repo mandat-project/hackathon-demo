@@ -1,4 +1,4 @@
-# hackathon-template
+# TAO App (Max)
 
 ## Project setup
 

@@ -1,4 +1,4 @@
-# SME / Tom / Loan App
+# SME-App (Tom)
 
 The purpose if this is app is to create demands for a loan and get a list of multiple providers. Furthermore, we can handle
 requests and see the status of all of our demands.
