@@ -13,7 +13,7 @@
           </div>
           <div class="col-6">
             <span>Amount</span>
-            <h2>{{ amount }} - {{ currency }}</h2>
+            <h2>{{ Number(amount).toLocaleString('de-DE') }} - {{ currency }}</h2>
           </div>
         </div>
         <div class="border-round-2xl p-4 ml-2" style="background-color:rgba(246, 247, 249, 1);">
