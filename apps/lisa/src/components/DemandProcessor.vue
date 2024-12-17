@@ -1,6 +1,6 @@
 <template>
   <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation">
-    <Card>
+    <Card :data-demand-id="demandUri">
       <template #content>
         <div class="grid pt-0">
           <div class="col-12" v-if ="currentState === STATES.Terminated" >
@@ -145,8 +145,6 @@ const toast = useToast();
 const appMemory = useCache();
 const {session} = useSolidSession();
 
-
-
 let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
@@ -175,13 +173,62 @@ const shapeTrees = [
   }
 ];
 
+/**
+ * Reactive state variable, but keep in mind, that something changes internally, Vuejs is not able to
+ * recognize these changes, probably due to some private property changes. For example, if you use
+ * store.addQuads(...) or store.add(...) the state won't be updating any computed reference / watcher,
+ * that relies on that store.
+ */
 const state = reactive({
   demandStore: new Store(),
   offerStore: new Store(),
   orderStore: new Store(),
   demanderStore: new Store(),
-  businessAssessmentStore : new Store()
+  businessAssessmentStore : new Store(),
 });
+/**
+ * change this if `state.demandStore` was changed somewhere.
+ * E.g. by using `state.demandStore.addQuads(...);`
+ */
+const demandStoreChanges = ref(0);
+/**
+ * change this if `state.offerStore` was changed somewhere.
+ * E.g. by using `state.offerStore.addQuads(...);`
+ */
+const offerStoreChanges = ref(0);
+/**
+ * change this if `state.orderStore` was changed somewhere.
+ * E.g. by using `state.orderStore.addQuads(...);`
+ */
+const orderStoreChanges = ref(0);
+/**
+ * change this if `state.demanderStore` was changed somewhere.
+ * E.g. by using `state.demanderStore.addQuads(...);`
+ */
+const demanderStoreChanges = ref(0);
+/**
+ * change this if `state.businessAssessmentStore` was changed somewhere.
+ * E.g. by using `state.businessAssessmentStore.addQuads(...);`
+ */
+const businessAssessmentStoreChanges = ref(0);
+
+/**
+ * call this function with whatever you want to be tracked by vue-js.
+ * Note, the function does not do anything! It is a no-op function.
+ *
+ * Usage:
+ * ```typescript
+ * const someRef = computed(() => {
+ *   track(someDependencyThatNeedsToBeExplicitlyTrackedHere.value);
+ *   return someOtherDependencyThatIsMayBeNotTrackedCorrectly;
+ * });
+ * ```
+ *
+ * You can pass multiple arguments, signals and variables to this function.
+ *
+ * @param _args anything you want to track by vue
+ */
+function track(..._args: unknown[]): void {}
 
 async function fetchStoreOf(uri: string): Promise<Store> {
   return getResource(uri, session)
@@ -199,13 +246,15 @@ async function fetchStoreOf(uri: string): Promise<Store> {
       .then((parsedN3) => parsedN3.store);
 }
 
-async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag?:Ref<boolean> ) {
+async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag?:Ref<boolean>
+) {
   const itemStores: Store[] = await Promise.all(
       itemUris.map((item) => fetchStoreOf(item))
   )
   itemStores
       .map(itemStore => itemStore.getQuads(null, null, null, null))
-      .map((quads) => store.addQuads(quads))
+      .forEach((quads) => store.addQuads(quads));
+
   if(flag != undefined)
   {
     flag.value = !flag.value
@@ -214,19 +263,47 @@ async function fillItemStoresIntoStore(itemUris: string[], store: Store, flag?:R
 
 function refreshState() {
   state.demandStore = new Store()
+  demandStoreChanges.value += 1;
+  fetchStoreOf(props.demandUri)
+      .then(store => {
+        state.demandStore = store;
+        demandStoreChanges.value += 1;
+      })
+
   state.offerStore = new Store()
+  offerStoreChanges.value += 1;
+
   state.orderStore = new Store()
+  orderStoreChanges.value += 1;
+
   state.demanderStore = new Store()
-  fetchStoreOf(props.demandUri).then(store => state.demandStore = store)
+  demanderStoreChanges.value += 1;
 }
 
 // DEMAND
 state.demandStore = await fetchStoreOf(props.demandUri);
-const accessRequestUri = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("hasAccessRequest"), null, null)[0]?.object?.value);
-const isAccessRequestGranted = computed(() => state.demandStore.getQuads(props.demandUri, CREDIT("isAccessRequestGranted"), null, null)[0]?.object?.value);
-const amount = computed(() => state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value);
-const currency = computed(() => state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value);
-const demanderUri = computed(() => state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value);
+demandStoreChanges.value += 1;
+
+const accessRequestUri = computed(() => {
+  track(demandStoreChanges.value);
+  return state.demandStore.getQuads(props.demandUri, CREDIT("hasAccessRequest"), null, null)[0]?.object?.value
+});
+const isAccessRequestGranted = computed(() => {
+  track(demandStoreChanges.value);
+  return state.demandStore.getQuads(props.demandUri, CREDIT("isAccessRequestGranted"), null, null)[0]?.object?.value
+});
+const amount = computed(() => {
+  track(demandStoreChanges.value);
+  return state.demandStore.getObjects(null, SCHEMA("amount"), null)[0]?.value
+});
+const currency = computed(() => {
+  track(demandStoreChanges.value);
+  return state.demandStore.getObjects(null, SCHEMA("currency"), null)[0]?.value
+});
+const demanderUri = computed(() => {
+  track(demandStoreChanges.value);
+  return state.demandStore.getQuads(null, SCHEMA("seeks"), props.demandUri, null)[0]?.subject?.value
+});
 let currentDemandState= ref('Demand');
 // DEMANDER
 watch(() => demanderUri.value,
@@ -234,26 +311,50 @@ watch(() => demanderUri.value,
       if (demanderUri.value) {
         state.demanderStore =
             await fetchStoreOf(demanderUri.value)
+        demanderStoreChanges.value += 1;
       }
     }, {immediate: true}
 )
 watch(()=> props.demandState,()=> {
   currentDemandState.value = props.demandState;
 }, {immediate:true});
-const demanderName = computed(() => state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value);
-const demanderIconUri = computed(() => state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value);
-const demanderAccessInboxUri = computed(() => state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value);
+const demanderName = computed(() => {
+  track(demanderStoreChanges.value);
+  return state.demanderStore.getObjects(null, FOAF("name"), null)[0]?.value
+});
+const demanderIconUri = computed(() => {
+  track(demanderStoreChanges.value);
+  return state.demanderStore.getObjects(null, VCARD("hasPhoto"), null)[0]?.value
+});
+const demanderAccessInboxUri = computed(() => {
+  track(demanderStoreChanges.value);
+  return state.demanderStore.getObjects(null, INTEROP("hasAccessInbox"), null)[0]?.value
+});
 
 // OFFER
 const orderStoreFilledFlag = ref(false)
-const offersForDemand = computed(() => state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value));
+const offersForDemand = computed(() => {
+  track(demandStoreChanges.value);
+  return state.demandStore.getObjects(props.demandUri, CREDIT("hasOffer"), null).map(term => term.value)
+});
 const isOfferCreated = computed(() => offersForDemand.value.length > 0);
 
 await fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag)
-watch(() => offersForDemand.value, () => fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag));
+offerStoreChanges.value += 1;
 
-const offerIsAccessible = computed(() => state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value));
-const offerAccessRequests = computed(() => state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value));
+watch(() => offersForDemand.value, async () => {
+  await fillItemStoresIntoStore(offersForDemand.value, state.offerStore, orderStoreFilledFlag);
+  offerStoreChanges.value += 1;
+});
+
+const offerIsAccessible = computed(() => {
+  track(offerStoreChanges.value);
+  return state.offerStore.getObjects(null, CREDIT("isAccessRequestGranted"), null).map(term => term.value)
+});
+const offerAccessRequests = computed(() => {
+  track(offerStoreChanges.value);
+  return state.offerStore.getObjects(null, CREDIT("hasAccessRequest"), null).map(term => term.value)
+});
 watch(() => offerAccessRequests.value,
     async () => {
       offerAccessRequests.value.forEach(accessRequestURI => {
@@ -315,17 +416,22 @@ const currentState = computed(() =>{
 // meh. this imposes unnecessary requests and memory, should be application wide, but it works and I dont care at this point anymore.
 watch(() => offersForDemand.value,
     async () => {
+      track(orderStoreChanges.value);
       const orderContainers = await getDataRegistrationContainers(memberOf.value, orderShapeTreeUri, session);
       const orderItems = (await Promise.all(orderContainers.map(orderContainer => getContainerItems(orderContainer, session)))).flat()
       await fillItemStoresIntoStore(orderItems, state.orderStore, orderStoreFilledFlag)
-    }, {immediate: true})
+      orderStoreChanges.value += 1;
+    }, {immediate: true});
+
 const hasOrderForAnyOfferForThisDemand = computed(() => {
+  track(orderStoreChanges.value);
   const acceptedOffers = state.orderStore.getQuads(null, SCHEMA("acceptedOffer"), null, null).map(quad => quad.object?.value)
   return offersForDemand.value.some(offer => acceptedOffers.includes(offer))
 });
 
 const hasTerminatedOrder = ref(false);
 watch(() => orderStoreFilledFlag.value == true, () => {
+  track(orderStoreChanges.value);
   let acceptedOrders : string[] = [];
   for (const offer of offersForDemand.value){
     acceptedOrders.push(...state.orderStore.getSubjects(SCHEMA("acceptedOffer"), new NamedNode(offer), null).map(subject => subject.value));
@@ -346,6 +452,7 @@ async function fetchProcessedData() {
   const businessAssessmentUri = await getDataRegistrationContainers(demanderUri.value!, selectedShapeTree.value.value, session);
   const items = await getContainerItems(businessAssessmentUri[0], session);
   await fillItemStoresIntoStore(items, state.businessAssessmentStore);
+  businessAssessmentStoreChanges.value += 1;
   businessDataFetched.value = true;
 }
 
@@ -557,7 +664,7 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
     offerAccessRequests.value.forEach(function (offerAccessRequest) {
       handleAuthorizationRequest(offerAccessRequest)
     });
-  },5000);
+  }, 5000);
 
 }
 
@@ -582,7 +689,7 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
           inspectedAccessRequestURI
       )}&app_redirect=${encodeURIComponent(
           window.location.origin + "/accessRequestHandled"
-      )}`,
+      )}&css=${encodeURIComponent(window.location.origin + "/auth.css")}`,
       "_self"
   );
 }
@@ -628,7 +735,7 @@ async function handleAuthorizationRequestRedirect(
 }
 setTimeout(()=>{
   const id = props.demandUri.slice(props.demandUri.lastIndexOf('/')+1);
-  const data:demandData ={
+  const data = {
     "id": id,
     "name": demanderName.value,
     "status": currentState.value,
