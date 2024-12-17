@@ -34,15 +34,20 @@ export const useSolidProfile = () => {
                 .then((parsedN3) => parsedN3.store);
         }
         let query = store.getObjects(webId, VCARD("hasPhoto"), null);
+        let userName = '';
         img.value = query.length > 0 ? query[0].value : "";
         query = store.getObjects(webId, VCARD("fn"), null);
-        name.value = query.length > 0 ? query[0].value : "";
+        userName = query.length > 0 ? query[0].value : "";
+
         query = store.getObjects(webId, LDP("inbox"), null);
         inbox.value = query.length > 0 ? query[0].value : "";
+
         query = store.getObjects(webId, SPACE("storage"), null);
         storage.value = query.length > 0 ? query[0].value : "";
+
         query = store.getObjects(webId, INTEROP("hasAuthorizationAgent"), null);
         authAgent.value = query.length > 0 ? query[0].value : "";
+
         query = store.getObjects(webId, INTEROP("hasAccessInbox"), null);
         accessInbox.value = query.length > 0 ? query[0].value : "";
 
@@ -59,20 +64,27 @@ export const useSolidProfile = () => {
                 memberOf.value = uncheckedMemberOf;
                 query = storeOrg.getObjects(uncheckedMemberOf, MANDAT("hasRightsDelegationProxy"), null);
                 hasOrgRDP.value = query.length > 0 ? query[0].value : "";
+
                 session.updateSessionWithRDP(hasOrgRDP.value);
                 // and also overwrite fields from org profile
                 query = storeOrg.getObjects(memberOf.value, VCARD("fn"), null);
-                name.value += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+                userName += ` (Org: ${query.length > 0 ? query[0].value : "N/A"})`;
+
                 query = storeOrg.getObjects(memberOf.value, LDP("inbox"), null);
                 inbox.value = query.length > 0 ? query[0].value : "";
+
                 query = storeOrg.getObjects(memberOf.value, SPACE("storage"), null);
                 storage.value = query.length > 0 ? query[0].value : "";
+
                 query = storeOrg.getObjects(memberOf.value, INTEROP("hasAuthorizationAgent"), null);
                 authAgent.value = query.length > 0 ? query[0].value : "";
+
                 query = storeOrg.getObjects(memberOf.value, INTEROP("hasAccessInbox"), null);
                 accessInbox.value = query.length > 0 ? query[0].value : "";
             }
         }
+
+        name.value = userName;
     });
     return {
         name, img, inbox, storage, authAgent, accessInbox, memberOf, hasOrgRDP,

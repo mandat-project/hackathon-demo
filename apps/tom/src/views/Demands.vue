@@ -392,7 +392,8 @@ function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
   <ProgressBar v-show="isLoading" mode="indeterminate" style="height: 2px" />
 
   <div role="list" v-if="displayedDemands" class="flex flex-column gap-3 py-0 px-3">
-    <Card :class="{'bg-yellow-100' : highlightAmountValue === demand.amount, ['amount-'+demand.amount]: true }" role="listitem" v-for="demand in displayedDemands" :key="demand.id">
+    <Card :class="{'bg-yellow-100' : highlightAmountValue === demand.amount, ['amount-'+demand.amount]: true }"
+          role="listitem" v-for="demand in displayedDemands" :key="demand.id" :data-demand-id="demand.id">
       <template #title>
         <a class="font-normal text-black-alpha-90 no-underline" :href="demand.providerWebID">{{ demand.providerName }}</a>
       </template>
