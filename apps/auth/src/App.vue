@@ -9,20 +9,7 @@
     <router-view />
   </main>
 
-  <Card
-    v-else
-    style="
-      width: 50%;
-      margin-top: 2rem;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    "
-  >
-    <template #content>
-      <p style="text-align: center">{{ $t("error.401-unauthenticated") }}</p>
-    </template>
-  </Card>
+  <UnauthenticatedCard v-else />
 
   <Toast
     position="bottom-right"
@@ -32,12 +19,14 @@
 
 <script setup lang="ts">
 import appLogo from "@/assets/logo.svg";
-import { AuthAppHeaderBar } from "@datev-research/mandat-shared-components";
+import {
+  AuthAppHeaderBar,
+  UnauthenticatedCard,
+} from "@datev-research/mandat-shared-components";
 import {
   useSolidProfile,
   useSolidSession,
 } from "@datev-research/mandat-shared-composables";
-import Card from "primevue/card";
 import Toast from "primevue/toast";
 import { computed } from "vue";
 import router from "./router";

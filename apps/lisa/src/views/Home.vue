@@ -8,7 +8,7 @@
     <h1 v-else class="px-3 font-normal text-4xl md:text-6xl gap-2 flex align-items-center">{{activeTab}} <Button v-if="session.webId" icon="pi pi-refresh" class="p-button-text p-button-rounded p-button-icon-only"
                                           @click="fetchDemandUris(memberOf)" /></h1>
 
-    <div class="col-12 flex flex-column gap-4" style="background-color:white">
+    <div class="col-12 flex flex-column" style="background-color:white">
       <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 2px" />
       <template v-for="(demandUri, index) in demandUris" :key="demandUri">
         <div class="w-full" v-if="index === 0"></div>

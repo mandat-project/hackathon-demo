@@ -1,7 +1,8 @@
 <template>
-  <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation">
+  <div v-show="tabState === currentDemandState" v-if="currentState!== STATES.NoOperation" class="pb-4">
     <Card :data-demand-id="demandUri">
       <template #content>
+        <div class="card-container">
         <div class="grid pt-0">
           <div class="col-12" v-if ="currentState === STATES.Terminated" >
             <StatusChip :status="STATES.Terminated"></StatusChip>
@@ -68,6 +69,7 @@
         </Button>
         <Button v-else-if="currentState !== STATES.Terminated" class="step-button" :disabled="isCreateOfferBtnDisabled"
                 @click="createOfferResource(props.demandUri, accessRequestUri!)">Create Offer and grant Access</Button>
+        </div>
       </template>
     </Card>
   </div>
@@ -92,6 +94,7 @@
       </div>
     </div>
   </Dialog>
+  <LoadingDialog :isVisible="isLoadingDialogVisible"></LoadingDialog>
 </template>
 
 <script setup lang="ts">
@@ -113,7 +116,7 @@ import {
   getDataBody,
   getDocumentCreationDemandBody
 } from "@/utils/request-access";
-import {DacklTextInput} from "@datev-research/mandat-shared-components";
+import {DacklTextInput, LoadingDialog} from "@datev-research/mandat-shared-components";
 import {useCache, useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import {
   createResourceInAnyRegistrationOfShape,
@@ -149,6 +152,7 @@ let businessDataFetched = ref(false);
 const enteredAnnualPercentageRate = ref(1.08);
 const selectedLoanTerm = ref({label: "60 months", value: "5"});
 const isDialogVisible = ref(false);
+const isLoadingDialogVisible = ref(false);
 const loanTerms = [
   {label: "6 months", value: "0.5"},
   {label: "12 months", value: "1"},
@@ -625,6 +629,7 @@ async function patchOfferInDemand(demandURI: string, offerURI: string): Promise<
 }
 
 async function createOfferResource(demand: string, dataAccessRequest: string) {
+  isLoadingDialogVisible.value =true;
   const businessAssessmentRegistrations = await getDataRegistrationContainers(demanderUri!.value!, selectedShapeTree.value.value, session);
   const derivedFromData = businessAssessmentRegistrations.map(r => "<" + r + ">").join(", ");
   const body = getCreateOfferResourceBody(
@@ -640,6 +645,7 @@ async function createOfferResource(demand: string, dataAccessRequest: string) {
   );
   const offerLocation = await createResourceInAnyRegistrationOfShape(memberOf.value!, offerShapeTreeUri, body, session)
       .catch((err) => {
+        isLoadingDialogVisible.value = false;
         toast.add({
           severity: "error",
           summary: "Error on create offer!",
@@ -684,6 +690,7 @@ async function requestAccessBeingSet(resource: string, forAgent: string) {
 }
 
 function handleAuthorizationRequest(inspectedAccessRequestURI: string) {
+  isLoadingDialogVisible.value =false;
   window.open(
       `${authAgent.value}?uri=${encodeURIComponent(
           inspectedAccessRequestURI
@@ -747,13 +754,13 @@ setTimeout(()=>{
 },1000);
 </script>
 
-<style>
-.p-card {
-  .p-card-content {
-    padding: 0;
-  }
+<style scoped>
+.p-component :deep(.p-card-body){
+  padding-top:0px
 }
-
+.p-component :deep(.p-card-content ){
+  padding-top:0px
+}
 
 
 .p-disabled{

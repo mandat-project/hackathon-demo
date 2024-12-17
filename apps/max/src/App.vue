@@ -7,12 +7,7 @@
     <router-view />
   </div>
 
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;" >
-    <template #content>
-      <p style="text-align: center;">401 Unauthenticated : Login using the button in the top-right corner!</p>
-    </template>
-  </Card>
-
+  <UnauthenticatedCard v-else/>
   <Dialog header="We updated the App!" v-model:visible="isOpen" position="bottomright">
     <div>Please save your progress.</div>
     <div>Use the latest version.</div>
@@ -30,9 +25,8 @@
 import { computed, ref, watch } from "vue";
 import Toast from "primevue/toast";
 import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@datev-research/mandat-shared-composables";
-import {DacklHeaderBar, HeaderBar} from "@datev-research/mandat-shared-components";
+import {DacklHeaderBar, UnauthenticatedCard} from "@datev-research/mandat-shared-components";
 import router from "./router";
-import Card from "primevue/card";
 
 const appLogo = require('@/assets/logo.png');
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();

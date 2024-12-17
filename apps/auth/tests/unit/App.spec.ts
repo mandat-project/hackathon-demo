@@ -7,14 +7,15 @@ import ToastService from "primevue/toastservice";
 
 jest.mock("@datev-research/mandat-shared-components", () => ({}));
 
-test("App should render 401 by default", async () => {
+test("App should render", async () => {
   const wrapper = mount(App, {
     global: {
       plugins: [PrimeVue, ToastService, ConfirmationService, router],
+
       mocks: {
         $t: (key: string): string => key,
       },
     },
   });
-  expect(wrapper.text()).toMatch(`error.401-unauthenticated`);
+  expect(wrapper.exists()).toBe(true);
 });

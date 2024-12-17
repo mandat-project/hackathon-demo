@@ -5,11 +5,7 @@
   <div v-if="isLoggedIn && session.rdp !== ''">
     <router-view />
   </div>
-  <Card v-else style="width: 50%; margin-top: 2rem; display: block; margin-left: auto; margin-right: auto;height:100px" >
-    <template #content>
-      <p style="text-align: center;line-height:100px">401 Unauthenticated : Login using the button in the top-right corner!</p>
-    </template>
-  </Card>
+  <UnauthenticatedCard v-else/>
 
   <Dialog
     header="We updated the App!"
@@ -33,11 +29,10 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import {DacklHeaderBar} from "@datev-research/mandat-shared-components";
+import {DacklHeaderBar, UnauthenticatedCard} from "@datev-research/mandat-shared-components";
 import { useServiceWorkerUpdate, useSolidProfile, useSolidSession } from "@datev-research/mandat-shared-composables";
 import Toast from "primevue/toast";
 import router from "./router";
-import Card from "primevue/card";
 
 const appLogo = require('@/assets/logo.svg');
 const { hasUpdatedAvailable, refreshApp } = useServiceWorkerUpdate();

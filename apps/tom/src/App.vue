@@ -8,12 +8,7 @@
   <div v-if="isLoggedIn && session.rdp" class="m-1 lg:m-5">
     <router-view />
   </div>
-  <Card v-else class="w-6 mt-5 block mx-auto">
-    <template #content>
-      <p class="text-center">401 Unauthenticated:<br/>Login using the button in the top-right corner!</p>
-    </template>
-  </Card>
-
+  <UnauthenticatedCard v-else />
   <!-- This div is a buffer area for the bottom navigation tool (speeddial or other) -->
   <div style="height: 75px" />
 
@@ -39,10 +34,9 @@
 </template>
 
 <script lang="ts" setup>
-import {DacklHeaderBar, TabItemType, TabList} from "@datev-research/mandat-shared-components";
+import {DacklHeaderBar, TabItemType, TabList, UnauthenticatedCard} from "@datev-research/mandat-shared-components";
 import {useIsLoggedIn, useServiceWorkerUpdate, useSolidProfile, useSolidSession} from "@datev-research/mandat-shared-composables";
 import Button from "primevue/button";
-import Card from "primevue/card";
 import Toast from "primevue/toast";
 import {computed, ref, watch} from "vue";
 import {useRoute} from "vue-router";
