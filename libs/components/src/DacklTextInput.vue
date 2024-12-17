@@ -11,24 +11,35 @@
       class="pt-5 -mt-5"
       :id="id"
       :value="modelValue"
+      :style =" { backgroundColor: backgroundColor }"
+      :disabled="disabled"
       @keyup="update($event.target.value)"
     />
     <span v-show="error" class="text-red-500">Ungültige Eingabe</span>
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import {ref, watch} from "vue";
 
 const props = defineProps<{
   type: string;
   modelValue: string;
   label: string;
+  disabled: boolean;
 }>();
 const emit = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
 const error = ref<boolean>(false);
 
+const backgroundColor = ref('white');
+watch(
+    () => props.disabled,
+    (newValue) => {
+      backgroundColor.value = newValue ? 'rgba(237, 240, 243, 1)' : 'white';
+    },
+    { immediate: true } // Run the watcher immediately on component mount
+);
 const id = Math.random().toString(32).substring(2);
 
 function update(value: string): void {

@@ -1,10 +1,10 @@
 <template>
   <Chip v-if="chipStatus === STATES.Terminated" :label="chipStatus" class="text-color text-sm terminated" />
-  <Chip v-else-if="chipStatus === STATES.DataNeeded" label="Data needed" class="text-0 text-sm ml-2 data-needed"/>
-  <Chip v-else-if="chipStatus === STATES.PendingDataRequest" label="Pending Data Request" class=" text-color text-sm ml-2 pending-data-request"/>
-  <Chip v-else-if="chipStatus === STATES.DataSuccessfullyProvided" label="Data successfully provided" class="text-color text-sm ml-2 data-successfully-provided"/>
-  <Chip v-else-if="chipStatus === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm ml-2 waiting-for-response"/>
-  <Chip v-else-if="chipStatus === STATES.OfferAccepted" label="Offer Accepted" class="text-sm ml-2 offer-accepted"/>
+  <Chip v-else-if="chipStatus === STATES.DataNeeded" label="Data needed" class="text-0 text-sm data-needed"/>
+  <Chip v-else-if="chipStatus === STATES.PendingDataRequest" label="Pending Data Request" class=" text-color text-sm pending-data-request"/>
+  <Chip v-else-if="chipStatus === STATES.DataSuccessfullyProvided" label="Data successfully provided" class="text-color text-sm data-successfully-provided"/>
+  <Chip v-else-if="chipStatus === STATES.WaitingForResponse" label="Waiting for response" class=" text-color text-sm waiting-for-response"/>
+  <Chip v-else-if="chipStatus === STATES.OfferAccepted" label="Offer Accepted" class="text-sm offer-accepted"/>
 </template>
 <script setup>
 import {ref, watch} from "vue";

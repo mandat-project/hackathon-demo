@@ -69,7 +69,7 @@ export default defineComponent({
             class="white-space-nowrap overflow-hidden text-overflow-ellipsis hidden sm:inline w-5 md:w-auto"
             >{{ name }}</span
           >
-          <Avatar v-if="isLoggedIn" shape="circle" class="border-1 mx-1">
+          <Avatar v-if="isLoggedIn" shape="circle" class="border-1 mx-2">
             <img v-if="img" :src="img" />
             <i v-else class="pi pi-user" />
           </Avatar>
