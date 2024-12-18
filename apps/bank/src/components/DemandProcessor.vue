@@ -71,7 +71,7 @@
   </div>
 
 
-  <Dialog v-model:visible="isDialogVisible" modal header="Requested business assessment data" :style="{ width: '55rem' }">
+  <Dialog v-model:visible="isDialogVisible" modal header="Requested business assessment data" :style="{ width: '80%' }">
     <div v-if="!businessDataFetched">
       <Skeleton width="100%" height="300px" ></Skeleton>
       <Skeleton width="100%" height="50px" class="mb-5 mt-2"></Skeleton>

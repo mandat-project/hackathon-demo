@@ -1,6 +1,15 @@
 <script setup lang="ts">
-import { Store, Writer } from 'n3';
-import { ref } from 'vue';
+import {Store, Writer} from 'n3';
+import {onMounted, ref} from 'vue';
+import hljs from "highlight.js/lib/core";
+import hljsDefineTurtle from '../assets/highlightjs-turtle/turtle.js';
+import 'highlight.js/styles/stackoverflow-light.css';
+
+hljs.registerLanguage('turtle', hljsDefineTurtle);
+
+onMounted(() => {
+  hljs.highlightBlock(document.querySelector('.turtle'));
+});
 
 const props = defineProps({
   store: Store
@@ -20,8 +29,8 @@ if (props.store) {
 </script>
 
 <template>
-  <div class="card bg-gray-50 border-round" style="background: rgba(232, 236, 239, 0.7); padding:0.5rem">
-    <p class="m-0">{{ displayText }} </p>
+  <div class="p-1">
+    <pre><code ref="codeBlock" class="turtle border-round bg-gray-50">{{ displayText }}</code></pre>
   </div>
   <div class="success-message border-round">
     <p>Looks good: Automatic processing returned positive!

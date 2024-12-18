@@ -4,6 +4,7 @@ import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
 import ConfirmationService from "primevue/confirmationservice";
 
+jest.mock('highlight.js/styles/stackoverflow-light.css', () => 'mocked-check-icon-path');
 describe('DemandProcessor.vue', () => {
   it('should render DemandProcessor', async() => {
     const wrapper = mount(DemandProcessor, {

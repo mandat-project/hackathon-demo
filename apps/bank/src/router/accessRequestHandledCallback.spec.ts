@@ -1,4 +1,5 @@
 import onResult from "@/router/accessRequestHandledCallback";
+jest.mock('highlight.js/styles/stackoverflow-light.css', () => 'mocked-check-icon-path');
 
 describe('accessRequestHandledCallback', () => {
   it('should memorize callback uri', async () => {
