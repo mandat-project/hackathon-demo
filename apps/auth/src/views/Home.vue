@@ -234,6 +234,9 @@ async function getAccessRequestInformationResources(accessInbox: string) {
 watch(
   () => accessInbox.value,
   () => {
+   if (!accessInbox.value) {
+      return;
+    }
     getAccessRequestInformationResources(accessInbox.value).then(
       (newAccessRequestResources) =>
         accessRequestInformationResources.value.push(

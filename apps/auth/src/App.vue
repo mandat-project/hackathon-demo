@@ -34,9 +34,8 @@ import router from "./router";
 const { session, restoreSession } = useSolidSession();
 const { memberOf } = useSolidProfile();
 const isLoggedIn = computed(() => {
-  return !!(
-    (session.webId && !memberOf) ||
-    (session.webId && memberOf && session.rdp)
+  return (
+    (session.webId && !(memberOf.value)) || (session.webId && memberOf.value && session.rdp)
   );
 });
 
